@@ -106,7 +106,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         setManager = new SettingManager(this);
 
         //检查版本
-        checkVersion();
+        //checkVersion();
 
         //初始化界面
         initView();
