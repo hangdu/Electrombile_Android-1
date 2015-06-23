@@ -111,10 +111,7 @@ android {
         xiaomi {}
         tencent {}
         taobao {}
-        FIR {
-            minSdkVersion 17
-            targetSdkVersion 17
-        }
+        FIR {}
     }
 
     productFlavors.all { flavor ->
