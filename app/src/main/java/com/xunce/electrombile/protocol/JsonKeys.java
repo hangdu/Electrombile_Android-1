@@ -110,15 +110,15 @@ public class JsonKeys {
     public final static String STATE = "state";
     public final static String LAT = "lat";
     public final static String LNG = "lng";
-    public final static String FENCE_ON = "FENCE_ON";
-    public final static String FENCE_OFF = "FENCE_OFF";
-    public final static String FENCE_GET = "FENCE_GET";
-    public final static String SEEK_ON = "SEEK_ON";
-    public final static String SEEK_OFF = "SEEK_OFF";
-    public final static String ON = "ON";
-    public final static String OFF = "OFF";
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
-    public final static String GET_GPS = "GET_GPS";
+
+    public final static int CMD_WILD = 0;
+    public final static int CMD_FENCE_ON = 1;
+    public final static int CMD_FENCE_OFF = 2;
+    public final static int CMD_FENCE_GET = 3;
+    public final static int CMD_SEEK_ON = 4;
+    public final static int CMD_SEEK_OFF = 5;
+    public final static int CMD_LOCATION = 6;
 
 }

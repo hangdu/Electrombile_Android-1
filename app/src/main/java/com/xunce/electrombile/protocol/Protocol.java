@@ -30,8 +30,8 @@ public class Protocol implements Serializable {
 
     ;
 
-    public String getCmd() {
-        return "";
+    public int getCmd() {
+        return 0;
     }
 
     ;
@@ -42,8 +42,8 @@ public class Protocol implements Serializable {
 
     ;
 
-    public String getState() {
-        return "";
+    public int getState() {
+        return 0;
     }
 
     ;

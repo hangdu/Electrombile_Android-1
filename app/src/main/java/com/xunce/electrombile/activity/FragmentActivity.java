@@ -491,29 +491,29 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         }
 
         private void onCmdArrived(Protocol protocol) {
-            String cmd = protocol.getCmd();
+            int cmd = protocol.getCmd();
             int result = protocol.getResult();
             switch (cmd) {
                 //如果是设置围栏的命令
-                case JsonKeys.FENCE_ON:
+                case JsonKeys.CMD_FENCE_ON:
                     switchFragment.cancelWaitTimeOut();
                     caseFence(result, true, "防盗开启成功", "防盗开启失败");
                     break;
                 //如果是设置关闭围栏的命令
-                case JsonKeys.FENCE_OFF:
+                case JsonKeys.CMD_FENCE_OFF:
                     switchFragment.cancelWaitTimeOut();
                     caseFence(result, false, "防盗关闭成功", "防盗关闭失败");
                     break;
                 //如果是获取围栏的命令
-                case JsonKeys.FENCE_GET:
+                case JsonKeys.CMD_FENCE_GET:
                     caseFenceGet(protocol, result);
                     break;
                 //如果是开始找车的命令
-                case JsonKeys.SEEK_ON:
+                case JsonKeys.CMD_SEEK_ON:
                     caseSeek(result, "开始找车", "开始找车初始化失败");
                     break;
                 //如果是停止找车的命令
-                case JsonKeys.SEEK_OFF:
+                case JsonKeys.CMD_SEEK_OFF:
                     caseSeek(result, "停止找车", "停止找车失败");
                     break;
                 default:
@@ -539,12 +539,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         }
 
         private void caseFenceGet(Protocol protocol, int result) {
-            String state = protocol.getState();
+            int state = protocol.getState();
             if (0 == result) {
-                if (JsonKeys.ON.equals(state)) {
+                if (state == 1) {
                     setManager.setAlarmFlag(true);
                     switchFragment.openStateAlarmBtn();
-                } else if (JsonKeys.OFF.equals(state)) {
+                } else if (state == 0) {
                     setManager.setAlarmFlag(false);
                     switchFragment.closeStateAlarmBtn();
                 }
