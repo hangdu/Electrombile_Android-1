@@ -143,5 +143,4 @@ public class JsonKeys {
     //设备超时时间
     public final static int TIME_OUT_VALUE = 5000;
 
-
 }
