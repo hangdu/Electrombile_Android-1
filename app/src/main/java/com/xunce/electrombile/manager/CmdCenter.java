@@ -315,7 +315,7 @@ public class CmdCenter {
 //
 //    //25 查询经纬度  命令字 6
 //    public byte[] cWhere(byte[] serial) {
-//        byte[] data = packetOrder(new byte[]{0x00, 0x06}, serial, JsonKeys.GET_GPS, "");
+//        byte[] data = packetOrder(new byte[]{0x00, 0x06}, serial, JsonKeys.CMD_LOCATION, "");
 //        return data;
 //    }
 //
@@ -368,28 +368,28 @@ public class CmdCenter {
      * 新协议
      ************************************************************/
     public byte[] cmdFenceOn() {
-        return getCmdString(JsonKeys.FENCE_ON).getBytes();
+        return getCmdString(JsonKeys.CMD_FENCE_ON).getBytes();
     }
 
     public byte[] cmdFenceOff() {
-        return getCmdString(JsonKeys.FENCE_OFF).getBytes();
+        return getCmdString(JsonKeys.CMD_FENCE_OFF).getBytes();
     }
 
     public byte[] cmdFenceGet() {
-        return getCmdString(JsonKeys.FENCE_GET).getBytes();
+        return getCmdString(JsonKeys.CMD_FENCE_GET).getBytes();
     }
 
     public byte[] cmdWhere() {
-        return getCmdString(JsonKeys.GET_GPS).getBytes();
+        return getCmdString(JsonKeys.CMD_LOCATION).getBytes();
     }
 
     ;
     public byte[] cmdSeekOn() {
-        return getCmdString(JsonKeys.SEEK_ON).getBytes();
+        return getCmdString(JsonKeys.CMD_SEEK_ON).getBytes();
     }
 
     public byte[] cmdSeekOff() {
-        return getCmdString(JsonKeys.SEEK_OFF).getBytes();
+        return getCmdString(JsonKeys.CMD_SEEK_OFF).getBytes();
     }
 
     private String getCmdString(int cmd) {
