@@ -392,10 +392,10 @@ public class CmdCenter {
         return getCmdString(JsonKeys.SEEK_OFF).getBytes();
     }
 
-    private String getCmdString(String fenceOn) {
+    private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put(JsonKeys.CMD, fenceOn);
+            obj.put(JsonKeys.CMD, cmd);
         } catch (JSONException e) {
             e.printStackTrace();
         }

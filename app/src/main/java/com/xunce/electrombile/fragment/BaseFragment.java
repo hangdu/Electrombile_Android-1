@@ -14,6 +14,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
+import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 
@@ -31,7 +32,7 @@ public class BaseFragment extends Fragment{
 
     private static String TAG = "BaseFragmet";
     //timeOut
-    public final int TIME_OUT = 0;
+//    protected final int TIME_OUT = 0;
     //判断是否关闭页面
     public boolean close = false;
     protected CmdCenter mCenter;
@@ -98,7 +99,7 @@ public class BaseFragment extends Fragment{
 
     public void cancelWaitTimeOut() {
         waitDialog.dismiss();
-        timeHandler.removeMessages(TIME_OUT);
+        timeHandler.removeMessages(JsonKeys.TIME_OUT);
     }
     public interface GPSDataChangeListener {
         void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint);

@@ -69,14 +69,16 @@ import io.yunba.android.manager.YunBaManager;
  * Created by heyukun on 2015/3/24.
  */
 
-public class FragmentActivity extends android.support.v4.app.FragmentActivity implements SwitchFragment.GPSDataChangeListener, LocationTVClickedListener {
+public class FragmentActivity extends android.support.v4.app.FragmentActivity
+        implements SwitchFragment.GPSDataChangeListener,
+        LocationTVClickedListener {
     //推送通知用的
     public static PushService pushService;
     //保存自己的实例
     public static FragmentActivity fragmentActivity;
     private static String TAG = "FragmentActivity:";
     protected CmdCenter mCenter;
-    boolean isupde;
+    boolean isUpdate;
     //my service
     ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -95,10 +97,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             Bundle bundle = msg.getData();
-            isupde = bundle.getBoolean("isupdate");
-            if (isupde) {
+            isUpdate = bundle.getBoolean("isupdate");
+            if (isUpdate) {
                 upData();
-                isupde = false;
+                isUpdate = false;
             }
 
         }
@@ -463,6 +465,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
     }
 
     public class MyReceiver extends BroadcastReceiver {
+        private Handler timeHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                ToastUtils.showShort(FragmentActivity.this, "设备超时！");
+            }
+        };
+
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "接收调用");
@@ -491,18 +501,19 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         }
 
         private void onCmdArrived(Protocol protocol) {
-            String cmd = protocol.getCmd();
+            int cmd = protocol.getCmd();
             int result = protocol.getResult();
+            timeHandler.removeMessages(JsonKeys.TIME_OUT);
             switch (cmd) {
                 //如果是设置围栏的命令
                 case JsonKeys.FENCE_ON:
                     switchFragment.cancelWaitTimeOut();
-                    caseFence(result, true, "防盗开启成功", "防盗开启失败");
+                    caseFence(result, true, "防盗开启成功");
                     break;
                 //如果是设置关闭围栏的命令
                 case JsonKeys.FENCE_OFF:
                     switchFragment.cancelWaitTimeOut();
-                    caseFence(result, false, "防盗关闭成功", "防盗关闭失败");
+                    caseFence(result, false, "防盗关闭成功");
                     break;
                 //如果是获取围栏的命令
                 case JsonKeys.FENCE_GET:
@@ -510,25 +521,31 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
                     break;
                 //如果是开始找车的命令
                 case JsonKeys.SEEK_ON:
-                    caseSeek(result, "开始找车", "开始找车初始化失败");
+                    caseSeek(result, "开始找车");
                     break;
                 //如果是停止找车的命令
                 case JsonKeys.SEEK_OFF:
-                    caseSeek(result, "停止找车", "停止找车失败");
+                    caseSeek(result, "停止找车");
                     break;
+                case JsonKeys.GET_GPS:
+                    caseGetGPS(result);
                 default:
                     break;
             }
         }
 
-        private void caseSeek(int result, String success, String failed) {
-            if (0 == result) {
+        private void caseGetGPS(int result) {
+            maptabFragment.cancelWaitTimeOut();
+            dealErr(result);
+        }
+
+        private void caseSeek(int result, String success) {
+            if (JsonKeys.ERR_SUCCESS == result) {
                 ToastUtils.showShort(FragmentActivity.this, success);
-                caseSeekSendToFindAct(0);
             } else {
-                ToastUtils.showShort(FragmentActivity.this, failed);
-                caseSeekSendToFindAct(0);
+                dealErr(result);
             }
+            caseSeekSendToFindAct(0);
         }
 
         private void caseSeekSendToFindAct(int value) {
@@ -539,36 +556,58 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity im
         }
 
         private void caseFenceGet(Protocol protocol, int result) {
-            String state = protocol.getState();
-            if (0 == result) {
-                if (JsonKeys.ON.equals(state)) {
+            if (JsonKeys.ERR_SUCCESS == result) {
+                int state = protocol.getState();
+                if (JsonKeys.ON == state) {
                     setManager.setAlarmFlag(true);
                     switchFragment.openStateAlarmBtn();
-                } else if (JsonKeys.OFF.equals(state)) {
+                } else if (JsonKeys.OFF == state) {
                     setManager.setAlarmFlag(false);
                     switchFragment.closeStateAlarmBtn();
                 }
                 ToastUtils.showShort(FragmentActivity.this, "查询状态成功");
             } else {
-                ToastUtils.showShort(FragmentActivity.this, "查询状态失败");
+                dealErr(result);
             }
         }
 
-        private void caseFence(int result, boolean successAlarmFlag, String success, String failed) {
-            if (0 == result) {
+        private void caseFence(int result, boolean successAlarmFlag, String success) {
+            if (JsonKeys.ERR_SUCCESS == result) {
                 setManager.setAlarmFlag(successAlarmFlag);
-
                 switchFragment.msgSuccessArrived();
                 ToastUtils.showShort(FragmentActivity.this, success);
             } else {
-                setManager.setAlarmFlag(!successAlarmFlag);
-                switchFragment.msgSuccessArrived();
-                ToastUtils.showShort(FragmentActivity.this, failed);
+                dealErr(result);
+            }
+
+
+//            if (JsonKeys.ERR_SUCCESS == result) {
+//                setManager.setAlarmFlag(successAlarmFlag);
+//                switchFragment.msgSuccessArrived();
+//                ToastUtils.showShort(FragmentActivity.this, success);
+//            } else {
+//                setManager.setAlarmFlag(!successAlarmFlag);
+//                switchFragment.msgSuccessArrived();
+//                ToastUtils.showShort(FragmentActivity.this, failed);
+//            }
+        }
+
+        private void dealErr(int result) {
+            switch (result) {
+                case JsonKeys.ERR_WAITING:
+                    ToastUtils.showShort(FragmentActivity.this, "正在设置命令，请稍后...");
+                    timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE * 2);
+                    return;
+                case JsonKeys.ERR_OFFLINE:
+                    ToastUtils.showShort(FragmentActivity.this, "设备不在线，请检查电源。");
+                    break;
+                case JsonKeys.ERR_INTERNAL:
+                    ToastUtils.showShort(FragmentActivity.this, "服务器内部错误，请稍后再试。");
+                    break;
             }
         }
 
         private void onGPSArrived(Protocol protocol) {
-
             float Flat = protocol.getLat();
             float Flong = protocol.getLng();
             Date curDate = new Date(System.currentTimeMillis());//获取当前时间

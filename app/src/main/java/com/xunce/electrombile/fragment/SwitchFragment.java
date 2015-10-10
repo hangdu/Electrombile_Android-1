@@ -36,6 +36,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.bean.WeatherBean;
+import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -134,7 +135,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             cancelNotification();
                             FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
+                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
                             //test
 //                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
 //                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
@@ -158,7 +159,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             VibratorUtil.Vibrate(getActivity(), 700);
                             FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
+                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
                         } else {
                             ToastUtils.showShort(m_context, "请先绑定设备");
                         }

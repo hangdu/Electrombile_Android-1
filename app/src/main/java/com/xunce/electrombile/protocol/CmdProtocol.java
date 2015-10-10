@@ -4,17 +4,17 @@ package com.xunce.electrombile.protocol;
  * Created by lybvinci on 2015/9/28.
  */
 public class CmdProtocol extends Protocol {
-    protected String cmd;
+    protected int cmd;
     protected int result;
-    protected String state;
+    protected int state;
 
     public CmdProtocol(String tmp) {
         super(tmp);
     }
 
     @Override
-    public String getCmd() {
-        cmd = keyForValue(JsonKeys.CMD);
+    public int getCmd() {
+        cmd = Integer.parseInt(keyForValue(JsonKeys.CMD));
         return cmd;
     }
 
@@ -25,8 +25,8 @@ public class CmdProtocol extends Protocol {
     }
 
     @Override
-    public String getState() {
-        state = keyForValue(JsonKeys.STATE);
+    public int getState() {
+        state = Integer.parseInt(keyForValue(JsonKeys.STATE));
         return state;
     }
 
