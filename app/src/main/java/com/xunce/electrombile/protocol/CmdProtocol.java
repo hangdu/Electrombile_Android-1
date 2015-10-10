@@ -6,7 +6,7 @@ package com.xunce.electrombile.protocol;
 public class CmdProtocol extends Protocol {
     protected int cmd;
     protected int result;
-    protected String state;
+    protected int state;
 
     public CmdProtocol(String tmp) {
         super(tmp);
@@ -26,8 +26,8 @@ public class CmdProtocol extends Protocol {
 
     @Override
     public int getState() {
-        state = keyForValue(JsonKeys.STATE);
-        return Integer.parseInt(state);
+        state = Integer.parseInt(keyForValue(JsonKeys.STATE));
+        return state;
     }
 
 }

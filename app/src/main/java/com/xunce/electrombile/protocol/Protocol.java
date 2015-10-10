@@ -19,43 +19,41 @@ public class Protocol implements Serializable {
     }
 
     public int getTimestamp() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;
 
     public int getIntensity() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;
 
     public int getCmd() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;
 
     public int getResult() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;
 
     public int getState() {
-        return 0;
+        throw new NullPointerException();
     }
 
-    ;
-
     public float getLng() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;
 
     public float getLat() {
-        return 0;
+        throw new NullPointerException();
     }
 
     ;

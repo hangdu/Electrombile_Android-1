@@ -40,6 +40,7 @@ import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
+import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
@@ -249,7 +250,7 @@ public class MaptabFragment extends BaseFragment {
                 if (mBaiduMap != null) {
                     //LatLng point = getLatestLocation();
                     waitDialog.show();
-                    timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
+                    timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
                     updateLocation();
                 }
             }

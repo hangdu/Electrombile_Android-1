@@ -368,34 +368,34 @@ public class CmdCenter {
      * 新协议
      ************************************************************/
     public byte[] cmdFenceOn() {
-        return getCmdString(JsonKeys.CMD_FENCE_ON).getBytes();
+        return getCmdString(JsonKeys.FENCE_ON).getBytes();
     }
 
     public byte[] cmdFenceOff() {
-        return getCmdString(JsonKeys.CMD_FENCE_OFF).getBytes();
+        return getCmdString(JsonKeys.FENCE_OFF).getBytes();
     }
 
     public byte[] cmdFenceGet() {
-        return getCmdString(JsonKeys.CMD_FENCE_GET).getBytes();
+        return getCmdString(JsonKeys.FENCE_GET).getBytes();
     }
 
     public byte[] cmdWhere() {
-        return getCmdString(JsonKeys.CMD_LOCATION).getBytes();
+        return getCmdString(JsonKeys.GET_GPS).getBytes();
     }
 
     ;
     public byte[] cmdSeekOn() {
-        return getCmdString(JsonKeys.CMD_SEEK_ON).getBytes();
+        return getCmdString(JsonKeys.SEEK_ON).getBytes();
     }
 
     public byte[] cmdSeekOff() {
-        return getCmdString(JsonKeys.CMD_SEEK_OFF).getBytes();
+        return getCmdString(JsonKeys.SEEK_OFF).getBytes();
     }
 
-    private String getCmdString(int fenceOn) {
+    private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put(JsonKeys.CMD, fenceOn);
+            obj.put(JsonKeys.CMD, cmd);
         } catch (JSONException e) {
             e.printStackTrace();
         }
