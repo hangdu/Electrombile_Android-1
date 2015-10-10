@@ -58,7 +58,6 @@
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
-        <service android:name=".service.UpdateAppService" />
 
         <!-- 云巴相关 -->
         <meta-data

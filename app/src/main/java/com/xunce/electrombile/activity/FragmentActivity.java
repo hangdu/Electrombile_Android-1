@@ -1,15 +1,11 @@
 package com.xunce.electrombile.activity;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -41,22 +37,12 @@ import com.xunce.electrombile.protocol.CmdModeSelect;
 import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.protocol.Protocol;
 import com.xunce.electrombile.service.PushService;
-import com.xunce.electrombile.service.UpdateAppService;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.util.EntityUtils;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,7 +64,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public static FragmentActivity fragmentActivity;
     private static String TAG = "FragmentActivity:";
     protected CmdCenter mCenter;
-    boolean isUpdate;
     //my service
     ServiceConnection conn = new ServiceConnection() {
         @Override
@@ -90,18 +75,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             //返回一个MsgService实例
             pushService = ((PushService.MsgBinder) service).getService();
-
-        }
-    };
-    Handler MyHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Bundle bundle = msg.getData();
-            isUpdate = bundle.getBoolean("isupdate");
-            if (isUpdate) {
-                upData();
-                isUpdate = false;
-            }
 
         }
     };
@@ -132,9 +105,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         setContentView(R.layout.activity_fragment);
         mCenter = CmdCenter.getInstance(this);
         setManager = new SettingManager(this);
-
-        //检查版本
-        checkVersion();
 
         //初始化界面
         initView();
@@ -285,30 +255,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         main_radio.check(checkId);
     }
 
-    /**
-     * 检查更新
-     */
-    public void upData() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("软件升级")
-                .setMessage("发现新版本,建议立即更新使用.")
-                .setPositiveButton("更新", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent updateIntent = new Intent(FragmentActivity.this, UpdateAppService.class);
-                        startService(updateIntent);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alert.create().show();
-    }
-
-
     @Override
     public void onBackPressed() {
         exit();
@@ -336,67 +282,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
-    }
-
-
-    public void checkVersion() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Message msg = new Message();
-                Bundle bundle = new Bundle();
-                String baseUrl = "http://fir.im/api/v2/app/version/%s?token=%s";
-                //下面是正式的 版本调整
-                // String checkUpdateUrl = String.format(baseUrl, "553ca95096a9fc5c14001802", "39d16f30ebf111e4a2da4efe6522248a4b9d9ed4");
-                String checkUpdateUrl = String.format(baseUrl, "556c810d2bb8ac0e5d001a30", "b9d54ba0b12411e4bc2c492c76a46d264a53ba2f");
-
-                HttpClient httpClient = new DefaultHttpClient();
-                //请求超时
-                httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
-                //读取超时
-                httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 20000);
-                try {
-                    HttpGet httpGet = new HttpGet(checkUpdateUrl);
-                    HttpResponse httpResponse = httpClient.execute(httpGet);
-                    HttpEntity httpEntity = httpResponse.getEntity();
-                    int statusCode = httpResponse.getStatusLine().getStatusCode();
-                    if (statusCode == HttpStatus.SC_OK) {
-                        String firResponse = EntityUtils.toString(httpEntity);
-                        JSONObject versionJsonObj = new JSONObject(firResponse);
-                        //FIR上当前的versionCode
-                        int firVersionCode = Integer.parseInt(versionJsonObj.getString("version"));
-                        //FIR上当前的versionName
-                        String firVersionName = versionJsonObj.getString("versionShort");
-                        PackageManager pm = FragmentActivity.this.getPackageManager();
-                        PackageInfo pi = pm.getPackageInfo(FragmentActivity.this.getPackageName(),
-                                PackageManager.GET_ACTIVITIES);
-                        if (pi != null) {
-                            int currentVersionCode = pi.versionCode;
-                            String currentVersionName = pi.versionName;
-//                            Log.i("当前版本",currentVersionCode+"");
-//                            Log.i("查看版本",firVersionCode+"");
-                            if (firVersionCode > currentVersionCode) {
-                                //需要更新
-                                bundle.putBoolean("isupdate", true);
-                            } else if (firVersionCode == currentVersionCode) {
-                                //如果本地app的versionCode与FIR上的app的versionCode一致，则需要判断versionName.
-                                if (!currentVersionName.equals(firVersionName)) {
-                                    bundle.putBoolean("isupdate", true);
-                                }
-                            } else {
-                                //不需要更新,当前版本高于FIR上的app版本.
-                                bundle.putBoolean("isupdate", false);
-                            }
-                            msg.setData(bundle);
-                            FragmentActivity.this.MyHandler.sendMessage(msg);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }).start();
     }
 
     @Override
@@ -579,17 +464,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             } else {
                 dealErr(result);
             }
-
-
-//            if (JsonKeys.ERR_SUCCESS == result) {
-//                setManager.setAlarmFlag(successAlarmFlag);
-//                switchFragment.msgSuccessArrived();
-//                ToastUtils.showShort(FragmentActivity.this, success);
-//            } else {
-//                setManager.setAlarmFlag(!successAlarmFlag);
-//                switchFragment.msgSuccessArrived();
-//                ToastUtils.showShort(FragmentActivity.this, failed);
-//            }
         }
 
         private void dealErr(int result) {
