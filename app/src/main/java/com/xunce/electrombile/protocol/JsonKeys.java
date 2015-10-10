@@ -68,7 +68,7 @@ public class JsonKeys {
 //    public final static String RESET = "RESET#";
 //
 //    //25 、查询经纬度  设备会回复：Lat:N22.55787,Lon:E113.93509,Course:0.00,Speed:0.00km/h,DateTime:2014-12-12 07:32:133426
-////    public final static String GET_GPS = "GET_GPS#";
+////    public final static String CMD_LOCATION = "CMD_LOCATION#";
 //
 //    // GPS定位状态，0表示未定位，1表示已定位
 //    public final static String GPSSTATUS = "GPSStatus";
@@ -110,23 +110,15 @@ public class JsonKeys {
     public final static String STATE = "state";
     public final static String LAT = "lat";
     public final static String LNG = "lng";
-    //    public final static String FENCE_ON = "FENCE_ON";
-//    public final static String FENCE_OFF = "FENCE_OFF";
-//    public final static String FENCE_GET = "FENCE_GET";
-//    public final static String SEEK_ON = "SEEK_ON";
-//    public final static String SEEK_OFF = "SEEK_OFF";
-//    public final static String GET_GPS = "GET_GPS";
-//    public final static String ON = "ON";
-//    public final static String OFF = "OFF";
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
 
-    public final static int FENCE_ON = 1;
-    public final static int FENCE_OFF = 2;
-    public final static int FENCE_GET = 3;
-    public final static int SEEK_ON = 4;
-    public final static int SEEK_OFF = 5;
-    public final static int GET_GPS = 6;
+    public final static int CMD_FENCE_ON = 1;
+    public final static int CMD_FENCE_OFF = 2;
+    public final static int CMD_FENCE_GET = 3;
+    public final static int CMD_SEEK_ON = 4;
+    public final static int CMD_SEEK_OFF = 5;
+    public final static int CMD_LOCATION = 6;
     public final static int ON = 1;
     public final static int OFF = 0;
 
@@ -142,6 +134,5 @@ public class JsonKeys {
     public final static int TIME_OUT = 404;
     //设备超时时间
     public final static int TIME_OUT_VALUE = 5000;
-
 
 }

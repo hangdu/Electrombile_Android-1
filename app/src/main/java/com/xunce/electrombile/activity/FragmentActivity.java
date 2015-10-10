@@ -391,28 +391,28 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             timeHandler.removeMessages(JsonKeys.TIME_OUT);
             switch (cmd) {
                 //如果是设置围栏的命令
-                case JsonKeys.FENCE_ON:
+                case JsonKeys.CMD_FENCE_ON:
                     switchFragment.cancelWaitTimeOut();
                     caseFence(result, true, "防盗开启成功");
                     break;
                 //如果是设置关闭围栏的命令
-                case JsonKeys.FENCE_OFF:
+                case JsonKeys.CMD_FENCE_OFF:
                     switchFragment.cancelWaitTimeOut();
                     caseFence(result, false, "防盗关闭成功");
                     break;
                 //如果是获取围栏的命令
-                case JsonKeys.FENCE_GET:
+                case JsonKeys.CMD_FENCE_GET:
                     caseFenceGet(protocol, result);
                     break;
                 //如果是开始找车的命令
-                case JsonKeys.SEEK_ON:
+                case JsonKeys.CMD_SEEK_ON:
                     caseSeek(result, "开始找车");
                     break;
                 //如果是停止找车的命令
-                case JsonKeys.SEEK_OFF:
+                case JsonKeys.CMD_SEEK_OFF:
                     caseSeek(result, "停止找车");
                     break;
-                case JsonKeys.GET_GPS:
+                case JsonKeys.CMD_LOCATION:
                     caseGetGPS(result);
                 default:
                     break;
