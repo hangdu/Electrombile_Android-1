@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="8dp"
                 android:src="@drawable/switch_fragment_map_location" />
 
             <TextView
@@ -43,10 +43,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="28dp"
                 android:text="当前位置"
                 android:textColor="@color/customblack"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <ImageView
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="8dp"
                 android:src="@drawable/iv_weather" />
 
             <TextView
@@ -81,12 +81,12 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="2dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="28dp"
                 android:ellipsize="end"
-                android:maxLines="4"
+                android:maxLines="3"
                 android:text="现在天气"
                 android:textColor="@color/customblack"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
 

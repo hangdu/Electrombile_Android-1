@@ -25,7 +25,7 @@ import java.io.IOException;
 public class PersonalCenterActivity extends BaseActivity {
 
     /*头像名称*/
-    private static final String IMAGE_FILE_NAME = "faceImage.png";
+    //private static final String IMAGE_FILE_NAME = "faceImage.png";
     /* 请求码*/
     private static final int IMAGE_REQUEST_CODE = 0;
     private static final int CAMERA_REQUEST_CODE = 1;

@@ -14,12 +14,12 @@
 
         <ImageView
             android:id="@+id/head_portrait"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="24dp"
             android:onClick="changeHeadPortrait"
-            android:src="@drawable/iv_login_act" />
+            android:src="@drawable/iv_person_head" />
 
         <TextView
             android:id="@+id/tv_equip"

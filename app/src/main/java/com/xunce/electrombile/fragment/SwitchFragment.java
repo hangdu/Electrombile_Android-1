@@ -1,6 +1,7 @@
 package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -110,6 +111,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         btnAlarmState = (Button) getActivity().findViewById(R.id.btn_AlarmState);
 
         tvWeather = (TextView) getActivity().findViewById(R.id.weather);
+        tvWeather.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+                builder.setMessage(tvWeather.getText().toString().trim());
+                builder.create();
+                builder.show();
+            }
+        });
 
         switch_fragment_tvLocation = (TextView) getActivity().findViewById(R.id.switch_fragment_tvLocation);
         switch_fragment_tvLocation.setOnClickListener(new OnClickListener() {
@@ -305,14 +315,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-                        tvWeather.setText("城市：" + data.city +
-                                "更新时间：" + data.time +
-                                "天气状况：" + data.weather +
-                                "气温：" + data.temp +
-                                "最低气温：" + data.l_tmp +
-                                "最高气温：" + data.h_tmp +
-                                "风向：" + data.WD +
-                                "风速：" + data.WS);
+                        String tmp = "气温：" + data.temp + "\n" +
+                                "天气状况：" + data.weather + "\n" +
+                                "城市：" + data.city + "\n" +
+                                "风速：" + data.WS + "\n" +
+                                "更新时间：" + data.time +"\n" +
+                                "最低气温：" + data.l_tmp +"\n" +
+                                "最高气温：" + data.h_tmp +"\n" +
+                                "风向：" + data.WD +"\n" ;
+                        tvWeather.setText(tmp);
                     }
 
                     @Override
