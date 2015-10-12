@@ -1,8 +1,6 @@
 package com.xunce.electrombile.service;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -13,9 +11,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.util.Log;
 
 import com.avos.avoscloud.LogUtil;
@@ -25,8 +21,6 @@ import com.ibm.mqtt.MqttException;
 import com.ibm.mqtt.MqttPersistence;
 import com.ibm.mqtt.MqttPersistenceException;
 import com.ibm.mqtt.MqttSimpleCallback;
-import com.xunce.electrombile.R;
-import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.bean.ConnectionLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
@@ -61,8 +55,6 @@ public class PushService extends Service {
     // Retry intervals, when the connection is lost.
     private static final long INITIAL_RETRY_INTERVAL = 1000 * 10;
     private static final long MAXIMUM_RETRY_INTERVAL = 1000 * 60 * 30;
-    // Notification id
-    private static final int NOTIF_CONNECTED = 0;
     // MQTT client ID, which is given the broker. In this example, I also use this for the topic header.
     // You can use this to run push notifications for multiple apps with one MQTT broker.
     public static String MQTT_CLIENT_ID = "";
@@ -72,8 +64,7 @@ public class PushService extends Service {
     private static final String ACTION_STOP = MQTT_CLIENT_ID + ".STOP";
     private static final String ACTION_KEEPALIVE = MQTT_CLIENT_ID + ".KEEP_ALIVE";
     private static final String ACTION_RECONNECT = MQTT_CLIENT_ID + ".RECONNECT";
-    // Notification title
-    public static String NOTIF_TITLE = "安全宝";
+
     // the port at which the broker is running.
     private static int MQTT_BROKER_PORT_NUM = 1883;
     // Let's not use the MQTT persistence.
@@ -93,8 +84,6 @@ public class PushService extends Service {
     private ConnectionLog mLog;
     // Connectivity manager to determining, when the phone loses connection
     private ConnectivityManager mConnMan;
-    // Notification manager to displaying arrived push notifications
-    private NotificationManager mNotifMan;
     // Whether or not the service has been started.
     private boolean mStarted;
     // Preferences instance
@@ -129,17 +118,6 @@ public class PushService extends Service {
             }
         }
     };
-    //当数据到达时进行处理
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            String jsonString = new String((byte[]) msg.obj);
-            createFactory(msg, jsonString);
-        }
-
-
-    };
 
     // Static method to start the service
     public static void actionStart(Context ctx) {
@@ -162,10 +140,10 @@ public class PushService extends Service {
         ctx.startService(i);
     }
 
-    private void createFactory(Message msg, String jsonString) {
+    private void createFactory(byte msg, String jsonString) {
         ProtocolFactoryInterface factory;
         Protocol protocol;
-        switch (msg.what) {
+        switch (msg) {
             case 0x01:
                 LogUtil.log.d("收到CMD");
                 factory = new CmdFactory();
@@ -217,7 +195,6 @@ public class PushService extends Service {
         // Get instances of preferences, connectivity manager and notification manager
         mPrefs = getSharedPreferences(TAG, MODE_PRIVATE);
         mConnMan = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        mNotifMan = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		/* If our process was reaped by the system for any reason we need
          * to restore our state with merely a call to onCreate.  We record
@@ -380,7 +357,6 @@ public class PushService extends Service {
                     scheduleReconnect(mStartTime);
                 }
             }
-
             setStarted(true);
         }
     }
@@ -470,103 +446,11 @@ public class PushService extends Service {
         }
     }
 
-    // Display the topbar notification
-    private void showNotification(String text) {
-        Notification n = new Notification();
-
-        n.flags |= Notification.FLAG_SHOW_LIGHTS;
-        n.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        n.defaults = Notification.DEFAULT_ALL;
-
-        n.icon = R.drawable.logo;
-        n.when = System.currentTimeMillis();
-
-        // Simply open the parent activity
-        PendingIntent pi = PendingIntent.getActivity(this, 0,
-                new Intent(this, FragmentActivity.class), 0);
-
-        // Change the name of the notification here
-        n.setLatestEventInfo(this, NOTIF_TITLE, text, pi);
-
-        mNotifMan.notify(NOTIF_CONNECTED, n);
-    }
-
     // Check if we are online
     private boolean isNetworkAvailable() {
         NetworkInfo info = mConnMan.getActiveNetworkInfo();
-//		if (info == null) {
-//			return false;
-//		}
         return info != null && info.isConnected();
     }
-
-//    private void handArrivedGPSString(byte[] cmd) {
-//        byte[] newData = Arrays.copyOfRange(cmd, 8, cmd.length - 1);
-//        String data = new String(newData);
-//        LogUtil.log.i("收到的包：" + data);
-//        if (data.contains("Lat") && data.contains("Lon")
-//                && data.contains("Course") && data.contains("Speed")
-//                && data.contains("DateTime")) {
-//            String[] strArray = data.split(",");
-//            float lat = Float.parseFloat(strArray[0].substring(5));
-//            float longitude = Float.parseFloat(strArray[1].substring(5));
-//            String dateTime = strArray[4].substring(9);
-//            Intent intent = new Intent();
-//            intent.putExtra("CMD", cmd);
-//            intent.putExtra(CmdModeSelect.SELECT_MODE, CmdModeSelect.SELECT_MODE_CMD);
-//            intent.putExtra("LAT", lat);
-//            intent.putExtra("LONG", longitude);
-//            intent.putExtra("DATE", dateTime);
-//            LogUtil.log.i("解析到的数据：LAT=" + lat + "  Long=" + longitude + "  date=" + dateTime);
-//            intent.setAction("com.xunce.electrombile.service");
-//            sendBroadcast(intent);
-//        } else {
-//            LogUtil.log.i("收到错误的包");
-//            //return ;
-//        }
-//    }
-
-//    private void handArrivedCmd(byte[] b) {
-//        Intent intent = new Intent();
-//        intent.putExtra(CmdModeSelect.SELECT_MODE, CmdModeSelect.SELECT_MODE_CMD);
-//        intent.putExtra("CMD", b);
-//        intent.setAction("com.xunce.electrombile.service");
-//        sendBroadcast(intent);
-////		}
-//    }
-
-//    private void handArrivedFindInfo(byte[] findInfo) {
-//        Intent intent = new Intent();
-//        intent.putExtra(CmdModeSelect.SELECT_MODE, CmdModeSelect.SELECT_MODE_433);
-//        intent.putExtra("findInfo", findInfo);
-//        intent.setAction("com.xunce.electrombile.service");
-//        sendBroadcast(intent);
-//    }
-//    private void handArrivedGPS(byte[] payload) {
-//
-////        float lat = mCenter.parseGPSDataToInt(mCenter.parsePushServiceLat(payload)) / (float) 30000.0;
-////        float longitude = mCenter.parseGPSDataToInt(mCenter.parsePushServiceLong(payload)) / (float) 30000.0;
-//        float lat = mCenter.parsePushServiceLat3(payload);
-//        float longitude = mCenter.parsePushServiceLong3(payload);
-//        Log.i(TAG, "lat=" + lat);
-//        Log.i(TAG, "longitude=" + longitude);
-//        String direction = mCenter.parsePushServiceDirection(payload);
-//        int speed = mCenter.parsePushServiceSpeed(payload);
-//        boolean isGPS = mCenter.parsePushServiceIsGPS(payload);
-//        long time = mCenter.parsePushServiceTime(payload);
-//        Log.i(TAG, "time=" + time);
-//        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        sdfWithSecond.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
-//        String date = sdfWithSecond.format(time * 1000);
-//        Intent intent = new Intent();
-//        intent.putExtra(CmdModeSelect.SELECT_MODE, CmdModeSelect.SELECT_MODE_GPS);
-//        intent.putExtra("LAT", lat);
-//        intent.putExtra("LONG", longitude);
-//        intent.putExtra("DATE", date);
-//        intent.setAction("com.xunce.electrombile.service");
-//        sendBroadcast(intent);
-//    }
 
     //lybvinci
     public void sendMessage1(byte[] message) {
@@ -616,17 +500,12 @@ public class PushService extends Service {
 
     // This inner class is a wrapper on top of MQTT client.
     private class MQTTConnection implements MqttSimpleCallback {
-
-
         // Creates a new connection given the broker address and initial topic
         public MQTTConnection(String brokerHostName, String initTopic) throws MqttException {
             // Create connection spec
             String mqttConnSpec = "tcp://" + brokerHostName + "@" + MQTT_BROKER_PORT_NUM;
             // Create the client and connect
             mqttClient = MqttClient.createMqttClient(mqttConnSpec, MQTT_PERSISTENCE);
-            //String clientID = MQTT_CLIENT_ID + "/" + mPrefs.getString(PREF_DEVICE_ID, "");
-            //initTopic = setManager.getIMEI();
-            //String clientID = MQTT_CLIENT_ID + "/" + initTopic +"/e2link/cmd";
             String clientID = MQTT_CLIENT_ID;
             Log.i(TAG, clientID);
             mqttClient.connect(clientID, MQTT_CLEAN_START, MQTT_KEEP_ALIVE);
@@ -719,23 +598,15 @@ public class PushService extends Service {
                 String s = new String(payload);
                 Log.e("pushService payload:", s);
                 //showNotification(s);
-                //如果返回的是自己发送的命令的回答
+                byte select = 0;
                 if (topicName.contains("cmd")) {
-                    Message msg = Message.obtain();
-                    msg.what = 0x01;
-                    msg.obj = payload;
-                    mHandler.sendMessage(msg);
+                    select = 0x01;
                 } else if (topicName.contains("gps")) {
-                    Message msg = Message.obtain();
-                    msg.what = 0x02;
-                    msg.obj = payload;
-                    mHandler.sendMessage(msg);
+                    select = 0x02;
                 } else if (topicName.contains("433")) {
-                    Message msg = Message.obtain();
-                    msg.what = 0x03;
-                    msg.obj = payload;
-                    mHandler.sendMessage(msg);
+                    select = 0x03;
                 }
+                createFactory(select, s);
             }
 
         }
@@ -745,7 +616,6 @@ public class PushService extends Service {
             // publish to a keep-alive topic
             publishToTopic(MQTT_CLIENT_ID + "/keepalive", mPrefs.getString(PREF_DEVICE_ID, ""));
         }
-
 
     }
 
