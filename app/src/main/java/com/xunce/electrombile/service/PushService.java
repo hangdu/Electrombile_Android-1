@@ -33,6 +33,10 @@ import com.xunce.electrombile.protocol._433Factory;
 
 import java.io.IOException;
 
+/**
+ * 已知bug：因为版本问题，会有Exception为null.会导致无限重连。
+ */
+
 /* 
  * PushService that does all of the work.
  * Most of the logic is borrowed from KeepAliveService.
@@ -60,8 +64,8 @@ public class PushService extends Service {
     public static String MQTT_CLIENT_ID = "";
 
     // These are the actions for the service (name are descriptive enough)
-    private static final String ACTION_START = MQTT_CLIENT_ID + ".START";
-    private static final String ACTION_STOP = MQTT_CLIENT_ID + ".STOP";
+    //private static final String ACTION_START = MQTT_CLIENT_ID + ".START";
+    //private static final String ACTION_STOP = MQTT_CLIENT_ID + ".STOP";
     private static final String ACTION_KEEPALIVE = MQTT_CLIENT_ID + ".KEEP_ALIVE";
     private static final String ACTION_RECONNECT = MQTT_CLIENT_ID + ".RECONNECT";
 
@@ -106,39 +110,49 @@ public class PushService extends Service {
             boolean hasConnectivity = (info != null && info.isConnected());
 
             log("Connectivity changed: connected=" + hasConnectivity);
-            if (mqttClient != null && hasConnectivity)
-                sendMessage1(mCenter.cmdFenceGet());
-            if (hasConnectivity) {
+//            if (mqttClient != null && hasConnectivity)
+//                sendMessage1(mCenter.cmdFenceGet());
+            if (isNetworkAvailable()) {
                 reconnectIfNecessary();
-            } else if (mConnection != null) {
-                // if there no connectivity, make sure MQTT connection is destroyed
-                mConnection.disconnect();
+            } else {
+                log("mConnection is closed");
+//                mConnection.disconnect();
                 cancelReconnect();
-                mConnection = null;
+//                mConnection = null;
             }
+
+//            if (hasConnectivity) {
+//                reconnectIfNecessary();
+//            } else if (mConnection != null) {
+//                // if there no connectivity, make sure MQTT connection is destroyed
+//                log("mConnection is closed");
+//                mConnection.disconnect();
+//                cancelReconnect();
+//                mConnection = null;
+//            }
         }
     };
 
     // Static method to start the service
-    public static void actionStart(Context ctx) {
-        Intent i = new Intent(ctx, PushService.class);
-        i.setAction(ACTION_START);
-        ctx.startService(i);
-    }
-
-    // Static method to stop the service
-    public static void actionStop(Context ctx) {
-        Intent i = new Intent(ctx, PushService.class);
-        i.setAction(ACTION_STOP);
-        ctx.startService(i);
-    }
-
-    // Static method to send a keep alive message
-    public static void actionPing(Context ctx) {
-        Intent i = new Intent(ctx, PushService.class);
-        i.setAction(ACTION_KEEPALIVE);
-        ctx.startService(i);
-    }
+//    public static void actionStart(Context ctx) {
+//        Intent i = new Intent(ctx, PushService.class);
+//        i.setAction(ACTION_START);
+//        ctx.startService(i);
+//    }
+//
+//    // Static method to stop the service
+//    public static void actionStop(Context ctx) {
+//        Intent i = new Intent(ctx, PushService.class);
+//        i.setAction(ACTION_STOP);
+//        ctx.startService(i);
+//    }
+//
+//    // Static method to send a keep alive message
+//    public static void actionPing(Context ctx) {
+//        Intent i = new Intent(ctx, PushService.class);
+//        i.setAction(ACTION_KEEPALIVE);
+//        ctx.startService(i);
+//    }
 
     private void createFactory(byte msg, String jsonString) {
         ProtocolFactoryInterface factory;
@@ -226,15 +240,14 @@ public class PushService extends Service {
     public void onDestroy() {
         log("Service destroyed (started=" + mStarted + ")");
         // Stop the services, if it has been started
-        if (mStarted) {
-            stop();
-        }
+        stop();
         try {
             if (mLog != null)
                 mLog.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        stopSelf();
     }
 
     @Override
@@ -242,12 +255,14 @@ public class PushService extends Service {
         flags = START_STICKY;
         log("Service started with intent=" + intent);
         // Do an appropriate action based on the intent.
-        if (intent.getAction().equals(ACTION_STOP)) {
-            stop();
-            stopSelf();
-        } else if (intent.getAction().equals(ACTION_START)) {
-            start();
-        } else if (intent.getAction().equals(ACTION_KEEPALIVE)) {
+//        if (intent.getAction().equals(ACTION_STOP)) {
+//            stop();
+//            stopSelf();
+//        } else
+//        if (intent.getAction().equals(ACTION_START)) {
+//            start();
+////        } else
+        if (intent.getAction().equals(ACTION_KEEPALIVE)) {
             keepAlive();
         } else if (intent.getAction().equals(ACTION_RECONNECT)) {
             if (isNetworkAvailable()) {
@@ -557,6 +572,7 @@ public class PushService extends Service {
             try {
                 stopKeepAlives();
                 mqttClient.disconnect();
+                log("mqtt is closed");
             } catch (MqttPersistenceException e) {
                 log("MqttException" + (e.getMessage() != null ? e.getMessage() : " NULL"), e);
             }
@@ -600,8 +616,9 @@ public class PushService extends Service {
          */
         public void connectionLost() throws Exception {
             log("Loss of connection" + "connection downed");
-            stopKeepAlives();
+//            stopKeepAlives();
             // null itself
+            disconnect();
             mConnection = null;
             if (isNetworkAvailable()) {
                 reconnectIfNecessary();
@@ -636,6 +653,7 @@ public class PushService extends Service {
             // publish to a keep-alive topic
             publishToTopic(MQTT_CLIENT_ID + "/keepalive", mPrefs.getString(PREF_DEVICE_ID, ""));
         }
+
 
     }
 

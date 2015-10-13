@@ -277,7 +277,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     protected void onDestroy() {
         unregisterReceiver(receiver);
         if (!setManager.getIMEI().isEmpty()) {
-            pushService.actionStop(this);
+            //pushService.actionStop(this);
             unbindService(conn);
         }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
@@ -315,7 +315,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             unregisterReceiver(receiver);
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
             if (!setManager.getIMEI().isEmpty()) {
-                pushService.actionStop(this);
+                //pushService.actionStop(this);
                 unbindService(conn);
             }
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
