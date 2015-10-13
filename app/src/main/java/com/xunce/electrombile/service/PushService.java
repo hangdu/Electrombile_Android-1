@@ -238,11 +238,10 @@ public class PushService extends Service {
     }
 
     @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        flags = START_STICKY;
         log("Service started with intent=" + intent);
         // Do an appropriate action based on the intent.
-        if (intent == null) return;
         if (intent.getAction().equals(ACTION_STOP)) {
             stop();
             stopSelf();
@@ -255,7 +254,28 @@ public class PushService extends Service {
                 reconnectIfNecessary();
             }
         }
+        return super.onStartCommand(intent, flags, startId);
     }
+
+//    @Override
+//    public void onStart(Intent intent, int startId) {
+//        super.onStart(intent, startId);
+//        log("Service started with intent=" + intent);
+//        // Do an appropriate action based on the intent.
+//        if (intent == null) return;
+//        if (intent.getAction().equals(ACTION_STOP)) {
+//            stop();
+//            stopSelf();
+//        } else if (intent.getAction().equals(ACTION_START)) {
+//            start();
+//        } else if (intent.getAction().equals(ACTION_KEEPALIVE)) {
+//            keepAlive();
+//        } else if (intent.getAction().equals(ACTION_RECONNECT)) {
+//            if (isNetworkAvailable()) {
+//                reconnectIfNecessary();
+//            }
+//        }
+//    }
 
     @Override
     public IBinder onBind(Intent intent) {
