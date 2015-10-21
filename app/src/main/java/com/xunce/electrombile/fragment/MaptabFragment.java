@@ -41,7 +41,6 @@ import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.protocol.JsonKeys;
-import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
@@ -516,14 +515,8 @@ public class MaptabFragment extends BaseFragment {
 
     //return longitude and latitude data,if no data, returns null
     public void updateLocation() {
-
-        //透传
-        if (FragmentActivity.pushService != null) {
-            FragmentActivity.pushService.sendMessage1(mCenter.cmdWhere());
-
-        } else {
-            ToastUtils.showShort(getActivity().getApplicationContext(), "请稍后...");
-        }
+        if (((FragmentActivity) m_context).mac != null && ((FragmentActivity) m_context).mac.isConnected())
+            ((FragmentActivity) m_context).sendMessage(mCenter.cmdWhere(), setManager.getIMEI());
 
     }
 

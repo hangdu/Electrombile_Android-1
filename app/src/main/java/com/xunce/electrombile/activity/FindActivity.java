@@ -1,6 +1,5 @@
 package com.xunce.electrombile.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,7 +22,7 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 
-public class FindActivity extends Activity {
+public class FindActivity extends BaseActivity {
 
     private static final String TAG = "FindActivity";
     private final int TIME_OUT = 0;
@@ -37,6 +36,7 @@ public class FindActivity extends Activity {
             ratingBar.setRating(next);
         }
     };
+    private String IMEI;
     private ImageView scanner;
     private ProgressDialog progressDialog;
     private CmdCenter mCenter;
@@ -53,26 +53,27 @@ public class FindActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find);
-        initView();
-        initEvent();
+        super.onCreate(savedInstanceState);
     }
 
-    private void initView() {
+    @Override
+    public void initViews() {
         scanner = (ImageView) findViewById(R.id.iv_scanner);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         progressDialog = new ProgressDialog(this);
         mCenter = CmdCenter.getInstance(this);
     }
 
-    private void initEvent() {
+    @Override
+    public void initEvents() {
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
         LinearInterpolator lin = new LinearInterpolator();
         operatingAnim.setInterpolator(lin);
         progressDialog.setMessage("正在配置...");
         progressDialog.setCancelable(false);
         registerBroadCast();
+        IMEI = setManager.getIMEI();
     }
 
     private void registerBroadCast() {
@@ -90,8 +91,9 @@ public class FindActivity extends Activity {
         Button button = (Button) view;
         timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
         if (!isFinding) {
-            if (FragmentActivity.pushService != null) {
-                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
+            if (FragmentActivity.mac.isConnected()) {
+//                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
+                FragmentActivity.sendMessage(mCenter.cmdSeekOn(), IMEI);
                 progressDialog.show();
             }
             if (operatingAnim != null) {
@@ -99,8 +101,8 @@ public class FindActivity extends Activity {
             }
             button.setText("停止找车");
         } else {
-            if (FragmentActivity.pushService != null) {
-                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOff());
+            if (FragmentActivity.mac.isConnected()) {
+                FragmentActivity.sendMessage(mCenter.cmdSeekOff(), IMEI);
                 progressDialog.show();
             }
             //radarView.stop();

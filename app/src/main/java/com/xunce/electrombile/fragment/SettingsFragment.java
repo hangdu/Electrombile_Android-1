@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +20,8 @@ import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.HelpActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
-import com.xunce.electrombile.utils.system.ToastUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
@@ -201,24 +196,24 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String topic = "e2link_" + setManager.getIMEI();
-                        YunBaManager.unsubscribe(m_context, topic, new IMqttActionListener() {
-
-                            @Override
-                            public void onSuccess(IMqttToken arg0) {
-                                Log.d(TAG, "UnSubscribe topic succeed");
-                                //删除本地的IMEI 和报警标志
-                                setManager.setIMEI("");
-                                setManager.setAlarmFlag(false);
-                                ToastUtils.showShort(m_context, "退出登录成功");
-                                setManager.cleanAll();
-                            }
-
-                            @Override
-                            public void onFailure(IMqttToken arg0, Throwable arg1) {
-                                Log.d(TAG, "UnSubscribe topic failed");
-                                ToastUtils.showShort(m_context, "退订服务失败，请确保网络通畅！");
-                            }
-                        });
+//                        YunBaManager.unsubscribe(m_context, topic, new IMqttActionListener() {
+//
+//                            @Override
+//                            public void onSuccess(IMqttToken arg0) {
+//                                Log.d(TAG, "UnSubscribe topic succeed");
+//                                //删除本地的IMEI 和报警标志
+//                                setManager.setIMEI("");
+//                                setManager.setAlarmFlag(false);
+//                                ToastUtils.showShort(m_context, "退出登录成功");
+//                                setManager.cleanAll();
+//                            }
+//
+//                            @Override
+//                            public void onFailure(IMqttToken arg0, Throwable arg1) {
+//                                Log.d(TAG, "UnSubscribe topic failed");
+//                                ToastUtils.showShort(m_context, "退订服务失败，请确保网络通畅！");
+//                            }
+//                        });
                         Intent intentStartLogin = new Intent(m_context, LoginActivity.class);
                         startActivity(intentStartLogin);
                         AVUser.logOut();

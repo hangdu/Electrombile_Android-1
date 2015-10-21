@@ -64,9 +64,7 @@ public class AddSosActivity extends Activity {
         setContentView(R.layout.activity_add_sos);
         mCenter = CmdCenter.getInstance(this);
         initView();
-        if(FragmentActivity.pushService != null){
-            //byte[] serial = mCenter.getSerial(firstByteSearch, secondByteSearch);
-            //FragmentActivity.pushService.sendMessage1(mCenter.cSOSSearch(serial));
+        if (FragmentActivity.mac != null) {
             SOSWaitDialog.show();
         }
 
@@ -93,7 +91,7 @@ public class AddSosActivity extends Activity {
             ToastUtils.showShort(this,getString(R.string.input_yes_phonenumber));
             return ;
         }
-        if(FragmentActivity.pushService == null){
+        if (FragmentActivity.mac == null) {
             ToastUtils.showShort(this,getString(R.string.init_failed));
             return ;
         }
@@ -109,7 +107,7 @@ public class AddSosActivity extends Activity {
         for(int i=1;i< arrayListSOS.size();i++){
             phone = "," + phone;
         }
-        // FragmentActivity.pushService.sendMessage1(mCenter.cSOSManagerAdd(serial, phone));
+        // FragmentActivity.pushService.sendMessage(mCenter.cSOSManagerAdd(serial, phone));
         SOSWaitDialog.show();
         mAdapter.notifyDataSetChanged();
     }
@@ -139,7 +137,7 @@ public class AddSosActivity extends Activity {
                             }
                         }
                         //byte[] serial = mCenter.getSerial(firstByteSOSDelete, secondByteSOSDelete);
-                        //FragmentActivity.pushService.sendMessage1(mCenter.cSOSManagerDelete(serial,phone));
+                        //FragmentActivity.pushService.sendMessage(mCenter.cSOSManagerDelete(serial,phone));
                         SOSWaitDialog.show();
                         mAdapter.notifyDataSetChanged();
                     }

@@ -69,24 +69,24 @@
             android:name="BUG_HD_SDK_GENERAL_KEY"
             android:value="c3eabcfe28504e5428596427cfdd2311" />
 
-        <service
-            android:name="io.yunba.android.core.YunBaService"
-            android:enabled="true"
-            android:exported="true" />
+        <!--<service-->
+        <!--android:name="io.yunba.android.core.YunBaService"-->
+        <!--android:enabled="true"-->
+        <!--android:exported="true" />-->
 
-        <receiver android:name="io.yunba.android.core.YunBaReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".receiver.YunBaReceiver">
-            <intent-filter>
-                <action android:name="io.yunba.android.MESSAGE_RECEIVED_ACTION" />
+        <!--<receiver android:name="io.yunba.android.core.YunBaReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.USER_PRESENT" />-->
+        <!--<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!--<receiver android:name=".receiver.YunBaReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="io.yunba.android.MESSAGE_RECEIVED_ACTION" />-->
 
-                <category android:name="com.xunce.electrombile" />
-            </intent-filter>
-        </receiver>
+        <!--<category android:name="com.xunce.electrombile" />-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <activity
             android:name=".activity.SplashActivity"
@@ -167,16 +167,9 @@
         </receiver>
         -->
 
-        <service
-            android:name=".service.PushService"
-            android:enabled="true"
-            android:label="Push Notifications Service"
-            android:priority="1000">
-            <intent-filter>
-                <action android:name="com.xunce.electrombile.service.PushService.MSG_ACTION" />
-            </intent-filter>
-        </service>
 
+        <!-- Mqtt Service -->
+        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
         <activity
             android:name=".activity.AddSosActivity"
             android:label="@string/title_activity_add_sos"

@@ -133,16 +133,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //关闭报警
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
-                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
+                            ((FragmentActivity) m_context).sendMessage(mCenter.cmdFenceOff(), setManager.getIMEI());
                             waitDialog.show();
                             timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
-                            //test
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOff());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceGet());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdWhere());
 
                         } else {
                             ToastUtils.showShort(m_context, "网络连接失败");
@@ -157,7 +150,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
                             VibratorUtil.Vibrate(getActivity(), 700);
-                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
+                            ((FragmentActivity) m_context).sendMessage(mCenter.cmdFenceOn(), setManager.getIMEI());
                             waitDialog.show();
                             timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
                         } else {

@@ -2,9 +2,6 @@ package com.xunce.electrombile.utils.device;
 
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
@@ -16,9 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 
-import java.util.Random;
-
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 /**
  * Created by lybvinci on 2015/5/13.
@@ -37,28 +32,28 @@ public class DeviceUtils {
                     .setSound(alarmSound).setVibrate(pattern).setAutoCancel(true);
             // Creates an explicit intent for an Activity in your app
             Intent resultIntent = new Intent(context, FragmentActivity.class);
-            if (!topic.isEmpty())
-                resultIntent.putExtra(YunBaManager.MQTT_TOPIC, topic);
-            if (!msg.isEmpty())
-                resultIntent.putExtra(YunBaManager.MQTT_MSG, msg);
+//            if (!topic.isEmpty())
+//                resultIntent.putExtra(YunBaManager.MQTT_TOPIC, topic);
+//            if (!msg.isEmpty())
+//                resultIntent.putExtra(YunBaManager.MQTT_MSG, msg);
             // The stack builder object will contain an artificial back stack
             // for the
             // started Activity.
             // This ensures that navigating backward from the Activity leads out
             // of
             // your application to the Home screen.
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+//            TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             // Adds the back stack for the Intent (but not the Intent itself)
-            stackBuilder.addParentStack(FragmentActivity.class);
+//            stackBuilder.addParentStack(FragmentActivity.class);
             // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-                    0, PendingIntent.FLAG_UPDATE_CURRENT);
-            mBuilder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//            stackBuilder.addNextIntent(resultIntent);
+//            PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+//                    0, PendingIntent.FLAG_UPDATE_CURRENT);
+//            mBuilder.setContentIntent(resultPendingIntent);
+//            NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             // mId allows you to update the notification later on.
-            Random r = new Random();
-            mNotificationManager.notify(r.nextInt(), mBuilder.build());
+//            Random r = new Random();
+//            mNotificationManager.notify(r.nextInt(), mBuilder.build());
         } catch (Exception e) {
             return false;
         }

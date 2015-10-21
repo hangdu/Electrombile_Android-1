@@ -18,12 +18,9 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-
 import java.util.List;
 
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 public class DeviceActivity extends BaseActivity {
     private static final String TAG = "DeviceActivity";
@@ -128,26 +125,26 @@ public class DeviceActivity extends BaseActivity {
                             if (e == null) {
                                 String topic = "simcom_" + setManager.getIMEI();
                                 //退订云巴推送
-                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
-
-                                    @Override
-                                    public void onSuccess(IMqttToken arg0) {
-                                        Log.d(TAG, "UnSubscribe topic succeed");
-                                        //删除本地的IMEI 和报警标志
-                                        setManager.setIMEI("");
-                                        setManager.setAlarmFlag(false);
-                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
-                                        Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
-                                        startActivity(intent);
-                                        DeviceActivity.this.finish();
-                                    }
-
-                                    @Override
-                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-                                        Log.d(TAG, "UnSubscribe topic failed");
-                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定失败，请确保网络通畅！");
-                                    }
-                                });
+//                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
+//
+//                                    @Override
+//                                    public void onSuccess(IMqttToken arg0) {
+//                                        Log.d(TAG, "UnSubscribe topic succeed");
+//                                        //删除本地的IMEI 和报警标志
+//                                        setManager.setIMEI("");
+//                                        setManager.setAlarmFlag(false);
+//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
+//                                        Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
+//                                        startActivity(intent);
+//                                        DeviceActivity.this.finish();
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
+//                                        Log.d(TAG, "UnSubscribe topic failed");
+//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定失败，请确保网络通畅！");
+//                                    }
+//                                });
                             }
                         }
                     });

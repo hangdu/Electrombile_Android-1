@@ -1,18 +1,16 @@
 package com.xunce.electrombile.activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -24,6 +22,8 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
+import com.xunce.electrombile.Constants.ActivityConstants;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
 import com.xunce.electrombile.fragment.MaptabFragment;
@@ -33,22 +33,27 @@ import com.xunce.electrombile.fragment.SwitchFragment.LocationTVClickedListener;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
-import com.xunce.electrombile.protocol.CmdModeSelect;
+import com.xunce.electrombile.protocol.CmdFactory;
+import com.xunce.electrombile.protocol.GPSFactory;
 import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.protocol.Protocol;
-import com.xunce.electrombile.service.PushService;
+import com.xunce.electrombile.protocol.ProtocolFactoryInterface;
+import com.xunce.electrombile.protocol._433Factory;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 
 /**
@@ -58,26 +63,12 @@ import io.yunba.android.manager.YunBaManager;
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
-    //推送通知用的
-    public static PushService pushService;
     //保存自己的实例
     public static FragmentActivity fragmentActivity;
+    public static MqttAndroidClient mac;
     private static String TAG = "FragmentActivity:";
+    public String IMEI;
     protected CmdCenter mCenter;
-    //my service
-    ServiceConnection conn = new ServiceConnection() {
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            //返回一个MsgService实例
-            pushService = ((PushService.MsgBinder) service).getService();
-
-        }
-    };
     private SwitchFragment switchFragment;
     private MaptabFragment maptabFragment;
     private SettingsFragment settingsFragment;
@@ -98,6 +89,59 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             isExit = false;
         }
     };
+    private Thread startService = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            MqttConnectOptions mcp = new MqttConnectOptions();
+            mcp.setCleanSession(false);
+            mac = new MqttAndroidClient(getApplicationContext(), ServiceConstants.MQTT_HOST, ServiceConstants.clientId);
+            try {
+                mac.connect(mcp, this, new IMqttActionListener() {
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        subscribe(mac);
+                        ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                        sendMessage(mCenter.cmdWhere(), setManager.getIMEI());
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+                    }
+                });
+            } catch (MqttException e1) {
+                e1.printStackTrace();
+            }
+//                    YunBaManager.subscribe(getApplicationContext(), topic, new IMqttActionListener() {
+//
+//                        @Override
+//                        public void onSuccess(IMqttToken arg0) {
+//                            Log.d(TAG, "Subscribe topic succeed");
+//                        }
+//
+//                        @Override
+//                        public void onFailure(IMqttToken arg0, Throwable arg1) {
+//                            if (arg0 != null)
+//                                Log.i(arg0.toString(), "XXXX");
+//                            if (arg1 != null)
+//                                Log.i("AAAA", arg1.toString());
+//                            Log.d(TAG, "Subscribe topic failed");
+//                        }
+//                    });
+        }
+    });
+
+    public static void sendMessage(byte[] message, String IMEI) {
+        if (mac == null) {
+            ToastUtils.showShort(FragmentActivity.fragmentActivity, "请先连接设备，或等待连接。");
+            return;
+        }
+        try {
+            mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +159,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         startServer();
         Historys.put(this);
 
+
         fragmentActivity = this;
+        IMEI = setManager.getIMEI();
     }
 
     private void startServer() {
@@ -132,27 +178,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         final String topic = "simcom_" + setManager.getIMEI();
                         Log.i(TAG + "SSSSSSSSSS", topic);
                         //启动服务
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent("com.xunce.electrombile.service.PushService.MSG_ACTION");
-                                bindService(intent, conn, Context.BIND_AUTO_CREATE);
-                                //订阅云巴推送
-                                YunBaManager.subscribe(getApplicationContext(), topic, new IMqttActionListener() {
-
-                                    @Override
-                                    public void onSuccess(IMqttToken arg0) {
-                                        Log.d(TAG, "Subscribe topic succeed");
-                                    }
-
-                                    @Override
-                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-                                        Log.d(TAG, "Subscribe topic failed");
-                                    }
-                                });
-                            }
-                        }).start();
-
+                        startService.start();
                         Log.d("成功", "查询到" + avObjects.size() + " 条符合条件的数据");
                         ToastUtils.showShort(FragmentActivity.this, "设备查询成功");
                     } else {
@@ -166,32 +192,33 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             Log.i(TAG, setManager.getIMEI());
             final String topic = "simcom_" + setManager.getIMEI();
             Log.i(TAG + "SSSSSSSSSS", topic);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent("com.xunce.electrombile.service.PushService.MSG_ACTION");
-                    bindService(intent, conn, Context.BIND_AUTO_CREATE);
-                    YunBaManager.subscribe(getApplicationContext(), topic, new IMqttActionListener() {
-
-                        @Override
-                        public void onSuccess(IMqttToken arg0) {
-                            Log.d(TAG, "Subscribe topic succeed");
-                        }
-
-                        @Override
-                        public void onFailure(IMqttToken arg0, Throwable arg1) {
-                            if (arg0 != null)
-                                Log.i(arg0.toString(), "XXXX");
-                            if (arg1 != null)
-                                Log.i("AAAA", arg1.toString());
-                            Log.d(TAG, "Subscribe topic failed");
-                        }
-                    });
-                }
-            }).start();
-
+            startService.start();
             ToastUtils.showShort(this, "登陆成功");
         }
+    }
+
+    private void subscribe(MqttAndroidClient mac) {
+        //订阅命令字
+        String initTopic = setManager.getIMEI();
+        String topic1 = "dev2app/" + initTopic + "/cmd";
+
+        //订阅GPS数据
+        String topic2 = "dev2app/" + initTopic + "/gps";
+
+        //订阅上报的信号强度
+        String topic3 = "dev2app/" + initTopic + "/433";
+
+        String[] topic = {topic1, topic2, topic3};
+        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+        try {
+            mac.subscribe(topic, qos);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -205,12 +232,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void registerBroadCast() {
         receiver = new MyReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction("com.xunce.electrombile.service");
-        try {
-            FragmentActivity.this.registerReceiver(receiver, filter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        filter.addAction("MqttService.callbackToActivity.v0");
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+
+//        filter.addAction("com.xunce.electrombile.service");
+//        try {
+//            FragmentActivity.this.registerReceiver(receiver, filter);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -268,18 +298,16 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (pushService != null) {
-            pushService.sendMessage1(mCenter.cmdFenceGet());
+        if (mac != null && mac.isConnected()) {
+            mac.registerResources(this);
+            sendMessage(mCenter.cmdFenceGet(), setManager.getIMEI());
         }
     }
 
     @Override
     protected void onDestroy() {
         unregisterReceiver(receiver);
-        if (!setManager.getIMEI().isEmpty()) {
-            //pushService.actionStop(this);
-            unbindService(conn);
-        }
+        mac.unregisterResources();
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
     }
@@ -312,12 +340,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             exitHandler.sendEmptyMessageDelayed(0, 2000);
         } else {
             switchFragment.cancelNotification();
-            unregisterReceiver(receiver);
+            mac.unregisterResources();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+//            unregisterReceiver(receiver);
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
-            if (!setManager.getIMEI().isEmpty()) {
-                //pushService.actionStop(this);
-                unbindService(conn);
-            }
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
 
             //返回桌面
@@ -357,28 +383,72 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 ToastUtils.showShort(FragmentActivity.this, "设备超时！");
             }
         };
+        private String callbackStatus;
+        private String callbackAction;
+        private String destinationName;
+        private byte select = 0;
+        private Protocol protocol;
+
+        private Protocol createFactory(byte msg, String jsonString) {
+            ProtocolFactoryInterface factory;
+            Protocol protocol = null;
+            switch (msg) {
+                case 0x01:
+                    LogUtil.log.d("收到CMD");
+                    factory = new CmdFactory();
+                    protocol = factory.createProtocol(jsonString);
+                    break;
+                case 0x02:
+                    LogUtil.log.d("收到GPS");
+                    factory = new GPSFactory();
+                    protocol = factory.createProtocol(jsonString);
+                    break;
+                case 0x03:
+                    LogUtil.log.d("收到找车信息");
+                    factory = new _433Factory();
+                    protocol = factory.createProtocol(jsonString);
+                    break;
+                default:
+                    break;
+            }
+            return protocol;
+        }
 
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "接收调用");
+            Log.i(TAG, intent.getExtras().toString());
             Bundle bundle = intent.getExtras();
-            String MODE = bundle.getString(CmdModeSelect.SELECT_MODE);
-            Log.i(TAG, "MODE:" + MODE);
-            Protocol protocol;
-            protocol = (Protocol) bundle.get("protocol");
-            if (CmdModeSelect.SELECT_MODE_GPS.equals(MODE)) {
-                Log.i(TAG, "得到GPS");
-                maptabFragment.cancelWaitTimeOut();
-                onGPSArrived(protocol);
-            } else if (CmdModeSelect.SELECT_MODE_CMD.equals(MODE)) {
-                Log.i(TAG, "得到命令字");
-                onCmdArrived(protocol);
-            } else if (CmdModeSelect.SELECT_MODE_433.equals(MODE)) {
-                // 找车
-                on433Arrived(protocol);
-            }
+            callbackStatus = bundle.get(ActivityConstants.callbackStatus).toString();
+            callbackAction = bundle.get(ActivityConstants.callbackAction).toString();
+            if (ActivityConstants.OK.equals(callbackStatus)) {
+                if (callbackAction.equals(ActivityConstants.messageArrived)) {
+                    destinationName = bundle.get(ActivityConstants.destinationName).toString();
+                    String s = bundle.get(ActivityConstants.PARCEL).toString();
+                    if (destinationName.contains("cmd")) {
+                        select = 0x01;
+                        protocol = createFactory(select, s);
+                        Log.i(TAG, "得到命令字");
+                        onCmdArrived(protocol);
+                    } else if (destinationName.contains("gps")) {
+                        select = 0x02;
+                        protocol = createFactory(select, s);
+                        Log.i(TAG, "得到GPS");
+                        maptabFragment.cancelWaitTimeOut();
+                        onGPSArrived(protocol);
+                    } else if (destinationName.contains("433")) {
+                        select = 0x03;
+                        protocol = createFactory(select, s);
+                        // 找车
+                        on433Arrived(protocol);
+                    }
 
+                } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {
+                    ToastUtils.showShort(FragmentActivity.this, "网络连接已断开");
+                }
+            }
         }
+
 
         private void on433Arrived(Protocol protocol) {
             int intensity = protocol.getIntensity();

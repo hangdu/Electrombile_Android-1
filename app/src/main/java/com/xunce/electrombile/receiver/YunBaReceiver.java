@@ -8,7 +8,7 @@ import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.activity.AlarmActivity;
 import com.xunce.electrombile.utils.device.DeviceUtils;
 
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 /**
  * Created by lybvinci on 2015/5/1.
@@ -20,8 +20,8 @@ public class YunBaReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String topic = intent.getStringExtra(YunBaManager.MQTT_TOPIC);
-        String msg = intent.getStringExtra(YunBaManager.MQTT_MSG);
+//        String topic = intent.getStringExtra(YunBaManager.MQTT_TOPIC);
+//        String msg = intent.getStringExtra(YunBaManager.MQTT_MSG);
         //在这里处理从服务器发布下来的消息， 比如显示通知栏， 打开 Activity 等等
 //        if(AlarmActivity.instance == null) {
         LogUtil.log.i("创建报警界面了么？？？");
