@@ -54,7 +54,7 @@ public class PushService extends Service {
     // We store the last retry interval
     public static final String PREF_RETRY = "retryInterval";
     // the IP address, where your MQTT broker is running.
-    private static final String MQTT_HOST = "120.25.157.233";
+    private static final String MQTT_HOST = "121.40.117.200";
     // This the application level keep-alive interval, that is used by the AlarmManager
     // to keep the connection active, even when the device goes to sleep.
     private static final long KEEP_ALIVE_INTERVAL = 1000 * 60 * 28;
