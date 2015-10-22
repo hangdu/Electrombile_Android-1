@@ -6,19 +6,19 @@ package com.xunce.electrombile.Constants;
 public class ActivityConstants {
     public static final String historyProperty = "history";
     public static final String ConnectionStatusProperty = "connectionStatus";
-    public static String callbackStatus = "MqttService.callbackStatus";
-    public static String invocationContext = "MqttService.invocationContext";
-    public static String clientHandle = "MqttService.clientHandle";
-    public static String activityToken = "MqttService.activityToken";
-    public static String callbackAction = "MqttService.callbackAction";
-    public static String PARCEL = "MqttService.PARCEL";
-    public static String destinationName = "MqttService.destinationName";
-    public static String OK = "OK";
-    public static String messageDelivered = "messageDelivered";
-    public static String connect = "connect";
-    public static String subscribe = "subscribe";
-    public static String messageArrived = "messageArrived";
-    public static String onConnectionLost = "onConnectionLost";
+    public static final String callbackStatus = "MqttService.callbackStatus";
+    public static final String invocationContext = "MqttService.invocationContext";
+    public static final String clientHandle = "MqttService.clientHandle";
+    public static final String activityToken = "MqttService.activityToken";
+    public static final String callbackAction = "MqttService.callbackAction";
+    public static final String PARCEL = "MqttService.PARCEL";
+    public static final String destinationName = "MqttService.destinationName";
+    public static final String OK = "OK";
+    public static final String messageDelivered = "messageDelivered";
+    public static final String connect = "connect";
+    public static final String subscribe = "subscribe";
+    public static final String messageArrived = "messageArrived";
+    public static final String onConnectionLost = "onConnectionLost";
 
 
 }

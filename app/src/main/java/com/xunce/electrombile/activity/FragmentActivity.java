@@ -67,7 +67,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         LocationTVClickedListener {
     private static String TAG = "FragmentActivity:";
     public MqttAndroidClient mac;
-    protected CmdCenter mCenter;
+    private CmdCenter mCenter;
     private SwitchFragment switchFragment;
     private MaptabFragment maptabFragment;
     private SettingsFragment settingsFragment;
@@ -342,11 +342,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
 
-            //返回桌面
-//            Intent intent = new Intent(Intent.ACTION_MAIN);
-//            intent.addCategory(Intent.CATEGORY_HOME);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            this.startActivity(intent);
             Historys.exit();
         }
     }
