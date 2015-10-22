@@ -1,6 +1,7 @@
 package com.xunce.electrombile.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,17 +46,16 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import java.util.ArrayList;
 import java.util.List;
 
-//import io.yunba.android.manager.YunBaManager;
-
 
 /**
  * Created by heyukun on 2015/3/24.
+ * 修改 By liyanbo
  */
 
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
-    private static String TAG = "FragmentActivity:";
+    private static final String TAG = "FragmentActivity:";
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -79,139 +79,20 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     };
 
-    private void startService() {
-        Connection connection = Connection.createConnection(ServiceConstants.clientId,
-                ServiceConstants.MQTT_HOST,
-                ServiceConstants.PORT,
-                FragmentActivity.this,
-                false);
-        ServiceConstants.handler = connection.handle();
-        MqttConnectOptions mcp = new MqttConnectOptions();
-        mcp.setCleanSession(false);
-        connection.addConnectionOptions(mcp);
-        mac = connection.getClient();
-        try {
-            mac.connect(mcp, this, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    subscribe(mac);
-                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
-                }
-            });
-            Connections.getInstance(FragmentActivity.this).addConnection(connection);
-        } catch (MqttException e1) {
-            e1.printStackTrace();
-        }
-//                    YunBaManager.subscribe(getApplicationContext(), topic, new IMqttActionListener() {
-//
-//                        @Override
-//                        public void onSuccess(IMqttToken arg0) {
-//                            Log.d(TAG, "Subscribe topic succeed");
-//                        }
-//
-//                        @Override
-//                        public void onFailure(IMqttToken arg0, Throwable arg1) {
-//                            if (arg0 != null)
-//                                Log.i(arg0.toString(), "XXXX");
-//                            if (arg1 != null)
-//                                Log.i("AAAA", arg1.toString());
-//                            Log.d(TAG, "Subscribe topic failed");
-//                        }
-//                    });
-
-    }
-
-    ;
-
-    public void sendMessage(Context context, byte[] message, String IMEI) {
-        if (mac == null) {
-            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
-            return;
-        }
-        try {
-            mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
         mCenter = CmdCenter.getInstance(this);
         setManager = new SettingManager(this);
-
         //初始化界面
         initView();
         initData();
         //注册广播
         registerBroadCast();
-        //判断是否需要开启服务
-        startServer();
+        //判断是否绑定设备
+        queryIMEI();
         Historys.put(this);
-    }
-
-    private void startServer() {
-        if (setManager.getIMEI().isEmpty()) {
-            AVQuery<AVObject> query = new AVQuery<>("Bindings");
-            final AVUser currentUser = AVUser.getCurrentUser();
-            query.whereEqualTo("user", currentUser);
-            query.findInBackground(new FindCallback<AVObject>() {
-                @Override
-                public void done(List<AVObject> avObjects, AVException e) {
-                    if (e == null && avObjects.size() > 0) {
-                        setManager.setIMEI((String) avObjects.get(0).get("IMEI"));
-                        Log.i(TAG + "AAAAAA", setManager.getIMEI());
-                        final String topic = "simcom_" + setManager.getIMEI();
-                        Log.i(TAG + "SSSSSSSSSS", topic);
-                        //启动服务
-                        startService();
-                        Log.d("成功", "查询到" + avObjects.size() + " 条符合条件的数据");
-                        ToastUtils.showShort(FragmentActivity.this, "设备查询成功");
-                    } else {
-                        Log.d("失败", "查询错误2: ");
-                        ToastUtils.showShort(FragmentActivity.this, "请先绑定设备");
-                    }
-                }
-            });
-
-        } else {
-            Log.i(TAG, setManager.getIMEI());
-            final String topic = "simcom_" + setManager.getIMEI();
-            Log.i(TAG + "SSSSSSSSSS", topic);
-            startService();
-            ToastUtils.showShort(FragmentActivity.this, "登陆成功");
-        }
-    }
-
-    private void subscribe(MqttAndroidClient mac) {
-        //订阅命令字
-        String initTopic = setManager.getIMEI();
-        String topic1 = "dev2app/" + initTopic + "/cmd";
-
-        //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
-
-        //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
-
-        String[] topic = {topic1, topic2, topic3};
-        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
-        try {
-            mac.subscribe(topic, qos);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
@@ -220,55 +101,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
         }
-    }
-
-    private void registerBroadCast() {
-        receiver = new MyReceiver(FragmentActivity.this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("MqttService.callbackToActivity.v0");
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-    }
-
-    /**
-     * 界面初始化
-     */
-    private void initView() {
-        main_radio = (RadioGroup) findViewById(R.id.main_radio);
-        mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
-        switchFragment = new SwitchFragment();
-        maptabFragment = new MaptabFragment();
-        settingsFragment = new SettingsFragment();
-    }
-
-    private void initData() {
-        List<Fragment> list = new ArrayList<>();
-        list.add(switchFragment);
-        list.add(maptabFragment);
-        list.add(settingsFragment);
-        HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager(), list);
-        mViewPager.setAdapter(mAdapter);
-        main_radio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.rbSwitch:
-                        mViewPager.setCurrentItem(0, false);
-                        checkId = 0;
-                        break;
-                    case R.id.rbMap:
-                        mViewPager.setCurrentItem(1, false);
-                        checkId = 1;
-                        break;
-                    case R.id.rbSettings:
-                        mViewPager.setCurrentItem(2, false);
-                        checkId = 2;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-        main_radio.check(checkId);
     }
 
     @Override
@@ -317,6 +149,182 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     }
 
     /**
+     * 建立MQTT连接
+     */
+    private void getMqttConnection() {
+        Connection connection = Connection.createConnection(ServiceConstants.clientId,
+                ServiceConstants.MQTT_HOST,
+                ServiceConstants.PORT,
+                FragmentActivity.this,
+                false);
+        ServiceConstants.handler = connection.handle();
+        MqttConnectOptions mcp = new MqttConnectOptions();
+        mcp.setCleanSession(false);
+        connection.addConnectionOptions(mcp);
+        mac = connection.getClient();
+        try {
+            mac.connect(mcp, this, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    subscribe(mac);
+                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                    startAlarmService();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+                }
+            });
+            Connections.getInstance(FragmentActivity.this).addConnection(connection);
+        } catch (MqttException e1) {
+            e1.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 开启报警服务
+     */
+    private void startAlarmService() {
+        Intent intent = new Intent("com.xunce.electrombile.alarmservice");
+        FragmentActivity.this.startService(intent);
+    }
+
+    /**
+     * 发送命令
+     *
+     * @param context 传递上下文，用于弹吐司
+     * @param message 要发送的命令
+     * @param IMEI    要发送的设备号
+     */
+    public void sendMessage(Context context, byte[] message, String IMEI) {
+        if (mac == null) {
+            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
+            return;
+        }
+        try {
+            mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 查询并判断是否该建立MQTT连接
+     */
+    private void queryIMEI() {
+        if (setManager.getIMEI().isEmpty()) {
+            AVQuery<AVObject> query = new AVQuery<>("Bindings");
+            final AVUser currentUser = AVUser.getCurrentUser();
+            query.whereEqualTo("user", currentUser);
+            query.findInBackground(new FindCallback<AVObject>() {
+                @Override
+                public void done(List<AVObject> avObjects, AVException e) {
+                    if (e == null && avObjects.size() > 0) {
+                        setManager.setIMEI((String) avObjects.get(0).get("IMEI"));
+                        //建立连接
+                        getMqttConnection();
+                        Log.d("成功", "查询到" + avObjects.size() + " 条符合条件的数据");
+                        ToastUtils.showShort(FragmentActivity.this, "设备查询成功");
+                    } else {
+                        Log.d("失败", "查询错误2: ");
+                        ToastUtils.showShort(FragmentActivity.this, "请先绑定设备");
+                    }
+                }
+            });
+
+        } else {
+            getMqttConnection();
+            ToastUtils.showShort(FragmentActivity.this, "登陆成功");
+        }
+    }
+
+    /**
+     * 订阅话题
+     * @param mac mqtt的客户端
+     */
+    private void subscribe(MqttAndroidClient mac) {
+        //订阅命令字
+        String initTopic = setManager.getIMEI();
+        String topic1 = "dev2app/" + initTopic + "/cmd";
+        //订阅GPS数据
+        String topic2 = "dev2app/" + initTopic + "/gps";
+        //订阅上报的信号强度
+        String topic3 = "dev2app/" + initTopic + "/433";
+        String[] topic = {topic1, topic2, topic3};
+        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+        try {
+            mac.subscribe(topic, qos);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
+        }
+
+    }
+
+    /**
+     * 注册广播  监听话题为：cmd gps 433
+     */
+    private void registerBroadCast() {
+        receiver = new MyReceiver(FragmentActivity.this);
+        IntentFilter filter = new IntentFilter();
+        filter.setPriority(999);
+        filter.addAction("MqttService.callbackToActivity.v0");
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+    }
+
+    /**
+     * 界面初始化
+     */
+    private void initView() {
+        main_radio = (RadioGroup) findViewById(R.id.main_radio);
+        mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
+        switchFragment = new SwitchFragment();
+        maptabFragment = new MaptabFragment();
+        settingsFragment = new SettingsFragment();
+    }
+
+    /**
+     * 数据初始化
+     */
+    private void initData() {
+        List<Fragment> list = new ArrayList<>();
+        list.add(switchFragment);
+        list.add(maptabFragment);
+        list.add(settingsFragment);
+        HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager(), list);
+        mViewPager.setAdapter(mAdapter);
+        main_radio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rbSwitch:
+                        mViewPager.setCurrentItem(0, false);
+                        checkId = 0;
+                        break;
+                    case R.id.rbMap:
+                        mViewPager.setCurrentItem(1, false);
+                        checkId = 1;
+                        break;
+                    case R.id.rbSettings:
+                        mViewPager.setCurrentItem(2, false);
+                        checkId = 2;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        main_radio.check(checkId);
+    }
+
+
+
+    /**
      * 重复按下返回键退出app方法
      */
     public void exit() {
@@ -336,6 +344,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
+    /**
+     * 界面切换
+     */
     class HomePagerAdapter extends FragmentPagerAdapter {
 
         private List<Fragment> list;

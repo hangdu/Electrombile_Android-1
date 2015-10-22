@@ -64,17 +64,6 @@
             android:name="BUG_HD_SDK_GENERAL_KEY"
             android:value="c3eabcfe28504e5428596427cfdd2311" />
 
-        <!--<service-->
-        <!--android:name="io.yunba.android.core.YunBaService"-->
-        <!--android:enabled="true"-->
-        <!--android:exported="true" />-->
-
-        <receiver android:name=".receiver.YunBaReceiver">
-            <intent-filter android:priority="2147483647">
-                <action android:name="MqttService.callbackToActivity.v0" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".activity.SplashActivity"
             android:label="@string/app_name"
@@ -156,7 +145,7 @@
 
 
         <!-- Mqtt Service -->
-        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
             android:name=".activity.BindListActivity"
@@ -169,11 +158,20 @@
         <activity
             android:name=".activity.account.PersonalCenterActivity"
             android:label="@string/title_activity_personal_center"
-            android:theme="@style/App2Theme"></activity>
+            android:theme="@style/App2Theme" />
         <activity
             android:name=".activity.DeviceActivity"
             android:label="@string/title_activity_equipment"
-            android:theme="@style/App2Theme"></activity>
+            android:theme="@style/App2Theme" />
+
+        <service
+            android:name=".services.AlarmService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="com.xunce.electrombile.alarmservice" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

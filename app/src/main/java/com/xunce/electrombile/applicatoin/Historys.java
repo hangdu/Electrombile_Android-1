@@ -111,7 +111,7 @@ public class Historys
 		activityList.clear();
 
 		//android.os.Process.killProcess(android.os.Process.myPid());
-		System.exit(0);
+		//System.exit(0);
 	}
 	
 	/**
