@@ -59,11 +59,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
 
-        <!-- 云巴相关 -->
-        <meta-data
-            android:name="YUNBA_APPKEY"
-            android:value="554ab0957e353f5814e12100" />
-
         <!-- BugHD -->
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"
@@ -74,19 +69,11 @@
         <!--android:enabled="true"-->
         <!--android:exported="true" />-->
 
-        <!--<receiver android:name="io.yunba.android.core.YunBaReceiver">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.USER_PRESENT" />-->
-        <!--<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-        <!--<receiver android:name=".receiver.YunBaReceiver">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="io.yunba.android.MESSAGE_RECEIVED_ACTION" />-->
-
-        <!--<category android:name="com.xunce.electrombile" />-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
+        <receiver android:name=".receiver.YunBaReceiver">
+            <intent-filter android:priority="2147483647">
+                <action android:name="MqttService.callbackToActivity.v0" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.SplashActivity"
