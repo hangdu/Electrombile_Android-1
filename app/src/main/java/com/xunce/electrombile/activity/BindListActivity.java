@@ -223,7 +223,6 @@ public class BindListActivity extends BaseActivity {
                     }
                     setManager.setIMEI((String) bindList.get(i).get("IMEI"));
                     Historys.finishAct(FragmentActivity.class);
-                    //FragmentActivity.fragmentActivity.finish();
                     ToastUtils.showShort(BindListActivity.this, "切换中~");
                     Intent intent = new Intent(BindListActivity.this, FragmentActivity.class);
                     startActivity(intent);

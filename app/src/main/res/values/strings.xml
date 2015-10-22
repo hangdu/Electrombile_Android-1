@@ -116,5 +116,16 @@
     <string name="title_activity_find">FindActivity</string>
     <string name="title_activity_personal_center">PersonalCenterActivity</string>
     <string name="title_activity_equipment">EquipmentActivity</string>
+    <string name="timestamp">&lt;br/&gt; &lt;small&gt; %1$s &lt;/small&gt;</string>
+    <string name="connectedto">Connected to </string>
+    <string name="Disconnect">Disconnect</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="publish">Publish</string>
+    <string name="title_activity_subscribe">Subscribe</string>
+    <string name="disconnected">Disconnected from</string>
+    <string name="no_status">Unknown connection status to</string>
+    <string name="connecting">Connecting to</string>
+    <string name="disconnecting">Disconnecting from</string>
+    <string name="connectionError">An error occurred connecting to</string>
 
 </resources>

@@ -33,6 +33,8 @@ import com.xunce.electrombile.fragment.SwitchFragment.LocationTVClickedListener;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.protocol.CmdFactory;
 import com.xunce.electrombile.protocol.GPSFactory;
 import com.xunce.electrombile.protocol.JsonKeys;
@@ -63,8 +65,8 @@ import java.util.List;
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
-    public static MqttAndroidClient mac;
     private static String TAG = "FragmentActivity:";
+    public MqttAndroidClient mac;
     protected CmdCenter mCenter;
     private SwitchFragment switchFragment;
     private MaptabFragment maptabFragment;
@@ -86,29 +88,35 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             isExit = false;
         }
     };
-    private Thread startService = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            MqttConnectOptions mcp = new MqttConnectOptions();
-            mcp.setCleanSession(false);
-            mac = new MqttAndroidClient(getApplicationContext(), ServiceConstants.MQTT_HOST, ServiceConstants.clientId);
-            try {
-                mac.connect(mcp, this, new IMqttActionListener() {
-                    @Override
-                    public void onSuccess(IMqttToken asyncActionToken) {
-                        subscribe(mac);
-                        ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                        sendMessage(FragmentActivity.this, mCenter.cmdWhere(), setManager.getIMEI());
-                    }
 
-                    @Override
-                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                        ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
-                    }
-                });
-            } catch (MqttException e1) {
-                e1.printStackTrace();
-            }
+    private void startService() {
+        Connection connection = Connection.createConnection(ServiceConstants.clientId,
+                ServiceConstants.MQTT_HOST,
+                ServiceConstants.PORT,
+                FragmentActivity.this,
+                false);
+        ServiceConstants.handler = connection.handle();
+        MqttConnectOptions mcp = new MqttConnectOptions();
+        mcp.setCleanSession(false);
+        connection.addConnectionOptions(mcp);
+        mac = connection.getClient();
+        try {
+            mac.connect(mcp, this, new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    subscribe(mac);
+                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+                }
+            });
+            Connections.getInstance(FragmentActivity.this).addConnection(connection);
+        } catch (MqttException e1) {
+            e1.printStackTrace();
+        }
 //                    YunBaManager.subscribe(getApplicationContext(), topic, new IMqttActionListener() {
 //
 //                        @Override
@@ -125,10 +133,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //                            Log.d(TAG, "Subscribe topic failed");
 //                        }
 //                    });
-        }
-    });
 
-    public static void sendMessage(Context context, byte[] message, String IMEI) {
+    }
+
+    ;
+
+    public void sendMessage(Context context, byte[] message, String IMEI) {
         if (mac == null) {
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
@@ -171,7 +181,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         final String topic = "simcom_" + setManager.getIMEI();
                         Log.i(TAG + "SSSSSSSSSS", topic);
                         //启动服务
-                        startService.start();
+                        startService();
                         Log.d("成功", "查询到" + avObjects.size() + " 条符合条件的数据");
                         ToastUtils.showShort(FragmentActivity.this, "设备查询成功");
                     } else {
@@ -185,8 +195,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             Log.i(TAG, setManager.getIMEI());
             final String topic = "simcom_" + setManager.getIMEI();
             Log.i(TAG + "SSSSSSSSSS", topic);
-            startService.start();
-            ToastUtils.showShort(this, "登陆成功");
+            startService();
+            ToastUtils.showShort(FragmentActivity.this, "登陆成功");
         }
     }
 

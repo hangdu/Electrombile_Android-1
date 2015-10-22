@@ -170,10 +170,7 @@
 
         <!-- Mqtt Service -->
         <service android:name="org.eclipse.paho.android.service.MqttService"></service>
-        <activity
-            android:name=".activity.AddSosActivity"
-            android:label="@string/title_activity_add_sos"
-            android:theme="@style/App2Theme" />
+
         <activity
             android:name=".activity.BindListActivity"
             android:label="@string/title_activity_bind_list"
