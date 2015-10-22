@@ -39,7 +39,7 @@ public class AlarmActivity extends BaseActivity {
                     mPlayer.stop();
                     AlarmActivity.this.finish();
                     //AlarmActivity.instance = null;
-                    FragmentActivity.sendMessage(mCenter.cmdFenceOff(), setManager.getIMEI());
+                    FragmentActivity.sendMessage(AlarmActivity.this, mCenter.cmdFenceOff(), setManager.getIMEI());
                 }
             }
         });

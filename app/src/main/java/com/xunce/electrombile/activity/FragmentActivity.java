@@ -63,11 +63,8 @@ import java.util.List;
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
-    //保存自己的实例
-    public static FragmentActivity fragmentActivity;
     public static MqttAndroidClient mac;
     private static String TAG = "FragmentActivity:";
-    public String IMEI;
     protected CmdCenter mCenter;
     private SwitchFragment switchFragment;
     private MaptabFragment maptabFragment;
@@ -101,7 +98,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     public void onSuccess(IMqttToken asyncActionToken) {
                         subscribe(mac);
                         ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                        sendMessage(mCenter.cmdWhere(), setManager.getIMEI());
+                        sendMessage(FragmentActivity.this, mCenter.cmdWhere(), setManager.getIMEI());
                     }
 
                     @Override
@@ -131,9 +128,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     });
 
-    public static void sendMessage(byte[] message, String IMEI) {
+    public static void sendMessage(Context context, byte[] message, String IMEI) {
         if (mac == null) {
-            ToastUtils.showShort(FragmentActivity.fragmentActivity, "请先连接设备，或等待连接。");
+            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         }
         try {
@@ -158,10 +155,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         //判断是否需要开启服务
         startServer();
         Historys.put(this);
-
-
-        fragmentActivity = this;
-        IMEI = setManager.getIMEI();
     }
 
     private void startServer() {
@@ -234,13 +227,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         IntentFilter filter = new IntentFilter();
         filter.addAction("MqttService.callbackToActivity.v0");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-
-//        filter.addAction("com.xunce.electrombile.service");
-//        try {
-//            FragmentActivity.this.registerReceiver(receiver, filter);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**
@@ -300,14 +286,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         super.onResume();
         if (mac != null && mac.isConnected()) {
             mac.registerResources(this);
-            sendMessage(mCenter.cmdFenceGet(), setManager.getIMEI());
+            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
     }
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(receiver);
+        switchFragment.cancelNotification();
         mac.unregisterResources();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
     }
@@ -342,15 +329,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             switchFragment.cancelNotification();
             mac.unregisterResources();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-//            unregisterReceiver(receiver);
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
 
             //返回桌面
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            this.startActivity(intent);
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.addCategory(Intent.CATEGORY_HOME);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            this.startActivity(intent);
             Historys.exit();
         }
     }

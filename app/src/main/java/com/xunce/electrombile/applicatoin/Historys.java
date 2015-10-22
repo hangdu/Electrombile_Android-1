@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * 历史程序栈.
  *
- * @author Lien Li
+ * @author Lyb
  * @version 1.00
  */
 public class Historys
@@ -144,5 +144,26 @@ public class Historys
 			activityList = null;
 		}
 		instance = null;
+	}
+
+	/**
+	 * 结束act
+	 *
+	 * @param className
+	 */
+	public static void finishAct(Class className) {
+		if (activityList == null)
+			return;
+		int size = activityList.size();
+		for (int i = 0; i < size; i++) {
+			Activity act = activityList.get(i);
+			if (act.getClass().equals(className)) {
+				finish(act);
+				act = null;
+				activityList.remove(i);
+				return;
+			}
+			act = null;
+		}
 	}
 }

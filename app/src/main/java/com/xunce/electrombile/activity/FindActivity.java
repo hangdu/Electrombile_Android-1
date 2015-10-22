@@ -92,8 +92,7 @@ public class FindActivity extends BaseActivity {
         timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
         if (!isFinding) {
             if (FragmentActivity.mac.isConnected()) {
-//                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
-                FragmentActivity.sendMessage(mCenter.cmdSeekOn(), IMEI);
+                FragmentActivity.sendMessage(FindActivity.this, mCenter.cmdSeekOn(), IMEI);
                 progressDialog.show();
             }
             if (operatingAnim != null) {
@@ -102,7 +101,7 @@ public class FindActivity extends BaseActivity {
             button.setText("停止找车");
         } else {
             if (FragmentActivity.mac.isConnected()) {
-                FragmentActivity.sendMessage(mCenter.cmdSeekOff(), IMEI);
+                FragmentActivity.sendMessage(FindActivity.this, mCenter.cmdSeekOff(), IMEI);
                 progressDialog.show();
             }
             //radarView.stop();

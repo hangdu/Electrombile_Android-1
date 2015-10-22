@@ -22,8 +22,9 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
 import com.xunce.electrombile.R;
-import com.xunce.electrombile.view.RefreshableView;
+import com.xunce.electrombile.applicatoin.Historys;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.view.RefreshableView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -221,7 +222,8 @@ public class BindListActivity extends BaseActivity {
                         return;
                     }
                     setManager.setIMEI((String) bindList.get(i).get("IMEI"));
-                    FragmentActivity.fragmentActivity.finish();
+                    Historys.finishAct(FragmentActivity.class);
+                    //FragmentActivity.fragmentActivity.finish();
                     ToastUtils.showShort(BindListActivity.this, "切换中~");
                     Intent intent = new Intent(BindListActivity.this, FragmentActivity.class);
                     startActivity(intent);

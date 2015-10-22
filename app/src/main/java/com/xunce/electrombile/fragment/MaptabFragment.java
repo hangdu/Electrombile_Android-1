@@ -516,7 +516,7 @@ public class MaptabFragment extends BaseFragment {
     //return longitude and latitude data,if no data, returns null
     public void updateLocation() {
         if (((FragmentActivity) m_context).mac != null && ((FragmentActivity) m_context).mac.isConnected())
-            ((FragmentActivity) m_context).sendMessage(mCenter.cmdWhere(), setManager.getIMEI());
+            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
 

@@ -133,7 +133,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //关闭报警
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
-                            ((FragmentActivity) m_context).sendMessage(mCenter.cmdFenceOff(), setManager.getIMEI());
+                            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
                             waitDialog.show();
                             timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
 
@@ -150,7 +150,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
                             VibratorUtil.Vibrate(getActivity(), 700);
-                            ((FragmentActivity) m_context).sendMessage(mCenter.cmdFenceOn(), setManager.getIMEI());
+                            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
                             waitDialog.show();
                             timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
                         } else {
