@@ -113,13 +113,21 @@ public class JsonKeys {
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
 
+    //开启电子围栏告警
     public final static int CMD_FENCE_ON = 1;
+    //关闭电子围栏告警
     public final static int CMD_FENCE_OFF = 2;
+    //查询电子围栏告警开关状态
     public final static int CMD_FENCE_GET = 3;
+    //打开找车模式开关
     public final static int CMD_SEEK_ON = 4;
+    // 关闭找车模式开关
     public final static int CMD_SEEK_OFF = 5;
+    // 获取当前位置
     public final static int CMD_LOCATION = 6;
+    //围栏打开状态
     public final static int ON = 1;
+    //围栏关闭状态
     public final static int OFF = 0;
 
     //成功
