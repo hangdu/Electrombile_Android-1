@@ -25,7 +25,6 @@ import com.ibm.mqtt.MqttException;
 import com.ibm.mqtt.MqttPersistence;
 import com.ibm.mqtt.MqttPersistenceException;
 import com.ibm.mqtt.MqttSimpleCallback;
-import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.bean.ConnectionLog;
 import com.xunce.electrombile.manager.CmdCenter;
@@ -479,7 +478,7 @@ public class PushService extends Service {
 
         n.defaults = Notification.DEFAULT_ALL;
 
-        n.icon = R.drawable.logo;
+        // n.icon = R.drawable.logo;
         n.when = System.currentTimeMillis();
 
         // Simply open the parent activity
