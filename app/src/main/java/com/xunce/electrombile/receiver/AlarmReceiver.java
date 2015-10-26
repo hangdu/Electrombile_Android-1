@@ -26,15 +26,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "先进入云吧Receiver");
+        Log.d(TAG, "先进入报警Receiver");
         Bundle bundle = intent.getExtras();
         callbackStatus = bundle.get(ActivityConstants.callbackStatus).toString();
         callbackAction = bundle.get(ActivityConstants.callbackAction).toString();
         if (ActivityConstants.OK.equals(callbackStatus)) {
             if (callbackAction.equals(ActivityConstants.messageArrived)) {
                 destinationName = bundle.get(ActivityConstants.destinationName).toString();
-                if (destinationName.equals("topic")) {
-                    LogUtil.log.i("创建报警界面了么？？？");
+                if (destinationName.contains("alarm")) {
+                    LogUtil.log.i("创建报警界面");
                     // DeviceUtils.showNotifation(context, topic, msg);
                     abortBroadcast();
                     DeviceUtils.wakeUpAndUnlock(context);

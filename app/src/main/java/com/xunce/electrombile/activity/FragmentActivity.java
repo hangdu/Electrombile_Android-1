@@ -49,7 +49,7 @@ import java.util.List;
 
 /**
  * Created by heyukun on 2015/3/24.
- * 修改 By liyanbo
+ * 修改 by liyanbo
  */
 
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
@@ -88,10 +88,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         //初始化界面
         initView();
         initData();
-        //注册广播
-        registerBroadCast();
         //判断是否绑定设备
         queryIMEI();
+//        //注册广播
+//        registerBroadCast();
         Historys.put(this);
     }
 
@@ -168,6 +168,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 public void onSuccess(IMqttToken asyncActionToken) {
                     subscribe(mac);
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                    registerBroadCast();
                     startAlarmService();
                 }
 
