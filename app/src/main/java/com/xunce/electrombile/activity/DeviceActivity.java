@@ -123,7 +123,13 @@ public class DeviceActivity extends BaseActivity {
                         @Override
                         public void done(AVException e) {
                             if (e == null) {
-                                String topic = "simcom_" + setManager.getIMEI();
+                                //String topic = "simcom_" + setManager.getIMEI();
+                                Intent intent;
+                                intent = new Intent("com.xunce.electrombile.alarmservice");
+                                DeviceActivity.this.stopService(intent);
+                                intent = new Intent(DeviceActivity.this, BindingActivity.class);
+                                startActivity(intent);
+                                DeviceActivity.this.finish();
                                 //退订云巴推送
 //                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
 //

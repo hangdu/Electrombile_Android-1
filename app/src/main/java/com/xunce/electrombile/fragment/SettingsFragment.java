@@ -20,6 +20,7 @@ import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.HelpActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 //import io.yunba.android.manager.YunBaManager;
 
@@ -28,8 +29,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     private static String TAG = "SettingsFragment:";
     private Context m_context;
-   // private LinearLayout btnPhoneNumber;
-   //  private LinearLayout btnBind;
+    // private LinearLayout btnPhoneNumber;
+    //  private LinearLayout btnBind;
     private LinearLayout btnAbout;
     private LinearLayout btnHelp;
     //  private LinearLayout releaseBind;
@@ -39,15 +40,15 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     //缓存view
     private View rootView;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         initView();
-        if(rootView == null) {
+        if (rootView == null) {
             rootView = inflater.inflate(R.layout.settings_fragment, container, false);
         }
-		return rootView;
-	}
+        return rootView;
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -195,7 +196,14 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                         }).setNegativeButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String topic = "e2link_" + setManager.getIMEI();
+                        //String topic = "e2link_" + setManager.getIMEI();
+                        Intent intent;
+                        intent = new Intent("com.xunce.electrombile.alarmservice");
+                        m_context.stopService(intent);
+                        setManager.setIMEI("");
+                        setManager.setAlarmFlag(false);
+                        ToastUtils.showShort(m_context, "退出登录成功");
+                        setManager.cleanAll();
 //                        YunBaManager.unsubscribe(m_context, topic, new IMqttActionListener() {
 //
 //                            @Override
@@ -214,8 +222,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 //                                ToastUtils.showShort(m_context, "退订服务失败，请确保网络通畅！");
 //                            }
 //                        });
-                        Intent intentStartLogin = new Intent(m_context, LoginActivity.class);
-                        startActivity(intentStartLogin);
+                        intent = new Intent(m_context, LoginActivity.class);
+                        startActivity(intent);
                         AVUser.logOut();
                         getActivity().finish();
                     }
@@ -285,15 +293,15 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     private void initView() {
 //        btnBind = (LinearLayout)getActivity().findViewById(R.id.layout_bind);
-        btnAbout = (LinearLayout)getActivity().findViewById(R.id.layout_about);
-        btnHelp = (LinearLayout)getActivity().findViewById(R.id.layout_help);
+        btnAbout = (LinearLayout) getActivity().findViewById(R.id.layout_about);
+        btnHelp = (LinearLayout) getActivity().findViewById(R.id.layout_help);
         btnLogout = (LinearLayout) getActivity().findViewById(R.id.btn_logout);
     }
 
     @Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public void onDestroy() {
