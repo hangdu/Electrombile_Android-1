@@ -222,9 +222,12 @@ public class BindListActivity extends BaseActivity {
                         return;
                     }
                     setManager.setIMEI((String) bindList.get(i).get("IMEI"));
-                    Historys.finishAct(FragmentActivity.class);
                     ToastUtils.showShort(BindListActivity.this, "切换中~");
-                    Intent intent = new Intent(BindListActivity.this, FragmentActivity.class);
+                    Historys.finishAct(FragmentActivity.class);
+                    Intent intent;
+                    intent = new Intent("com.xunce.electrombile.alarmservice");
+                    BindListActivity.this.stopService(intent);
+                    intent = new Intent(BindListActivity.this, FragmentActivity.class);
                     startActivity(intent);
                     BindListActivity.this.finish();
                 }
