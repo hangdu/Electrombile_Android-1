@@ -2,20 +2,64 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="60dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/alarm_iv"/>
-    <ToggleButton
-        android:id="@+id/btn_warning_confirm"
-        android:layout_width="@dimen/btn_width_warning"
-        android:layout_height="@dimen/btn_height_warning"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:textOn=""
-        android:textOff=""
-        android:background="@drawable/alarm_btn"/>
+        android:src="@drawable/alarm_iv" />
+
+    <TextView
+        android:id="@+id/tv_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="警告！车辆被移动"
+        android:textColor="#FF00ff"
+        android:textSize="25sp" />
+
+    <FrameLayout
+        android:layout_width="250dip"
+        android:layout_height="60dip"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/tv_sliding"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ff000000"
+            android:gravity="center"
+            android:paddingLeft="35dip"
+            android:text="滑动关闭报警"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+        <!-- 此处，滑动按钮的父亲组件不能为FrameLayout -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal">
+
+            <com.xunce.electrombile.view.SlidingButton
+                android:id="@+id/mainview_answer_1_button"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@mipmap/ic_launcher"
+                android:gravity="center" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!--<ToggleButton-->
+    <!--android:id="@+id/btn_warning_confirm"-->
+    <!--android:layout_width="@dimen/btn_width_warning"-->
+    <!--android:layout_height="@dimen/btn_height_warning"-->
+    <!--android:layout_gravity="center_horizontal"-->
+    <!--android:layout_marginTop="30dp"-->
+    <!--android:background="@drawable/alarm_btn"-->
+    <!--android:textOff=""-->
+    <!--android:textOn="" />-->
 </LinearLayout>
