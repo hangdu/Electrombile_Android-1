@@ -188,7 +188,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 开启报警服务
      */
     private void startAlarmService() {
-        Intent intent = new Intent("com.xunce.electrombile.alarmservice");
+        Intent intent = new Intent();
+        intent.setAction("com.xunce.electrombile.alarmservice");
+        intent.setPackage(getPackageName());
         FragmentActivity.this.startService(intent);
     }
 
@@ -273,7 +275,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void registerBroadCast() {
         receiver = new MyReceiver(FragmentActivity.this);
         IntentFilter filter = new IntentFilter();
-        filter.setPriority(999);
+        filter.setPriority(800);
         filter.addAction("MqttService.callbackToActivity.v0");
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
     }

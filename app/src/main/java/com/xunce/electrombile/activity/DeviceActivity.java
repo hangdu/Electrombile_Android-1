@@ -124,6 +124,10 @@ public class DeviceActivity extends BaseActivity {
                         public void done(AVException e) {
                             if (e == null) {
                                 //String topic = "simcom_" + setManager.getIMEI();
+                                //删除本地的IMEI 和报警标志
+                                setManager.setIMEI("");
+                                setManager.setAlarmFlag(false);
+                                ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
                                 Intent intent;
                                 intent = new Intent("com.xunce.electrombile.alarmservice");
                                 DeviceActivity.this.stopService(intent);
