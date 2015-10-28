@@ -27,9 +27,7 @@ public class AlarmActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_alarm);
         super.onCreate(savedInstanceState);
-
         alarm();
-
     }
 
     private void alarm() {
