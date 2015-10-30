@@ -1,6 +1,6 @@
 /**
  * Project Name:XPGSdkV4AppBase
- * File Name:JsonKeys.java
+ * File Name:ProtocolConstants.java
  * Package Name:com.gizwits.framework.config
  * Date:2015-1-27 14:47:10
  * Copyright (c) 2014~2015 Xtreme Programming Group, Inc.
@@ -18,12 +18,12 @@
 package com.xunce.electrombile.protocol;
 
 /**
- * ClassName: Class JsonKeys. <br/>
+ * ClassName: Class ProtocolConstants. <br/>
  * Json对应字段表<br/>
  *
  * @author Lien
  */
-public class JsonKeys {
+public class ProtocolConstants {
 
 //    /**
 //     * 产品名.
@@ -112,6 +112,7 @@ public class JsonKeys {
     public final static String LNG = "lng";
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
+    public final static String TYPE = "type";
 
     public final static int CMD_FENCE_ON = 1;
     public final static int CMD_FENCE_OFF = 2;
