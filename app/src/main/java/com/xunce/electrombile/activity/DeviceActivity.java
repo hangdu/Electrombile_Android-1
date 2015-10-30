@@ -1,6 +1,7 @@
 package com.xunce.electrombile.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import java.util.List;
 public class DeviceActivity extends BaseActivity {
     private static final String TAG = "DeviceActivity";
     private LinearLayout releaseBind;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +37,14 @@ public class DeviceActivity extends BaseActivity {
     @Override
     public void initViews() {
         releaseBind = (LinearLayout) findViewById(R.id.layout_release_bind);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在设置,请稍后");
     }
 
     @Override
     public void initEvents() {
         ((TextView) (findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
+
     }
 
     public void bindDev(View view) {
@@ -92,6 +97,7 @@ public class DeviceActivity extends BaseActivity {
                         }).setNegativeButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        progressDialog.show();
                         releaseBind.setClickable(false);
                         releaseBinding();
                         releaseBind.setClickable(true);
@@ -104,10 +110,12 @@ public class DeviceActivity extends BaseActivity {
         //先判断IMEI是否为空，若为空证明没有绑定设备。
         if (setManager.getIMEI().isEmpty()) {
             ToastUtils.showShort(this, "未绑定设备");
+            progressDialog.dismiss();
             return;
         }
         if (!NetworkUtils.isNetworkConnected(this)) {
             ToastUtils.showShort(this, "网络连接失败");
+            progressDialog.dismiss();
             return;
         }
         //若不为空，则先查询所在绑定类，再删除，删除成功后取消订阅，并删除本地的IMEI，关闭FragmentActivity,进入绑定页面
@@ -123,7 +131,14 @@ public class DeviceActivity extends BaseActivity {
                         @Override
                         public void done(AVException e) {
                             if (e == null) {
-                                String topic = "simcom_" + setManager.getIMEI();
+                                progressDialog.dismiss();
+                                setManager.setIMEI("");
+                                setManager.setAlarmFlag(false);
+                                ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
+                                Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
+                                startActivity(intent);
+                                DeviceActivity.this.finish();
+                                //String topic = "simcom_" + setManager.getIMEI();
                                 //退订云巴推送
 //                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
 //
@@ -152,6 +167,7 @@ public class DeviceActivity extends BaseActivity {
                     if (e != null)
                         Log.d("失败", "问题： " + e.getMessage());
                     ToastUtils.showShort(DeviceActivity.this, "解除绑定失败!");
+                    progressDialog.dismiss();
                 }
             }
         });
