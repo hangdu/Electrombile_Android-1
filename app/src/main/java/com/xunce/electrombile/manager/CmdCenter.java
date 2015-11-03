@@ -21,7 +21,7 @@ import android.content.Context;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
-import com.xunce.electrombile.protocol.JsonKeys;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -228,7 +228,7 @@ public class CmdCenter {
 
 //    //3 、GPRS 定时发送设置
 //    public void cGprsSend(byte[] serial) {
-//        byte[] data = packetOrder(new byte[]{0x00, 0x01}, serial, JsonKeys.GPRS_SEND, "");
+//        byte[] data = packetOrder(new byte[]{0x00, 0x01}, serial, ProtocolConstants.GPRS_SEND, "");
 //        Log.i("定时发送设置", data.toString());
 //        //发送数据
 //        //xpgWifiDevice.write(data);
@@ -238,16 +238,16 @@ public class CmdCenter {
 //    //6 、设置 SOS 管理员 m命令字是 5
 //    public byte[] cSOSManagerAdd(byte[] serial, String phoneNumber) {
 //        phoneNumber = phoneNumber + "#";
-//        byte[] data = packetOrder(new byte[]{0x00, 0x05}, serial, JsonKeys.SOS_ADD, phoneNumber);
+//        byte[] data = packetOrder(new byte[]{0x00, 0x05}, serial, ProtocolConstants.SOS_ADD, phoneNumber);
 //        return data;
 //    }
 //
 //    //7 、删除 SOS  管理员
 //    public byte[] cSOSManagerDelete(byte[] serial, String phoneNumber) {
 //        phoneNumber = phoneNumber + "#";
-//        byte[] data = packetOrder(new byte[]{0x00, 0x05}, serial, JsonKeys.SOS_DELETE, phoneNumber);
+//        byte[] data = packetOrder(new byte[]{0x00, 0x05}, serial, ProtocolConstants.SOS_DELETE, phoneNumber);
 //        return data;
-//        //	String data = packetOrder(JsonKeys.SOS_DELETE,phoneNumber);
+//        //	String data = packetOrder(ProtocolConstants.SOS_DELETE,phoneNumber);
 //        //xpgWifiDevice.write(data);
 //    }
 //
@@ -261,37 +261,37 @@ public class CmdCenter {
 //    */
 //    //模式一
 //    public void cModeSet0() {
-//        //	String data = packetOrder(JsonKeys.MODE_SET_0,"");
+//        //	String data = packetOrder(ProtocolConstants.MODE_SET_0,"");
 //        //xpgWifiDevice.write(data);
 //    }
 //
 //    //模式二
 //    public void cModeSet1() {
-//        //	String data = packetOrder(JsonKeys.MODE_SET_1,"");
+//        //	String data = packetOrder(ProtocolConstants.MODE_SET_1,"");
 //        //xpgWifiDevice.write(data);
 //    }
 //
 //    //模式三
 //    public void cModeSet2() {
-//        //	String data = packetOrder(JsonKeys.MODE_SET_2,"");
+//        //	String data = packetOrder(ProtocolConstants.MODE_SET_2,"");
 //        //	xpgWifiDevice.write(data);
 //    }
 //
 //    //模式四
 //    public void cModeSet3() {
-//        //	String data = packetOrder(JsonKeys.MODE_SET_3,"");
+//        //	String data = packetOrder(ProtocolConstants.MODE_SET_3,"");
 //        //	xpgWifiDevice.write(data);
 //    }
 //
 //    //添加电子围栏  命令字 1
 //    public byte[] cFenceAdd(byte[] serial) {
-//        byte[] data = packetOrder(new byte[]{0x00, 0x01}, serial, JsonKeys.FENCE_SET_1, "");
+//        byte[] data = packetOrder(new byte[]{0x00, 0x01}, serial, ProtocolConstants.FENCE_SET_1, "");
 //        return data;
 //    }
 //
 //    //删除电子围栏 命令字 2
 //    public byte[] cFenceDelete(byte[] serial) {
-//        byte[] data = packetOrder(new byte[]{0x00, 0x02}, serial, JsonKeys.FENCE_DELETE, "");
+//        byte[] data = packetOrder(new byte[]{0x00, 0x02}, serial, ProtocolConstants.FENCE_DELETE, "");
 //        return data;
 //    }
 //
@@ -315,7 +315,7 @@ public class CmdCenter {
 //
 //    //25 查询经纬度  命令字 6
 //    public byte[] cWhere(byte[] serial) {
-//        byte[] data = packetOrder(new byte[]{0x00, 0x06}, serial, JsonKeys.CMD_LOCATION, "");
+//        byte[] data = packetOrder(new byte[]{0x00, 0x06}, serial, ProtocolConstants.CMD_LOCATION, "");
 //        return data;
 //    }
 //
@@ -345,7 +345,7 @@ public class CmdCenter {
 //
 //    //21 重启设备
 //    public void cResetDevice() {
-//        //	String data = packetOrder(JsonKeys.RESET,"");
+//        //	String data = packetOrder(ProtocolConstants.RESET,"");
 //        //xpgWifiDevice.write(data);
 //    }
 //
@@ -368,34 +368,34 @@ public class CmdCenter {
      * 新协议
      ************************************************************/
     public byte[] cmdFenceOn() {
-        return getCmdString(JsonKeys.CMD_FENCE_ON).getBytes();
+        return getCmdString(ProtocolConstants.CMD_FENCE_ON).getBytes();
     }
 
     public byte[] cmdFenceOff() {
-        return getCmdString(JsonKeys.CMD_FENCE_OFF).getBytes();
+        return getCmdString(ProtocolConstants.CMD_FENCE_OFF).getBytes();
     }
 
     public byte[] cmdFenceGet() {
-        return getCmdString(JsonKeys.CMD_FENCE_GET).getBytes();
+        return getCmdString(ProtocolConstants.CMD_FENCE_GET).getBytes();
     }
 
     public byte[] cmdWhere() {
-        return getCmdString(JsonKeys.CMD_LOCATION).getBytes();
+        return getCmdString(ProtocolConstants.CMD_LOCATION).getBytes();
     }
 
     ;
     public byte[] cmdSeekOn() {
-        return getCmdString(JsonKeys.CMD_SEEK_ON).getBytes();
+        return getCmdString(ProtocolConstants.CMD_SEEK_ON).getBytes();
     }
 
     public byte[] cmdSeekOff() {
-        return getCmdString(JsonKeys.CMD_SEEK_OFF).getBytes();
+        return getCmdString(ProtocolConstants.CMD_SEEK_OFF).getBytes();
     }
 
     private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {
-            obj.put(JsonKeys.CMD, cmd);
+            obj.put(ProtocolConstants.CMD, cmd);
         } catch (JSONException e) {
             e.printStackTrace();
         }

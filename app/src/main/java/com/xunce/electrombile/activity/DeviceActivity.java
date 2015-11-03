@@ -15,9 +15,16 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
+
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.List;
 
@@ -131,13 +138,26 @@ public class DeviceActivity extends BaseActivity {
                         @Override
                         public void done(AVException e) {
                             if (e == null) {
-                                progressDialog.dismiss();
-                                setManager.setIMEI("");
-                                setManager.setAlarmFlag(false);
-                                ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
-                                Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
-                                startActivity(intent);
-                                DeviceActivity.this.finish();
+                                Connection connection = Connections.getInstance(DeviceActivity.this).getConnection(ServiceConstants.handler);
+                                MqttAndroidClient mac = connection.getClient();
+                                boolean isUnSubscribe = unSubscribe(mac);
+                                if (isUnSubscribe) {
+                                    setManager.setIMEI("");
+                                    setManager.setAlarmFlag(false);
+                                    ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
+                                    Historys.finishAct(FragmentActivity.class);
+                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅成功!");
+                                    progressDialog.dismiss();
+                                    Intent intent;
+                                    intent = new Intent("com.xunce.electrombile.alarmservice");
+                                    DeviceActivity.this.stopService(intent);
+                                    intent = new Intent(DeviceActivity.this, BindingActivity.class);
+                                    startActivity(intent);
+                                    DeviceActivity.this.finish();
+                                } else {
+                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅失败!,请检查网络后重试.");
+                                }
+
                                 //String topic = "simcom_" + setManager.getIMEI();
                                 //退订云巴推送
 //                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
@@ -172,6 +192,28 @@ public class DeviceActivity extends BaseActivity {
             }
         });
 
+
+    }
+
+    private boolean unSubscribe(MqttAndroidClient mac) {
+        //订阅命令字
+        String initTopic = setManager.getIMEI();
+        String topic1 = "dev2app/" + initTopic + "/cmd";
+        //订阅GPS数据
+        String topic2 = "dev2app/" + initTopic + "/gps";
+        //订阅上报的信号强度
+        String topic3 = "dev2app/" + initTopic + "/433";
+
+        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String[] topic = {topic1, topic2, topic3, topic4};
+        try {
+            mac.unsubscribe(topic);
+            return true;
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(this, "取消订阅失败!请稍后重启再试！");
+            return false;
+        }
 
     }
 }

@@ -33,6 +33,7 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
 import com.xunce.electrombile.activity.FindActivity;
@@ -40,7 +41,6 @@ import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
-import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
@@ -249,7 +249,7 @@ public class MaptabFragment extends BaseFragment {
                 if (mBaiduMap != null) {
                     //LatLng point = getLatestLocation();
                     waitDialog.show();
-                    timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                     updateLocation();
                 }
             }

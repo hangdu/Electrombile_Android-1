@@ -33,10 +33,10 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.bean.WeatherBean;
-import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -135,7 +135,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             cancelNotification();
                             ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
+                            timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
 
                         } else {
                             ToastUtils.showShort(m_context, "网络连接失败");
@@ -152,7 +152,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             VibratorUtil.Vibrate(getActivity(), 700);
                             ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
+                            timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                         } else {
                             ToastUtils.showShort(m_context, "请先绑定设备");
                         }

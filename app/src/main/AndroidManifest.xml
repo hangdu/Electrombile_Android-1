@@ -114,7 +114,7 @@
         <activity
             android:name=".activity.AlarmActivity"
             android:label="Alarm"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
         <activity

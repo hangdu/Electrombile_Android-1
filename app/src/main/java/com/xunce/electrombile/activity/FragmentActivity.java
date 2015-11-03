@@ -56,6 +56,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
     private static final String TAG = "FragmentActivity:";
+
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -146,6 +147,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         checkId = R.id.rbMap;
         main_radio.check(checkId);
         checkId = 1;
+    }
+
+    /**
+     * 得到mac
+     * @return
+     */
+    public MqttAndroidClient getMac() {
+        return mac;
     }
 
     /**
@@ -255,13 +264,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         String topic2 = "dev2app/" + initTopic + "/gps";
         //订阅上报的信号强度
         String topic3 = "dev2app/" + initTopic + "/433";
-        String[] topic = {topic1, topic2, topic3};
-        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+        //订阅报警
+        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String[] topic = {topic1, topic2, topic3, topic4};
+        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
+                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
         try {
             mac.subscribe(topic, qos);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
+            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
         } catch (MqttException e) {
             e.printStackTrace();
             ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");

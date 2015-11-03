@@ -21,10 +21,16 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.view.RefreshableView;
+
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +57,7 @@ public class BindListActivity extends BaseActivity {
         tv_default = (TextView) findViewById(R.id.tv_default);
         refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("正在查询，请稍后...");
+        progressDialog.setMessage("请稍后...");
     }
 
     //初始化事件
@@ -164,6 +170,68 @@ public class BindListActivity extends BaseActivity {
         this.finish();
     }
 
+    /**
+     * 返回mqtt客户端
+     *
+     * @return
+     */
+    private MqttAndroidClient getMqttAndroidClient() {
+        Connection connection = Connections.getInstance(BindListActivity.this).getConnection(ServiceConstants.handler);
+        return connection.getClient();
+    }
+
+    /**
+     * 取消订阅之后
+     *
+     * @param i 传入的是 IMEI选项
+     */
+    private void isUnSubscribed(int i) {
+        ToastUtils.showShort(BindListActivity.this, "清除订阅成功!");
+        setManager.setIMEI((String) bindList.get(i).get("IMEI"));
+        Historys.finishAct(FragmentActivity.class);
+        progressDialog.dismiss();
+        reStartFragAct();
+    }
+
+    /**
+     * 重新启动fragmentActivity
+     */
+    private void reStartFragAct() {
+        Intent intent;
+        intent = new Intent("com.xunce.electrombile.alarmservice");
+        BindListActivity.this.stopService(intent);
+        intent = new Intent(BindListActivity.this, FragmentActivity.class);
+        startActivity(intent);
+        BindListActivity.this.finish();
+    }
+
+    /**
+     * 取消订阅
+     *
+     * @param mac mqtt连接
+     * @return
+     */
+    private boolean unSubscribe(MqttAndroidClient mac) {
+        //订阅命令字
+        String initTopic = setManager.getIMEI();
+        String topic1 = "dev2app/" + initTopic + "/cmd";
+        //订阅GPS数据
+        String topic2 = "dev2app/" + initTopic + "/gps";
+        //订阅上报的信号强度
+        String topic3 = "dev2app/" + initTopic + "/433";
+
+        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String[] topic = {topic1, topic2, topic3, topic4};
+        try {
+            mac.unsubscribe(topic);
+            return true;
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(this, "取消订阅失败!请稍后重启再试！");
+            return false;
+        }
+
+    }
 
     //设备列表listview 适配器
     class MyAdapter extends BaseAdapter {
@@ -221,15 +289,16 @@ public class BindListActivity extends BaseActivity {
                         ToastUtils.showShort(BindListActivity.this, "正在使用此设备，无须切换~");
                         return;
                     }
-                    setManager.setIMEI((String) bindList.get(i).get("IMEI"));
-                    ToastUtils.showShort(BindListActivity.this, "切换中~");
-                    Historys.finishAct(FragmentActivity.class);
-                    Intent intent;
-                    intent = new Intent("com.xunce.electrombile.alarmservice");
-                    BindListActivity.this.stopService(intent);
-                    intent = new Intent(BindListActivity.this, FragmentActivity.class);
-                    startActivity(intent);
-                    BindListActivity.this.finish();
+                    progressDialog.show();
+                    MqttAndroidClient mac = getMqttAndroidClient();
+                    boolean isUnSubscribe = unSubscribe(mac);
+                    if (isUnSubscribe) {
+                        isUnSubscribed(i);
+                    } else {
+                        progressDialog.dismiss();
+                        ToastUtils.showShort(BindListActivity.this, "清除订阅失败!,请检查网络后再试!");
+                    }
+
                 }
             });
             return mView;

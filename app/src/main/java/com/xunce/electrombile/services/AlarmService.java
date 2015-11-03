@@ -7,16 +7,13 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.AlarmReceiver;
-import com.xunce.electrombile.utils.system.ToastUtils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 public class AlarmService extends Service {
     public SettingManager setManager;
@@ -37,7 +34,7 @@ public class AlarmService extends Service {
         super.onCreate();
         setManager = new SettingManager(this);
         startMqttClient();
-        subscribe(mac);
+        //subscribe(mac);
         registerBroadCast();
     }
 
@@ -63,26 +60,26 @@ public class AlarmService extends Service {
         mac = connection.getClient();
     }
 
-    /**
-     * 订阅话题
-     *
-     * @param mac mqtt的客户端
-     */
-    private void subscribe(MqttAndroidClient mac) {
-        if (mac != null && mac.isConnected()) {
-            //订阅命令字
-            String initTopic = setManager.getIMEI();
-            String topic1 = "dev2app/" + initTopic + "/alarm";
-            int qos = ServiceConstants.MQTT_QUALITY_OF_SERVICE;
-            try {
-                mac.subscribe(topic1, qos);
-                LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-            } catch (MqttException e) {
-                e.printStackTrace();
-                ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
-            }
-        }
-    }
+//    /**
+//     * 订阅话题
+//     *
+//     * @param mac mqtt的客户端
+//     */
+//    private void subscribe(MqttAndroidClient mac) {
+//        if (mac != null && mac.isConnected()) {
+//            //订阅命令字
+//            String initTopic = setManager.getIMEI();
+//            String topic1 = "dev2app/" + initTopic + "/alarm";
+//            int qos = ServiceConstants.MQTT_QUALITY_OF_SERVICE;
+//            try {
+//                mac.subscribe(topic1, qos);
+//                LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
+//            } catch (MqttException e) {
+//                e.printStackTrace();
+//                ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
+//            }
+//        }
+//    }
 
     @Override
     public void onDestroy() {

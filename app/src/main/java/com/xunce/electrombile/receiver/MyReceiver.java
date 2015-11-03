@@ -11,11 +11,11 @@ import android.util.Log;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.Constants.ActivityConstants;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.protocol.CmdFactory;
 import com.xunce.electrombile.protocol.GPSFactory;
-import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.protocol.Protocol;
 import com.xunce.electrombile.protocol.ProtocolFactoryInterface;
 import com.xunce.electrombile.protocol._433Factory;
@@ -115,31 +115,31 @@ public class MyReceiver extends BroadcastReceiver {
     private void onCmdArrived(Protocol protocol) {
         int cmd = protocol.getCmd();
         int result = protocol.getResult();
-        timeHandler.removeMessages(JsonKeys.TIME_OUT);
+        timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
         switch (cmd) {
             //如果是设置围栏的命令
-            case JsonKeys.CMD_FENCE_ON:
+            case ProtocolConstants.CMD_FENCE_ON:
                 ((FragmentActivity) mContext).switchFragment.cancelWaitTimeOut();
                 caseFence(result, true, "防盗开启成功");
                 break;
             //如果是设置关闭围栏的命令
-            case JsonKeys.CMD_FENCE_OFF:
+            case ProtocolConstants.CMD_FENCE_OFF:
                 ((FragmentActivity) mContext).switchFragment.cancelWaitTimeOut();
                 caseFence(result, false, "防盗关闭成功");
                 break;
             //如果是获取围栏的命令
-            case JsonKeys.CMD_FENCE_GET:
+            case ProtocolConstants.CMD_FENCE_GET:
                 caseFenceGet(protocol, result);
                 break;
             //如果是开始找车的命令
-            case JsonKeys.CMD_SEEK_ON:
+            case ProtocolConstants.CMD_SEEK_ON:
                 caseSeek(result, "开始找车");
                 break;
             //如果是停止找车的命令
-            case JsonKeys.CMD_SEEK_OFF:
+            case ProtocolConstants.CMD_SEEK_OFF:
                 caseSeek(result, "停止找车");
                 break;
-            case JsonKeys.CMD_LOCATION:
+            case ProtocolConstants.CMD_LOCATION:
                 caseGetGPS(result);
             default:
                 break;
@@ -152,7 +152,7 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseSeek(int result, String success) {
-        if (JsonKeys.ERR_SUCCESS == result) {
+        if (ProtocolConstants.ERR_SUCCESS == result) {
             ToastUtils.showShort(mContext, success);
         } else {
             dealErr(result);
@@ -168,12 +168,12 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseFenceGet(Protocol protocol, int result) {
-        if (JsonKeys.ERR_SUCCESS == result) {
+        if (ProtocolConstants.ERR_SUCCESS == result) {
             int state = protocol.getState();
-            if (JsonKeys.ON == state) {
+            if (ProtocolConstants.ON == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
                 ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
-            } else if (JsonKeys.OFF == state) {
+            } else if (ProtocolConstants.OFF == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
                 ((FragmentActivity) mContext).switchFragment.closeStateAlarmBtn();
             }
@@ -184,7 +184,7 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseFence(int result, boolean successAlarmFlag, String success) {
-        if (JsonKeys.ERR_SUCCESS == result) {
+        if (ProtocolConstants.ERR_SUCCESS == result) {
             ((FragmentActivity) mContext).setManager.setAlarmFlag(successAlarmFlag);
             ((FragmentActivity) mContext).switchFragment.msgSuccessArrived();
             ToastUtils.showShort(mContext, success);
@@ -195,14 +195,14 @@ public class MyReceiver extends BroadcastReceiver {
 
     private void dealErr(int result) {
         switch (result) {
-            case JsonKeys.ERR_WAITING:
+            case ProtocolConstants.ERR_WAITING:
                 ToastUtils.showShort(mContext, "正在设置命令，请稍后...");
-                timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE * 2);
+                timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE * 2);
                 return;
-            case JsonKeys.ERR_OFFLINE:
+            case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
                 break;
-            case JsonKeys.ERR_INTERNAL:
+            case ProtocolConstants.ERR_INTERNAL:
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
                 break;
         }
