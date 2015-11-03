@@ -1,6 +1,7 @@
 package com.xunce.electrombile.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,20 +15,25 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.List;
 
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 public class DeviceActivity extends BaseActivity {
     private static final String TAG = "DeviceActivity";
     private LinearLayout releaseBind;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +44,14 @@ public class DeviceActivity extends BaseActivity {
     @Override
     public void initViews() {
         releaseBind = (LinearLayout) findViewById(R.id.layout_release_bind);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("正在设置,请稍后");
     }
 
     @Override
     public void initEvents() {
         ((TextView) (findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
+
     }
 
     public void bindDev(View view) {
@@ -95,6 +104,7 @@ public class DeviceActivity extends BaseActivity {
                         }).setNegativeButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        progressDialog.show();
                         releaseBind.setClickable(false);
                         releaseBinding();
                         releaseBind.setClickable(true);
@@ -107,10 +117,12 @@ public class DeviceActivity extends BaseActivity {
         //先判断IMEI是否为空，若为空证明没有绑定设备。
         if (setManager.getIMEI().isEmpty()) {
             ToastUtils.showShort(this, "未绑定设备");
+            progressDialog.dismiss();
             return;
         }
         if (!NetworkUtils.isNetworkConnected(this)) {
             ToastUtils.showShort(this, "网络连接失败");
+            progressDialog.dismiss();
             return;
         }
         //若不为空，则先查询所在绑定类，再删除，删除成功后取消订阅，并删除本地的IMEI，关闭FragmentActivity,进入绑定页面
@@ -126,28 +138,48 @@ public class DeviceActivity extends BaseActivity {
                         @Override
                         public void done(AVException e) {
                             if (e == null) {
-                                String topic = "simcom_" + setManager.getIMEI();
+                                Connection connection = Connections.getInstance(DeviceActivity.this).getConnection(ServiceConstants.handler);
+                                MqttAndroidClient mac = connection.getClient();
+                                boolean isUnSubscribe = unSubscribe(mac);
+                                if (isUnSubscribe) {
+                                    setManager.setIMEI("");
+                                    setManager.setAlarmFlag(false);
+                                    ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
+                                    Historys.finishAct(FragmentActivity.class);
+                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅成功!");
+                                    progressDialog.dismiss();
+                                    Intent intent;
+                                    intent = new Intent("com.xunce.electrombile.alarmservice");
+                                    DeviceActivity.this.stopService(intent);
+                                    intent = new Intent(DeviceActivity.this, BindingActivity.class);
+                                    startActivity(intent);
+                                    DeviceActivity.this.finish();
+                                } else {
+                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅失败!,请检查网络后重试.");
+                                }
+
+                                //String topic = "simcom_" + setManager.getIMEI();
                                 //退订云巴推送
-                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
-
-                                    @Override
-                                    public void onSuccess(IMqttToken arg0) {
-                                        Log.d(TAG, "UnSubscribe topic succeed");
-                                        //删除本地的IMEI 和报警标志
-                                        setManager.setIMEI("");
-                                        setManager.setAlarmFlag(false);
-                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
-                                        Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
-                                        startActivity(intent);
-                                        DeviceActivity.this.finish();
-                                    }
-
-                                    @Override
-                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-                                        Log.d(TAG, "UnSubscribe topic failed");
-                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定失败，请确保网络通畅！");
-                                    }
-                                });
+//                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
+//
+//                                    @Override
+//                                    public void onSuccess(IMqttToken arg0) {
+//                                        Log.d(TAG, "UnSubscribe topic succeed");
+//                                        //删除本地的IMEI 和报警标志
+//                                        setManager.setIMEI("");
+//                                        setManager.setAlarmFlag(false);
+//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
+//                                        Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
+//                                        startActivity(intent);
+//                                        DeviceActivity.this.finish();
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
+//                                        Log.d(TAG, "UnSubscribe topic failed");
+//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定失败，请确保网络通畅！");
+//                                    }
+//                                });
                             }
                         }
                     });
@@ -155,10 +187,33 @@ public class DeviceActivity extends BaseActivity {
                     if (e != null)
                         Log.d("失败", "问题： " + e.getMessage());
                     ToastUtils.showShort(DeviceActivity.this, "解除绑定失败!");
+                    progressDialog.dismiss();
                 }
             }
         });
 
+
+    }
+
+    private boolean unSubscribe(MqttAndroidClient mac) {
+        //订阅命令字
+        String initTopic = setManager.getIMEI();
+        String topic1 = "dev2app/" + initTopic + "/cmd";
+        //订阅GPS数据
+        String topic2 = "dev2app/" + initTopic + "/gps";
+        //订阅上报的信号强度
+        String topic3 = "dev2app/" + initTopic + "/433";
+
+        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String[] topic = {topic1, topic2, topic3, topic4};
+        try {
+            mac.unsubscribe(topic);
+            return true;
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(this, "取消订阅失败!请稍后重启再试！");
+            return false;
+        }
 
     }
 }

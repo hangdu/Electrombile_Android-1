@@ -5,7 +5,7 @@ package com.xunce.electrombile.protocol;
  */
 public class CmdModeSelect {
     public static final String SELECT_MODE = "SELECT_MODE";
-    public static final String SELECT_MODE_GPS = "GPS";
+    public static final String SELECT_MODE_GPS = "gps";
     public static final String SELECT_MODE_433 = "433";
-    public static final String SELECT_MODE_CMD = "CMD";
+    public static final String SELECT_MODE_CMD = "cmd";
 }

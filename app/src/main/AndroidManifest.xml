@@ -59,34 +59,10 @@
         android:screenOrientation="portrait"
         android:theme="@style/App2Theme">
 
-        <!-- 云巴相关 -->
-        <meta-data
-            android:name="YUNBA_APPKEY"
-            android:value="554ab0957e353f5814e12100" />
-
         <!-- BugHD -->
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"
             android:value="c3eabcfe28504e5428596427cfdd2311" />
-
-        <service
-            android:name="io.yunba.android.core.YunBaService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <receiver android:name="io.yunba.android.core.YunBaReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".receiver.YunBaReceiver">
-            <intent-filter>
-                <action android:name="io.yunba.android.MESSAGE_RECEIVED_ACTION" />
-
-                <category android:name="com.xunce.electrombile" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".activity.SplashActivity"
@@ -131,8 +107,9 @@
         <activity
             android:name=".activity.AlarmActivity"
             android:label="Alarm"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/App2Theme" />
         <activity
             android:name=".activity.RecordActivity"
             android:label="Record"
@@ -156,19 +133,9 @@
         </receiver>
         -->
 
-        <service
-            android:name=".service.PushService"
-            android:enabled="true"
-            android:label="Push Notifications Service"
-            android:priority="1000">
-            <intent-filter>
-                <action android:name="com.xunce.electrombile.service.PushService.MSG_ACTION" />
-            </intent-filter>
-        </service>
+        <!-- Mqtt Service -->
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <activity
-            android:name=".activity.AddSosActivity"
-            android:label="@string/title_activity_add_sos" />
         <activity
             android:name=".activity.BindListActivity"
             android:label="@string/title_activity_bind_list" />
@@ -177,10 +144,21 @@
             android:label="@string/title_activity_find" />
         <activity
             android:name=".activity.account.PersonalCenterActivity"
-            android:label="@string/title_activity_personal_center" />
+            android:label="@string/title_activity_personal_center"
+            android:theme="@style/App2Theme" />
         <activity
             android:name=".activity.DeviceActivity"
-            android:label="@string/title_activity_equipment" />
+            android:label="@string/title_activity_equipment"
+            android:theme="@style/App2Theme" />
+
+        <service
+            android:name=".services.AlarmService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="1000">
+                <action android:name="com.xunce.electrombile.alarmservice" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

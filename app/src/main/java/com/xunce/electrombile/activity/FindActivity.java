@@ -1,6 +1,5 @@
 package com.xunce.electrombile.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,12 +17,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.CmdCenter;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
-public class FindActivity extends Activity {
+
+public class FindActivity extends BaseActivity {
 
     private static final String TAG = "FindActivity";
     private final int TIME_OUT = 0;
@@ -37,6 +42,7 @@ public class FindActivity extends Activity {
             ratingBar.setRating(next);
         }
     };
+    private String IMEI;
     private ImageView scanner;
     private ProgressDialog progressDialog;
     private CmdCenter mCenter;
@@ -50,31 +56,42 @@ public class FindActivity extends Activity {
             ToastUtils.showShort(FindActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
+    private MqttAndroidClient mac;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find);
-        initView();
-        initEvent();
+        super.onCreate(savedInstanceState);
     }
 
-    private void initView() {
+    @Override
+    public void initViews() {
         scanner = (ImageView) findViewById(R.id.iv_scanner);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         progressDialog = new ProgressDialog(this);
         mCenter = CmdCenter.getInstance(this);
     }
 
-    private void initEvent() {
+    @Override
+    public void initEvents() {
+        startMqttClient();
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
         LinearInterpolator lin = new LinearInterpolator();
         operatingAnim.setInterpolator(lin);
         progressDialog.setMessage("正在配置...");
         progressDialog.setCancelable(false);
         registerBroadCast();
+        IMEI = setManager.getIMEI();
     }
 
+    private void startMqttClient() {
+        if (ServiceConstants.handler.isEmpty()) {
+            return;
+        }
+        Connection connection = Connections.getInstance(this).getConnection(ServiceConstants.handler);
+        mac = connection.getClient();
+    }
     private void registerBroadCast() {
         receiver = new MyReceiver();
         IntentFilter filter = new IntentFilter();
@@ -87,29 +104,43 @@ public class FindActivity extends Activity {
     }
 
     public void startFind(View view) {
-        Button button = (Button) view;
+        button = (Button) view;
         timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
         if (!isFinding) {
-            if (FragmentActivity.pushService != null) {
-                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
+            if (mac != null && mac.isConnected()) {
+                sendMessage(FindActivity.this, mCenter.cmdSeekOn(), IMEI);
                 progressDialog.show();
+            } else {
+                ToastUtils.showShort(this, "服务未连接...");
+                timeHandler.removeMessages(TIME_OUT);
+                return;
             }
-            if (operatingAnim != null) {
-                scanner.startAnimation(operatingAnim);
-            }
-            button.setText("停止找车");
+            isFinding = !isFinding;
         } else {
-            if (FragmentActivity.pushService != null) {
-                FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOff());
+            if (mac != null && mac.isConnected()) {
+                sendMessage(FindActivity.this, mCenter.cmdSeekOff(), IMEI);
                 progressDialog.show();
+            } else {
+                ToastUtils.showShort(this, "服务未连接...");
+                timeHandler.removeMessages(TIME_OUT);
+                return;
             }
-            //radarView.stop();
-            scanner.clearAnimation();
-            button.setText("开始找车");
+            isFinding = !isFinding;
         }
-        isFinding = !isFinding;
+
     }
 
+    private void sendMessage(Context context, byte[] message, String IMEI) {
+        if (mac == null) {
+            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
+            return;
+        }
+        try {
+            mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -122,6 +153,15 @@ public class FindActivity extends Activity {
         progressDialog.dismiss();
         float rating = (float) (data / 200.0);
         ratingBar.setRating(rating);
+        if (isFinding) {
+            if (operatingAnim != null) {
+                scanner.startAnimation(operatingAnim);
+            }
+            button.setText("停止找车");
+        } else {
+            scanner.clearAnimation();
+            button.setText("开始找车");
+        }
     }
 
     private class MyReceiver extends BroadcastReceiver {

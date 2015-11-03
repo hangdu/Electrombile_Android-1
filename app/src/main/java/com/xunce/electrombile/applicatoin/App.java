@@ -7,7 +7,7 @@ import com.avos.avoscloud.AVOSCloud;
 import com.baidu.mapapi.SDKInitializer;
 
 import im.fir.sdk.FIR;
-import io.yunba.android.manager.YunBaManager;
+//import io.yunba.android.manager.YunBaManager;
 
 
 /**
@@ -26,7 +26,7 @@ public class App extends Application {
         AVOSCloud.initialize(this,
                 "5wk8ccseci7lnss55xfxdgj9xn77hxg3rppsu16o83fydjjn",
                 "yovqy5zy16og43zwew8i6qmtkp2y6r9b18zerha0fqi5dqsw");
-        YunBaManager.start(getApplicationContext());
+//        YunBaManager.start(getApplicationContext());
 
         //initial BugHD
         FIR.init(this);

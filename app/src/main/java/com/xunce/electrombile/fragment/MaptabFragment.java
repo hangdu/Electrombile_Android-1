@@ -34,6 +34,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
 import com.xunce.electrombile.activity.FindActivity;
@@ -41,8 +42,6 @@ import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
-import com.xunce.electrombile.protocol.JsonKeys;
-import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
@@ -260,7 +259,7 @@ public class MaptabFragment extends BaseFragment {
                 if (mBaiduMap != null) {
                     //LatLng point = getLatestLocation();
                     waitDialog.show();
-                    timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                     updateLocation();
                 }
             }
@@ -409,45 +408,6 @@ public class MaptabFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-
-        mMapView.onDestroy();
-        mMapView = null;
-        super.onDestroy();
-        //clearDataAndView();
-    }
-
-    @Override
-    public void onResume() {
-
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        //   Log.i(TAG, "onResume called!");
-        mMapView.setVisibility(View.VISIBLE);
-        mMapView.onResume();
-        super.onResume();
-
-        //检查历史轨迹列表，若不为空，则需要绘制轨迹
-        if (trackDataList.size() > 0) {
-            // if (tracksOverlay != null) tracksOverlay.remove();
-            mBaiduMap.clear();
-            playLocateMobile(trackDataList.get(0));
-            enterPlayTrackMode();
-            drawLine();
-        }
-        updateLocation();
-    }
-
-    @Override
-    public void onPause() {
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        //  Log.i(TAG, "onPause called!");
-        //mMapView.setVisibility(View.INVISIBLE);
-        mMapView.onPause();
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
         if (lineDraw != null)
             lineDraw.remove();
         // 退出时销毁定位
@@ -466,6 +426,38 @@ public class MaptabFragment extends BaseFragment {
         m_playThread = null;
         exitPlayTrackMode();
         mBaiduMap.clear();
+        mMapView.onDestroy();
+        mMapView = null;
+        super.onDestroy();
+        //clearDataAndView();
+    }
+
+    @Override
+    public void onResume() {
+
+        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
+        //   Log.i(TAG, "onResume called!");
+        mMapView.setVisibility(View.VISIBLE);
+        mMapView.onResume();
+        super.onResume();
+
+        //检查历史轨迹列表，若不为空，则需要绘制轨迹
+        if (trackDataList.size() > 0) {
+            // if (tracksOverlay != null) tracksOverlay.remove();
+            playLocateMobile(trackDataList.get(0));
+            enterPlayTrackMode();
+            drawLine();
+        }
+        updateLocation();
+    }
+
+    @Override
+    public void onPause() {
+        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
+        //  Log.i(TAG, "onPause called!");
+        //mMapView.setVisibility(View.INVISIBLE);
+        mMapView.onPause();
+        super.onPause();
     }
 
     private void enterPlayTrackMode() {
@@ -591,18 +583,13 @@ public class MaptabFragment extends BaseFragment {
 
     //return longitude and latitude data,if no data, returns null
     public void updateLocation() {
-
-        //透传
-        if (FragmentActivity.pushService != null) {
-            FragmentActivity.pushService.sendMessage1(mCenter.cmdWhere());
-
-        } else {
-            ToastUtils.showShort(getActivity().getApplicationContext(), "请稍后...");
-        }
+        if (((FragmentActivity) m_context).mac != null && ((FragmentActivity) m_context).mac.isConnected())
+            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
 
     private void drawLine() {
+        mBaiduMap.clear();
         ArrayList<LatLng> points = new ArrayList<>();
         for (TrackPoint tp : trackDataList) {
             points.add(tp.point);

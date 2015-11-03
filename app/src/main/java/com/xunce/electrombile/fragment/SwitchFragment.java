@@ -34,10 +34,10 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.bean.WeatherBean;
-import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -143,16 +143,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //关闭报警
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
-                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
+                            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
-                            //test
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOff());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOn());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdSeekOff());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceGet());
-//                            FragmentActivity.pushService.sendMessage1(mCenter.cmdWhere());
+                            timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
 
                         } else {
                             ToastUtils.showShort(m_context, "网络连接失败");
@@ -167,9 +160,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
                             VibratorUtil.Vibrate(getActivity(), 700);
-                            FragmentActivity.pushService.sendMessage1(mCenter.cmdFenceOn());
+                            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
                             waitDialog.show();
-                            timeHandler.sendEmptyMessageDelayed(JsonKeys.TIME_OUT, JsonKeys.TIME_OUT_VALUE);
+                            timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                         } else {
                             ToastUtils.showShort(m_context, "请先绑定设备");
                         }
@@ -319,10 +312,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                                 "天气状况：" + data.weather + "\n" +
                                 "城市：" + data.city + "\n" +
                                 "风速：" + data.WS + "\n" +
-                                "更新时间：" + data.time +"\n" +
-                                "最低气温：" + data.l_tmp +"\n" +
-                                "最高气温：" + data.h_tmp +"\n" +
-                                "风向：" + data.WD +"\n" ;
+                                "更新时间：" + data.time + "\n" +
+                                "最低气温：" + data.l_tmp + "\n" +
+                                "最高气温：" + data.h_tmp + "\n" +
+                                "风向：" + data.WD + "\n";
                         tvWeather.setText(tmp);
                     }
 

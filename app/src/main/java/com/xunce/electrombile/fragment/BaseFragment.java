@@ -11,10 +11,10 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.baidu.mapapi.model.LatLng;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
-import com.xunce.electrombile.protocol.JsonKeys;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 
@@ -99,7 +99,7 @@ public class BaseFragment extends Fragment{
 
     public void cancelWaitTimeOut() {
         waitDialog.dismiss();
-        timeHandler.removeMessages(JsonKeys.TIME_OUT);
+        timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
     }
     public interface GPSDataChangeListener {
         void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint);
