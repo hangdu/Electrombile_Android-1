@@ -2,11 +2,12 @@ package com.xunce.electrombile.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.widget.CompoundButton;
-import android.widget.ToggleButton;
+import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
@@ -15,6 +16,7 @@ import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.view.SlidingButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -22,47 +24,52 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  * Created by heyukun on 2015/4/3.
+ * Modify by liyanbo on 2015/10/27
  */
 public class AlarmActivity extends BaseActivity {
-    ToggleButton btnWarmComfirm = null;
-    AudioManager aManager = null;
     MediaPlayer mPlayer;
     private MqttAndroidClient mac;
+    private SlidingButton mSlidingButton;
+    private TextView tv_sliding;
+    private TextView tv_alarm;
+    private Animation operatingAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
-        VibratorUtil.Vibrate(this, 60000);
+        super.onCreate(savedInstanceState);
+        alarm();
         Intent intent = getIntent();
         int type = intent.getIntExtra(ProtocolConstants.TYPE, 2);
         //       int type = savedInstanceState.getInt("type");
+    }
 
-
+    private void alarm() {
+        VibratorUtil.Vibrate(this, new long[]{1000, 2000, 2000, 1000}, true);
         //播放警铃
-        startAlarm();
-        startMqttClient();
-        btnWarmComfirm = (ToggleButton) findViewById(R.id.btn_warning_confirm);
-        btnWarmComfirm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (compoundButton.isChecked()) {
-                    //stop alarm
-                    VibratorUtil.VibrateCancle(AlarmActivity.this);
-                    mPlayer.stop();
-                    AlarmActivity.this.finish();
-                    //AlarmActivity.instance = null;
-                    sendMessage(AlarmActivity.this, mCenter.cmdFenceOff(), setManager.getIMEI());
-                }
-            }
-        });
+        mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alarm);
+        mPlayer.setLooping(true);
+        mPlayer.start();
+    }
 
+    @Override
+    public void initViews() {
+        mSlidingButton = (SlidingButton) this.findViewById(R.id.mainview_answer_1_button);
+        tv_sliding = (TextView) findViewById(R.id.tv_sliding);
+        tv_alarm = (TextView) findViewById(R.id.tv_alarm);
+    }
+    @Override
+    public void initEvents() {
+        startMqttClient();
+        operatingAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        tv_alarm.startAnimation(operatingAnim);
     }
 
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        sendMessage(this, mCenter.cmdFenceOff(), setManager.getIMEI());
         mPlayer.stop();
         VibratorUtil.VibrateCancle(AlarmActivity.this);
         AlarmActivity.this.finish();
@@ -71,15 +78,6 @@ public class AlarmActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-    }
-
-    /**
-     * 播放警铃
-     */
-    private void startAlarm() {
-        mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alarm);
-        mPlayer.setLooping(true);
-        mPlayer.start();
     }
 
     /**
@@ -110,5 +108,22 @@ public class AlarmActivity extends BaseActivity {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mSlidingButton.handleActivityEvent(event)) {
+            //stop alarm
+            tv_sliding.setText("停止告警！");
+            tv_alarm.clearAnimation();
+            VibratorUtil.VibrateCancle(AlarmActivity.this);
+            mPlayer.stop();
+            AlarmActivity.this.finish();
+            sendMessage(this, mCenter.cmdFenceOff(), setManager.getIMEI());
+        } else {
+            tv_sliding.setText("滑动关闭报警");
+            tv_alarm.startAnimation(operatingAnim);
+        }
+        return super.onTouchEvent(event);
     }
 }

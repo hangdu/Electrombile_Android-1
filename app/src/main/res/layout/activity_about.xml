@@ -5,32 +5,32 @@
     android:background="@color/white">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/logo"
         android:id="@+id/iv_logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"/>
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="@mipmap/ic_launcher" />
+    <TextView
         android:id="@+id/tv_appInfo"
-        android:layout_below="@+id/iv_logo"
-        android:textColor="@color/firebrick"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"/>
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_companyInfo"
         android:layout_below="@+id/iv_logo"
-        android:text="@string/companyInfo"
-        android:textSize="20sp"
-        android:textColor="@color/black"
-        android:layout_marginTop="90dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/firebrick" />
+    <TextView
+        android:id="@+id/tv_companyInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
         android:paddingLeft="30dp"
-        android:paddingRight="30dp"/>
+        android:paddingRight="30dp"
+        android:text="@string/companyInfo"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <!--<LinearLayout-->
         <!--android:layout_width="wrap_content"-->
@@ -59,12 +59,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:layout_marginBottom="100dp"
+        android:background="@drawable/btn_register"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="反馈"
-        android:textSize="20sp"
-        android:background="@drawable/common_btn"/>
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/btn_returnFromFelp"
@@ -72,12 +72,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:layout_marginBottom="40dp"
+        android:background="@drawable/btn_login"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:text="返回"
-        android:textSize="20sp"
-        android:background="@drawable/special_btn"/>
+        android:textSize="20sp" />
 
 
 

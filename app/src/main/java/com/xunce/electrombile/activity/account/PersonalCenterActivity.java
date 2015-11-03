@@ -25,7 +25,7 @@ import java.io.IOException;
 public class PersonalCenterActivity extends BaseActivity {
 
     /*头像名称*/
-    private static final String IMAGE_FILE_NAME = "faceImage.png";
+    //private static final String IMAGE_FILE_NAME = "faceImage.png";
     /* 请求码*/
     private static final int IMAGE_REQUEST_CODE = 0;
     private static final int CAMERA_REQUEST_CODE = 1;
@@ -73,7 +73,7 @@ public class PersonalCenterActivity extends BaseActivity {
 
     private void loadAndSetImg(ImageView imageView, String nameImg) {
         com.lidroid.xutils.BitmapUtils bitmapUtils = new com.lidroid.xutils.BitmapUtils(this);
-        bitmapUtils.configDefaultLoadFailedImage(R.drawable.person_center_left);//加载失败图片
+        bitmapUtils.configDefaultLoadFailedImage(R.drawable.iv_person_head);//加载失败图片
         bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);//设置图片压缩类型
         bitmapUtils.configDefaultCacheExpiry(0);
         bitmapUtils.configDefaultAutoRotation(true);

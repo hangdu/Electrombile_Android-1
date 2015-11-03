@@ -33,6 +33,7 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
@@ -47,11 +48,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MaptabFragment extends BaseFragment {
 
+
+    //保存数据所需要的最短距离
+    private static final double MIN_DISTANCE = 100;
     public static MapView mMapView;
     //maptabFragment 维护一组历史轨迹坐标列表
     public static List<TrackPoint> trackDataList;
@@ -84,9 +86,15 @@ public class MaptabFragment extends BaseFragment {
     Dialog didDialog;
     //private Context m_context;
     private BaiduMap mBaiduMap;
+
+    //
     //    private ProgressDialog watiDialog;
     //缓存布局
     private View rootView;
+    //保存行进过程中的点,用于画出行径轨迹.
+    private ArrayList<LatLng> drawLineList;
+    //轨迹显示图层
+    private Overlay lineDraw;
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -94,7 +102,7 @@ public class MaptabFragment extends BaseFragment {
             switch (key) {
                 case CHANGEPOINT:
                     try {
-                        locateMobile((TrackPoint) msg.obj);
+                        playLocateMobile((TrackPoint) msg.obj);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -113,10 +121,10 @@ public class MaptabFragment extends BaseFragment {
                     }
 
                 }
-                case HIDEINFOWINDOW: {
-                    // mBaiduMap.hideInfoWindow();
-                    break;
-                }
+//                case HIDEINFOWINDOW: {
+//                    // mBaiduMap.hideInfoWindow();
+//                    break;
+//                }
 
             }
 
@@ -160,7 +168,7 @@ public class MaptabFragment extends BaseFragment {
 
                     }
                 }).create();
-
+        drawLineList = new ArrayList<>();
         waitDialog.setMessage("正在查询位置信息，请稍后……");
     }
 
@@ -186,6 +194,7 @@ public class MaptabFragment extends BaseFragment {
         mMapView = (MapView) v.findViewById(R.id.bmapView);
         mBaiduMap = mMapView.getMap();
 
+
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             public boolean onMarkerClick(final Marker marker) {
 //                if(marker == markerMobile){
@@ -201,6 +210,7 @@ public class MaptabFragment extends BaseFragment {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //若没有播放线程，先创建
                 if (m_playThread == null) {
                     m_playThread = new PlayRecordThread(1000);
@@ -398,6 +408,8 @@ public class MaptabFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
+        if (lineDraw != null)
+            lineDraw.remove();
         // 退出时销毁定位
         //mLocationClient.stop();
         // 关闭定位图层
@@ -413,7 +425,7 @@ public class MaptabFragment extends BaseFragment {
         }
         m_playThread = null;
         exitPlayTrackMode();
-
+        mBaiduMap.clear();
         mMapView.onDestroy();
         mMapView = null;
         super.onDestroy();
@@ -431,8 +443,8 @@ public class MaptabFragment extends BaseFragment {
 
         //检查历史轨迹列表，若不为空，则需要绘制轨迹
         if (trackDataList.size() > 0) {
-            if (tracksOverlay != null) tracksOverlay.remove();
-            locateMobile(trackDataList.get(0));
+            // if (tracksOverlay != null) tracksOverlay.remove();
+            playLocateMobile(trackDataList.get(0));
             enterPlayTrackMode();
             drawLine();
         }
@@ -477,6 +489,79 @@ public class MaptabFragment extends BaseFragment {
     //将地图中心移到某点
     public void locateMobile(TrackPoint track) {
         if (mBaiduMap == null) return;
+        if (drawLineList.isEmpty()) {
+            drawLineList.add(0, track.point);
+        } else if (drawLineList.size() == 1) {
+            double dis = Math.abs(DistanceUtil.getDistance(drawLineList.get(0), track.point));
+            if (dis >= MIN_DISTANCE) {
+                drawLineList.add(1, track.point);
+                addOverlayOnMap();
+            }
+        } else if (drawLineList.size() == 2) {
+            double dis = Math.abs(DistanceUtil.getDistance(drawLineList.get(1), track.point));
+            if (dis >= MIN_DISTANCE) {
+                drawLineList.add(0, drawLineList.get(1));
+                drawLineList.add(1, track.point);
+                addOverlayOnMap();
+            }
+        }
+
+
+        /**
+         *设定中心点坐标
+         */
+        //定义地图状态
+        //在地图上添加多边形Option，用于显示
+
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(track.point)
+                .zoom(mBaiduMap.getMapStatus().zoom)
+                .build();
+        //float a = mBaiduMap.getMapStatus().zoom;
+        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.animateMapStatus(mMapStatusUpdate);
+
+
+        markerMobile.setPosition(track.point);
+        refreshTrack(track);
+        //显示悬浮窗，一定时间后消失
+        //  mBaiduMap.hideInfoWindow();
+        mInfoWindow = new InfoWindow(markerView, track.point, -90);
+
+        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        tvUpdateTime.setText(sdfWithSecond.format(track.time));
+        mBaiduMap.showInfoWindow(mInfoWindow);
+//        new Timer().schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                playHandler.sendEmptyMessage(handleKey.HIDEINFOWINDOW.ordinal());
+//            }
+//        }, 10000);
+
+    }
+
+    //将轨迹显示到地图上
+    private void addOverlayOnMap() {
+        OverlayOptions polylineOption = new PolylineOptions()
+                .points(drawLineList)
+                .width(5)
+                .color(0xAA00FF00);
+        lineDraw = mBaiduMap.addOverlay(polylineOption);
+
+    }
+
+    //更新当前轨迹
+    private void refreshTrack(TrackPoint track) {
+        currentTrack = track;
+        waitDialog.dismiss();
+    }
+
+    //播放历史轨迹的时候调用的绘图方法,减少了文本框的显示
+    private void playLocateMobile(TrackPoint track) {
+        if (mBaiduMap == null) return;
         /**
          *设定中心点坐标
          */
@@ -491,25 +576,8 @@ public class MaptabFragment extends BaseFragment {
         //改变地图状态
         mBaiduMap.animateMapStatus(mMapStatusUpdate);
         markerMobile.setPosition(track.point);
+        refreshTrack(track);
 
-        //显示悬浮窗，一定时间后消失
-        //  mBaiduMap.hideInfoWindow();
-        mInfoWindow = new InfoWindow(markerView, track.point, -90);
-
-        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        tvUpdateTime.setText(sdfWithSecond.format(track.time));
-        mBaiduMap.showInfoWindow(mInfoWindow);
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                playHandler.sendEmptyMessage(handleKey.HIDEINFOWINDOW.ordinal());
-            }
-        }, 10000);
-
-        //更新当前轨迹
-        currentTrack = track;
-        waitDialog.dismiss();
     }
 
 
@@ -521,6 +589,7 @@ public class MaptabFragment extends BaseFragment {
     }
 
     private void drawLine() {
+        mBaiduMap.clear();
         ArrayList<LatLng> points = new ArrayList<>();
         for (TrackPoint tp : trackDataList) {
             points.add(tp.point);
@@ -549,7 +618,7 @@ public class MaptabFragment extends BaseFragment {
     enum handleKey {
         CHANGEPOINT,
         LOCATEMESSAGE,
-        HIDEINFOWINDOW,
+        //HIDEINFOWINDOW,
     }
 
     private class PlayRecordThread extends Thread {
