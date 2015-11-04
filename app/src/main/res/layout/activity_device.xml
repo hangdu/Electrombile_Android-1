@@ -9,7 +9,8 @@
         android:id="@+id/rl_1"
         android:layout_width="match_parent"
         android:layout_height="184dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:elevation="2dip">
 
         <ImageView
             android:id="@+id/iv_logo"
@@ -46,6 +47,7 @@
         style="@style/clickableLayout"
         android:layout_below="@+id/rl_1"
         android:layout_marginTop="24dp"
+        android:elevation="1dip"
         android:onClick="bindDev">
 
         <ImageView
@@ -59,16 +61,18 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="300dp"
-        android:layout_height="1dp"
-        android:layout_gravity="center"
-        android:background="@color/gray" />
+    <!--<View-->
+    <!--android:layout_width="300dp"-->
+    <!--android:layout_height="1dp"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="@color/gray" />-->
 
     <LinearLayout
         android:id="@+id/layout_release_bind"
         style="@style/clickableLayout"
         android:layout_below="@+id/layout_bind"
+        android:layout_marginTop="2dp"
+        android:elevation="2dip"
         android:onClick="unBindDev">
 
         <ImageView
@@ -86,6 +90,7 @@
         android:id="@+id/layout_bind_list"
         style="@style/clickableLayout"
         android:layout_marginTop="24dp"
+        android:elevation="2dip"
         android:onClick="multDevManage">
 
         <ImageView

@@ -10,7 +10,8 @@
         android:id="@+id/rl_1"
         android:layout_width="match_parent"
         android:layout_height="184dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:elevation="2dip">
 
         <ImageView
             android:id="@+id/head_portrait"
@@ -48,6 +49,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="24dp"
         android:background="@color/white"
+        android:elevation="2dip"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
