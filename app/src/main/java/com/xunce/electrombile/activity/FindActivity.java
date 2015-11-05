@@ -57,7 +57,7 @@ public class FindActivity extends BaseActivity {
         }
     };
     private MqttAndroidClient mac;
-    private Button button;
+    private Button findBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,7 @@ public class FindActivity extends BaseActivity {
     public void initViews() {
         scanner = (ImageView) findViewById(R.id.iv_scanner);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        findBtn = (Button) findViewById(R.id.find_button);
         progressDialog = new ProgressDialog(this);
         mCenter = CmdCenter.getInstance(this);
     }
@@ -104,7 +105,6 @@ public class FindActivity extends BaseActivity {
     }
 
     public void startFind(View view) {
-        button = (Button) view;
         timeHandler.sendEmptyMessageDelayed(TIME_OUT, 5000);
         if (!isFinding) {
             if (mac != null && mac.isConnected()) {
@@ -157,10 +157,10 @@ public class FindActivity extends BaseActivity {
             if (operatingAnim != null) {
                 scanner.startAnimation(operatingAnim);
             }
-            button.setText("停止找车");
+            findBtn.setText("停止找车");
         } else {
             scanner.clearAnimation();
-            button.setText("开始找车");
+            findBtn.setText("开始找车");
         }
     }
 

@@ -28,7 +28,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
-            android:background="#47d3c2"
+            android:background="@drawable/switch_frag_location"
             android:orientation="vertical">
 
             <ImageView
@@ -50,9 +50,9 @@
         </LinearLayout>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/line_home_fragment" />
+            android:layout_width="1dp"
+            android:layout_height="164dip"
+            android:src="@drawable/line_between_two_frag" />
 
         <LinearLayout
             android:id="@+id/ll_b"
@@ -64,7 +64,7 @@
             android:layout_marginTop="4dp"
             android:layout_toRightOf="@+id/ll_a"
             android:layout_weight="1"
-            android:background="#ffce4b"
+            android:background="@drawable/switch_frag_weather"
             android:orientation="vertical">
 
             <ImageView

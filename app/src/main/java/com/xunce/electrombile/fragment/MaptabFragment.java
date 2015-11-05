@@ -528,7 +528,7 @@ public class MaptabFragment extends BaseFragment {
         refreshTrack(track);
         //显示悬浮窗，一定时间后消失
         //  mBaiduMap.hideInfoWindow();
-        mInfoWindow = new InfoWindow(markerView, track.point, -90);
+        mInfoWindow = new InfoWindow(markerView, track.point, -70);
 
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

@@ -161,14 +161,19 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        Connection connection = Connection.createConnection(ServiceConstants.clientId,
+        Connection connection = Connection.createConnection(null,
                 ServiceConstants.MQTT_HOST,
                 ServiceConstants.PORT,
                 FragmentActivity.this,
                 false);
+//        Connection connection = Connection.createConnection(ServiceConstants.clientId,
+//                ServiceConstants.MQTT_HOST,
+//                ServiceConstants.PORT,
+//                FragmentActivity.this,
+//                false);
         ServiceConstants.handler = connection.handle();
         MqttConnectOptions mcp = new MqttConnectOptions();
-        mcp.setCleanSession(false);
+        mcp.setCleanSession(true);
         connection.addConnectionOptions(mcp);
         mac = connection.getClient();
         try {
@@ -184,6 +189,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+                    Log.d(TAG, exception.toString());
                 }
             });
             Connections.getInstance(FragmentActivity.this).addConnection(connection);

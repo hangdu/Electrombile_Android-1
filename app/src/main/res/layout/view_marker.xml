@@ -3,37 +3,39 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@drawable/popup">
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="时间:"
         android:id="@+id/tv_timeName"
-        android:textColor="@color/dimgrey"
-        android:paddingLeft="10dp"
-        android:layout_marginTop="10dp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:id="@+id/tv_updateTime"
-        android:layout_toRightOf="@+id/tv_timeName"
-        android:text="2015-06-23 10:33:2"
-        android:textColor="@color/black"
-        android:paddingRight="20dp"
-        android:layout_marginTop="10dp"/>
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="状态:"
-        android:id="@+id/tv_statusName"
-        android:layout_below="@+id/tv_timeName"
-        android:textColor="@color/dimgrey"
-        android:paddingLeft="10dp"/>
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="10dp"
+        android:text="时间:"
+        android:textColor="@color/dimgrey" />
     <TextView
+        android:id="@+id/tv_updateTime"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/tv_timeName"
+        android:paddingRight="20dp"
+        android:text="2015-06-23 10:33:2"
+        android:textColor="@color/black" />
+    <TextView
+        android:id="@+id/tv_statusName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_timeName"
+        android:paddingLeft="10dp"
+        android:text="状态:"
+        android:textColor="@color/dimgrey" />
+    <TextView
         android:id="@+id/tv_statuse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/tv_timeName"
         android:layout_toRightOf="@+id/tv_timeName"
+        android:paddingRight="20dp"
         android:text="在线"
-        android:textColor="@color/blue"
-        android:paddingRight="20dp"/>
+        android:textColor="@color/blue" />
 </RelativeLayout>
