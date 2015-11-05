@@ -161,16 +161,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        Connection connection = Connection.createConnection(null,
+        Connection connection = Connection.createConnection(ServiceConstants.clientId,
                 ServiceConstants.MQTT_HOST,
                 ServiceConstants.PORT,
                 FragmentActivity.this,
                 false);
-//        Connection connection = Connection.createConnection(ServiceConstants.clientId,
-//                ServiceConstants.MQTT_HOST,
-//                ServiceConstants.PORT,
-//                FragmentActivity.this,
-//                false);
         ServiceConstants.handler = connection.handle();
         MqttConnectOptions mcp = new MqttConnectOptions();
         mcp.setCleanSession(true);
