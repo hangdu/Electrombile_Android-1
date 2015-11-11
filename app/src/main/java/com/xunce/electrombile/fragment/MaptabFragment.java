@@ -107,9 +107,7 @@ public class MaptabFragment extends BaseFragment {
                     }
                     break;
                 case LOCATEMESSAGE: {
-
-                    waitDialog.dismiss();
-
+                    dismissWaitDialog();
                     if (msg.obj != null) {
                         locateMobile((TrackPoint) msg.obj);
                         break;
@@ -168,7 +166,7 @@ public class MaptabFragment extends BaseFragment {
                     }
                 }).create();
         drawLineList = new ArrayList<>();
-        waitDialog.setMessage("正在查询位置信息，请稍后……");
+        //waitDialog.setMessage("正在查询位置信息，请稍后……");
     }
 
     @Override
@@ -257,7 +255,7 @@ public class MaptabFragment extends BaseFragment {
 
                 if (mBaiduMap != null) {
                     //LatLng point = getLatestLocation();
-                    waitDialog.show();
+                    showWaitDialog();
                     timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                     updateLocation();
                 }
@@ -555,7 +553,7 @@ public class MaptabFragment extends BaseFragment {
     //更新当前轨迹
     private void refreshTrack(TrackPoint track) {
         currentTrack = track;
-        waitDialog.dismiss();
+        dismissWaitDialog();
     }
 
     //播放历史轨迹的时候调用的绘图方法,减少了文本框的显示

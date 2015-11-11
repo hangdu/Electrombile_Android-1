@@ -31,7 +31,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
 
-    private static String TAG = "SettingsFragment:";
+    private static String TAG = "SettingsFragment";
     private LinearLayout btnAbout;
     private LinearLayout btnHelp;
     private LinearLayout btnLogout;
@@ -128,7 +128,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         //解析xml
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_logout, null);
-        final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle);
+        final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
 
         //找按钮
         TextView title = (TextView) view.findViewById(R.id.dialog_title);

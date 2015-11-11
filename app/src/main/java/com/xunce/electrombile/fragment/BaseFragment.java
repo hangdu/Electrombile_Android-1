@@ -1,17 +1,23 @@
 package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 
 import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.Constants.ProtocolConstants;
+import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -20,13 +26,6 @@ import com.xunce.electrombile.utils.system.ToastUtils;
 
 /**
  * Created by lybvinci on 2015/4/24.
- * 实现机智云的所有回调接口，监听器。
- * 解除绑定功能：
- * 1.需要先绑定设备，如果界面先出现正在登陆设备，而未出现登陆成功，就可能是之前解除绑定过，否则不会出现。
- * 2.解除绑定功能需要先使用unbindDevice函数，解除绑定，在didunbindDevice里得到结果
- * 3.同时还需要调用disconnnect函数，断开连接。如果不断开连接，是不能重新绑定设备的。
- * 4.当解除绑定时，如果出现解除绑定成功，就可以重新绑定新设备了。
- * 5当解除绑定时出现设备断开连接，则表明解除绑定操作失败，重新打开app，重新解除绑定操作……（我也不知道怎么操作才能正常解除绑定）
  */
 public class BaseFragment extends Fragment{
 
@@ -38,13 +37,13 @@ public class BaseFragment extends Fragment{
     protected CmdCenter mCenter;
     protected SettingManager setManager;
     protected GPSDataChangeListener mGpsChangedListener;
-    protected ProgressDialog waitDialog;
     protected Context m_context;
+    private Dialog waitDialog;
     protected Handler timeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            waitDialog.dismiss();
+            dismissWaitDialog();
             ToastUtils.showShort(m_context, "指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
@@ -54,9 +53,34 @@ public class BaseFragment extends Fragment{
         super.onCreate(saveInstanceState);
         setManager = new SettingManager(getActivity().getApplicationContext());
         mCenter = CmdCenter.getInstance(getActivity().getApplicationContext());
-        waitDialog = new ProgressDialog(m_context);
-        waitDialog.setMessage("正在查询位置信息，请稍后……");
+    }
+
+    /**
+     * 显示等待框
+     */
+    protected void showWaitDialog() {
+        LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_wait, null);
+        Animation animation = AnimationUtils.loadAnimation(m_context, R.anim.alpha);
+        view.findViewById(R.id.iv).startAnimation(animation);
+        waitDialog = new Dialog(m_context, R.style.Translucent_NoTitle_trans);
+        waitDialog.addContentView(view, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        waitDialog.setContentView(view);
         waitDialog.setCancelable(false);
+        waitDialog.show();
+        WindowManager.LayoutParams params = waitDialog.getWindow().getAttributes();
+        params.y = -156;
+        waitDialog.getWindow().setAttributes(params);
+    }
+
+    /**
+     * 取消显示等待框
+     */
+    protected void dismissWaitDialog() {
+        if (waitDialog != null) {
+            waitDialog.dismiss();
+        }
     }
 
     @Override
@@ -98,8 +122,10 @@ public class BaseFragment extends Fragment{
     }
 
     public void cancelWaitTimeOut() {
-        waitDialog.dismiss();
-        timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        if (waitDialog != null) {
+            dismissWaitDialog();
+            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        }
     }
     public interface GPSDataChangeListener {
         void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint);

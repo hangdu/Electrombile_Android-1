@@ -81,8 +81,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
-        //设置报警进度框初始化
-        waitDialog.setMessage("正在设置，请稍后......");
+
     }
 
     private void initLocation() {
@@ -139,7 +138,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                             cancelNotification();
                             ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
-                            waitDialog.show();
+                            showWaitDialog();
                             timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
 
                         } else {
@@ -156,7 +155,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             cancelNotification();
                             VibratorUtil.Vibrate(getActivity(), 700);
                             ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
-                            waitDialog.show();
+                            showWaitDialog();
                             timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                         } else {
                             ToastUtils.showShort(m_context, "请先绑定设备");
@@ -329,14 +328,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     //点击打开报警按钮时按钮样式的响应操作
     public void openStateAlarmBtn() {
         alarmState = true;
-        btnAlarmState.setText("关闭小安保");
+        btnAlarmState.setText("关闭小安宝");
         btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
     }
 
     //点击关闭报警按钮时按钮样式的响应操作
     public void closeStateAlarmBtn() {
         alarmState = false;
-        btnAlarmState.setText("开启小安保");
+        btnAlarmState.setText("开启小安宝");
         btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
     }
 

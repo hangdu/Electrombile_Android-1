@@ -102,7 +102,7 @@
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:background="@drawable/btn_switch_selector_1"
-            android:text="开启小安保"
+            android:text="开启小安宝"
             android:textColor="@color/base_color_text_white" />
 
         <!--<ImageView-->
