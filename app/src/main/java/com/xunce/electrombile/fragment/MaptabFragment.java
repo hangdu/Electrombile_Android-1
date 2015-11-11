@@ -84,7 +84,6 @@ public class MaptabFragment extends BaseFragment {
     //dialogs
     Dialog networkDialog;
     Dialog didDialog;
-    //private Context m_context;
     private BaiduMap mBaiduMap;
 
     //

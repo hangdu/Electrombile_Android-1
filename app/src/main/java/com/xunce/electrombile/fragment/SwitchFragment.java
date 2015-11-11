@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -50,7 +49,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
     GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
-    private Context m_context;
     private boolean alarmState = false;
     //缓存view
     private View rootView;
@@ -58,15 +56,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     //textview 设置当前位置
     private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
-    //设置时出现的进度框
-    // private ProgressDialog setAlarmDialog;
     private TextView tvWeather;
 
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        m_context = activity;
         try {
             locationTVClickedListener = (LocationTVClickedListener) activity;
         } catch (ClassCastException e) {
