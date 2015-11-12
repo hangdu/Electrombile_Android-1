@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-
 
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
@@ -138,7 +138,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
         //设置对应的事件
         title.setText("退出登录");
-        message.setText("退出登录将清除所有已有账户及已经绑定的设备，确定退出么？");
+        message.setText("将删除本地所有信息，确定退出么？");
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,13 +166,20 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         //设置布局
         dialog.addContentView(view, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        dialog.setContentView(view);
+        //dialog.setContentView(view);
         dialog.show();
 
         //设置宽度
-        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-        params.width = 900;
-        dialog.getWindow().setAttributes(params);
+        WindowManager m = ((FragmentActivity) m_context).getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
+//        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
+        p.width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+        dialog.getWindow().setAttributes(p);
+
+//        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+//        params.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//        dialog.getWindow().setAttributes(params);
     }
 
     /**

@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:background="@drawable/etname_login_act"
-        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <EditText
@@ -25,14 +24,16 @@
             style="@style/loginEditTextTheme"
             android:layout_width="274dip"
             android:layout_height="55dip"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="3dp"
             android:background="@color/transation"
             android:drawableLeft="@drawable/et_left_name"
-            android:hint="@string/login_name_hint" />
+            android:hint="@string/login_name_hint"
+            android:inputType="phone" />
 
         <View
             android:layout_width="240dp"
             android:layout_height="1dp"
+            android:layout_gravity="center"
             android:background="@color/white" />
 
         <EditText
@@ -40,7 +41,7 @@
             style="@style/loginEditTextTheme"
             android:layout_width="274dip"
             android:layout_height="55dip"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="3dp"
             android:background="@color/transation"
             android:drawableLeft="@drawable/et_left_psw"
             android:hint="@string/password"
