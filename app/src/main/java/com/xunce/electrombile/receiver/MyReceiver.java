@@ -218,6 +218,7 @@ public class MyReceiver extends BroadcastReceiver {
         ((FragmentActivity) mContext).setManager.setInitLocation(Flat + "", Flong + "");
         if (trackPoint != null) {
             if (!((FragmentActivity) mContext).maptabFragment.isPlaying) {
+                timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
             }
             ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);

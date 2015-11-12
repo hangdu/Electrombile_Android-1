@@ -138,17 +138,21 @@
 
         <activity
             android:name=".activity.BindListActivity"
-            android:label="@string/title_activity_bind_list" />
+            android:label="@string/title_activity_bind_list"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.FindActivity"
-            android:label="@string/title_activity_find" />
+            android:label="@string/title_activity_find"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.account.PersonalCenterActivity"
             android:label="@string/title_activity_personal_center"
+            android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
         <activity
             android:name=".activity.DeviceActivity"
             android:label="@string/title_activity_equipment"
+            android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
 
         <service

@@ -52,7 +52,7 @@
             android:id="@+id/dialog_confirm"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.3"
+            android:layout_weight="1.35"
             android:background="@drawable/dialog_tv_bg"
             android:clickable="true"
             android:gravity="center"
@@ -63,7 +63,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="0.4"
+            android:layout_weight="0.3"
             android:background="@drawable/vertical_line"
             android:layerType="software" />
 
@@ -71,7 +71,7 @@
             android:id="@+id/dialog_cancel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.3"
+            android:layout_weight="1.35"
             android:background="@drawable/dialog_tv_bg"
             android:clickable="true"
             android:gravity="center"

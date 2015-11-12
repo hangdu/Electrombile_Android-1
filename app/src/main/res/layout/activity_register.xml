@@ -64,6 +64,8 @@
         android:background="@drawable/btn_getverifycode_register_act"
         android:padding="5dp"
         android:text="获取验证码"
+
+        android:textColor="@color/base_color_text_white"
         android:textSize="23sp" />
 
     <LinearLayout
