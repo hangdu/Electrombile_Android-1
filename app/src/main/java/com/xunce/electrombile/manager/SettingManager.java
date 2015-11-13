@@ -20,53 +20,44 @@ package com.xunce.electrombile.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-// TODO: Auto-generated Javadoc
-
 /**
  * SharePreference处理类.
  *
- * @author Sunny Ding
+ * @author lybvinci
  */
 public class SettingManager {
 
-    public final String ALARMFLAG = "alarmFlag";
+    private final String ALARM_FLAG = "alarmFlag";
     /**
      * The share preferences.
      */
     private final String SHARE_PREFERENCES = "set";
 
-    // =================================================================
-    //
-    // SharePreference文件中的变量名字列表
-    //
-    // =================================================================
-
-    // Sharepreference文件的名字
-    /**
-     * The user name.
-     */
-    private final String USER_NAME = "username";
-    // 用户名
     /**
      * The phone num.
      */
-    private final String PHONE_NUM = "phonenumber";
+    private final String PHONE_NUM = "phoneNumber";
     // 手机号码
     /**
      * The password.
      */
-    private final String PASSWORD = "password";
+    //private final String PASSWORD = "password";
     // 密码
     /**
      * The token.
      */
-    private final String TOKEN = "token";
+    // private final String TOKEN = "token";
     // 用户名
     //did
     private final String IMEI = "imie";
+
+    //用户中心相关
     private final String PHOTO_FLAG = "photoFlag";
+    private final String CAR_NUMBER = "carNumber";
+    private final String SIM_NUMBER = "simNumber";
+
     //TracksBean
-    private final String TRACKSDATA = "tracksData";
+    //private final String TRACKS_DATA = "tracksData";
     //用户的初始位置
     private final String Lat = "lat";
     private final String Longitude = "longitude";
@@ -94,122 +85,158 @@ public class SettingManager {
     }
 
     /**
-     * SharePreference clean.
+     * 清理所有信息
      */
     public void cleanAll() {
-        setToken("");
         setPhoneNumber("");
-        setPassword("");
-        setUserName("");
         setIMEI("");
         setAlarmFlag(false);
         setInitLocation("", "");
+        setPersonCenterCarNumber("");
+        setPersonCenterImage(0);
+        setPersonCenterSimNumber("");
     }
 
+    /**
+     * 清理设备信息
+     */
     public void cleanDevice() {
         setIMEI("");
         setInitLocation("", "");
     }
 
+    /**
+     * 设置初始位置
+     *
+     * @param lat       纬度
+     * @param longitude 经度
+     */
     public void setInitLocation(String lat, String longitude) {
         spf.edit().putString(Lat, lat).commit();
         spf.edit().putString(Longitude, longitude).commit();
     }
 
+    /**
+     * 获得初始纬度
+     * @return
+     */
     public String getInitLocationLat() {
         return spf.getString(Lat, "");
     }
 
+    /**
+     * 获得初始经度
+     * @return
+     */
     public String getInitLocationLongitude() {
         return spf.getString(Longitude, "");
     }
 
+    /**
+     * 获得报警标志状态
+     * @return
+     */
     public boolean getAlarmFlag() {
-        return spf.getBoolean(ALARMFLAG, false);
+        return spf.getBoolean(ALARM_FLAG, false);
     }
 
+    /**
+     * 设置报警状态标志
+     * @param alarmFlag
+     */
     public void setAlarmFlag(boolean alarmFlag) {
-        spf.edit().putBoolean(ALARMFLAG, alarmFlag).commit();
+        spf.edit().putBoolean(ALARM_FLAG, alarmFlag).commit();
     }
 
     /**
-     * Gets the user name.
      *
-     * @return the user name
-     */
-    public String getUserName() {
-        return spf.getString(USER_NAME, "");
-    }
-
-    /**
-     * Sets the user name.
-     *
-     * @param name the new user name
-     */
-    public void setUserName(String name) {
-        spf.edit().putString(USER_NAME, name).commit();
-
-    }
-
-    /**
-     * Gets the phone number.
-     *
-     * @return the phone number
+     * @return 电话号码
      */
     public String getPhoneNumber() {
         return spf.getString(PHONE_NUM, "");
     }
 
     /**
-     * Sets the phone number.
+     * 设置电话号码
      *
-     * @param phoneNumber the new phone number
+     * @param phoneNumber 电话号码
      */
     public void setPhoneNumber(String phoneNumber) {
         spf.edit().putString(PHONE_NUM, phoneNumber).commit();
     }
 
     /**
-     * Gets the password.
      *
-     * @return the password
+     * @return 获取IMEI号
      */
-    public String getPassword() {
-        return spf.getString(PASSWORD, "");
-    }
-
-    /**
-     * Sets the password.
-     *
-     * @param psw the new password
-     */
-    public void setPassword(String psw) {
-        spf.edit().putString(PASSWORD, psw).commit();
-    }
-
-    /**
-     * Sets the token.
-     *
-     * @param token the new token
-     */
-    public void setToken(String token) {
-        spf.edit().putString(TOKEN, token).commit();
-    }
-
     public String getIMEI() {
         return spf.getString(IMEI, "");
     }
 
+    /**
+     * 设置IMEI号
+     * @param did  IMEI号
+     */
     public void setIMEI(String did) {
         spf.edit().putString(IMEI, did).commit();
     }
 
+
+    /********************************个人中心相关****************************************/
+
+    /**
+     * 获取个人中心已经设置的图片个数
+     *
+     * @return
+     */
     public int getPersonCenterImage() {
         return spf.getInt(PHOTO_FLAG, 0);
     }
 
+    /**
+     * 设置个人中心设置的图片个数
+     *
+     * @param did
+     */
     public void setPersonCenterImage(int did) {
         spf.edit().putInt(PHOTO_FLAG, did).commit();
     }
 
+    /**
+     * 取出个人中心车辆牌照
+     *
+     * @return
+     */
+    public String getPersonCenterCarNumber() {
+        return spf.getString(CAR_NUMBER, "");
+    }
+
+    /**
+     * 保存个人中心车辆牌照
+     *
+     * @param carNumber
+     */
+    public void setPersonCenterCarNumber(String carNumber) {
+        spf.edit().putString(CAR_NUMBER, carNumber).commit();
+    }
+
+    /**
+     * 取出个人中心SIM卡号
+     *
+     * @return
+     */
+    public String getPersonCenterSimNumber() {
+        return spf.getString(SIM_NUMBER, "");
+    }
+
+    /**
+     * 保存个人中心SIM卡号
+     *
+     * @param simNumber
+     */
+    public void setPersonCenterSimNumber(String simNumber) {
+        spf.edit().putString(SIM_NUMBER, simNumber).commit();
+    }
+
+    /********************************以上为个人中心相关****************************************/
 }

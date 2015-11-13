@@ -32,9 +32,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
 
     private static String TAG = "SettingsFragment";
-    private LinearLayout btnAbout;
-    private LinearLayout btnHelp;
-    private LinearLayout btnLogout;
 
     //缓存view
     private View rootView;
@@ -42,7 +39,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        initView();
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.settings_fragment, container, false);
         }
@@ -52,12 +48,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ((TextView) (view.findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
-        view.findViewById(R.id.layout_about).setOnClickListener(this);
-        view.findViewById(R.id.layout_help).setOnClickListener(this);
-        view.findViewById(R.id.btn_logout).setOnClickListener(this);
-        view.findViewById(R.id.layout_person_center).setOnClickListener(this);
-        view.findViewById(R.id.rl_1).setOnClickListener(this);
+        initView(view);
+
     }
 
     @Override
@@ -80,10 +72,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                     ToastUtils.showShort(m_context, "请先连接网络!");
                     return;
                 }
-                if (AVUser.getCurrentUser() == null) {
-                    Intent intent = new Intent(m_context, LoginActivity.class);
-                    startActivity(intent);
-                    getActivity().finish();
+                if (!hasUser()) {
+                    return;
                 }
                 loginOut();
                 break;
@@ -94,15 +84,36 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 break;
             //个人中心条目
             case R.id.layout_person_center:
+                if (!hasUser()) {
+                    return;
+                }
                 goToPersonCenterAct();
                 break;
             //设备管理条目
             case R.id.rl_1:
+                if (!hasUser()) {
+                    return;
+                }
                 goToDeviceAct();
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 判断是否有用户
+     *
+     * @return
+     */
+    private boolean hasUser() {
+        if (AVUser.getCurrentUser() == null) {
+            Intent intent = new Intent(m_context, LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -146,8 +157,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 Intent intent;
                 intent = new Intent("com.xunce.electrombile.alarmservice");
                 m_context.stopService(intent);
-                setManager.setIMEI("");
-                setManager.setAlarmFlag(false);
                 ToastUtils.showShort(m_context, "退出登录成功");
                 setManager.cleanAll();
                 intent = new Intent(m_context, LoginActivity.class);
@@ -166,7 +175,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         //设置布局
         dialog.addContentView(view, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        //dialog.setContentView(view);
         dialog.show();
 
         //设置宽度
@@ -174,12 +182,9 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
         WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
 //        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
+        //虽然过时,为了兼容性,还是用老方法. API 13以上才能使用新方法
         p.width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
         dialog.getWindow().setAttributes(p);
-
-//        WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-//        params.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-//        dialog.getWindow().setAttributes(params);
     }
 
     /**
@@ -213,11 +218,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     /**
      * 初始化布局
      */
-    private void initView() {
-//        btnBind = (LinearLayout)getActivity().findViewById(R.id.layout_bind);
-        btnAbout = (LinearLayout) getActivity().findViewById(R.id.layout_about);
-        btnHelp = (LinearLayout) getActivity().findViewById(R.id.layout_help);
-        btnLogout = (LinearLayout) getActivity().findViewById(R.id.btn_logout);
+    private void initView(View view) {
+        ((TextView) (view.findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
+        view.findViewById(R.id.layout_about).setOnClickListener(this);
+        view.findViewById(R.id.layout_help).setOnClickListener(this);
+        view.findViewById(R.id.btn_logout).setOnClickListener(this);
+        view.findViewById(R.id.layout_person_center).setOnClickListener(this);
+        view.findViewById(R.id.rl_1).setOnClickListener(this);
     }
 
     @Override

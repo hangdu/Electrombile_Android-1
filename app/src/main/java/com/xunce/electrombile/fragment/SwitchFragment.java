@@ -6,14 +6,17 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -45,6 +48,7 @@ import com.xunce.electrombile.utils.useful.StringUtils;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
 
+    private static final String URL = "http://wap.koudaitong.com/v2/home/a02xn3a3";
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
@@ -102,8 +106,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //报警按钮
         btnAlarmState = (Button) getActivity().findViewById(R.id.btn_AlarmState);
 
+        //天气按钮
         tvWeather = (TextView) getActivity().findViewById(R.id.weather);
         tvWeather.setOnClickListener(new OnClickListener() {
             @Override
@@ -128,6 +134,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
+
+        //test
+        showNotification("测试");
+
+        //开关按钮的点击事件
         btnAlarmState.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,6 +178,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
+        ImageView title_image = (ImageView) getActivity().findViewById(R.id.title_image);
+        title_image.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse(URL);
+                Intent it = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(it);
+            }
+        });
 
     }
 
@@ -214,13 +234,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         NotificationManager notificationManager = (NotificationManager) m_context.getSystemService(getActivity().
                 getApplicationContext()
                 .NOTIFICATION_SERVICE);
-        Notification notification = new Notification(R.mipmap.ic_launcher, "安全宝", System.currentTimeMillis());
-        //下面这句用来自定义通知栏
-        //notification.contentView = new RemoteViews(getPackageName(),R.layout.notification);
         Intent intent = new Intent(m_context, FragmentActivity.class);
-        notification.flags = Notification.FLAG_ONGOING_EVENT;
         PendingIntent contextIntent = PendingIntent.getActivity(m_context, 0, intent, 0);
-        notification.setLatestEventInfo(m_context, "安全宝", text, contextIntent);
+        Notification notification = new NotificationCompat.Builder(m_context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("安全宝")
+                .setWhen(System.currentTimeMillis())
+                .setTicker("安全宝正在设置~")
+                .setOngoing(true)
+                .setContentText(text)
+                .setContentIntent(contextIntent)
+                .build();
         notificationManager.notify(R.string.app_name, notification);
     }
 

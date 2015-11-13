@@ -31,12 +31,12 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
-import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
+import com.xunce.electrombile.utils.useful.StringUtils;
 
 
 /**
@@ -143,8 +143,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		dialog = new ProgressDialog(this);
 		dialog.setMessage("登录中，请稍候...");
-		if (setManager.getUserName() != null) {
-			etName.setText(setManager.getUserName());
+		if (setManager.getPhoneNumber() != null) {
+			etName.setText(setManager.getPhoneNumber());
 		}
 
 	}
