@@ -188,6 +188,7 @@ public class BindListActivity extends BaseActivity {
     private void isUnSubscribed(int i) {
         ToastUtils.showShort(BindListActivity.this, "清除订阅成功!");
         setManager.setIMEI((String) bindList.get(i).get("IMEI"));
+        setManager.setAlarmFlag(false);
         Historys.finishAct(FragmentActivity.class);
         progressDialog.dismiss();
         reStartFragAct();

@@ -85,12 +85,10 @@ public class SettingManager {
      */
     public void cleanAll() {
         setPhoneNumber("");
-        setIMEI("");
-        setAlarmFlag(false);
-        setInitLocation("", "");
         setPersonCenterCarNumber("");
         setPersonCenterImage(0);
         setPersonCenterSimNumber("");
+        cleanDevice();
     }
 
     /**
@@ -98,6 +96,7 @@ public class SettingManager {
      */
     public void cleanDevice() {
         setIMEI("");
+        setAlarmFlag(false);
         setInitLocation("", "");
     }
 

@@ -142,8 +142,7 @@ public class DeviceActivity extends BaseActivity {
                                 MqttAndroidClient mac = connection.getClient();
                                 boolean isUnSubscribe = unSubscribe(mac);
                                 if (isUnSubscribe) {
-                                    setManager.setIMEI("");
-                                    setManager.setAlarmFlag(false);
+                                    setManager.cleanDevice();
                                     ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
                                     Historys.finishAct(FragmentActivity.class);
                                     ToastUtils.showShort(DeviceActivity.this, "清除订阅成功!");
@@ -157,29 +156,6 @@ public class DeviceActivity extends BaseActivity {
                                 } else {
                                     ToastUtils.showShort(DeviceActivity.this, "清除订阅失败!,请检查网络后重试.");
                                 }
-
-                                //String topic = "simcom_" + setManager.getIMEI();
-                                //退订云巴推送
-//                                YunBaManager.unsubscribe(DeviceActivity.this, topic, new IMqttActionListener() {
-//
-//                                    @Override
-//                                    public void onSuccess(IMqttToken arg0) {
-//                                        Log.d(TAG, "UnSubscribe topic succeed");
-//                                        //删除本地的IMEI 和报警标志
-//                                        setManager.setIMEI("");
-//                                        setManager.setAlarmFlag(false);
-//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
-//                                        Intent intent = new Intent(DeviceActivity.this, BindingActivity.class);
-//                                        startActivity(intent);
-//                                        DeviceActivity.this.finish();
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure(IMqttToken arg0, Throwable arg1) {
-//                                        Log.d(TAG, "UnSubscribe topic failed");
-//                                        ToastUtils.showShort(DeviceActivity.this, "解除绑定失败，请确保网络通畅！");
-//                                    }
-//                                });
                             }
                         }
                     });
