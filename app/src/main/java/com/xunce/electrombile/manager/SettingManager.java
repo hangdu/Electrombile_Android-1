@@ -56,14 +56,10 @@ public class SettingManager {
     private final String CAR_NUMBER = "carNumber";
     private final String SIM_NUMBER = "simNumber";
 
-    //TracksBean
-    //private final String TRACKS_DATA = "tracksData";
     //用户的初始位置
     private final String Lat = "lat";
     private final String Longitude = "longitude";
 
-    //添加SOS管理员
-    //public final String SOS = "sos";
     /**
      * The spf.
      */

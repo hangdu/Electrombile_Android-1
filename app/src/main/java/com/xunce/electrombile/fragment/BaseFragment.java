@@ -30,8 +30,6 @@ import com.xunce.electrombile.utils.system.ToastUtils;
 public class BaseFragment extends Fragment{
 
     private static String TAG = "BaseFragmet";
-    //timeOut
-//    protected final int TIME_OUT = 0;
     //判断是否关闭页面
     public boolean close = false;
     protected CmdCenter mCenter;
@@ -121,12 +119,16 @@ public class BaseFragment extends Fragment{
         close = true;
     }
 
+    /**
+     * 取消等待框的显示
+     */
     public void cancelWaitTimeOut() {
         if (waitDialog != null) {
             dismissWaitDialog();
             timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
         }
     }
+
     public interface GPSDataChangeListener {
         void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint);
     }
