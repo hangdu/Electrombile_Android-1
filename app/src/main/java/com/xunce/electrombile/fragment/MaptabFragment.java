@@ -11,9 +11,11 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,6 +32,7 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
@@ -97,7 +100,9 @@ public class MaptabFragment extends BaseFragment {
 
     //轨迹显示图层
     private Overlay lineDraw;
-    private TranslateAnimation myAnimation_Translate;
+    //    private Animation myAnimation_Translate;
+    //移动图标的动画
+    private ImageView moveMarker;
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -127,6 +132,23 @@ public class MaptabFragment extends BaseFragment {
                     if (msg.obj != null) {
                         TrackPoint trackPoint = (TrackPoint) msg.obj;
                         markerMobile.setPosition(trackPoint.point);
+
+                        /**
+                         *设定中心点坐标
+                         */
+                        //定义地图状态
+                        //在地图上添加多边形Option，用于显示
+
+                        MapStatus mMapStatus = new MapStatus.Builder()
+                                .target(trackPoint.point)
+                                .zoom(mBaiduMap.getMapStatus().zoom)
+                                .build();
+                        //float a = mBaiduMap.getMapStatus().zoom;
+                        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+                        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+                        //改变地图状态
+                        mBaiduMap.animateMapStatus(mMapStatusUpdate);
+
                         mInfoWindow = new InfoWindow(markerView, trackPoint.point, -100);
 
                         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -181,6 +203,7 @@ public class MaptabFragment extends BaseFragment {
                 }).create();
         //drawLineList = new ArrayList<>();
         //waitDialog.setMessage("正在查询位置信息，请稍后……");
+
     }
 
     @Override
@@ -319,6 +342,9 @@ public class MaptabFragment extends BaseFragment {
                 dialog.show();
             }
         });
+        //移动的图标
+        moveMarker = new ImageView(m_context);
+        moveMarker.setImageResource(R.drawable.move_marker);
     }
 
     private boolean checkBind() {
@@ -348,7 +374,7 @@ public class MaptabFragment extends BaseFragment {
         m_playThread = null;
 
         //电动车标志回到当前位置
-        updateLocation();
+        //updateLocation();
 
         //清除轨迹数
 //        trackDataList.clear();
@@ -391,6 +417,14 @@ public class MaptabFragment extends BaseFragment {
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
 
 
+        MapViewLayoutParams mapViewLayoutParams = new MapViewLayoutParams.Builder()
+                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
+                .height(100)
+                .width(100)
+                .position(markerMobile.getPosition())
+                .build();
+        mMapView.addView(moveMarker, mapViewLayoutParams);
+
         //将电动车位置移至中心
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(point)
@@ -400,6 +434,7 @@ public class MaptabFragment extends BaseFragment {
         //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
+
     }
 
     //}
@@ -500,6 +535,8 @@ public class MaptabFragment extends BaseFragment {
     //将地图中心移到某点
     public void locateMobile(TrackPoint track) {
         if (mBaiduMap == null) return;
+
+
 //        if (drawLineList.isEmpty()) {
 //            drawLineList.add(0, track.point);
 //        } else if (drawLineList.size() == 1) {
@@ -518,36 +555,23 @@ public class MaptabFragment extends BaseFragment {
 //        }
 
 
-        /**
-         *设定中心点坐标
-         */
-        //定义地图状态
-        //在地图上添加多边形Option，用于显示
-
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(track.point)
-                .zoom(mBaiduMap.getMapStatus().zoom)
-                .build();
-        //float a = mBaiduMap.getMapStatus().zoom;
-        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        //改变地图状态
-        mBaiduMap.animateMapStatus(mMapStatusUpdate);
 
         Point p1 = mBaiduMap.getProjection().toScreenLocation(markerMobile.getPosition());
         Point p2 = mBaiduMap.getProjection().toScreenLocation(track.point);
-        myAnimation_Translate = new TranslateAnimation(p1.x, p2.x, p1.y, p2.y);
-        myAnimation_Translate.setDuration(2000);
+        Log.e(TAG, "p1.x:" + p1.x + "p1.y:" + p1.y + "p2.x:" + p2.x + "p2.y:" + p2.y);
+        Animation myAnimation_Translate = new TranslateAnimation(0, p2.x - p1.x, 0, p2.y - p1.y);
+        myAnimation_Translate.setDuration(5000);
         myAnimation_Translate.setFillAfter(true);
-        ImageView view = new ImageView(m_context);
-        view.setImageResource(R.drawable.icon_gcoding);
-        view.startAnimation(myAnimation_Translate);
+
+
+        moveMarker.startAnimation(myAnimation_Translate);
+
 
         //延迟出现定位图标
         Message msg = Message.obtain();
         msg.what = handleKey.SET_MARKER.ordinal();
         msg.obj = track;
-        playHandler.sendMessageDelayed(msg, 2000);
+        playHandler.sendMessageDelayed(msg, 5000);
 
         refreshTrack(track);
         //显示悬浮窗，一定时间后消失
@@ -637,7 +661,7 @@ public class MaptabFragment extends BaseFragment {
     enum handleKey {
         CHANGE_POINT,
         LOCATE_MESSAGE,
-        SET_MARKER,
+        SET_MARKER
     }
 
     private class PlayRecordThread extends Thread {

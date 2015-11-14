@@ -136,7 +136,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
 
         //test
-        showNotification("测试");
+        //showNotification("测试");
 
         //开关按钮的点击事件
         btnAlarmState.setOnClickListener(new OnClickListener() {
