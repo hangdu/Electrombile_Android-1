@@ -6,10 +6,13 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -46,12 +50,16 @@ import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 
+import java.util.ArrayList;
+
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
 
     private static final String URL = "http://wap.koudaitong.com/v2/home/a02xn3a3";
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
+    // 上一个页面的位置
+    protected int lastPosition;
     GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
     private boolean alarmState = false;
     //缓存view
@@ -61,6 +69,35 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
     private TextView tvWeather;
+    //viewpager
+    private ViewPager viewPager;
+    private LinearLayout pointGroup;
+    private TextView imageDesc;
+    // 图片资源ID
+    private int[] imageIds = {R.drawable.first_fragment_iv, R.drawable.alarm_iv, R.drawable.iv_add_photo_person_act,
+            R.drawable.iv_person_head};
+    //图片标题集合
+    private String[] imageDescriptions = {
+            "哈哈",
+            "哈哈哈哈",
+            "哈哈哈哈哈哈",
+            "哈哈哈哈哈哈哈哈",
+            "哈哈哈哈哈哈哈哈哈哈"
+    };
+    private ArrayList<ImageView> imageList;
+    //判断是否自动滚动
+    private boolean isRunning = false;
+    private Handler viewPagerHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            //让viewPager 滑动到下一页
+            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
+            if (isRunning) {
+                viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
+            }
+        }
+    };
 
 
     @Override
@@ -79,7 +116,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         // 初始化搜索模块，注册事件监听
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
-
 
         mLocationClient = new LocationClient(m_context);     //声明LocationClient类
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
@@ -106,6 +142,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initView();
+    }
+
+    private void initView() {
         //报警按钮
         btnAlarmState = (Button) getActivity().findViewById(R.id.btn_AlarmState);
 
@@ -134,10 +174,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
-
-        //test
-        //showNotification("测试");
-
         //开关按钮的点击事件
         btnAlarmState.setOnClickListener(new OnClickListener() {
             @Override
@@ -178,15 +214,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        ImageView title_image = (ImageView) getActivity().findViewById(R.id.title_image);
-        title_image.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse(URL);
-                Intent it = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(it);
-            }
-        });
+//        ImageView title_image = (ImageView) getActivity().findViewById(R.id.viewpager);
+//        title_image.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Uri uri = Uri.parse(URL);
+//                Intent it = new Intent(Intent.ACTION_VIEW, uri);
+//                startActivity(it);
+//            }
+//        });
+        initViewpager();
 
     }
 
@@ -227,6 +264,88 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             return;
         }
         switch_fragment_tvLocation.setText(result.getAddress().trim());
+    }
+
+    //初始化viewpager
+    private void initViewpager() {
+        viewPager = (ViewPager) getActivity().findViewById(R.id.banner_viewpager);
+        pointGroup = (LinearLayout) getActivity().findViewById(R.id.point_group);
+        imageDesc = (TextView) getActivity().findViewById(R.id.image_desc);
+        imageDesc.setText(imageDescriptions[0]);
+        imageList = new ArrayList<ImageView>();
+        for (int i = 0; i < imageIds.length; i++) {
+            //初始化图片资源
+            ImageView image = new ImageView(m_context);
+            image.setBackgroundResource(imageIds[i]);
+            imageList.add(image);
+
+            //添加指示点
+            ImageView point = new ImageView(m_context);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.rightMargin = 10;
+            point.setLayoutParams(params);
+            point.setBackgroundResource(R.drawable.point_bg);
+            if (i == 0) {
+                point.setEnabled(false);
+            } else {
+                point.setEnabled(true);
+            }
+            pointGroup.addView(point);
+        }
+
+        viewPager.setAdapter(new MyPagerAdapter());
+
+        viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % imageList.size()));
+
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            /**
+             * 页面切换后调用
+             * position  新的页面位置
+             */
+            public void onPageSelected(int position) {
+
+                position = position % imageList.size();
+
+                //设置文字描述内容
+                imageDesc.setText(imageDescriptions[position]);
+
+                //改变指示点的状态
+                //把当前点enbale 为true
+                pointGroup.getChildAt(position).setEnabled(true);
+                //把上一个点设为false
+                pointGroup.getChildAt(lastPosition).setEnabled(false);
+                lastPosition = position;
+
+            }
+
+            @Override
+            /**
+             * 页面正在滑动的时候，回调
+             */
+            public void onPageScrolled(int position, float positionOffset,
+                                       int positionOffsetPixels) {
+            }
+
+            @Override
+            /**
+             * 当页面状态发生变化的时候，回调
+             */
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+		 /*
+          * 自动循环：
+		  * 1、定时器：Timer
+		  * 2、开子线程 while  true 循环
+		  * 3、ColckManager
+		  * 4、 用handler 发送延时信息，实现循环
+		  */
+        isRunning = true;
+        viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
     }
 
     //显示常驻通知栏
@@ -271,6 +390,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onDestroy() {
         m_context = null;
         mSearch = null;
+        isRunning = false;
         super.onDestroy();
     }
 
@@ -387,5 +507,48 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
+    //viewpager 适配器
+    private class MyPagerAdapter extends PagerAdapter {
+        @Override
+        /**
+         * 获得页面的总数
+         */
+        public int getCount() {
+            return Integer.MAX_VALUE;
+        }
 
+        @Override
+        /**
+         * 获得相应位置上的view
+         * container  view的容器，其实就是viewpager自身
+         * position 	相应的位置
+         */
+        public Object instantiateItem(ViewGroup container, int position) {
+            // 给 container 添加一个view
+            container.addView(imageList.get(position % imageList.size()));
+            //返回一个和该view相对的object
+            return imageList.get(position % imageList.size());
+        }
+
+        @Override
+        /**
+         * 判断 view和object的对应关系
+         */
+        public boolean isViewFromObject(View view, Object object) {
+            if (view == object) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        /**
+         * 销毁对应位置上的object
+         */
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+            object = null;
+        }
+    }
 }

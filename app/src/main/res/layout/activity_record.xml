@@ -7,7 +7,7 @@
     tools:context=".MainActivity" >
 
     <RelativeLayout
-        android:id="@+id/title_image"
+        android:id="@+id/viewpager"
         android:layout_width="fill_parent"
         android:layout_height="40dp"
         android:background="#bfbfbf"
@@ -25,7 +25,7 @@
         android:id="@+id/buttonList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title_image"
+        android:layout_below="@+id/viewpager"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
         <Button

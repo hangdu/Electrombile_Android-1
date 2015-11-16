@@ -6,7 +6,7 @@
         android:id="@+id/bmapView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/title_image"
+        android:layout_below="@id/viewpager"
         android:clickable="true" />
 
     <LinearLayout
