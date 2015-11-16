@@ -268,74 +268,75 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     //初始化viewpager
     private void initViewpager() {
-        viewPager = (ViewPager) getActivity().findViewById(R.id.banner_viewpager);
-        pointGroup = (LinearLayout) getActivity().findViewById(R.id.point_group);
-        imageDesc = (TextView) getActivity().findViewById(R.id.image_desc);
-        imageDesc.setText(imageDescriptions[0]);
-        imageList = new ArrayList<ImageView>();
-        for (int i = 0; i < imageIds.length; i++) {
-            //初始化图片资源
-            ImageView image = new ImageView(m_context);
-            image.setBackgroundResource(imageIds[i]);
-            imageList.add(image);
+        if (viewPager == null) {
+            viewPager = (ViewPager) getActivity().findViewById(R.id.banner_viewpager);
+            pointGroup = (LinearLayout) getActivity().findViewById(R.id.point_group);
+            imageDesc = (TextView) getActivity().findViewById(R.id.image_desc);
+            imageDesc.setText(imageDescriptions[0]);
+            imageList = new ArrayList<ImageView>();
+            for (int i = 0; i < imageIds.length; i++) {
+                //初始化图片资源
+                ImageView image = new ImageView(m_context);
+                image.setBackgroundResource(imageIds[i]);
+                imageList.add(image);
 
-            //添加指示点
-            ImageView point = new ImageView(m_context);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.rightMargin = 10;
-            point.setLayoutParams(params);
-            point.setBackgroundResource(R.drawable.point_bg);
-            if (i == 0) {
-                point.setEnabled(false);
-            } else {
-                point.setEnabled(true);
-            }
-            pointGroup.addView(point);
-        }
-
-        viewPager.setAdapter(new MyPagerAdapter());
-
-        viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % imageList.size()));
-
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            /**
-             * 页面切换后调用
-             * position  新的页面位置
-             */
-            public void onPageSelected(int position) {
-
-                position = position % imageList.size();
-
-                //设置文字描述内容
-                imageDesc.setText(imageDescriptions[position]);
-
-                //改变指示点的状态
-                //把当前点enbale 为true
-                pointGroup.getChildAt(position).setEnabled(true);
-                //把上一个点设为false
-                pointGroup.getChildAt(lastPosition).setEnabled(false);
-                lastPosition = position;
-
+                //添加指示点
+                ImageView point = new ImageView(m_context);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.rightMargin = 10;
+                point.setLayoutParams(params);
+                point.setBackgroundResource(R.drawable.point_bg);
+                if (i == 0) {
+                    point.setEnabled(false);
+                } else {
+                    point.setEnabled(true);
+                }
+                pointGroup.addView(point);
             }
 
-            @Override
-            /**
-             * 页面正在滑动的时候，回调
-             */
-            public void onPageScrolled(int position, float positionOffset,
-                                       int positionOffsetPixels) {
-            }
+            viewPager.setAdapter(new MyPagerAdapter());
 
-            @Override
-            /**
-             * 当页面状态发生变化的时候，回调
-             */
-            public void onPageScrollStateChanged(int state) {
+            viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % imageList.size()));
 
-            }
-        });
+            viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                /**
+                 * 页面切换后调用
+                 * position  新的页面位置
+                 */
+                public void onPageSelected(int position) {
+
+                    position = position % imageList.size();
+
+                    //设置文字描述内容
+                    imageDesc.setText(imageDescriptions[position]);
+
+                    //改变指示点的状态
+                    //把当前点enbale 为true
+                    pointGroup.getChildAt(position).setEnabled(true);
+                    //把上一个点设为false
+                    pointGroup.getChildAt(lastPosition).setEnabled(false);
+                    lastPosition = position;
+
+                }
+
+                @Override
+                /**
+                 * 页面正在滑动的时候，回调
+                 */
+                public void onPageScrolled(int position, float positionOffset,
+                                           int positionOffsetPixels) {
+                }
+
+                @Override
+                /**
+                 * 当页面状态发生变化的时候，回调
+                 */
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
 
 		 /*
           * 自动循环：
@@ -344,8 +345,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 		  * 3、ColckManager
 		  * 4、 用handler 发送延时信息，实现循环
 		  */
-        isRunning = true;
-        viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
+            isRunning = true;
+            viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
+        }
     }
 
     //显示常驻通知栏
