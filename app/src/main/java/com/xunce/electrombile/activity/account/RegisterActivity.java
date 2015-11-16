@@ -304,6 +304,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
                     msg.obj = "发送成功";
                     handler.sendMessage(msg);
                 } else {
+                    LogUtil.log.e("注册" + e.toString());
                     Message msg = new Message();
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送失败";
@@ -350,6 +351,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
                     msg.obj = "发送成功";
                     handler.sendMessage(msg);
                 } else {
+                    LogUtil.log.e("注册" + e.toString());
                     Message msg = new Message();
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送失败";
