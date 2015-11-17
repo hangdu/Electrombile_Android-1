@@ -49,11 +49,19 @@ public class ProtocolConstants {
     public final static int CMD_SEEK_OFF = 5;
     // 获取当前位置
     public final static int CMD_LOCATION = 6;
+    //    7	APP_CMD_AUTO_LOCK_ON	打开自动锁车开关
+    public final static int APP_CMD_AUTO_LOCK_ON = 7;
+    //    8	APP_CMD_AUTO_LOCK_OFF	关闭自动锁车开关
+    public final static int APP_CMD_AUTO_LOCK_OFF = 8;
+    //    9	APP_CMD_AUTO_PERIOD_SET	设置自动锁车的检测周期
+    public final static int APP_CMD_AUTO_PERIOD_SET = 9;
+    //    10	APP_CMD_AUTO_PERIOD_GET	查询自动锁车的检测周期
+    public final static int APP_CMD_AUTO_PERIOD_GET = 10;
+
     //围栏打开状态
     public final static int ON = 1;
     //围栏关闭状态
     public final static int OFF = 0;
-
     //成功
     public final static int ERR_SUCCESS = 0;
     //服务器内部错误
