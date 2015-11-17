@@ -15,9 +15,11 @@ import android.os.Message;
 import android.telephony.TelephonyManager;
 
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
+import com.xunce.electrombile.activity.account.VerifiedActivity;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.json.JSONObject;
@@ -58,9 +60,16 @@ public class SplashActivity extends BaseActivity {
                 case UN_UPDATE:
                     AVUser currentUser = AVUser.getCurrentUser();
                     if (currentUser != null) {
+                        Intent intent;
                         FIR.addCustomizeValue("user", currentUser.getUsername());
-                        Intent intent = new Intent(SplashActivity.this, FragmentActivity.class);
-                        startActivity(intent);
+                        LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
+                        if (currentUser.isMobilePhoneVerified()) {
+                            intent = new Intent(SplashActivity.this, FragmentActivity.class);
+                            startActivity(intent);
+                        } else {
+                            intent = new Intent(SplashActivity.this, VerifiedActivity.class);
+                            startActivity(intent);
+                        }
                         SplashActivity.this.finish();
                     } else {
                         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);

@@ -138,10 +138,7 @@ public class BindListActivity extends BaseActivity {
                         bindList.clear();
                         for (int i = 0; i < list.size(); i++) {
                             bindList.put(i, list.get(i));
-                            if (progressDialog == null) {
-                                refreshableView.finishRefreshing();
-                                mAdapter.notifyDataSetChanged();
-                            }
+
 
                         }
                     } else {
@@ -151,10 +148,12 @@ public class BindListActivity extends BaseActivity {
                     e.printStackTrace();
                     ToastUtils.showShort(BindListActivity.this, "查询错误");
                 }
-                if (progressDialog != null) {
+                if (progressDialog == null) {
+                    refreshableView.finishRefreshing();
+                    mAdapter.notifyDataSetChanged();
+                } else {
                     progressDialog.dismiss();
                 }
-
             }
         });
         if (progressDialog != null) {
@@ -165,9 +164,20 @@ public class BindListActivity extends BaseActivity {
 
     //添加设备
     public void addEquip(View view) {
-        Intent intent = new Intent(this, BindingActivity.class);
-        startActivity(intent);
-        this.finish();
+        MqttAndroidClient mac = getMqttAndroidClient();
+        boolean isUnSubscribe = unSubscribe(mac);
+        if (isUnSubscribe) {
+//            setManager.cleanDevice();
+            Historys.finishAct(FragmentActivity.class);
+            Intent intent;
+            intent = new Intent("com.xunce.electrombile.alarmservice");
+            BindListActivity.this.stopService(intent);
+            intent = new Intent(this, BindingActivity.class);
+            startActivity(intent);
+            this.finish();
+        } else {
+            ToastUtils.showShort(BindListActivity.this, "发生错误,请检查网络后再试!");
+        }
     }
 
     /**
@@ -187,8 +197,8 @@ public class BindListActivity extends BaseActivity {
      */
     private void isUnSubscribed(int i) {
         ToastUtils.showShort(BindListActivity.this, "清除订阅成功!");
+        setManager.cleanDevice();
         setManager.setIMEI((String) bindList.get(i).get("IMEI"));
-        setManager.setAlarmFlag(false);
         Historys.finishAct(FragmentActivity.class);
         progressDialog.dismiss();
         reStartFragAct();
@@ -290,13 +300,11 @@ public class BindListActivity extends BaseActivity {
                         ToastUtils.showShort(BindListActivity.this, "正在使用此设备，无须切换~");
                         return;
                     }
-                    progressDialog.show();
                     MqttAndroidClient mac = getMqttAndroidClient();
                     boolean isUnSubscribe = unSubscribe(mac);
                     if (isUnSubscribe) {
                         isUnSubscribed(i);
                     } else {
-                        progressDialog.dismiss();
                         ToastUtils.showShort(BindListActivity.this, "清除订阅失败!,请检查网络后再试!");
                     }
 

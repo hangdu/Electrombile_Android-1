@@ -79,9 +79,11 @@ public class DeviceActivity extends BaseActivity {
         if (NetworkUtils.isNetworkConnected(this)) {
             if (setManager.getIMEI().isEmpty()) {
                 setManager.cleanDevice();
+                Historys.finishAct(FragmentActivity.class);
                 Intent intentStartBinding = new Intent(this, BindingActivity.class);
                 startActivity(intentStartBinding);
                 this.finish();
+
             } else {
                 System.out.println(setManager.getIMEI() + "aaaaaaaaaaa");
                 ToastUtils.showShort(this, "设备已绑定");
@@ -134,18 +136,17 @@ public class DeviceActivity extends BaseActivity {
             public void done(List<AVObject> avObjects, AVException e) {
                 if (e == null && avObjects.size() > 0) {
                     AVObject bindClass = avObjects.get(0);
-                    bindClass.deleteInBackground(new DeleteCallback() {
-                        @Override
-                        public void done(AVException e) {
-                            if (e == null) {
-                                Connection connection = Connections.getInstance(DeviceActivity.this).getConnection(ServiceConstants.handler);
-                                MqttAndroidClient mac = connection.getClient();
-                                boolean isUnSubscribe = unSubscribe(mac);
-                                if (isUnSubscribe) {
+                    Connection connection = Connections.getInstance(DeviceActivity.this).getConnection(ServiceConstants.handler);
+                    MqttAndroidClient mac = connection.getClient();
+                    boolean isUnSubscribe = unSubscribe(mac);
+                    if (isUnSubscribe) {
+                        bindClass.deleteInBackground(new DeleteCallback() {
+                            @Override
+                            public void done(AVException e) {
+                                if (e == null) {
                                     setManager.cleanDevice();
                                     ToastUtils.showShort(DeviceActivity.this, "解除绑定成功!");
                                     Historys.finishAct(FragmentActivity.class);
-                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅成功!");
                                     progressDialog.dismiss();
                                     Intent intent;
                                     intent = new Intent("com.xunce.electrombile.alarmservice");
@@ -153,12 +154,11 @@ public class DeviceActivity extends BaseActivity {
                                     intent = new Intent(DeviceActivity.this, BindingActivity.class);
                                     startActivity(intent);
                                     DeviceActivity.this.finish();
-                                } else {
-                                    ToastUtils.showShort(DeviceActivity.this, "清除订阅失败!,请检查网络后重试.");
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
+
                 } else {
                     if (e != null)
                         Log.d("失败", "问题： " + e.getMessage());

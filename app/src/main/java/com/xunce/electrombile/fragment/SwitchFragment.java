@@ -74,8 +74,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private LinearLayout pointGroup;
     private TextView imageDesc;
     // 图片资源ID
-    private int[] imageIds = {R.drawable.first_fragment_iv, R.drawable.alarm_iv, R.drawable.iv_add_photo_person_act,
-            R.drawable.iv_person_head};
+    private int[] imageIds = {R.drawable.first_fragment_iv, R.drawable.linshitupian1, R.drawable.linshitupian2,
+            R.drawable.linshitupian3};
     //图片标题集合
     private String[] imageDescriptions = {
             "哈哈",

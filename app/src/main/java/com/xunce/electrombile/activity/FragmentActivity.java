@@ -126,8 +126,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     protected void onDestroy() {
         switchFragment.cancelNotification();
-        mac.unregisterResources();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        if (mac != null) {
+            mac.unregisterResources();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
     }

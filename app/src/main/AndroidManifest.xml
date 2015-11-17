@@ -133,6 +133,7 @@
         </receiver>
         -->
 
+
         <!-- Mqtt Service -->
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
@@ -163,6 +164,12 @@
                 <action android:name="com.xunce.electrombile.alarmservice" />
             </intent-filter>
         </service>
+
+        <activity
+            android:name=".activity.account.VerifiedActivity"
+            android:label="VerifiedActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/App2Theme"></activity>
     </application>
 
 </manifest>

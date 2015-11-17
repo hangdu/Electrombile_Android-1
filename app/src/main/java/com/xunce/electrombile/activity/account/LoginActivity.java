@@ -18,6 +18,7 @@
 package com.xunce.electrombile.activity.account;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -199,9 +200,18 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                 } else {
                     if (avUser != null) {
 						setManager.setPhoneNumber(avUser.getMobilePhoneNumber());
-                        handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
-                    } else {
-                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
+						if (avUser.isMobilePhoneVerified()) {
+							handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
+						} else {
+							handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+							Toast.makeText(LoginActivity.this, "请验证", Toast.LENGTH_SHORT)
+									.show();
+							dialog.cancel();
+							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
+							startActivity(intent);
+						}
+					} else {
+						handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
                     }
                 }
             }
