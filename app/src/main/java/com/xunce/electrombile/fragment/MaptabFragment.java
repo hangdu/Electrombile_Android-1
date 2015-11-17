@@ -131,8 +131,8 @@ public class MaptabFragment extends BaseFragment {
                     // mBaiduMap.hideInfoWindow();
                     if (msg.obj != null) {
                         TrackPoint trackPoint = (TrackPoint) msg.obj;
-                        markerMobile.setPosition(trackPoint.point);
-
+//                        markerMobile.setPosition(trackPoint.point);
+                        markerMobile.setVisible(true);
                         /**
                          *设定中心点坐标
                          */
@@ -178,7 +178,6 @@ public class MaptabFragment extends BaseFragment {
 
         //       mCenter = CmdCenter.getInstance(m_context);
         currentTrack = new TrackPoint(new Date(), 0, 0);
-
         LayoutInflater inflater = (LayoutInflater) m_context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         markerView = inflater.inflate(R.layout.view_marker, null);
@@ -558,15 +557,16 @@ public class MaptabFragment extends BaseFragment {
 
         Point p1 = mBaiduMap.getProjection().toScreenLocation(markerMobile.getPosition());
         Point p2 = mBaiduMap.getProjection().toScreenLocation(track.point);
+        markerMobile.setVisible(false);
+        mBaiduMap.hideInfoWindow();
         Log.e(TAG, "p1.x:" + p1.x + "p1.y:" + p1.y + "p2.x:" + p2.x + "p2.y:" + p2.y);
         Animation myAnimation_Translate = new TranslateAnimation(0, p2.x - p1.x, 0, p2.y - p1.y);
         myAnimation_Translate.setDuration(5000);
+        myAnimation_Translate.setFillEnabled(true);
         myAnimation_Translate.setFillAfter(true);
-
-
         moveMarker.startAnimation(myAnimation_Translate);
 
-
+        markerMobile.setPosition(track.point);
         //延迟出现定位图标
         Message msg = Message.obtain();
         msg.what = handleKey.SET_MARKER.ordinal();
