@@ -103,6 +103,7 @@ public class MaptabFragment extends BaseFragment {
     //    private Animation myAnimation_Translate;
     //移动图标的动画
     private ImageView moveMarker;
+    private MapViewLayoutParams moveMarkerParams;
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -132,6 +133,14 @@ public class MaptabFragment extends BaseFragment {
                     if (msg.obj != null) {
                         TrackPoint trackPoint = (TrackPoint) msg.obj;
 //                        markerMobile.setPosition(trackPoint.point);
+                        moveMarkerParams = new MapViewLayoutParams.Builder()
+                                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
+                                .height(100)
+                                .width(100)
+                                .position(trackPoint.point)
+                                .build();
+                        mMapView.removeView(moveMarker);
+                        mMapView.addView(moveMarker, moveMarkerParams);
                         markerMobile.setVisible(true);
                         /**
                          *设定中心点坐标
@@ -416,13 +425,13 @@ public class MaptabFragment extends BaseFragment {
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
 
 
-        MapViewLayoutParams mapViewLayoutParams = new MapViewLayoutParams.Builder()
+        moveMarkerParams = new MapViewLayoutParams.Builder()
                 .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
                 .height(100)
                 .width(100)
                 .position(markerMobile.getPosition())
                 .build();
-        mMapView.addView(moveMarker, mapViewLayoutParams);
+        mMapView.addView(moveMarker, moveMarkerParams);
 
         //将电动车位置移至中心
         MapStatus mMapStatus = new MapStatus.Builder()
@@ -564,6 +573,7 @@ public class MaptabFragment extends BaseFragment {
         myAnimation_Translate.setDuration(5000);
         myAnimation_Translate.setFillEnabled(true);
         myAnimation_Translate.setFillAfter(true);
+        myAnimation_Translate.setFillBefore(true);
         moveMarker.startAnimation(myAnimation_Translate);
 
         markerMobile.setPosition(track.point);
