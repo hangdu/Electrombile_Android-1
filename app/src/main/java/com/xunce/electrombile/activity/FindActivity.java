@@ -74,6 +74,8 @@ public class FindActivity extends BaseActivity {
     private XYMultipleSeriesRenderer renderer;
     private GraphicalView chart;
     private int addX = -1, addY;
+    private double xMin = 0;
+    private double xMax = 100;
 
 
     @Override
@@ -175,7 +177,7 @@ public class FindActivity extends BaseActivity {
         progressDialog.dismiss();
         // float rating = (float) (data / 200.0);
         //ratingBar.setRating(rating);
-        int rating = data / 20;
+        int rating = data / 20 - 20;
         Log.d(TAG, "rating:" + rating);
         updateChart(rating);
         if (isFinding) {
@@ -205,7 +207,7 @@ public class FindActivity extends BaseActivity {
         renderer = buildRenderer(color, style, true);
 
         //设置好图表的样式
-        setChartSettings(renderer, "X", "Y", 0, 100, 0, 90, Color.WHITE, Color.WHITE);
+        setChartSettings(renderer, "X", "Y", 0, 100, xMin, xMax, Color.WHITE, Color.WHITE);
 
         //生成图表
         chart = ChartFactory.getLineChartView(this, mDataset, renderer);
@@ -244,18 +246,25 @@ public class FindActivity extends BaseActivity {
         renderer.setShowGrid(true);
         renderer.setGridColor(Color.GREEN);
         //renderer.setMarginsColor(Color.CYAN);
-        renderer.setXLabels(20);
+        renderer.setXLabels(10);
         renderer.setYLabels(10);
         renderer.setXTitle("");
         renderer.setYTitle("信号强度图");
         renderer.setYLabelsAlign(Paint.Align.RIGHT);
         renderer.setPointSize((float) 2);
         renderer.setShowLegend(false);
+        renderer.setPanEnabled(true, false);
     }
 
     private void updateChart(int y) {
         //设置好下一个需要增加的节点
         addX++;
+        if (addX != 0 && addX % 100 == 0) {
+            xMin += 50;
+            xMax += 50;
+            renderer.setXAxisMin(xMin);
+            renderer.setXAxisMax(xMax);
+        }
         addY = y;
         //移除数据集中旧的点集
         mDataset.removeSeries(series);
