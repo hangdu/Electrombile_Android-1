@@ -108,7 +108,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public void onBackPressed() {
         exit();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -354,8 +353,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             exitHandler.sendEmptyMessageDelayed(0, 2000);
         } else {
             switchFragment.cancelNotification();
-            mac.unregisterResources();
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+            if (mac != null) {
+                mac.unregisterResources();
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+            }
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
 

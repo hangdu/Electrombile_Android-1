@@ -234,6 +234,10 @@ public class MaptabFragment extends BaseFragment {
 
     private void initView(View v) {
         mMapView = (MapView) v.findViewById(R.id.bmapView);
+
+        mMapView.showZoomControls(false);
+        // mMapView.
+
         mBaiduMap = mMapView.getMap();
 
 

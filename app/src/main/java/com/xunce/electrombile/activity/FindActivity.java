@@ -76,7 +76,8 @@ public class FindActivity extends BaseActivity {
     private int addX = -1, addY;
     private double xMin = 0;
     private double xMax = 100;
-
+    //刷新的间隔.
+    private int separated = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,11 +260,14 @@ public class FindActivity extends BaseActivity {
     private void updateChart(int y) {
         //设置好下一个需要增加的节点
         addX++;
-        if (addX != 0 && addX % 100 == 0) {
+        if (addX != 0 && addX % separated == 0) {
             xMin += 50;
             xMax += 50;
             renderer.setXAxisMin(xMin);
             renderer.setXAxisMax(xMax);
+            if (addX == 100) {
+                separated = 50;
+            }
         }
         addY = y;
         //移除数据集中旧的点集
