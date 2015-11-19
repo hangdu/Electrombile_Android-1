@@ -80,6 +80,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     };
 
+    public RadioGroup getMain_radio() {
+        return main_radio;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
