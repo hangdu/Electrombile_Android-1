@@ -23,7 +23,7 @@ public class JSONUtils {
 	 * @return result
 	 *            关键字对应的值
 	 * */
-	public static String ParseJSON(String str,String name){
+	public static String ParseJSON(String str, String name) throws JSONException {
 		if(str.isEmpty()||name.isEmpty())
 			return null;
 		
@@ -33,6 +33,7 @@ public class JSONUtils {
 			   result = myJSobj.has(name)?myJSobj.getString(name):null;
 			  } catch (JSONException e) {
 			   e.printStackTrace();
+			  throw e;
 			  }
 		  
 		  return result;

@@ -15,13 +15,17 @@ public class _433Protocol extends Protocol {
 
     @Override
     public int getTimestamp() {
-        timestamp = Integer.parseInt(keyForValue(ProtocolConstants.TIMESTAMP));
+        String temp = keyForValue(ProtocolConstants.TIMESTAMP);
+        if (isEmpty(temp)) return -1;
+        timestamp = Integer.parseInt(temp);
         return timestamp;
     }
 
     @Override
     public int getIntensity() {
-        intensity = Integer.parseInt(keyForValue(ProtocolConstants.INTENSITY));
+        String temp = keyForValue(ProtocolConstants.INTENSITY);
+        if (isEmpty(temp)) return -1;
+        intensity = Integer.parseInt(temp);
         return intensity;
     }
 

@@ -12,6 +12,8 @@ import com.xunce.electrombile.activity.AlarmActivity;
 import com.xunce.electrombile.utils.device.DeviceUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 
+import org.json.JSONException;
+
 /**
  * Created by lybvinci on 2015/5/1.
  */
@@ -35,7 +37,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                 destinationName = bundle.get(ActivityConstants.destinationName).toString();
                 if (destinationName.contains("alarm")) {
                     String s = bundle.get(ActivityConstants.PARCEL).toString();
-                    int type = Integer.parseInt(JSONUtils.ParseJSON(s, "type"));
+                    int type = 0;
+                    try {
+                        type = Integer.parseInt(JSONUtils.ParseJSON(s, "type"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        //处理异常
+                    }
                     LogUtil.log.i("创建报警界面:" + bundle.toString());
                     // DeviceUtils.showNotifation(context, topic, msg);
                     DeviceUtils.wakeUpAndUnlock(context);

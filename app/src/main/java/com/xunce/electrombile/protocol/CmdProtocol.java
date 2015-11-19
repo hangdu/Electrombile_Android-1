@@ -16,19 +16,24 @@ public class CmdProtocol extends Protocol {
 
     @Override
     public int getCmd() {
-        cmd = Integer.parseInt(keyForValue(ProtocolConstants.CMD));
+        String temp = keyForValue(ProtocolConstants.CMD);
+        if (isEmpty(temp)) return -1;
+        cmd = Integer.parseInt(temp);
         return cmd;
     }
 
     @Override
     public int getResult() {
-        result = Integer.parseInt(keyForValue(ProtocolConstants.RESULT));
+        String temp = keyForValue(ProtocolConstants.RESULT);
+        if (isEmpty(temp)) return -1;
+        result = Integer.parseInt(temp);
         return result;
     }
 
     @Override
     public int getState() {
-        state = Integer.parseInt(keyForValue(ProtocolConstants.STATE));
+        String temp = keyForValue(ProtocolConstants.STATE);
+        state = Integer.parseInt(temp);
         return state;
     }
 

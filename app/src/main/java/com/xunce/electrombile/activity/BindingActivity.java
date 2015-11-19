@@ -22,6 +22,8 @@ import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 public class BindingActivity extends BaseActivity implements View.OnClickListener {
@@ -209,7 +211,13 @@ public class BindingActivity extends BaseActivity implements View.OnClickListene
             if (data.getExtras().containsKey("result")) {
                 String text = data.getExtras().getString("result");
                 if (text.contains("IMEI")) {
-                    IMEI = JSONUtils.ParseJSON(text,"IMEI");
+                    try {
+                        IMEI = JSONUtils.ParseJSON(text, "IMEI");
+                    } catch (JSONException e) {
+                        ToastUtils.showShort(BindingActivity.this, "扫描失败，请重新扫描！");
+                        e.printStackTrace();
+                        return;
+                    }
                     et_did.setText(IMEI);
                     setManager.setIMEI(IMEI);
                   //  setManager.setPassCode(passcode);

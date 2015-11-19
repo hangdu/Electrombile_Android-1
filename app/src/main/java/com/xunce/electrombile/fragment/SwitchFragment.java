@@ -54,6 +54,8 @@ import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
@@ -129,19 +131,26 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             public void onSuccess(ResponseInfo<String> responseInfo) {
                                 String data = StringUtils.decodeUnicode(responseInfo.result);
                                 Log.i(TAG, "获取图片信息：" + data);
-                                String tngou = JSONUtils.ParseJSON(data, "tngou");
-                                tngou = tngou.substring(1, tngou.length() - 1);
-                                String[] tngous = tngou.split("\\},");
-                                String[] imgs = new String[4];
-                                String[] titles = new String[4];
-                                for (int i = 0; i < 4; i++) {
-                                    imgs[i] = JSONUtils.ParseJSON(tngous[i] + "}", "img");
-                                    titles[i] = JSONUtils.ParseJSON(tngous[i] + "}", "title");
+                                String tngou = null;
+                                try {
+                                    tngou = JSONUtils.ParseJSON(data, "tngou");
+                                    tngou = tngou.substring(1, tngou.length() - 1);
+                                    String[] tngous = tngou.split("\\},");
+                                    String[] imgs = new String[4];
+                                    String[] titles = new String[4];
+                                    for (int i = 0; i < 4; i++) {
+                                        imgs[i] = JSONUtils.ParseJSON(tngous[i] + "}", "img");
+                                        titles[i] = JSONUtils.ParseJSON(tngous[i] + "}", "title");
+                                    }
+                                    for (int j = 0; j < 4; j++) {
+                                        loadAndSetImg(viewPagerBean.imageList.get(j), viewPagerBean.url + imgs[j]);
+                                    }
+                                    viewPagerBean.imageDescriptions = titles;
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    return;
                                 }
-                                for (int j = 0; j < 4; j++) {
-                                    loadAndSetImg(viewPagerBean.imageList.get(j), viewPagerBean.url + imgs[j]);
-                                }
-                                viewPagerBean.imageDescriptions = titles;
+
                             }
 
                             @Override
@@ -471,26 +480,37 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void parseWeatherErr(WeatherBean data, String originData) {
-                        data.errNum = JSONUtils.ParseJSON(originData, "errNum");
-                        data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
-                        if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
-                            data.retData = JSONUtils.ParseJSON(originData, "retData");
-                            parseRetData(data.retData, data);
-                        } else {
-                            Log.e(TAG, "fail to get Weather info");
+                        try {
+                            data.errNum = JSONUtils.ParseJSON(originData, "errNum");
+                            data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
+                            if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
+                                data.retData = JSONUtils.ParseJSON(originData, "retData");
+                                parseRetData(data.retData, data);
+                            } else {
+                                Log.e(TAG, "fail to get Weather info");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
+
                     }
 
                     private void parseRetData(String originData, WeatherBean data) {
-                        data.city = JSONUtils.ParseJSON(originData, "city");
-                        data.time = JSONUtils.ParseJSON(originData, "time");
-                        data.weather = JSONUtils.ParseJSON(originData, "weather");
-                        data.temp = JSONUtils.ParseJSON(originData, "temp");
-                        data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
-                        data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
-                        data.WD = JSONUtils.ParseJSON(originData, "WD");
-                        data.WS = JSONUtils.ParseJSON(originData, "WS");
-                        setWeather(data);
+                        try {
+                            data.city = JSONUtils.ParseJSON(originData, "city");
+                            data.time = JSONUtils.ParseJSON(originData, "time");
+                            data.weather = JSONUtils.ParseJSON(originData, "weather");
+                            data.temp = JSONUtils.ParseJSON(originData, "temp");
+                            data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
+                            data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
+                            data.WD = JSONUtils.ParseJSON(originData, "WD");
+                            data.WS = JSONUtils.ParseJSON(originData, "WS");
+                            setWeather(data);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            tvWeather.setText("查询失败");
+                        }
+
                     }
 
                     private void setWeather(WeatherBean data) {
