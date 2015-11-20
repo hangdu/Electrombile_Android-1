@@ -60,6 +60,8 @@ public class SettingManager {
     private final String Lat = "lat";
     private final String Longitude = "longitude";
 
+    private final String Server = "Server";
+
     /**
      * The spf.
      */
@@ -174,6 +176,14 @@ public class SettingManager {
      */
     public void setIMEI(String did) {
         spf.edit().putString(IMEI, did).commit();
+    }
+
+    public String getServer() {
+        return spf.getString(Server, "120.25.157.233");
+    }
+
+    public void setServer(String server) {
+        spf.edit().putString(Server, server).commit();
     }
 
 

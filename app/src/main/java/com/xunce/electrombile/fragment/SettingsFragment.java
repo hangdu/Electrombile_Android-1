@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.Display;
@@ -21,6 +22,7 @@ import com.xunce.electrombile.activity.AboutActivity;
 import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
+import com.xunce.electrombile.activity.TestActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -33,7 +35,8 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
 
     private static String TAG = "SettingsFragment";
-
+    //临时变量
+    public int temp = 0;
     //缓存view
     private View rootView;
 
@@ -97,6 +100,20 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 }
                 goToDeviceAct();
                 break;
+            case R.id.rl_1l:
+                int what = 999;
+                m_context.timeHandler.removeMessages(what);
+                if (temp == 10) {
+                    Intent intent = new Intent(m_context, TestActivity.class);
+                    startActivity(intent);
+                    temp = 0;
+                    return;
+                }
+                temp += 1;
+                Message msg = Message.obtain();
+                msg.what = what;
+                m_context.timeHandler.sendMessageDelayed(msg, 3000);
+
             default:
                 break;
         }
@@ -230,6 +247,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.btn_logout).setOnClickListener(this);
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
+        view.findViewById(R.id.rl_1l).setOnClickListener(this);
     }
 
     @Override

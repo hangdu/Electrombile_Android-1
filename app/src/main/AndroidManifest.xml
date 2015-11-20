@@ -169,7 +169,12 @@
             android:name=".activity.account.VerifiedActivity"
             android:label="VerifiedActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/App2Theme"></activity>
+            android:theme="@style/App2Theme" />
+        <activity
+            android:name=".activity.TestActivity"
+            android:label="VerifiedActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/App2Theme" />
     </application>
 
 </manifest>

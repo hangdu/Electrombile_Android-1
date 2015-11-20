@@ -85,7 +85,7 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+        ServiceConstants.MQTT_HOST = setManager.getServer();
         getDeviceId();
     }
 

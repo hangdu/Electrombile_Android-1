@@ -72,7 +72,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
     private static final String TAG = "FragmentActivity:";
-
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -103,7 +102,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public Handler timeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+            if (msg.what == 999) {
+                settingsFragment.temp = 0;
+                return;
+            }
             dismissWaitDialog();
             ToastUtils.showShort(FragmentActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
         }
@@ -125,7 +127,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         //判断是否绑定设备
         queryIMEI();
 //        //注册广播
-//        registerBroadCast();
         Historys.put(this);
     }
 
@@ -538,7 +539,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
             //此方法会不在onDestory中调用，所以放在结束任务之前使用
             if (TracksManager.getTracks() != null) TracksManager.clearTracks();
-
+            timeHandler.removeMessages(0);
+            timeHandler = null;
             Historys.exit();
         }
     }
