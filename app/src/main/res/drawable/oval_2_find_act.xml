@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <corners android:radius="90dp" />
+    <corners android:radius="@dimen/btn_radius" />
     <gradient
         android:angle="270"
         android:endColor="#1f7501"
-        android:startColor="#45d28e" />
+        android:startColor="@color/btn_normal_color" />
     <size
         android:width="211dp"
         android:height="45dp" />

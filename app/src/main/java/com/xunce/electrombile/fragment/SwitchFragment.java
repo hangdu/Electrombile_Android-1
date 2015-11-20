@@ -6,22 +6,15 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -37,8 +30,6 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.bitmap.BitmapCommonUtils;
-import com.lidroid.xutils.bitmap.BitmapDisplayConfig;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
@@ -46,7 +37,6 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
-import com.xunce.electrombile.bean.ViewPagerBean;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -56,16 +46,12 @@ import com.xunce.electrombile.utils.useful.StringUtils;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
-
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
 
-    private static final String URL = "http://wap.koudaitong.com/v2/home/a02xn3a3";
+    //    private static final String URL = "http://wap.koudaitong.com/v2/home/a02xn3a3";
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
-    // 上一个页面的位置
-    protected int lastPosition;
     GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
     private boolean alarmState = false;
     //缓存view
@@ -75,27 +61,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
     private TextView tvWeather;
-    //viewpager
-    private ViewPager viewPager;
-    private LinearLayout pointGroup;
-    private TextView imageDesc;
-    // 图片资源ID
-    private int[] imageIds = {R.drawable.first_fragment_iv, R.drawable.linshitupian1, R.drawable.linshitupian2,
-            R.drawable.linshitupian3};
-    private ViewPagerBean viewPagerBean;
-    //判断是否自动滚动
-    private boolean isRunning = false;
-    private Handler viewPagerHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            //让viewPager 滑动到下一页
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
-            if (isRunning) {
-                viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
-            }
-        }
-    };
+
 
 
     @Override
@@ -119,63 +85,23 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                HttpUtils http = new HttpUtils();
-                http.send(HttpRequest.HttpMethod.GET,
-                        "http://www.tngou.net/tnfs/api/news",
-                        new RequestCallBack<String>() {
 
-                            @Override
-                            public void onSuccess(ResponseInfo<String> responseInfo) {
-                                String data = StringUtils.decodeUnicode(responseInfo.result);
-                                Log.i(TAG, "获取图片信息：" + data);
-                                String tngou = null;
-                                try {
-                                    tngou = JSONUtils.ParseJSON(data, "tngou");
-                                    tngou = tngou.substring(1, tngou.length() - 1);
-                                    String[] tngous = tngou.split("\\},");
-                                    String[] imgs = new String[4];
-                                    String[] titles = new String[4];
-                                    for (int i = 0; i < 4; i++) {
-                                        imgs[i] = JSONUtils.ParseJSON(tngous[i] + "}", "img");
-                                        titles[i] = JSONUtils.ParseJSON(tngous[i] + "}", "title");
-                                    }
-                                    for (int j = 0; j < 4; j++) {
-                                        loadAndSetImg(viewPagerBean.imageList.get(j), viewPagerBean.url + imgs[j]);
-                                    }
-                                    viewPagerBean.imageDescriptions = titles;
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    return;
-                                }
-
-                            }
-
-                            @Override
-                            public void onFailure(HttpException e, String s) {
-
-                            }
-                        });
-            }
-        }).start();
 
     }
 
-    private void loadAndSetImg(ImageView imageView, String url) {
-        com.lidroid.xutils.BitmapUtils bitmapUtils = new com.lidroid.xutils.BitmapUtils(m_context);
-        bitmapUtils.configDefaultLoadFailedImage(R.drawable.iv_person_head);//加载失败图片
-        bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);//设置图片压缩类型
-        bitmapUtils.configDefaultCacheExpiry(500);
-        BitmapDisplayConfig bitmapDisplayConfig = new BitmapDisplayConfig();
-        bitmapUtils.configDefaultDisplayConfig(bitmapDisplayConfig);
-        bitmapUtils.configDefaultBitmapMaxSize(BitmapCommonUtils.getScreenSize(getActivity()).getWidth(),
-                BitmapCommonUtils.getScreenSize(getActivity()).getWidth() / 3);
-        bitmapUtils.configDefaultAutoRotation(true);
-        bitmapUtils.display(imageView, url);
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-    }
+//    private void lastPosition(ImageView imageView, String url) {
+//        com.lidroid.xutils.BitmapUtils bitmapUtils = new com.lidroid.xutils.BitmapUtils(m_context);
+//        bitmapUtils.configDefaultLoadFailedImage(R.drawable.iv_person_head);//加载失败图片
+//        bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);//设置图片压缩类型
+//        bitmapUtils.configDefaultCacheExpiry(500);
+//        BitmapDisplayConfig bitmapDisplayConfig = new BitmapDisplayConfig();
+//        bitmapUtils.configDefaultDisplayConfig(bitmapDisplayConfig);
+//        bitmapUtils.configDefaultBitmapMaxSize(BitmapCommonUtils.getScreenSize(getActivity()).getWidth(),
+//                BitmapCommonUtils.getScreenSize(getActivity()).getWidth() / 3);
+//        bitmapUtils.configDefaultAutoRotation(true);
+//        bitmapUtils.display(imageView, url);
+//        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//    }
 
     private void initLocation() {
         LocationClientOption option = new LocationClientOption();
@@ -276,7 +202,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 //                startActivity(it);
 //            }
 //        });
-        initViewpager();
+
 
     }
 
@@ -319,91 +245,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         switch_fragment_tvLocation.setText(result.getAddress().trim());
     }
 
-    //初始化viewpager
-    private void initViewpager() {
-        if (viewPager == null) {
-            viewPagerBean = new ViewPagerBean();
-            viewPager = (ViewPager) getActivity().findViewById(R.id.banner_viewpager);
-            pointGroup = (LinearLayout) getActivity().findViewById(R.id.point_group);
-            imageDesc = (TextView) getActivity().findViewById(R.id.image_desc);
-            imageDesc.setText(viewPagerBean.imageDescriptions[0]);
-            viewPagerBean.imageList = new ArrayList<ImageView>();
-            for (int i = 0; i < imageIds.length; i++) {
-                //初始化图片资源
-                ImageView image = new ImageView(m_context);
-                image.setImageResource(imageIds[i]);
-                viewPagerBean.imageList.add(image);
 
-                //添加指示点
-                ImageView point = new ImageView(m_context);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.rightMargin = 10;
-                point.setLayoutParams(params);
-                point.setBackgroundResource(R.drawable.point_bg);
-                if (i == 0) {
-                    point.setEnabled(false);
-                } else {
-                    point.setEnabled(true);
-                }
-                pointGroup.addView(point);
-            }
-
-            viewPager.setAdapter(new MyPagerAdapter());
-
-            viewPager.setCurrentItem(Integer.MAX_VALUE / 2 - (Integer.MAX_VALUE / 2 % viewPagerBean.imageList.size()));
-
-            viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                /**
-                 * 页面切换后调用
-                 * position  新的页面位置
-                 */
-                public void onPageSelected(int position) {
-
-                    position = position % viewPagerBean.imageList.size();
-
-                    //设置文字描述内容
-                    imageDesc.setText(viewPagerBean.imageDescriptions[position]);
-
-                    //改变指示点的状态
-                    //把当前点enbale 为true
-                    pointGroup.getChildAt(position).setEnabled(true);
-                    //把上一个点设为false
-                    pointGroup.getChildAt(lastPosition).setEnabled(false);
-                    lastPosition = position;
-
-                }
-
-                @Override
-                /**
-                 * 页面正在滑动的时候，回调
-                 */
-                public void onPageScrolled(int position, float positionOffset,
-                                           int positionOffsetPixels) {
-                }
-
-                @Override
-                /**
-                 * 当页面状态发生变化的时候，回调
-                 */
-                public void onPageScrollStateChanged(int state) {
-
-                }
-            });
-
-		 /*
-          * 自动循环：
-		  * 1、定时器：Timer
-		  * 2、开子线程 while  true 循环
-		  * 3、ColckManager
-		  * 4、 用handler 发送延时信息，实现循环
-		  */
-            isRunning = true;
-            viewPagerHandler.sendEmptyMessageDelayed(0, 2000);
-
-        }
-    }
 
     //显示常驻通知栏
     public void showNotification(String text) {
@@ -447,7 +289,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onDestroy() {
         m_context = null;
         mSearch = null;
-        isRunning = false;
         super.onDestroy();
     }
 
@@ -575,48 +416,5 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    //viewpager 适配器
-    private class MyPagerAdapter extends PagerAdapter {
-        @Override
-        /**
-         * 获得页面的总数
-         */
-        public int getCount() {
-            return Integer.MAX_VALUE;
-        }
 
-        @Override
-        /**
-         * 获得相应位置上的view
-         * container  view的容器，其实就是viewpager自身
-         * position 	相应的位置
-         */
-        public Object instantiateItem(ViewGroup container, int position) {
-            // 给 container 添加一个view
-            container.addView(viewPagerBean.imageList.get(position % viewPagerBean.imageList.size()));
-            //返回一个和该view相对的object
-            return viewPagerBean.imageList.get(position % viewPagerBean.imageList.size());
-        }
-
-        @Override
-        /**
-         * 判断 view和object的对应关系
-         */
-        public boolean isViewFromObject(View view, Object object) {
-            if (view == object) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        /**
-         * 销毁对应位置上的object
-         */
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
-            object = null;
-        }
-    }
 }

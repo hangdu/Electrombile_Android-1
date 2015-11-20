@@ -23,6 +23,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.fragment.InformationFragment;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
@@ -62,6 +63,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public SwitchFragment switchFragment;
     public MaptabFragment maptabFragment;
     public SettingsFragment settingsFragment;
+    public InformationFragment informationFragment;
     public SettingManager setManager;
     //viewpager切换使用
     private CustomViewPager mViewPager;
@@ -308,6 +310,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
         settingsFragment = new SettingsFragment();
+        informationFragment = new InformationFragment();
     }
 
     /**
@@ -316,6 +319,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void initData() {
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
+        list.add(informationFragment);
         list.add(maptabFragment);
         list.add(settingsFragment);
         HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager(), list);
@@ -328,13 +332,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         mViewPager.setCurrentItem(0, false);
                         checkId = 0;
                         break;
-                    case R.id.rbMap:
+                    case R.id.rbInformation:
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
                         break;
-                    case R.id.rbSettings:
+                    case R.id.rbMap:
                         mViewPager.setCurrentItem(2, false);
                         checkId = 2;
+                        break;
+                    case R.id.rbSettings:
+                        mViewPager.setCurrentItem(3, false);
+                        checkId = 3;
                         break;
                     default:
                         break;

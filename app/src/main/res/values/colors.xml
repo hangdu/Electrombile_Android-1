@@ -153,12 +153,16 @@
     <color name="navy">#000080</color><!--海军色 -->
     <color name="black">#000000</color><!--黑色 -->
     <color name="customblack">#4a90e2</color><!--经典蓝 -->
+
+
     <color name="transation">#00000000</color>
     <color name="primary_material_light">#000000</color>
     <color name="primary_dark_material_light">#110101</color>
     <color name="accent_material_light">#000000</color>
     <color name="bright_foreground_material_light">#64c6bb</color>
     <color name="statusBarColor">#00ffffff</color>
-    <color name="style_green">#16c772</color>
+    <color name="app_style">#16c772</color>
+    <color name="btn_normal_color">#45d28e</color>
+    <color name="btn_pressed_color">#d0d344</color>
 
 </resources>

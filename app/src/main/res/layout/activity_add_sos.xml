@@ -1,47 +1,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/app_style"
     android:orientation="vertical"
-    android:background="@color/darksalmon"
     tools:context="com.xunce.electrombile.activity.AddSosActivity">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:text="添加管理员"
         android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:text="添加管理员"
+        android:textSize="25sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:orientation="horizontal">
+
         <EditText
             android:id="@+id/et_SOS"
-            android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="4"
             android:background="@color/white"
             android:hint="请输入账号"
-            android:paddingRight="5dp"
-            android:layout_gravity="center_vertical"/>
+            android:paddingRight="5dp" />
+
         <Button
-            android:onClick="addSOS"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="添加"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:onClick="addSOS"
+            android:text="添加" />
     </LinearLayout>
 
     <ListView
-        android:layout_marginTop="10dp"
         android:id="@+id/lv_SOS"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"></ListView>
 
 
 </LinearLayout>

@@ -222,6 +222,7 @@ public class MaptabFragment extends BaseFragment {
                 .width(100)
                 .position(markerMobile.getPosition())
                 .build();
+        mMapView.removeView(moveMarker);
         mMapView.addView(moveMarker, moveMarkerParams);
 
         //将电动车位置移至中心
@@ -268,15 +269,15 @@ public class MaptabFragment extends BaseFragment {
         mMapView.setVisibility(View.VISIBLE);
         mMapView.onResume();
         super.onResume();
-
         //检查历史轨迹列表，若不为空，则需要绘制轨迹
         if (trackDataList.size() > 0) {
             reSetMoveMarkerLocation(trackDataList.get(0).point);
             enterPlayTrackMode();
             drawLine();
-        } else {
-            updateLocation();
         }
+//        else {
+//            updateLocation();
+//        }
     }
 
     @Override
