@@ -59,6 +59,7 @@ public class MaptabFragment extends BaseFragment {
 
     //保存数据所需要的最短距离
     private static final double MIN_DISTANCE = 100;
+    private static final int DELAY = 5000;
     public static MapView mMapView;
     //maptabFragment 维护一组历史轨迹坐标列表
     public static List<TrackPoint> trackDataList;
@@ -93,17 +94,16 @@ public class MaptabFragment extends BaseFragment {
     private int playOrder = 0;
     private BaiduMap mBaiduMap;
 
-    //
-    //    private ProgressDialog watiDialog;
     //缓存布局
     private View rootView;
-
     //轨迹显示图层
     private Overlay lineDraw;
-    //    private Animation myAnimation_Translate;
     //移动图标的动画
     private ImageView moveMarker;
     private MapViewLayoutParams moveMarkerParams;
+    /**
+     * 处理消息
+     */
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -133,40 +133,13 @@ public class MaptabFragment extends BaseFragment {
                     }
                     break;
                 }
-
             }
-
         }
-
-
     };
-
-    //重新设置车辆图标位置
-    private void reSetMoveMarkerLocation(LatLng point) {
-        mMapView.removeView(moveMarker);
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(point)
-                .zoom(mBaiduMap.getMapStatus().zoom)
-                .build();
-        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        //改变地图状态
-        mBaiduMap.animateMapStatus(mMapStatusUpdate);
-        moveMarkerParams = new MapViewLayoutParams.Builder()
-                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
-                .height(100)
-                .width(100)
-                .position(point)
-                .build();
-        mMapView.addView(moveMarker, moveMarkerParams);
-        LogUtil.log.e(TAG, "reSetMoveMarkerLocation");
-
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Log.i(TAG, "onCreate called!");
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
@@ -196,7 +169,6 @@ public class MaptabFragment extends BaseFragment {
 
                     }
                 }).create();
-
     }
 
     @Override
@@ -214,17 +186,115 @@ public class MaptabFragment extends BaseFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        m_context = activity;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        //定义Maker坐标点
+        //leacloud服务器清空，暂时自定义数据代替
+        LatLng point;
+        if ((!setManager.getInitLocationLat().isEmpty()) && (!setManager.getInitLocationLongitude().isEmpty())) {
+            LogUtil.log.i("lat:::" + Double.valueOf(setManager.getInitLocationLat()));
+            LogUtil.log.i("longitude:::" + Double.valueOf(setManager.getInitLocationLongitude()));
+            point = new LatLng(Double.valueOf(setManager.getInitLocationLat()),
+                    Double.valueOf(setManager.getInitLocationLongitude()));
+            point = mCenter.convertPoint(point);
+        } else {
+            LogUtil.log.i("到了初始位置？");
+            point = new LatLng(30.5171, 114.4392);
+        }
+
+        //构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_gcoding);
+        //构建MarkerOption，用于在地图上添加Marker
+        option2 = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        markerMobile = (Marker) mBaiduMap.addOverlay(option2);
+        markerMobile.setVisible(false);
+
+
+        moveMarkerParams = new MapViewLayoutParams.Builder()
+                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
+                .height(100)
+                .width(100)
+                .position(markerMobile.getPosition())
+                .build();
+        mMapView.addView(moveMarker, moveMarkerParams);
+
+        //将电动车位置移至中心
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(point)
+                .zoom(mBaiduMap.getMapStatus().zoom * Double.valueOf(1.5).floatValue())
+                .build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((ViewGroup) rootView.getParent()).removeView(rootView);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (lineDraw != null)
+            lineDraw.remove();
+        //清除轨迹
+        if (tracksOverlay != null)
+            tracksOverlay.remove();
+        //结束播放
+        pausePlay();
+        exitPlayTrackMode();
+        mBaiduMap.clear();
+        mMapView.onDestroy();
+        mMapView = null;
+        super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
+        //   Log.i(TAG, "onResume called!");
+        mMapView.setVisibility(View.VISIBLE);
+        mMapView.onResume();
+        super.onResume();
+
+        //检查历史轨迹列表，若不为空，则需要绘制轨迹
+        if (trackDataList.size() > 0) {
+            reSetMoveMarkerLocation(trackDataList.get(0).point);
+            enterPlayTrackMode();
+            drawLine();
+        } else {
+            updateLocation();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
+        mMapView.onPause();
+        super.onPause();
+    }
+
+    /**
+     * 初始化view
+     *
+     * @param v view
+     */
     private void initView(View v) {
         mMapView = (MapView) v.findViewById(R.id.bmapView);
-
         mMapView.showZoomControls(false);
-        // mMapView.
-
         mBaiduMap = mMapView.getMap();
-
 
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             public boolean onMarkerClick(final Marker marker) {
@@ -246,7 +316,6 @@ public class MaptabFragment extends BaseFragment {
                 msg.what = handleKey.CHANGE_POINT.ordinal();
                 msg.obj = playOrder;
                 playHandler.sendMessage(msg);
-//                continuePlay();
             }
         });
 
@@ -255,10 +324,7 @@ public class MaptabFragment extends BaseFragment {
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Message msg = Message.obtain();
-                msg.what = handleKey.CHANGE_POINT.ordinal();
-                msg.obj = playOrder;
-                playHandler.sendMessageDelayed(msg, 5000);
+//                sendPlayMessage();
                 pausePlay();
             }
         });
@@ -345,157 +411,33 @@ public class MaptabFragment extends BaseFragment {
         ll_map = (LinearLayout) v.findViewById(R.id.ll_map);
     }
 
-    private boolean checkBind() {
-        if (setManager.getIMEI().isEmpty()) {
-            didDialog.show();
-            return true;
-        }
-        return false;
-    }
-
-    private boolean checkNetwork() {
-        if (!NetworkUtils.isNetworkConnected(m_context)) {
-            networkDialog = NetworkUtils.networkDialog(m_context, true);
-            return true;
-        }
-        return false;
-    }
-
-    private void clearDataAndView() {
-        //清除轨迹
-        if (tracksOverlay != null)
-            tracksOverlay.remove();
-        //结束播放线程
-        playHandler.removeMessages(handleKey.CHANGE_POINT.ordinal());
-        //清除轨迹数
-        trackDataList.clear();
-        //退出播放轨迹模式
-        exitPlayTrackMode();
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        /**
-         * 显示车的位置
-         */
-        //定义Maker坐标点
-        //leacloud服务器清空，暂时自定义数据代替
-        LatLng point;
-        if ((!setManager.getInitLocationLat().isEmpty()) && (!setManager.getInitLocationLongitude().isEmpty())) {
-            LogUtil.log.i("lat:::" + Double.valueOf(setManager.getInitLocationLat()));
-            LogUtil.log.i("longitude:::" + Double.valueOf(setManager.getInitLocationLongitude()));
-            point = new LatLng(Double.valueOf(setManager.getInitLocationLat()),
-                    Double.valueOf(setManager.getInitLocationLongitude()));
-            point = mCenter.convertPoint(point);
-        } else {
-            LogUtil.log.i("到了初始位置？");
-            point = new LatLng(30.5171, 114.4392);
-        }
-//        LatLng point = new LatLng(Double.valueOf(settingManager.getInitLocationLat()),
-//                Double.valueOf(settingManager.getInitLocationLongitude()));
-        //  Log.e(point.latitude + "", point.longitude + "");
-
-        //构建Marker图标
-        BitmapDescriptor bitmap = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_gcoding);
-        //构建MarkerOption，用于在地图上添加Marker
-        option2 = new MarkerOptions()
-                .position(point)
-                .icon(bitmap);
-        //在地图上添加Marker，并显示
-        markerMobile = (Marker) mBaiduMap.addOverlay(option2);
-        markerMobile.setVisible(false);
-
-
+    /**
+     * 重新设置车辆图标位置
+     */
+    private void reSetMoveMarkerLocation(LatLng point) {
+        mMapView.removeView(moveMarker);
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(point)
+                .zoom(mBaiduMap.getMapStatus().zoom)
+                .build();
+        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.animateMapStatus(mMapStatusUpdate);
         moveMarkerParams = new MapViewLayoutParams.Builder()
                 .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
                 .height(100)
                 .width(100)
-                .position(markerMobile.getPosition())
+                .position(point)
                 .build();
         mMapView.addView(moveMarker, moveMarkerParams);
-
-        //将电动车位置移至中心
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(point)
-                .zoom(mBaiduMap.getMapStatus().zoom * new Double(1.5).floatValue())
-                .build();
-        //float a = mBaiduMap.getMapStatus().zoom;
-        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        mBaiduMap.setMapStatus(mMapStatusUpdate);
+        LogUtil.log.e(TAG, "reSetMoveMarkerLocation");
 
     }
 
-    //}
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onActivityCreated(savedInstanceState);
-        //((TextView)getView().findViewById(R.id.tvTop)).setText("地图");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ((ViewGroup) rootView.getParent()).removeView(rootView);
-        //    Log.i(TAG, "onDestroyView called!");
-    }
-
-    @Override
-    public void onDestroy() {
-        if (lineDraw != null)
-            lineDraw.remove();
-        // 退出时销毁定位
-        //mLocationClient.stop();
-        // 关闭定位图层
-        // mBaiduMap.setMyLocationEnabled(false);
-        //pausePlay();
-        //清除轨迹
-        if (tracksOverlay != null)
-            tracksOverlay.remove();
-        //结束播放
-        playHandler.removeMessages(handleKey.CHANGE_POINT.ordinal());
-        exitPlayTrackMode();
-        mBaiduMap.clear();
-        mMapView.onDestroy();
-        mMapView = null;
-        super.onDestroy();
-    }
-
-    @Override
-    public void onResume() {
-
-        //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        //   Log.i(TAG, "onResume called!");
-        mMapView.setVisibility(View.VISIBLE);
-        mMapView.onResume();
-        super.onResume();
-
-        //检查历史轨迹列表，若不为空，则需要绘制轨迹
-        if (trackDataList.size() > 0) {
-            // if (tracksOverlay != null) tracksOverlay.remove();
-            //playLocateMobile(0);
-            reSetMoveMarkerLocation(trackDataList.get(0).point);
-            enterPlayTrackMode();
-            drawLine();
-        } else {
-            updateLocation();
-        }
-
-    }
-
-    @Override
-    public void onPause() {
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        //  Log.i(TAG, "onPause called!");
-        //mMapView.setVisibility(View.INVISIBLE);
-        mMapView.onPause();
-        super.onPause();
-    }
-
-
+    /**
+     * 进入历史轨迹播放模式
+     */
     private void enterPlayTrackMode() {
         isPlaying = true;
         playOrder = 0;
@@ -510,6 +452,9 @@ public class MaptabFragment extends BaseFragment {
 
     }
 
+    /**
+     * 退出历史轨迹播放模式
+     */
     private void exitPlayTrackMode() {
         isPlaying = false;
         playOrder = 0;
@@ -522,19 +467,9 @@ public class MaptabFragment extends BaseFragment {
         ll_map.setVisibility(View.VISIBLE);
     }
 
-//    //暂停更新地图
-//    public void pauseMapUpdate() {
-////        if(mLocationClient == null) return;
-////        mLocationClient.stop();
-//    }
-//
-//    //恢复更新地图
-//    public void resumeMapUpdate() {
-////        if(mLocationClient == null) return;
-////        mLocationClient.start();
-//    }
-
-    //将地图中心移到某点
+    /**
+     * 将地图中心移到某点
+     */
     public void locateMobile(TrackPoint track) {
         if (mBaiduMap == null) return;
         if (isPlaying) {
@@ -547,19 +482,19 @@ public class MaptabFragment extends BaseFragment {
         Point p1 = mBaiduMap.getProjection().toScreenLocation(markerMobile.getPosition());
         Point p2 = mBaiduMap.getProjection().toScreenLocation(track.point);
         Log.e(TAG, "p1.x:" + p1.x + "p1.y:" + p1.y + "p2.x:" + p2.x + "p2.y:" + p2.y);
-        carAnimation(p1, p2, 5000);
-
-        //markerMobile.setPosition(track.point);
+        carAnimation(p1, p2, DELAY);
         //延迟出现定位图标
         Message msg = Message.obtain();
         msg.what = handleKey.SET_MARKER.ordinal();
         msg.obj = track;
-        playHandler.sendMessageDelayed(msg, 5000);
+        playHandler.sendMessageDelayed(msg, DELAY);
         refreshTrack(track);
 
     }
 
-    //车的动画
+    /**
+     * 车的动画
+     */
     private void carAnimation(Point p1, Point p2, int time) {
         Animation myAnimation_Translate = new TranslateAnimation(0, p2.x - p1.x, 0, p2.y - p1.y);
         myAnimation_Translate.setDuration(time);
@@ -570,13 +505,17 @@ public class MaptabFragment extends BaseFragment {
     }
 
 
-    //更新当前轨迹
+    /**
+     * 更新当前轨迹
+     */
     private void refreshTrack(TrackPoint track) {
         currentTrack = track;
         dismissWaitDialog();
     }
 
-    //播放历史轨迹的时候调用的绘图方法,减少了文本框的显示
+    /**
+     * 播放历史轨迹的时候调用的绘图方法,减少了文本框的显示
+     */
     private void playLocateMobile(int track) {
         if (mBaiduMap == null) return;
         Point p1 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track).point);
@@ -584,7 +523,7 @@ public class MaptabFragment extends BaseFragment {
         if (track == 0) {
             Log.e(TAG, "track==" + track);
             p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
-            carAnimation(p1, p2, 5000);
+            carAnimation(p1, p2, DELAY);
         } else if ((track + 1) == (trackDataList.size())) {
             //不运动
             Log.e(TAG, "track==" + track);
@@ -594,26 +533,36 @@ public class MaptabFragment extends BaseFragment {
         } else {
             Log.e(TAG, "track==" + track);
             p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
-            carAnimation(p1, p2, 5000);
+            carAnimation(p1, p2, DELAY);
         }
         refreshTrack(trackDataList.get(track));
         playOrder += 1;
+        sendPlayMessage(DELAY);
+    }
+
+    /**
+     * 发送播放消息
+     */
+    private void sendPlayMessage(int delay) {
         Message msg = Message.obtain();
         msg.what = handleKey.CHANGE_POINT.ordinal();
         msg.obj = playOrder;
-        playHandler.sendMessageDelayed(msg, 5000);
-
-
+        playHandler.sendMessageDelayed(msg, delay);
     }
 
 
-    //return longitude and latitude data,if no data, returns null
+    /**
+     * 获取最新的位置
+     */
     public void updateLocation() {
         if (((FragmentActivity) m_context).mac != null && ((FragmentActivity) m_context).mac.isConnected())
             ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
 
+    /**
+     * 划线
+     */
     private void drawLine() {
         mBaiduMap.clear();
         ArrayList<LatLng> points = new ArrayList<>();
@@ -629,13 +578,54 @@ public class MaptabFragment extends BaseFragment {
         tracksOverlay = mBaiduMap.addOverlay(polylineOption);
     }
 
+    /**
+     * 暂停播放
+     */
     private void pausePlay() {
         playHandler.removeMessages(handleKey.CHANGE_POINT.ordinal());
     }
 
-//    private void continuePlay() {
-//    }
+    /**
+     * 检查是否已经绑定设备
+     *
+     * @return true绑定设备 false 未绑定
+     */
+    private boolean checkBind() {
+        if (setManager.getIMEI().isEmpty()) {
+            didDialog.show();
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * 检查网络
+     *
+     * @return 返回是否有网络连接
+     */
+    private boolean checkNetwork() {
+        if (!NetworkUtils.isNetworkConnected(m_context)) {
+            networkDialog = NetworkUtils.networkDialog(m_context, true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 清楚数据和界面
+     */
+    private void clearDataAndView() {
+        //清除轨迹
+        if (tracksOverlay != null)
+            tracksOverlay.remove();
+        //结束播放线程
+//        playHandler.removeMessages(handleKey.CHANGE_POINT.ordinal());
+        pausePlay();
+        //清除轨迹数
+        trackDataList.clear();
+        //退出播放轨迹模式
+        exitPlayTrackMode();
+    }
 
     //播放线程消息类型
     enum handleKey {
