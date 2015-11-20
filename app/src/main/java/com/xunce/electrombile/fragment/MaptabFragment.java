@@ -43,7 +43,6 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
 import com.xunce.electrombile.activity.FindActivity;
-import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
@@ -275,9 +274,6 @@ public class MaptabFragment extends BaseFragment {
             enterPlayTrackMode();
             drawLine();
         }
-//        else {
-//            updateLocation();
-//        }
     }
 
     @Override
@@ -354,8 +350,8 @@ public class MaptabFragment extends BaseFragment {
 
                 if (mBaiduMap != null) {
                     //LatLng point = getLatestLocation();
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+                    m_context.showWaitDialog();
+                    m_context.timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
                     updateLocation();
                 }
             }
@@ -448,7 +444,7 @@ public class MaptabFragment extends BaseFragment {
         btnClearTrack.setVisibility(View.VISIBLE);
         btnPlay.setVisibility(View.VISIBLE);
         btnPause.setVisibility(View.VISIBLE);
-        ((FragmentActivity) m_context).getMain_radio().setVisibility(View.GONE);
+        m_context.getMain_radio().setVisibility(View.GONE);
         ll_map.setVisibility(View.GONE);
 
     }
@@ -464,7 +460,7 @@ public class MaptabFragment extends BaseFragment {
         btnClearTrack.setVisibility(View.INVISIBLE);
         btnPlay.setVisibility(View.INVISIBLE);
         btnPause.setVisibility(View.INVISIBLE);
-        ((FragmentActivity) m_context).getMain_radio().setVisibility(View.VISIBLE);
+        m_context.getMain_radio().setVisibility(View.VISIBLE);
         ll_map.setVisibility(View.VISIBLE);
     }
 
@@ -511,7 +507,7 @@ public class MaptabFragment extends BaseFragment {
      */
     private void refreshTrack(TrackPoint track) {
         currentTrack = track;
-        dismissWaitDialog();
+        m_context.dismissWaitDialog();
     }
 
     /**
@@ -556,8 +552,8 @@ public class MaptabFragment extends BaseFragment {
      * 获取最新的位置
      */
     public void updateLocation() {
-        if (((FragmentActivity) m_context).mac != null && ((FragmentActivity) m_context).mac.isConnected())
-            ((FragmentActivity) m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
+        if ((m_context).mac != null && (m_context).mac.isConnected())
+            (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
 

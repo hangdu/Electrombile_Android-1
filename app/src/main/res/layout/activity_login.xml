@@ -9,13 +9,13 @@
     <ImageView
         android:layout_width="135dip"
         android:layout_height="135dip"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="60dip"
         android:src="@drawable/iv_login_act" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:background="@drawable/etname_login_act"
         android:orientation="vertical">
 
@@ -28,7 +28,8 @@
             android:background="@color/transation"
             android:drawableLeft="@drawable/et_left_name"
             android:hint="@string/login_name_hint"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:paddingLeft="17dp" />
 
         <View
             android:layout_width="240dp"
@@ -45,17 +46,18 @@
             android:background="@color/transation"
             android:drawableLeft="@drawable/et_left_psw"
             android:hint="@string/password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:paddingLeft="17dp" />
     </LinearLayout>
 
 
     <Button
         android:id="@+id/tvForgot"
         android:layout_width="72dp"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginRight="84dp"
-        android:layout_marginTop="20dip"
+        android:layout_marginTop="5dip"
         android:background="@drawable/common_btn_white"
         android:text="忘记密码"
         android:textColor="@color/white"
@@ -66,22 +68,22 @@
         android:layout_width="211dp"
         android:layout_height="45dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/btn_login"
         android:text="登陆"
         android:textColor="@color/white" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:src="@drawable/iv_arrow_login_act" />
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:src="@drawable/iv_arrow_login_act" />-->
 
     <Button
         android:id="@+id/btnRegister"
         android:layout_width="211dp"
         android:layout_height="45dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/btn_register"
         android:text="注册"
         android:textColor="@color/white"

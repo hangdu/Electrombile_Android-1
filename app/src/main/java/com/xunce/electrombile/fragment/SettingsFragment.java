@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -204,13 +205,17 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
         String topic4 = "dev2app/" + initTopic + "/alarm";
         String[] topic = {topic1, topic2, topic3, topic4};
-        try {
-            mac.unsubscribe(topic);
+        if (!TextUtils.isEmpty(initTopic)) {
+            try {
+                mac.unsubscribe(topic);
+                return true;
+            } catch (MqttException e) {
+                e.printStackTrace();
+                ToastUtils.showShort(m_context, "取消订阅失败!请稍后重启再试！");
+                return false;
+            }
+        } else {
             return true;
-        } catch (MqttException e) {
-            e.printStackTrace();
-            ToastUtils.showShort(m_context, "取消订阅失败!请稍后重启再试！");
-            return false;
         }
 
     }

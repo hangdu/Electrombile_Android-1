@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_style"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
     <ImageView
         android:layout_width="135dip"
         android:layout_height="135dip"
-        android:layout_marginTop="17dip"
+        android:layout_marginTop="50dip"
         android:src="@drawable/iv_login_act" />
 
     <EditText
@@ -17,7 +22,7 @@
         android:layout_width="274dp"
         android:layout_height="42dp"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:gravity="center_vertical"
         android:hint="@string/register_phone_num"
         android:inputType="phone"
@@ -25,20 +30,18 @@
         android:textColor="@color/white"
         android:textColorHint="@color/base_color_text_white" />
 
-    <LinearLayout
+        <RelativeLayout
         android:id="@+id/llInputPsw"
         android:layout_width="274dp"
         android:layout_height="42dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="15dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            android:gravity="center_vertical">
 
         <EditText
             android:id="@+id/etInputPsw"
-            android:layout_width="60dp"
-            android:layout_height="42dp"
-            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:hint="@string/password"
             android:inputType="textPassword"
@@ -48,19 +51,21 @@
 
         <ToggleButton
             android:id="@+id/tbPswFlag"
-            android:layout_width="50dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/toggle_selector"
             android:textOff=""
             android:textOn="" />
-    </LinearLayout>
+        </RelativeLayout>
 
     <Button
         android:id="@+id/btnGetCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_marginRight="30dp"
+        android:layout_marginRight="40dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/btn_getverifycode_register_act"
         android:padding="5dp"
@@ -91,7 +96,7 @@
 
         <Button
             android:id="@+id/btnReGetCode"
-            android:layout_width="89dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginRight="5dp"
             android:background="@drawable/btn_getverifycode_register_act"
@@ -114,13 +119,14 @@
         android:background="@drawable/btn_login"
         android:text="确    定"
         android:textColor="@color/base_color_text_white" />
-
+    </LinearLayout>
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:gravity="center_horizontal"
         android:text="@string/company_name"
+        android:textColor="@color/white"
         android:textSize="20sp" />
-
-</LinearLayout>
+</RelativeLayout>

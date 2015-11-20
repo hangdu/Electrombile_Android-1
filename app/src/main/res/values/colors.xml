@@ -164,5 +164,6 @@
     <color name="app_style">#16c772</color>
     <color name="btn_normal_color">#45d28e</color>
     <color name="btn_pressed_color">#d0d344</color>
+    <color name="edit_text_color">#c0efd9</color>
 
 </resources>

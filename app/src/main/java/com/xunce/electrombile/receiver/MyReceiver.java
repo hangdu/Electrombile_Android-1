@@ -91,7 +91,7 @@ public class MyReceiver extends BroadcastReceiver {
                     select = 0x02;
                     protocol = createFactory(select, s);
                     Log.i(TAG, "得到GPS");
-                    ((FragmentActivity) mContext).maptabFragment.cancelWaitTimeOut();
+                    ((FragmentActivity) mContext).cancelWaitTimeOut();
                     onGPSArrived(protocol);
                 } else if (destinationName.contains("433")) {
                     select = 0x03;
@@ -119,12 +119,12 @@ public class MyReceiver extends BroadcastReceiver {
         switch (cmd) {
             //如果是设置围栏的命令
             case ProtocolConstants.CMD_FENCE_ON:
-                ((FragmentActivity) mContext).switchFragment.cancelWaitTimeOut();
+                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(result, true, "防盗开启成功");
                 break;
             //如果是设置关闭围栏的命令
             case ProtocolConstants.CMD_FENCE_OFF:
-                ((FragmentActivity) mContext).switchFragment.cancelWaitTimeOut();
+                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(result, false, "防盗关闭成功");
                 break;
             //如果是获取围栏的命令
@@ -147,7 +147,7 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseGetGPS(int result) {
-        ((FragmentActivity) mContext).maptabFragment.cancelWaitTimeOut();
+        ((FragmentActivity) mContext).cancelWaitTimeOut();
         dealErr(result);
     }
 
@@ -175,10 +175,10 @@ public class MyReceiver extends BroadcastReceiver {
             int state = protocol.getState();
             if (ProtocolConstants.ON == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
-                ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
+                ((FragmentActivity) mContext).openStateAlarmBtn();
             } else if (ProtocolConstants.OFF == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
-                ((FragmentActivity) mContext).switchFragment.closeStateAlarmBtn();
+                ((FragmentActivity) mContext).closeStateAlarmBtn();
             }
             ToastUtils.showShort(mContext, "查询状态成功");
         } else {
@@ -189,7 +189,7 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseFence(int result, boolean successAlarmFlag, String success) {
         if (ProtocolConstants.ERR_SUCCESS == result) {
             ((FragmentActivity) mContext).setManager.setAlarmFlag(successAlarmFlag);
-            ((FragmentActivity) mContext).switchFragment.msgSuccessArrived();
+            ((FragmentActivity) mContext).msgSuccessArrived();
             ToastUtils.showShort(mContext, success);
         } else {
             dealErr(result);

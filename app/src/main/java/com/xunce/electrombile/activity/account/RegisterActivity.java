@@ -4,12 +4,12 @@
  * Package Name:com.gizwits.framework.activity.account
  * Date:2015-1-27 14:45:08
  * Copyright (c) 2014~2015 Xtreme Programming Group, Inc.
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
- * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- * 
+ * <p/>
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -54,13 +55,13 @@ import java.util.TimerTask;
 /**
  * ClassName: Class RegisterActivity. <br/>
  * 用户注册，该类用于新用户的注册<br/>
- * 
+ *
  * @author Lien
  */
 
 public class RegisterActivity extends BaseActivity implements OnClickListener {
 
-	/**
+    /**
      * 验证码重发倒计时
      */
     int secondleft = 60;
@@ -74,64 +75,66 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
     ProgressDialog dialog;
     /**
      * The tv phone switch.
-	 */
-	private TextView tvPhoneSwitch;
-	/** The tv tips. */
-	private TextView tvTips;
-	/**
-	 * The et name.
-	 */
-	private EditText etName;
-	/**
-	 * The et input code.
-	 */
-	private EditText etInputCode;
-	/**
-	 * The et input psw.
-	 */
-	private EditText etInputPsw;
-	/**
-	 * The btn get code.
-	 */
-	private Button btnGetCode;
-	/**
-	 * The btn re get code.
-	 */
-	private Button btnReGetCode;
-	/**
-	 * The handler.
-	 */
-	Handler handler = new Handler() {
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			handler_key key = handler_key.values()[msg.what];
-			switch (key) {
+     */
+    private TextView tvPhoneSwitch;
+    /**
+     * The tv tips.
+     */
+    private TextView tvTips;
+    /**
+     * The et name.
+     */
+    private EditText etName;
+    /**
+     * The et input code.
+     */
+    private EditText etInputCode;
+    /**
+     * The et input psw.
+     */
+    private EditText etInputPsw;
+    /**
+     * The btn get code.
+     */
+    private Button btnGetCode;
+    /**
+     * The btn re get code.
+     */
+    private Button btnReGetCode;
+    /**
+     * The handler.
+     */
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            handler_key key = handler_key.values()[msg.what];
+            switch (key) {
 
-			case TICK_TIME:
-				secondleft--;
-				if (secondleft <= 0) {
-					timer.cancel();
-					btnReGetCode.setEnabled(true);
-                    btnReGetCode.setText("重新获取");
-                    btnReGetCode
-                            .setBackgroundResource(R.drawable.btn_getverifycode_1_act);
-                } else {
-                    btnReGetCode.setText(secondleft + "秒后重新获取");
+                case TICK_TIME:
+                    secondleft--;
+                    if (secondleft <= 0) {
+                        timer.cancel();
+                        btnReGetCode.setEnabled(true);
+                        btnReGetCode.setText("重新获取");
+                        btnReGetCode
+                                .setBackgroundResource(R.drawable.btn_getverifycode_1_act);
+                    } else {
+                        btnReGetCode.setText(secondleft + "秒后重新获取");
 
-				}
-				break;
+                    }
+                    break;
 
-			case REG_SUCCESS:
-				ToastUtils.showShort(RegisterActivity.this, (String) msg.obj);
-				dialog.cancel();
-				IntentUtils.getInstance().startActivity(RegisterActivity.this,
-						BindingActivity.class);
-				break;
+                case REG_SUCCESS:
+                    ToastUtils.showShort(RegisterActivity.this, (String) msg.obj);
+                    dialog.cancel();
+                    IntentUtils.getInstance().startActivity(RegisterActivity.this,
+                            BindingActivity.class);
+                    break;
 
-			case TOAST:
-                ToastUtils.showShort(RegisterActivity.this, (String) msg.obj);
-				dialog.cancel();
-				break;
+                case TOAST:
+                    ToastUtils.showShort(RegisterActivity.this, (String) msg.obj);
+                    dialog.cancel();
+                    break;
             }
         }
     };
@@ -146,7 +149,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
     /**
      * The ll input psw.
      */
-    private LinearLayout llInputPsw;
+    private RelativeLayout llInputPsw;
     /**
      * The tb psw flag.
      */
@@ -156,37 +159,37 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
      */
     private boolean isEmail = false;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.activity_register);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_register);
         super.onCreate(savedInstanceState);
-	}
+    }
 
     /**
-	 * Inits the views.
-	 */
+     * Inits the views.
+     */
     @Override
-	public void initViews() {
-		etName = (EditText) findViewById(R.id.etName);
-		etInputCode = (EditText) findViewById(R.id.etInputCode);
-		etInputPsw = (EditText) findViewById(R.id.etInputPsw);
-		btnGetCode = (Button) findViewById(R.id.btnGetCode);
-		btnReGetCode = (Button) findViewById(R.id.btnReGetCode);
-		btnSure = (Button) findViewById(R.id.btnSure);
-		llInputCode = (LinearLayout) findViewById(R.id.llInputCode);
-		llInputPsw = (LinearLayout) findViewById(R.id.llInputPsw);
-		tbPswFlag = (ToggleButton) findViewById(R.id.tbPswFlag);
-		toogleUI(ui_statue.DEFAULT);
-		dialog = new ProgressDialog(this);
-		dialog.setMessage("处理中，请稍候...");
-	}
+    public void initViews() {
+        etName = (EditText) findViewById(R.id.etName);
+        etInputCode = (EditText) findViewById(R.id.etInputCode);
+        etInputPsw = (EditText) findViewById(R.id.etInputPsw);
+        btnGetCode = (Button) findViewById(R.id.btnGetCode);
+        btnReGetCode = (Button) findViewById(R.id.btnReGetCode);
+        btnSure = (Button) findViewById(R.id.btnSure);
+        llInputCode = (LinearLayout) findViewById(R.id.llInputCode);
+        llInputPsw = (RelativeLayout) findViewById(R.id.llInputPsw);
+        tbPswFlag = (ToggleButton) findViewById(R.id.tbPswFlag);
+        toogleUI(ui_statue.DEFAULT);
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("处理中，请稍候...");
+    }
 
     @Override
-	public void initEvents() {
-		btnGetCode.setOnClickListener(this);
-		btnReGetCode.setOnClickListener(this);
-		btnSure.setOnClickListener(this);
-		tbPswFlag.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+    public void initEvents() {
+        btnGetCode.setOnClickListener(this);
+        btnReGetCode.setOnClickListener(this);
+        btnSure.setOnClickListener(this);
+        tbPswFlag.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
@@ -202,33 +205,33 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
             }
 
         });
-	}
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.btnGetCode:
-            //注册并且发送验证码
-            getVerifyCode();
-			break;
-		case R.id.btnReGetCode:
-            //重新获取短信验证码
-            reGetVerifyCode();
-			break;
-		case R.id.btnSure:
-			//验证短信验证码是否正确
-            verifySmsCode();
-			break;
-		}
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnGetCode:
+                //注册并且发送验证码
+                getVerifyCode();
+                break;
+            case R.id.btnReGetCode:
+                //重新获取短信验证码
+                reGetVerifyCode();
+                break;
+            case R.id.btnSure:
+                //验证短信验证码是否正确
+                verifySmsCode();
+                break;
+        }
 
-	}
+    }
 
     //验证短信验证码
     private void verifySmsCode() {
         String code = etInputCode.getText().toString().trim();
-        if("".equals(code)){
+        if ("".equals(code)) {
             ToastUtils.showShort(getApplicationContext(), getString(R.string.validateCodeNull));
-        }else{
+        } else {
             AVUser.verifyMobilePhoneInBackground(code, new AVMobilePhoneVerifyCallback() {
                 @Override
                 public void done(AVException e) {
@@ -308,12 +311,12 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
     }
 
     /**
-	 * 处理发送验证码动作
-	 * 实际上是先注册，再验证。
-	 * @param phone
-	 *            the phone
-	 */
-	private void registerAndSendVerifyCode(final String phone, final String password) {
+     * 处理发送验证码动作
+     * 实际上是先注册，再验证。
+     *
+     * @param phone the phone
+     */
+    private void registerAndSendVerifyCode(final String phone, final String password) {
         dialog.show();
         btnReGetCode.setEnabled(false);
         btnReGetCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
@@ -366,7 +369,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
             btnGetCode.setVisibility(View.VISIBLE);
             etName.setHint("手机号");
             etName.setText("");
-			/*tvTips.setVisibility(View.GONE);*/
+            /*tvTips.setVisibility(View.GONE);*/
         } else if (statue == ui_statue.PHONE) {
             llInputCode.setVisibility(View.VISIBLE);
             //	llInputPsw.setVisibility(View.VISIBLE);
@@ -390,7 +393,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
-        if(!NetworkUtils.isNetworkConnected(this)){
+        if (!NetworkUtils.isNetworkConnected(this)) {
             if (builder == null) {
                 builder = NetworkUtils.networkDialogNoCancel(this);
             } else {
@@ -446,10 +449,10 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
          */
         PHONE,
 
-		/**
+        /**
          * email注册
-		 */
-		EMAIL,
-	}
+         */
+        EMAIL,
+    }
 
 }

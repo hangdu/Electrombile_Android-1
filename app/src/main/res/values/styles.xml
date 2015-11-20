@@ -42,7 +42,7 @@
     <style name="loginEditTextTheme">
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/edit_text_color</item>
     </style>
     <style name="noBackgroundDialog" parent="android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>

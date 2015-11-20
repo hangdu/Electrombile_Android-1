@@ -46,9 +46,6 @@ public class InformationFragment extends BaseFragment {
     private TextView imageDesc;
     // 图片资源ID
     private int[] imageIds = new int[5];
-    //    private int[] imageIds = {R.drawable.first_fragment_iv, R.drawable.linshitupian1, R.drawable.linshitupian2,
-//            R.drawable.linshitupian3,R.drawable.first_fragment_iv,R.drawable.first_fragment_iv,R.drawable.first_fragment_iv,R.drawable.first_fragment_iv,
-//            R.drawable.first_fragment_iv,R.drawable.first_fragment_iv};
     private ViewPagerBean viewPagerBean;
     //判断是否自动滚动
     private boolean isRunning = false;

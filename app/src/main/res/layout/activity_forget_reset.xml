@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="135dip"
         android:layout_height="135dip"
-        android:layout_marginTop="17dip"
+        android:layout_marginTop="60dip"
         android:src="@drawable/iv_login_act" />
 
     <EditText
@@ -17,7 +17,8 @@
         android:layout_width="274dp"
         android:layout_height="42dp"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/line_et"
         android:gravity="center_vertical"
         android:hint="@string/register_phone_num"
         android:inputType="phone"

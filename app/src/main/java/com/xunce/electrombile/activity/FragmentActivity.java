@@ -1,15 +1,28 @@
 package com.xunce.electrombile.activity;
 
+import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -20,6 +33,7 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
@@ -34,6 +48,7 @@ import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
+import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
@@ -73,12 +88,24 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private boolean isExit = false;
     //接收广播
     private MyReceiver receiver;
+
+    private Button btnAlarmState;
+    private boolean alarmState = false;
     /**
      * The handler. to process exit()
      */
     private Handler exitHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             isExit = false;
+        }
+    };
+    private Dialog waitDialog;
+    public Handler timeHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            dismissWaitDialog();
+            ToastUtils.showShort(FragmentActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
 
@@ -114,6 +141,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public void onBackPressed() {
         exit();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -126,11 +154,16 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             mac.registerResources(this);
             sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
+        if (setManager.getAlarmFlag()) {
+            openStateAlarmBtn();
+        } else {
+            closeStateAlarmBtn();
+        }
     }
 
     @Override
     protected void onDestroy() {
-        switchFragment.cancelNotification();
+        cancelNotification();
         if (mac != null) {
             mac.unregisterResources();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
@@ -156,8 +189,134 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         checkId = 1;
     }
 
+    public void alarmStatusChange(View view) {
+        if (alarmState) {
+            if (!setManager.getIMEI().isEmpty()) {
+                if (NetworkUtils.isNetworkConnected(this)) {
+                    //关闭报警
+                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
+                    cancelNotification();
+                    sendMessage(this, mCenter.cmdFenceOff(), setManager.getIMEI());
+                    showWaitDialog();
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+
+                } else {
+                    ToastUtils.showShort(this, "网络连接失败");
+                }
+            } else {
+                ToastUtils.showShort(this, "请等待设备绑定");
+            }
+        } else {
+            if (NetworkUtils.isNetworkConnected(this)) {
+                //打开报警
+                if (!setManager.getIMEI().isEmpty()) {
+                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
+                    cancelNotification();
+                    VibratorUtil.Vibrate(this, 700);
+                    sendMessage(this, mCenter.cmdFenceOn(), setManager.getIMEI());
+                    showWaitDialog();
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+                } else {
+                    ToastUtils.showShort(this, "请先绑定设备");
+                }
+            } else {
+                ToastUtils.showShort(this, "网络连接失败");
+            }
+        }
+    }
+
+    //显示常驻通知栏
+    public void showNotification(String text) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(
+                getApplicationContext()
+                        .NOTIFICATION_SERVICE);
+        Intent intent = new Intent(this, FragmentActivity.class);
+        PendingIntent contextIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Notification notification = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("安全宝")
+                .setWhen(System.currentTimeMillis())
+                .setTicker("安全宝正在设置~")
+                .setOngoing(true)
+                .setContentText(text)
+                .setContentIntent(contextIntent)
+                .build();
+        notificationManager.notify(R.string.app_name, notification);
+    }
+
+    //取消显示常驻通知栏
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(getApplicationContext()
+                .NOTIFICATION_SERVICE);
+        notificationManager.cancel(R.string.app_name);
+    }
+
+    public void msgSuccessArrived() {
+        if (setManager.getAlarmFlag()) {
+            showNotification("安全宝防盗系统已启动");
+            openStateAlarmBtn();
+        } else {
+            showNotification("安全宝防盗系统已关闭");
+            VibratorUtil.Vibrate(this, 500);
+            closeStateAlarmBtn();
+        }
+    }
+
+    /**
+     * 显示等待框
+     */
+    public void showWaitDialog() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_wait, null);
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        view.findViewById(R.id.iv).startAnimation(animation);
+        waitDialog = new Dialog(this, R.style.Translucent_NoTitle_trans);
+        waitDialog.addContentView(view, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        waitDialog.setContentView(view);
+        waitDialog.setCancelable(false);
+        waitDialog.show();
+        WindowManager.LayoutParams params = waitDialog.getWindow().getAttributes();
+        params.y = -156;
+        waitDialog.getWindow().setAttributes(params);
+    }
+
+    /**
+     * 取消显示等待框
+     */
+    public void dismissWaitDialog() {
+        if (waitDialog != null) {
+            waitDialog.dismiss();
+        }
+    }
+
+    //点击打开报警按钮时按钮样式的响应操作
+    public void openStateAlarmBtn() {
+        alarmState = true;
+        btnAlarmState.setText("防盗关闭");
+        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
+    }
+
+    //点击关闭报警按钮时按钮样式的响应操作
+    public void closeStateAlarmBtn() {
+        alarmState = false;
+        btnAlarmState.setText("防盗开启");
+        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
+    }
+
+    /**
+     * 取消等待框的显示
+     */
+    public void cancelWaitTimeOut() {
+        if (waitDialog != null) {
+            dismissWaitDialog();
+            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        }
+    }
+
     /**
      * 得到mac
+     *
      * @return
      */
     public MqttAndroidClient getMac() {
@@ -262,6 +421,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     /**
      * 订阅话题
+     *
      * @param mac mqtt的客户端
      */
     private void subscribe(MqttAndroidClient mac) {
@@ -306,6 +466,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      */
     private void initView() {
         main_radio = (RadioGroup) findViewById(R.id.main_radio);
+        btnAlarmState = (Button) findViewById(R.id.btn_AlarmState);
         mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
@@ -350,8 +511,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
         });
         main_radio.check(checkId);
-    }
+        if (setManager.getAlarmFlag()) {
+            showNotification("安全宝防盗系统已启动");
+            openStateAlarmBtn();
+        } else {
+            closeStateAlarmBtn();
+        }
 
+    }
 
 
     /**
@@ -364,7 +531,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     "退出程序", Toast.LENGTH_SHORT).show();
             exitHandler.sendEmptyMessageDelayed(0, 2000);
         } else {
-            switchFragment.cancelNotification();
+            cancelNotification();
             if (mac != null) {
                 mac.unregisterResources();
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
