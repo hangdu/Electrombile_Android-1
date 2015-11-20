@@ -161,6 +161,9 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseSeekSendToFindAct(int value) {
+        if (value == -1) {
+            return;
+        }
         Intent intent7 = new Intent();
         intent7.putExtra("intensity", value);
         intent7.setAction("com.xunce.electrombile.find");
@@ -211,6 +214,9 @@ public class MyReceiver extends BroadcastReceiver {
     private void onGPSArrived(Protocol protocol) {
         float Flat = protocol.getLat();
         float Flong = protocol.getLng();
+        if (Flat == -1 || Flong == -1) {
+            return;
+        }
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         TracksManager.TrackPoint trackPoint = null;
         trackPoint = new TracksManager.TrackPoint(curDate, ((FragmentActivity) mContext).mCenter.convertPoint(new LatLng(Flat, Flong)));
@@ -218,6 +224,7 @@ public class MyReceiver extends BroadcastReceiver {
         ((FragmentActivity) mContext).setManager.setInitLocation(Flat + "", Flong + "");
         if (trackPoint != null) {
             if (!((FragmentActivity) mContext).maptabFragment.isPlaying) {
+                timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
             }
             ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);

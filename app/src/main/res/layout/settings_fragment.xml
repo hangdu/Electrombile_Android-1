@@ -18,7 +18,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="184dp"
                 android:background="@drawable/layout_selector"
-                android:clickable="true">
+                android:clickable="true"
+                android:elevation="2dip">
 
                 <ImageView
                     android:id="@+id/iv_logo"
@@ -53,7 +54,8 @@
                 android:id="@+id/layout_person_center"
                 style="@style/clickableLayout"
                 android:layout_below="@+id/rl_1"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="24dp"
+                android:elevation="1dip">
 
                 <ImageView
                     style="@style/settings_fragment_iv"
@@ -66,16 +68,18 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="300dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:background="@color/gray" />
+            <!--<View-->
+            <!--android:layout_width="300dp"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:background="@color/transation" />-->
 
             <LinearLayout
                 android:id="@+id/layout_help"
                 style="@style/clickableLayout"
-                android:layout_below="@+id/layout_bind">
+                android:layout_below="@+id/layout_bind"
+                android:layout_marginTop="2dp"
+                android:elevation="2dip">
 
                 <ImageView
                     style="@style/settings_fragment_iv"
@@ -91,7 +95,8 @@
             <LinearLayout
                 android:id="@+id/layout_about"
                 style="@style/clickableLayout"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="24dp"
+                android:elevation="2dip">
 
                 <ImageView
                     style="@style/settings_fragment_iv"
@@ -106,7 +111,8 @@
             <LinearLayout
                 android:id="@+id/btn_logout"
                 style="@style/clickableLayout"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="24dp"
+                android:elevation="2dip">
 
                 <ImageView
                     style="@style/settings_fragment_iv"

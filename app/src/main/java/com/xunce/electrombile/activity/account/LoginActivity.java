@@ -18,6 +18,7 @@
 package com.xunce.electrombile.activity.account;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,12 +32,12 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
-import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
+import com.xunce.electrombile.utils.useful.StringUtils;
 
 
 /**
@@ -143,8 +144,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 		dialog = new ProgressDialog(this);
 		dialog.setMessage("登录中，请稍候...");
-		if (setManager.getUserName() != null) {
-			etName.setText(setManager.getUserName());
+		if (setManager.getPhoneNumber() != null) {
+			etName.setText(setManager.getPhoneNumber());
 		}
 
 	}
@@ -199,9 +200,18 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                 } else {
                     if (avUser != null) {
 						setManager.setPhoneNumber(avUser.getMobilePhoneNumber());
-                        handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
-                    } else {
-                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
+						if (avUser.isMobilePhoneVerified()) {
+							handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
+						} else {
+							handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+							Toast.makeText(LoginActivity.this, "请验证", Toast.LENGTH_SHORT)
+									.show();
+							dialog.cancel();
+							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
+							startActivity(intent);
+						}
+					} else {
+						handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
                     }
                 }
             }

@@ -159,4 +159,6 @@
     <color name="accent_material_light">#000000</color>
     <color name="bright_foreground_material_light">#64c6bb</color>
     <color name="statusBarColor">#00ffffff</color>
+    <color name="style_green">#16c772</color>
+
 </resources>

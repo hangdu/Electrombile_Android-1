@@ -20,6 +20,7 @@
         android:layout_marginTop="100dp"
         android:gravity="center_vertical"
         android:hint="@string/register_phone_num"
+        android:inputType="phone"
         android:paddingLeft="10dp"
         android:textColor="@color/white"
         android:textColorHint="@color/base_color_text_white" />
@@ -48,6 +49,7 @@
             android:layout_marginRight="5dp"
             android:gravity="center"
             android:hint="@string/forget_password_verifycode"
+            android:inputType="number"
             android:textColor="@color/base_color_text_white"
             android:textColorHint="@color/base_color_text_white" />
 

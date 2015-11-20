@@ -10,7 +10,8 @@
         android:id="@+id/rl_1"
         android:layout_width="match_parent"
         android:layout_height="184dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:elevation="2dip">
 
         <ImageView
             android:id="@+id/head_portrait"
@@ -48,6 +49,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="24dp"
         android:background="@color/white"
+        android:elevation="2dip"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -86,4 +88,65 @@
             android:src="@drawable/iv_add_photo_person_act"
             android:visibility="gone" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll__car_number_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/white"
+        android:elevation="2dip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:text="车辆牌照:"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/et_car_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:hint="请输入车辆牌照"
+            android:padding="5dp"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll__sim_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:elevation="2dip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:text="SIM卡号:"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/et_sim_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:hint="请输入SIM卡号"
+            android:inputType="number"
+            android:padding="5dp"
+            android:textSize="22sp" />
+    </LinearLayout>
+
 </LinearLayout>

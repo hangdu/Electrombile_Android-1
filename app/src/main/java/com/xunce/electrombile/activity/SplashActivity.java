@@ -12,10 +12,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.TelephonyManager;
 
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogUtil;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
+import com.xunce.electrombile.activity.account.VerifiedActivity;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.json.JSONObject;
@@ -27,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Random;
 
 import im.fir.sdk.FIR;
 
@@ -55,9 +60,16 @@ public class SplashActivity extends BaseActivity {
                 case UN_UPDATE:
                     AVUser currentUser = AVUser.getCurrentUser();
                     if (currentUser != null) {
+                        Intent intent;
                         FIR.addCustomizeValue("user", currentUser.getUsername());
-                        Intent intent = new Intent(SplashActivity.this, FragmentActivity.class);
-                        startActivity(intent);
+                        LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
+                        if (currentUser.isMobilePhoneVerified()) {
+                            intent = new Intent(SplashActivity.this, FragmentActivity.class);
+                            startActivity(intent);
+                        } else {
+                            intent = new Intent(SplashActivity.this, VerifiedActivity.class);
+                            startActivity(intent);
+                        }
                         SplashActivity.this.finish();
                     } else {
                         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
@@ -73,6 +85,8 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        getDeviceId();
     }
 
     @Override
@@ -191,6 +205,15 @@ public class SplashActivity extends BaseActivity {
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(true);
         progressDialog.show();
+    }
+
+    /**
+     * 获取设备号
+     */
+    private void getDeviceId() {
+        TelephonyManager TelephonyMgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        Random random = new Random(100);
+        ServiceConstants.clientId = TelephonyMgr.getDeviceId() + random.nextInt();
     }
 
     class updateRunnable implements Runnable {

@@ -9,8 +9,8 @@
     <RelativeLayout
         android:id="@+id/rl_container"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="30dp">
+        android:layout_height="200dp"
+        android:background="@color/green">
 
         <ImageView
             android:layout_width="match_parent"
@@ -33,31 +33,32 @@
     </RelativeLayout>
 
 
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="@style/roomRatingBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rl_container"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:clickable="false"
-        android:focusableInTouchMode="false"
-        android:numStars="10"
-        android:rating="1.5"
-        android:stepSize="0.15" />
+    <!--<RatingBar-->
+    <!--android:id="@+id/ratingBar"-->
+    <!--style="@style/roomRatingBar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/rl_container"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginTop="50dp"-->
+    <!--android:clickable="false"-->
+    <!--android:focusableInTouchMode="false"-->
+    <!--android:numStars="10"-->
+    <!--android:rating="1.5"-->
+    <!--android:stepSize="0.15" />-->
 
     <LinearLayout
+        android:id="@+id/ll_draw"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="280dp"
         android:layout_below="@+id/rl_container"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:orientation="horizontal" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/find_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

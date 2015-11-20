@@ -16,19 +16,26 @@ public class GPSProtocol extends Protocol {
 
     @Override
     public float getLng() {
-        lng = Float.parseFloat(keyForValue(ProtocolConstants.LNG));
+        String tmp = keyForValue(ProtocolConstants.LNG);
+        if (isEmpty(tmp)) return -1;
+        lng = Float.parseFloat(tmp);
         return lng;
     }
 
+
     @Override
     public int getTimestamp() {
-        timestamp = Integer.parseInt(keyForValue(ProtocolConstants.TIMESTAMP));
+        String tmp = keyForValue(ProtocolConstants.TIMESTAMP);
+        if (isEmpty(tmp)) return -1;
+        timestamp = Integer.parseInt(tmp);
         return timestamp;
     }
 
     @Override
     public float getLat() {
-        lat = Float.parseFloat(keyForValue(ProtocolConstants.LAT));
+        String tmp = keyForValue(ProtocolConstants.LAT);
+        if (isEmpty(tmp)) return -1;
+        lat = Float.parseFloat(tmp);
         return lat;
     }
 

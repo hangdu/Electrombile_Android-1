@@ -5,7 +5,7 @@
     tools:context="com.xunce.electrombile.activity.BindListActivity">
 
     <RelativeLayout
-        android:id="@+id/title"
+        android:id="@+id/viewpager"
         android:layout_width="fill_parent"
         android:layout_height="60dp"
         android:background="#bfbfbf"
@@ -24,14 +24,14 @@
         android:id="@+id/refreshable_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/title"
+        android:layout_below="@id/viewpager"
         android:orientation="vertical">
 
         <ListView
             android:id="@+id/list_view_bind_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/title"></ListView>
+            android:layout_below="@id/viewpager"></ListView>
 
     </com.xunce.electrombile.view.RefreshableView>
     <TextView

@@ -76,7 +76,7 @@
     <string name="help">help</string>
     <string name="help_for_device">help</string>
     <string name="help_for_app">APP help</string>
-    <string name="login_name_hint">tel／mail</string>
+    <string name="login_name_hint">tel</string>
     <string name="login_forget_password">forget password?</string>
     <string name="register">register</string>
     <string name="register_email">mail</string>

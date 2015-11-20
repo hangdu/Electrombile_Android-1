@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
@@ -42,6 +44,14 @@ public class PersonalCenterActivity extends BaseActivity {
     private ImageView[] iv;
     private String[] path = {"/faceImage.png", "/car1Image.png", "/car2Image.png", "/car3Image.png", "/car4Image.png"};
 
+    //设置设备号
+    private TextView tv_imei;
+    //设置车牌号
+    private EditText et_car_number;
+    //设置sim卡号
+    private EditText et_sim_number;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_personal_center);
@@ -56,12 +66,18 @@ public class PersonalCenterActivity extends BaseActivity {
         carView3 = (ImageView) findViewById(R.id.car3View);
         carView4 = (ImageView) findViewById(R.id.car4View);
         iv = new ImageView[]{faceImage, carView1, carView2, carView3, carView4};
+
+        tv_imei = (TextView) findViewById(R.id.tv_imei);
+        et_car_number = (EditText) findViewById(R.id.et_car_number);
+        et_sim_number = (EditText) findViewById(R.id.et_sim_number);
     }
 
     @Override
     public void initEvents() {
         loadAndSetImg(faceImage, "/faceImage.png");
         int ImageState = setManager.getPersonCenterImage();
+
+        //设置图片
         for (int i = 1; i <= ImageState; i++) {
             iv[i].setVisibility(View.VISIBLE);
             loadAndSetImg(iv[i], path[i]);
@@ -69,6 +85,21 @@ public class PersonalCenterActivity extends BaseActivity {
                 iv[i + 1].setVisibility(View.VISIBLE);
             }
         }
+
+        //设置文字
+        tv_imei.setText("设备卡号:" + setManager.getIMEI());
+        et_sim_number.setText(setManager.getPersonCenterSimNumber());
+        et_car_number.setText(setManager.getPersonCenterCarNumber());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        //保存输入的数据
+        setManager.setPersonCenterCarNumber(et_car_number.getText().toString().trim());
+        setManager.setPersonCenterSimNumber(et_sim_number.getText().toString().trim());
+
     }
 
     private void loadAndSetImg(ImageView imageView, String nameImg) {

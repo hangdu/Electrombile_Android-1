@@ -4,18 +4,46 @@
     android:layout_height="match_parent"
     tools:context=".SwitchFragment">
 
-    <ImageView
-        android:id="@+id/title"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/banner_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/first_fragment_iv" />
+        android:layout_height="220dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/banner_viewpager"
+        android:background="#33000000"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/image_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/point_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"></LinearLayout>
+    </LinearLayout>
+    <!--<ImageView-->
+    <!--android:id="@+id/title_image"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="220dp"-->
+    <!--android:scaleType="fitXY"-->
+    <!--android:src="@drawable/first_fragment_iv" />-->
 
     <LinearLayout
         android:id="@+id/ll_container"
         android:layout_width="match_parent"
         android:layout_height="164dip"
-        android:layout_below="@+id/title"
+        android:layout_below="@+id/banner_viewpager"
         android:orientation="horizontal"
         android:weightSum="2">
 
@@ -23,17 +51,17 @@
             android:id="@+id/ll_a"
             android:layout_width="0dp"
             android:layout_height="164dip"
-            android:layout_below="@+id/title"
+            android:layout_below="@+id/banner_viewpager"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
             android:layout_weight="1"
-            android:background="#47d3c2"
+            android:background="@drawable/switch_frag_location"
             android:orientation="vertical">
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/switch_fragment_map_location" />
@@ -43,33 +71,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="24dp"
                 android:text="当前位置"
-                android:textColor="@color/customblack"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/line_home_fragment" />
+            android:layout_width="1dp"
+            android:layout_height="164dip"
+            android:src="@drawable/line_between_two_frag" />
 
         <LinearLayout
             android:id="@+id/ll_b"
             android:layout_width="0dp"
             android:layout_height="164dip"
-            android:layout_below="@+id/title"
+            android:layout_below="@+id/viewpager"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="4dp"
             android:layout_toRightOf="@+id/ll_a"
             android:layout_weight="1"
-            android:background="#ffce4b"
+            android:background="@drawable/switch_frag_weather"
             android:orientation="vertical">
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/iv_weather" />
@@ -81,11 +109,11 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="2dp"
-                android:layout_marginTop="28dp"
+                android:layout_marginTop="24dp"
                 android:ellipsize="end"
                 android:maxLines="3"
                 android:text="现在天气"
-                android:textColor="@color/customblack"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
@@ -96,13 +124,27 @@
         android:layout_below="@+id/ll_container"
         android:background="@drawable/third_bg_fragment">
 
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:id="@+id/btn_AlarmState"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--app:borderWidth="0dp"-->
+        <!--app:backgroundTint="@color/green"-->
+        <!--app:rippleColor="@color/avoscloud_blue"-->
+        <!--app:elevation="6dp"-->
+        <!--android:text="开启小安宝"-->
+        <!--app:pressedTranslationZ="12dp"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:textColor="@color/base_color_text_white"-->
+        <!--android:src="@drawable/btn_switch_selector_1" />-->
         <Button
             android:id="@+id/btn_AlarmState"
             android:layout_width="200dp"
             android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:background="@drawable/btn_switch_selector_1"
-            android:text="开启小安保"
+            android:text="开启小安宝"
             android:textColor="@color/base_color_text_white" />
 
         <!--<ImageView-->

@@ -1,6 +1,10 @@
 package com.xunce.electrombile.protocol;
 
+import android.text.TextUtils;
+
 import com.xunce.electrombile.utils.useful.JSONUtils;
+
+import org.json.JSONException;
 
 import java.io.Serializable;
 
@@ -15,14 +19,19 @@ public class Protocol implements Serializable {
     }
 
     protected final String keyForValue(String key) {
-        return JSONUtils.ParseJSON(tmp, key);
+        try {
+            return JSONUtils.ParseJSON(tmp, key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public int getTimestamp() {
         throw new NullPointerException();
     }
 
-    ;
+
 
     public int getIntensity() {
         throw new NullPointerException();
@@ -56,5 +65,10 @@ public class Protocol implements Serializable {
         throw new NullPointerException();
     }
 
-    ;
+    protected boolean isEmpty(String temp) {
+        if (TextUtils.isEmpty(temp)) {
+            return true;
+        }
+        return false;
+    }
 }

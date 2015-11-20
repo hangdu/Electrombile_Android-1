@@ -232,24 +232,19 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
             AVUser.verifyMobilePhoneInBackground(code, new AVMobilePhoneVerifyCallback() {
                 @Override
                 public void done(AVException e) {
+                    Message msg = Message.obtain();
                     if (e == null) {
                         LogUtil.log.i(getString(R.string.validateSuccess));
-                        ToastUtils.showShort(getApplicationContext(), getString(R.string.validateSuccess));
-                        Message msg = new Message();
                         msg.what = handler_key.REG_SUCCESS.ordinal();
                         msg.obj = "注册成功";
-                        handler.sendMessage(msg);
                     } else if (AVException.CONNECTION_FAILED == e.getCode()) {
-                        Message msg = new Message();
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "网络连接失败";
-                        handler.sendMessage(msg);
                     } else {
-                        Message msg = new Message();
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "验证失败";
-                        handler.sendMessage(msg);
                     }
+                    handler.sendMessage(msg);
                 }
             });
         }
@@ -298,17 +293,16 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
         AVUser.requestMobilePhoneVerifyInBackground(phone, new RequestMobileCodeCallback() {
             @Override
             public void done(AVException e) {
+                Message msg = Message.obtain();
                 if (e == null) {
-                    Message msg = new Message();
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送成功";
-                    handler.sendMessage(msg);
                 } else {
-                    Message msg = new Message();
+                    LogUtil.log.e("注册" + e.toString());
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送失败";
-                    handler.sendMessage(msg);
                 }
+                handler.sendMessage(msg);
             }
         });
     }
@@ -341,20 +335,19 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(AVException e) {
+                Message msg = Message.obtain();
                 if (e == null) {
                     setManager.setPhoneNumber(phone);
                     LogUtil.log.i(getString(R.string.registerSuccess));
                     ToastUtils.showShort(getApplicationContext(), getString(R.string.registerSuccess));
-                    Message msg = new Message();
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送成功";
-                    handler.sendMessage(msg);
                 } else {
-                    Message msg = new Message();
+                    LogUtil.log.e("注册" + e.toString());
                     msg.what = handler_key.TOAST.ordinal();
                     msg.obj = "发送失败";
-                    handler.sendMessage(msg);
                 }
+                handler.sendMessage(msg);
             }
         });
     }

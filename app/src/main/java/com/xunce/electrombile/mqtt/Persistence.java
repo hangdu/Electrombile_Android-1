@@ -162,7 +162,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
         values.put(COLUMN_USER_NAME, conOpts.getUserName());
         values.put(COLUMN_TOPIC, conOpts.getWillDestination());
 
-        //uses "condition ? trueValue: falseValue" for in line converting of values
+        //uses "condition ? trueValue: falseValue" for in horizontal_line converting of values
         char[] password = conOpts.getPassword();
         values.put(COLUMN_CLEAN_SESSION, conOpts.isCleanSession() ? 1 : 0); //convert boolean to int and then put in values
         values.put(COLUMN_PASSWORD, password != null ? String.valueOf(password) : null); //convert char[] to String
@@ -243,7 +243,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
             int keepAlive = c.getInt(c.getColumnIndexOrThrow(COLUMN_KEEP_ALIVE));
             int timeout = c.getInt(c.getColumnIndexOrThrow(COLUMN_TIME_OUT));
 
-            //get all values that need converting and convert integers to booleans in line using "condition ? trueValue : falseValue"
+            //get all values that need converting and convert integers to booleans in horizontal_line using "condition ? trueValue : falseValue"
             boolean cleanSession = c.getInt(c.getColumnIndexOrThrow(COLUMN_CLEAN_SESSION)) == 1 ? true : false;
             boolean retained = c.getInt(c.getColumnIndexOrThrow(COLUMN_RETAINED)) == 1 ? true : false;
             boolean ssl = c.getInt(c.getColumnIndexOrThrow(COLUMN_ssl)) == 1 ? true : false;
