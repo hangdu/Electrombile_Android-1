@@ -33,8 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
 
-import im.fir.sdk.FIR;
-
 
 public class SplashActivity extends BaseActivity {
 
@@ -61,7 +59,7 @@ public class SplashActivity extends BaseActivity {
                     AVUser currentUser = AVUser.getCurrentUser();
                     if (currentUser != null) {
                         Intent intent;
-                        FIR.addCustomizeValue("user", currentUser.getUsername());
+//                        FIR.addCustomizeValue("user", currentUser.getUsername());
                         LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
                         if (currentUser.isMobilePhoneVerified()) {
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
