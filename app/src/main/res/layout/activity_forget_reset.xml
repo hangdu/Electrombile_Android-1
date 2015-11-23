@@ -22,7 +22,7 @@
         android:gravity="center_vertical"
         android:hint="@string/register_phone_num"
         android:inputType="phone"
-        android:paddingLeft="10dp"
+        android:paddingLeft="15dp"
         android:textColor="@color/white"
         android:textColorHint="@color/base_color_text_white" />
 
@@ -48,6 +48,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:background="@drawable/line_et"
             android:gravity="center"
             android:hint="@string/forget_password_verifycode"
             android:inputType="number"
@@ -70,7 +71,7 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/llInputPsw"
         android:layout_width="274dp"
         android:layout_height="42dp"
@@ -81,24 +82,27 @@
 
         <EditText
             android:id="@+id/etInputPsw"
-            android:layout_width="60dp"
+            android:layout_width="match_parent"
             android:layout_height="42dp"
             android:layout_weight="3"
+            android:background="@drawable/line_et"
             android:gravity="center_vertical"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:paddingLeft="10dp"
+            android:paddingLeft="15dp"
             android:textColor="@color/white"
             android:textColorHint="@color/base_color_text_white" />
 
         <ToggleButton
             android:id="@+id/tbPswFlag"
-            android:layout_width="50dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/toggle_selector"
             android:textOff=""
             android:textOn="" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btnSure"
