@@ -65,6 +65,10 @@ public class Protocol implements Serializable {
         throw new NullPointerException();
     }
 
+    public int getPeriod() {
+        throw new NullPointerException();
+    }
+
     protected boolean isEmpty(String temp) {
         if (TextUtils.isEmpty(temp)) {
             return true;

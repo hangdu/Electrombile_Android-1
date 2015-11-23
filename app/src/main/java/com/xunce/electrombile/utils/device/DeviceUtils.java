@@ -27,7 +27,7 @@ public class DeviceUtils {
 
             long[] pattern = { 500, 500, 500 };
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                    context).setSmallIcon(R.drawable.ic_launcher)
+                    context).setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle(topic).setContentText(msg)
                     .setSound(alarmSound).setVibrate(pattern).setAutoCancel(true);
             // Creates an explicit intent for an Activity in your app

@@ -9,6 +9,7 @@ public class CmdProtocol extends Protocol {
     protected int cmd;
     protected int result;
     protected int state;
+    protected int period;
 
     public CmdProtocol(String tmp) {
         super(tmp);
@@ -33,8 +34,16 @@ public class CmdProtocol extends Protocol {
     @Override
     public int getState() {
         String temp = keyForValue(ProtocolConstants.STATE);
+        if (isEmpty(temp)) return -1;
         state = Integer.parseInt(temp);
         return state;
     }
 
+    @Override
+    public int getPeriod() {
+        String temp = keyForValue(ProtocolConstants.PERIOD);
+        if (isEmpty(temp)) return -1;
+        period = Integer.parseInt(temp);
+        return period;
+    }
 }

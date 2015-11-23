@@ -96,12 +96,12 @@ public class MyReceiver extends BroadcastReceiver {
                 } else if (destinationName.contains("433")) {
                     select = 0x03;
                     protocol = createFactory(select, s);
-                    // 找车
+                    Log.i(TAG, "433找车");
                     on433Arrived(protocol);
                 }
 
             } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {
-                ToastUtils.showShort(mContext, "网络连接已断开");
+                ToastUtils.showShort(mContext, "服务器连接已断开");
             }
         }
     }
@@ -141,6 +141,15 @@ public class MyReceiver extends BroadcastReceiver {
                 break;
             case ProtocolConstants.CMD_LOCATION:
                 caseGetGPS(result);
+                break;
+            case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
+                break;
+            case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
+                break;
+            case ProtocolConstants.APP_CMD_AUTO_PERIOD_GET:
+                break;
+            case ProtocolConstants.APP_CMD_AUTO_PERIOD_SET:
+                break;
             default:
                 break;
         }

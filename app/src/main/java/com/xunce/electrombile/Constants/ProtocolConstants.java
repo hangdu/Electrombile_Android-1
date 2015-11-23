@@ -36,6 +36,7 @@ public class ProtocolConstants {
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
     public final static String TYPE = "type";
+    public final static String PERIOD = "period";
 
     //开启电子围栏告警
     public final static int CMD_FENCE_ON = 1;
