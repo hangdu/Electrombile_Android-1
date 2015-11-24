@@ -155,7 +155,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      */
     private void loginOut() {
         //解析xml
-        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_logout, null);
         final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
 
@@ -173,7 +173,9 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
             public void onClick(View v) {
                 unSubscribe(((FragmentActivity) m_context).getMac());
                 Intent intent;
-                intent = new Intent("com.xunce.electrombile.alarmservice");
+                intent = new Intent();
+                intent.setAction("com.xunce.electrombile.alarmservice");
+                intent.setPackage(m_context.getPackageName());
                 m_context.stopService(intent);
                 ToastUtils.showShort(m_context, "退出登录成功");
                 setManager.cleanAll();

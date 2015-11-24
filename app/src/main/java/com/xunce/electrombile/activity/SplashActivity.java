@@ -65,6 +65,7 @@ public class SplashActivity extends BaseActivity {
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
                             startActivity(intent);
                         } else {
+                            setManager.setPhoneNumber(currentUser.getUsername());
                             intent = new Intent(SplashActivity.this, VerifiedActivity.class);
                             startActivity(intent);
                         }

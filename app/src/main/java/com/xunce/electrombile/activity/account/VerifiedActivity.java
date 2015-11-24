@@ -2,6 +2,7 @@ package com.xunce.electrombile.activity.account;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,8 +16,11 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.RequestMobileCodeCallback;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.useful.StringUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,9 +55,10 @@ public class VerifiedActivity extends Activity {
                     ToastUtils.showShort(VerifiedActivity.this, (String) msg.obj);
                     dialog.cancel();
                     finish();
+                    IntentUtils.getInstance().startActivity(VerifiedActivity.this, FragmentActivity.class);
                     break;
                 case TOAST:
-                    ToastUtils.showShort(VerifiedActivity.this, (String) msg.obj);
+                    ToastUtils.showLong(VerifiedActivity.this, (String) msg.obj);
                     dialog.cancel();
                     break;
             }
@@ -66,6 +71,7 @@ public class VerifiedActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verified);
         initView();
+        btnReGetCode.performClick();
     }
 
     private void initView() {
@@ -90,7 +96,9 @@ public class VerifiedActivity extends Activity {
             }
         }, 1000, 1000);
         //此方法会再次发送验证短信
-        AVUser.requestMobilePhoneVerifyInBackground(settingManager.getPhoneNumber(), new RequestMobileCodeCallback() {
+        final AVUser user = AVUser.getCurrentUser();
+        user.setMobilePhoneNumber(user.getUsername());
+        AVUser.requestMobilePhoneVerifyInBackground(user.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
             @Override
             public void done(AVException e) {
                 if (e == null) {
@@ -99,10 +107,10 @@ public class VerifiedActivity extends Activity {
                     msg.obj = "发送成功";
                     handler.sendMessage(msg);
                 } else {
-                    LogUtil.log.e("注册" + e.toString());
+                    LogUtil.log.e("phoneNumber"+user.getMobilePhoneNumber()+"code:" +e.getCode()+ e.toString());
                     Message msg = new Message();
                     msg.what = handler_key.TOAST.ordinal();
-                    msg.obj = "发送失败";
+                    msg.obj = e.toString();
                     handler.sendMessage(msg);
                 }
             }
@@ -126,6 +134,7 @@ public class VerifiedActivity extends Activity {
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "网络连接失败";
                     } else {
+                        LogUtil.log.d(e.toString());
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "验证失败";
                     }
@@ -133,6 +142,12 @@ public class VerifiedActivity extends Activity {
                 }
             });
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        IntentUtils.getInstance().startActivity(this,LoginActivity.class);
+        this.finish();
     }
 
     private enum handler_key {

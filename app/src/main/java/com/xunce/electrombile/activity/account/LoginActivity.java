@@ -199,7 +199,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                     }
                 } else {
                     if (avUser != null) {
-						setManager.setPhoneNumber(avUser.getMobilePhoneNumber());
+						LogUtil.log.d(avUser.getUsername());
+						setManager.setPhoneNumber(avUser.getUsername());
 						if (avUser.isMobilePhoneVerified()) {
 							handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
 						} else {
