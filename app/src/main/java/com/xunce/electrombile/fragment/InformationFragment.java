@@ -22,6 +22,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.ViewPagerBean;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -30,6 +31,7 @@ import com.xunce.electrombile.utils.useful.StringUtils;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by lybvinci on 15/11/20.
@@ -83,9 +85,12 @@ public class InformationFragment extends BaseFragment {
                                     String[] tngous = tngou.split("\\},");
                                     String[] imgs = new String[imageIds.length];
                                     String[] titles = new String[imageIds.length];
+                                    Random random = new Random(System.currentTimeMillis());
+                                    int k = random.nextInt(14);
+                                    Logger.d("随机数"+k);
                                     for (int i = 0; i < imageIds.length; i++) {
-                                        imgs[i] = JSONUtils.ParseJSON(tngous[i] + "}", "img");
-                                        titles[i] = JSONUtils.ParseJSON(tngous[i] + "}", "title");
+                                        imgs[i] = JSONUtils.ParseJSON(tngous[i+k] + "}", "img");
+                                        titles[i] = JSONUtils.ParseJSON(tngous[i+k] + "}", "title");
                                     }
                                     for (int j = 0; j < imageIds.length; j++) {
                                         loadAndSetImg(viewPagerBean.imageList.get(j), viewPagerBean.url + imgs[j]);

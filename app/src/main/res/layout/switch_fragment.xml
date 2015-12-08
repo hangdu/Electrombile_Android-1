@@ -97,11 +97,13 @@
         </LinearLayout>
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="248dp"
-        android:layout_below="@+id/ll_container"
-        android:background="@drawable/third_bg_fragment">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="248dp"-->
+        <!--android:layout_below="@+id/ll_container"-->
+        <!--android:background="@drawable/third_bg_fragment">-->
+
+
 
         <!--<android.support.design.widget.FloatingActionButton-->
         <!--android:layout_width="100dp"-->
@@ -133,7 +135,7 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_centerHorizontal="true"-->
         <!--android:background="@drawable/switch_fragment_zhuangtai2" />-->
-    </RelativeLayout>
+    <!--</RelativeLayout>-->
 
 
     <!--<TextView-->

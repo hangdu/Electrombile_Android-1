@@ -15,9 +15,12 @@ package com.xunce.electrombile.mqtt;
 import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 
+import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.Constants.ActivityConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -94,6 +97,7 @@ public class Connection {
         sb.append(clientId);
         sb.append(" created");
         addAction(sb.toString());
+
     }
 
     /**
@@ -387,4 +391,5 @@ public class Connection {
         /** Status is unknown **/
         NONE
     }
+
 }
