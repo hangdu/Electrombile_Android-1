@@ -103,7 +103,6 @@ public class MyReceiver extends BroadcastReceiver {
                 }
 
             } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {
-                //TODO 可能bundle里面没有callbackaction
                 ToastUtils.showShort(mContext, "服务器连接已断开");
                 Logger.wtf("服务器连接已断开");
             }

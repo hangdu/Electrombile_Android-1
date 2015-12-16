@@ -2,7 +2,14 @@ package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +23,10 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.offline.MKOLSearchRecord;
+import com.baidu.mapapi.map.offline.MKOLUpdateElement;
+import com.baidu.mapapi.map.offline.MKOfflineMap;
+import com.baidu.mapapi.map.offline.MKOfflineMapListener;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -28,14 +39,21 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+import com.orhanobut.logger.Logger;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.WeatherBean;
+import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONException;
 
+import java.util.ArrayList;
+
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
+    private static final int DELAYTIME = 1000;
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
@@ -47,7 +65,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
     private TextView tvWeather;
-
+    static MKOfflineMap mkOfflineMap;
+    private static String localcity;
 
 
     @Override
@@ -71,6 +90,19 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
+
+        mkOfflineMap = new MKOfflineMap(); //初始化离线地图
+        mkOfflineMap.init(new MKOfflineMapListener() {
+            @Override
+            public void onGetOfflineMapState(int i, int i1) {
+            }
+        });
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                offlineMapAutoDownload(); //检查网络是否可以离线下载
+                //execute the task
+            }
+        }, DELAYTIME);
 
 
     }
@@ -150,9 +182,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
         switch_fragment_tvLocation.setText(result.getAddress().trim());
     }
-
-
-
 
 
     @Override
@@ -248,6 +277,39 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 });
     }
 
+    /**
+     * 判断是不是在WIFI环境下，如果是就自动下载离线地图
+     */
+    private void offlineMapAutoDownload() {
+        if (WIFIUtil.isWIFI(getActivity())) {
+            com.orhanobut.logger.Logger.d("没错，就是在WIFI环境下，我要开始下载离线地图了");
+            downloadOfflinemap();
+        } else {
+            com.orhanobut.logger.Logger.d("没连WIFI，不敢下……");
+        }
+    }
+
+    private static void downloadOfflinemap() {
+        if (localcity != null) {
+            Logger.d("我获取到了城市的名字%s", localcity);
+            MKOLUpdateElement element = LocalCityelement();
+            if (element != null) {
+                Logger.d("以前好像下过了，我看看下完没");
+                if (element.status != MKOLUpdateElement.FINISHED) {
+                    Logger.d("没下完，我接着下");
+                    mkOfflineMap.start(element.cityID);
+                }
+            } else {
+                Logger.d("以前没下过");
+                ArrayList<MKOLSearchRecord> records = mkOfflineMap.searchCity(localcity);
+                for (MKOLSearchRecord record : records) {
+                    Logger.d("下载:%d", record.cityID);
+                    mkOfflineMap.start(record.cityID);
+                }
+            }
+        }
+    }
+
     public interface LocationTVClickedListener {
         void locationTVClicked();
     }
@@ -259,18 +321,44 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
                 Log.i(TAG, "离线定位成功，离线定位结果也是有效的");
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else {
                 Log.e(TAG, "服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
             }
         }
     }
 
+    private static MKOLUpdateElement LocalCityelement() {
+        ArrayList<MKOLUpdateElement> localCitylist = mkOfflineMap.getAllUpdateInfo();
+        if (localCitylist != null) {
+            for (MKOLUpdateElement element : localCitylist) {
+                element.cityName.contains(localcity);
+                return element;
+            }
+        }
+        return null;
+    }
 
+    public static class NetWorkListen extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo wifiInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiInfo != null && wifiInfo.isConnected()) {
+                com.orhanobut.logger.Logger.d("没错，就是在WIFI环境下，我要看看获取到城市名字了没");
+                downloadOfflinemap();
+            } else {
+                Logger.d("没连WIFI");
+            }
+        }
+    }
 }

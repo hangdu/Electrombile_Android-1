@@ -231,7 +231,6 @@ public class MaptabFragment extends BaseFragment {
                 .build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-
     }
 
     @Override

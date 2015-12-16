@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#eeeeee"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#eeeeee"
+              android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                     android:layout_height="100dp"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="24dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@mipmap/ic_launcher"/>
 
                 <TextView
                     android:id="@+id/tv_equip"
@@ -37,7 +37,7 @@
                     android:layout_marginTop="60dp"
                     android:layout_toRightOf="@+id/iv_logo"
                     android:text="广告招商"
-                    android:textSize="25sp" />
+                    android:textSize="25sp"/>
 
                 <TextView
                     android:id="@+id/tv_imei"
@@ -47,7 +47,7 @@
                     android:layout_below="@+id/tv_equip"
                     android:layout_marginTop="10dp"
                     android:singleLine="true"
-                    android:text="当前设备号：" />
+                    android:text="当前设备号："/>
             </RelativeLayout>
 
             <LinearLayout
@@ -59,12 +59,12 @@
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@drawable/person_center_left" />
+                    android:src="@drawable/person_center_left"/>
 
                 <TextView
                     style="@style/clickableLayoutTextview"
                     android:text="个人中心"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
 
             </LinearLayout>
 
@@ -83,12 +83,12 @@
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@drawable/setting_help" />
+                    android:src="@drawable/setting_help"/>
 
                 <TextView
                     style="@style/clickableLayoutTextview"
                     android:text="使用帮助"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
             </LinearLayout>
 
             <LinearLayout
@@ -100,15 +100,31 @@
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@drawable/iv_login_act" />
+                    android:src="@drawable/iv_login_act"/>
 
                 <TextView
                     style="@style/clickableLayoutTextview"
                     android:text="设备管理"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/layout_map_offline"
+                style="@style/clickableLayout"
+                android:layout_below="@id/rl_1"
+                android:layout_marginTop="2dp"
+                android:elevation="2dip">
+
+                <ImageView
+                    style="@style/settings_fragment_iv"
+                    android:src="@drawable/iv_login_act"/>
+
+                <TextView
+                    style="@style/clickableLayoutTextview"
+                    android:text="离线地图"
+                    android:textColor="@color/black"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_about"
@@ -118,12 +134,12 @@
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@drawable/setting_tel" />
+                    android:src="@drawable/setting_tel"/>
 
                 <TextView
                     style="@style/clickableLayoutTextview"
                     android:text="联系我们"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
             </LinearLayout>
 
             <LinearLayout
@@ -134,12 +150,12 @@
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@color/transation" />
+                    android:src="@color/transation"/>
 
                 <TextView
                     style="@style/clickableLayoutTextview"
                     android:text="退出登录"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"/>
             </LinearLayout>
 
             <!--<LinearLayout-->

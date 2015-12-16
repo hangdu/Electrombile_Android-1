@@ -50,6 +50,7 @@ import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
 
@@ -599,7 +600,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         } else {
             closeStateAlarmBtn();
         }
-
     }
 
 

@@ -86,7 +86,7 @@ public class InformationFragment extends BaseFragment {
                                     String[] imgs = new String[imageIds.length];
                                     String[] titles = new String[imageIds.length];
                                     Random random = new Random(System.currentTimeMillis());
-                                    int k = random.nextInt(14);
+                                    int k = random.nextInt(13);
                                     Logger.d("随机数"+k);
                                     for (int i = 0; i < imageIds.length; i++) {
                                         imgs[i] = JSONUtils.ParseJSON(tngous[i+k] + "}", "img");
