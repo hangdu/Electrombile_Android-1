@@ -175,6 +175,8 @@
             android:label="VerifiedActivity"
             android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
+        <activity
+            android:name=".activity.TestddActivity"></activity>
     </application>
 
 </manifest>

@@ -44,6 +44,7 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
 import com.xunce.electrombile.activity.FindActivity;
 import com.xunce.electrombile.activity.RecordActivity;
+import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -369,7 +370,8 @@ public class MaptabFragment extends BaseFragment {
                 if (checkBind()) return;
                 clearDataAndView();
 
-                Intent intent = new Intent(m_context, RecordActivity.class);
+                //Intent intent = new Intent(m_context, RecordActivity.class);
+                Intent intent = new Intent(m_context, TestddActivity.class);
                 startActivity(intent);
             }
         });
