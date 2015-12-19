@@ -14,6 +14,12 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 import android.content.Context;
 
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.R;
 
 public class ExpandableAdapter extends BaseExpandableListAdapter{
@@ -125,6 +131,23 @@ public class ExpandableAdapter extends BaseExpandableListAdapter{
 
     @Override
     public void onGroupExpanded(int groupPosition) {
+        //test
+//        GeoCoder geoCoder = GeoCoder.newInstance();
+//        OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
+//            @Override
+//            public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+//
+//            }
+//
+//            @Override
+//            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+//                String address = reverseGeoCodeResult.getAddress();
+//
+//            }
+//        };
+//        // 设置地理编码检索监听者
+//        geoCoder.setOnGetGeoCodeResultListener(listener);
+//        geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(new LatLng(30,30)));
         activity.GetHistoryTrack(groupPosition);
     }
 }

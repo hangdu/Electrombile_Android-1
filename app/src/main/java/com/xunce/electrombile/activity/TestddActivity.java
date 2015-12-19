@@ -25,6 +25,11 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.TracksBean;
@@ -43,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
+import com.baidu.mapapi.search.geocode.GeoCoder;
+
 public class TestddActivity extends Activity {
 
     private final String TAG = "RecordActivity";
@@ -54,7 +61,7 @@ public class TestddActivity extends Activity {
     Button btnTwoDay;
     DatePicker dpBegin;
     DatePicker dpEnd;
-    ListView m_listview;
+//    ListView m_listview;
     TracksManager tracksManager;
     List<Item> ItemList = new ArrayList<>();
 
@@ -83,6 +90,9 @@ public class TestddActivity extends Activity {
     List<Message> messageList;
 
     Item item;
+
+    GeoCodering geoCoder1;
+    GeoCodering geoCoder2;
 
 
 
@@ -114,7 +124,7 @@ public class TestddActivity extends Activity {
 
         if (TracksBean.getInstance().getTracksData().size() != 0) {
             // Log.i(TAG, "TracksBean.getInstance().getTracksData().size()" + TracksBean.getInstance().getTracksData().size());
-            m_listview.setVisibility(View.VISIBLE);
+//            m_listview.setVisibility(View.VISIBLE);
             tracksManager.clearTracks();
             tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
             //Log.i(TAG, "TrackManager size:" + tracksManager.getTracks().size());
@@ -174,21 +184,7 @@ public class TestddActivity extends Activity {
 //        });
 //
 //
-//        dialog = new AlertDialog.Builder(this)
-//                .setPositiveButton("继续查询",
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//
-//                            }
-//                        }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        finish();
-//
-//                    }
-//                }).create();
+
 //
 //
 ////        tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
@@ -215,6 +211,17 @@ public class TestddActivity extends Activity {
             public void done(List<AVObject> avObjects, AVException e) {
                 //  Log.i(TAG, e + "");
                 if (e == null) {
+                    if (avObjects.size() == 0) {
+                        dialog.setTitle("此时间段内没有数据");
+                        dialog.show();
+                        watiDialog.dismiss();
+
+                        List<Message> test = new ArrayList<Message>();
+                        ItemList.get(GroupPosition).setMessagelist(test);
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
+
                     if (avObjects.size() > 0)
                         //     Log.e(TAG,"oooooooooooooook--------" + avObjects.size());
                         if (avObjects.size() == 0) {
@@ -222,6 +229,11 @@ public class TestddActivity extends Activity {
                             dialog.setTitle("此时间段内没有数据");
                             dialog.show();
                             watiDialog.dismiss();
+
+                            List<Message> test = new ArrayList<Message>();
+                            ItemList.get(GroupPosition).setMessagelist(test);
+                            adapter.notifyDataSetChanged();
+
                             return;
                         }
                     for (AVObject thisObject : avObjects) {
@@ -257,7 +269,7 @@ public class TestddActivity extends Activity {
                     watiDialog.dismiss();
                 }
             }
-        } );
+        });
     }
 
     private void clearListViewWhenFail() {
@@ -269,13 +281,15 @@ public class TestddActivity extends Activity {
     private void updateListView(){
         //   Log.i(TAG, "update list View");
 //        listItem.clear();
+
+
+
         //如果没有数据，弹出对话框
         if(tracksManager.getTracks().size() == 0){
             dialog.setTitle("此时间段内没有数据");
             dialog.show();
             return;
         }
-
 
         double start_latitude;
         double start_longitude;
@@ -301,16 +315,20 @@ public class TestddActivity extends Activity {
             start_latitude = startP.point.latitude;
             start_longitude=startP.point.longitude;
             startdate = startP.time;
+            geoCoder1 = new GeoCodering(this,startP.point,i,0);
 
             TrackPoint endP = trackList.get(trackList.size() - 1);
             end_latitude = endP.point.latitude;
             end_longitude = endP.point.longitude;
-            message = new Message(String.valueOf(startdate.getHours())+String.valueOf(startdate.getMinutes()),
-                    String.valueOf(start_latitude)+","+String.valueOf(start_longitude),
-                    String.valueOf(end_latitude)+","+String.valueOf(end_longitude));
+            geoCoder2 = new GeoCodering(this,endP.point,i,1);
+
+
+            message = new Message(String.valueOf(startdate.getHours())+":"+String.valueOf(startdate.getMinutes()),
+                    geoCoder1.ReverseGeoCodeResult,
+                    geoCoder2.ReverseGeoCodeResult);
             messageList.add(message);
 
-            //计算开始点和结束点时间间隔
+                //计算开始点和结束点时间间隔
             long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
             long days = diff / (60 * 60 * 24);
             long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
@@ -353,6 +371,23 @@ public class TestddActivity extends Activity {
 
     private void init(){
         watiDialog = new ProgressDialog(this);
+
+        dialog = new AlertDialog.Builder(this)
+                .setPositiveButton("继续查询",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+                            }
+                        }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+
+                    }
+                }).create();
+
         List<Message> test = new ArrayList<Message>();
 //        test.add(new Message("12:00", "location1", "location2"));
 
@@ -447,5 +482,19 @@ public class TestddActivity extends Activity {
 
        }
         findCloud(startT, endT, 0);
+    }
+
+    //由经纬度转换成了具体的地址之后就调用这个函数
+    void RefreshMessageList(int TrackPosition,int Start_End_TYPE,String result)
+    {
+        if(0 == Start_End_TYPE)
+        {
+            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setStartLocation(result);
+        }
+        else{
+            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setEndLocation(result);
+        }
+        adapter.notifyDataSetChanged();
+        return;
     }
 }

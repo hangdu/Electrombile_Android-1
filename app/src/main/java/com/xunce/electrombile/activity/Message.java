@@ -23,4 +23,14 @@ public class Message {
         return EndLocation;
     }
 
+    public void setStartLocation(String startLocation){
+        this.StartLocation = startLocation;
+    }
+
+    public void setEndLocation(String endLocation){
+        this.EndLocation = endLocation;
+    }
+
+
+
 }
