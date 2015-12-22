@@ -20,6 +20,8 @@ package com.xunce.electrombile.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.xunce.electrombile.Constants.ServiceConstants;
+
 /**
  * SharePreference处理类.
  *
@@ -179,7 +181,7 @@ public class SettingManager {
     }
 
     public String getServer() {
-        return spf.getString(Server, "120.25.157.233");
+        return spf.getString(Server, ServiceConstants.MQTT_HOST);
     }
 
     public void setServer(String server) {

@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
+import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.Constants.ActivityConstants;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.activity.FragmentActivity;
@@ -73,8 +74,9 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "接收调用");
-        Log.i(TAG, intent.getExtras().toString());
+        //Log.i(TAG, "接收调用");
+        Logger.i("接收调用%s",intent.getExtras().toString());
+        //Log.i(TAG, intent.getExtras().toString());
         Bundle bundle = intent.getExtras();
         callbackStatus = bundle.get(ActivityConstants.callbackStatus).toString();
         callbackAction = bundle.get(ActivityConstants.callbackAction).toString();
@@ -102,6 +104,7 @@ public class MyReceiver extends BroadcastReceiver {
 
             } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {
                 ToastUtils.showShort(mContext, "服务器连接已断开");
+                Logger.wtf("服务器连接已断开");
             }
         }
     }

@@ -17,11 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVUser;
+import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.AboutActivity;
 import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
+import com.xunce.electrombile.activity.MapOfflineActivity;
 import com.xunce.electrombile.activity.TestActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
@@ -100,6 +102,12 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 }
                 goToDeviceAct();
                 break;
+
+            //离线地图
+            case R.id.layout_map_offline:
+                goToMapOffline();
+                break;
+
             case R.id.rl_1l:
                 int what = 999;
                 m_context.timeHandler.removeMessages(what);
@@ -142,6 +150,14 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         startActivity(intent);
     }
 
+    /**
+     * 跳转到离线地图界面
+     */
+    private void goToMapOffline(){
+        Intent intent = new Intent(m_context,MapOfflineActivity.class);
+        startActivity(intent);
+        //TODO 添加选择是否WIFI环境下自动下载地图的功能
+    }
     /**
      * 跳转到个人中心界面
      */
@@ -250,6 +266,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
         view.findViewById(R.id.rl_1l).setOnClickListener(this);
+        view.findViewById(R.id.layout_map_offline).setOnClickListener(this);
     }
 
     @Override

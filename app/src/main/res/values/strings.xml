@@ -127,5 +127,7 @@
     <string name="connecting">Connecting to</string>
     <string name="disconnecting">Disconnecting from</string>
     <string name="connectionError">An error occurred connecting to</string>
+    <string name="mapOffline_tv_hotCity">所有城市</string>
+    <string name="mapOffline_tv_Location">下载管理</string>
 
 </resources>

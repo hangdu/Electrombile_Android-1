@@ -71,7 +71,6 @@
             android:theme="@style/splashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -122,6 +121,11 @@
             android:name=".activity.HelpActivity"
             android:label="Help"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MapOfflineActivity"
+            android:label="MapOffline"
+            />
+
 
         <!--
         来电悬浮窗暂关闭
@@ -164,6 +168,11 @@
                 <action android:name="com.xunce.electrombile.alarmservice" />
             </intent-filter>
         </service>
+        <receiver android:name=".fragment.SwitchFragment$NetWorkListen">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".activity.account.VerifiedActivity"
