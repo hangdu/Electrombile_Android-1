@@ -297,7 +297,7 @@ public class RecordActivity extends Activity{
 
 //                        //清楚本地数据
                        TracksBean.getInstance().getTracksData().clear();
-                       tracksManager.setTranks(totalAVObjects);
+//                       tracksManager.setTranks(groupposition,totalAVObjects);
 
 //                        //更新本地数据
                        TracksBean.getInstance().setTracksData(tracksManager.getTracks());

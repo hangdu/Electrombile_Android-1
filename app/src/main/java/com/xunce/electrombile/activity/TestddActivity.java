@@ -94,40 +94,29 @@ public class TestddActivity extends Activity {
     GeoCodering geoCoder1;
     GeoCodering geoCoder2;
 
-
+    static int j = 0;
 
     static int GroupPosition = 0;
+    ArrayList<ArrayList<TrackPoint>> tracks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_testdd);
-
-       // setContentView(R.layout.activity_record);
         init();
-
 
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
         sm = new SettingManager(this);
-
         sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
-
         sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdfWithSecond.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
 
         totalAVObjects = new ArrayList<AVObject>();
-//        initView();
-        //setCustonViewVisibility(false);
-       // m_listview.setVisibility(View.INVISIBLE);
 
         if (TracksBean.getInstance().getTracksData().size() != 0) {
-            // Log.i(TAG, "TracksBean.getInstance().getTracksData().size()" + TracksBean.getInstance().getTracksData().size());
-//            m_listview.setVisibility(View.VISIBLE);
             tracksManager.clearTracks();
             tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
-            //Log.i(TAG, "TrackManager size:" + tracksManager.getTracks().size());
             updateListView();
         }
     }
@@ -136,62 +125,6 @@ public class TestddActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
-
-//    private void initView(){
-//        watiDialog = new ProgressDialog(this);
-//        btnCuston = (Button)findViewById(R.id.btn_custom);
-//        btnCuston.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(!btnBegin.isShown()) {
-//                    setCustonViewVisibility(true);
-//                    m_listview.setVisibility(View.INVISIBLE);
-//                }
-//                else {
-//                }
-//            }
-//        });
-
-
-
-        //绑定Layout里面的ListView
-//        m_listview = (ListView) findViewById(R.id.listview);
-//
-//        //生成动态数组，加入数据
-//        listItem = new ArrayList<HashMap<String, Object>>();
-//        //生成适配器的Item和动态数组对应的元素
-//        listItemAdapter = new SimpleAdapter(this,listItem,//数据源
-//                R.layout.listview_item,//ListItem的XML实现
-//                //动态数组与ImageItem对应的子项
-//                new String[] {"ItemTotalTime", "ItemStartTime", "ItemEndTime", "ItemDistance"},
-//                //,两个TextView ID
-//                new int[] {R.id.ItemTotalTime,R.id.ItemStartTime, R.id.ItemEndTime, R.id.ItemDistance}
-//        );
-//
-//        //添加并且显示
-//        m_listview.setAdapter(listItemAdapter);
-//
-//        //添加点击
-//        m_listview.setOnItemClickListener(new OnItemClickListener() {
-//
-//            @Override
-//            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-//                                    long arg3) {
-//                MaptabFragment.trackDataList = tracksManager.getTrack(arg2);
-//                //Toast.makeText(getApplicationContext(), "点击第" + arg2 + "个项目", Toast.LENGTH_SHORT).show();
-//                finish();
-//            }
-//        });
-//
-//
-
-//
-//
-////        tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
-////        updateListView();
-//    }
-
-
 
     private void findCloud(final Date st, final Date et, int skip) {
         totalSkip += skip;
@@ -245,13 +178,14 @@ public class TestddActivity extends Activity {
                     }
                     if ((totalAVObjects.size() > 1000) && (avObjects.size() < 1000) ||
                             (totalSkip == 0) && (avObjects.size() < 1000)) {
-                        tracksManager.clearTracks();
+//                        tracksManager.clearTracks();
 
 //                        //清楚本地数据
-                        TracksBean.getInstance().getTracksData().clear();
+//                        TracksBean.getInstance().getTracksData().clear();
 
+//                        tracks = new ArrayList<>();
                         //将leancloud里得到的数据写到track里去
-                        tracksManager.setTranks(totalAVObjects);
+                        tracksManager.setTranks(GroupPosition,totalAVObjects);
 
 //                        //更新本地数据
                         TracksBean.getInstance().setTracksData(tracksManager.getTracks());
@@ -275,15 +209,9 @@ public class TestddActivity extends Activity {
     private void clearListViewWhenFail() {
         tracksManager.clearTracks();
         updateListView();
-//        listItemAdapter.notifyDataSetChanged();
     }
 
     private void updateListView(){
-        //   Log.i(TAG, "update list View");
-//        listItem.clear();
-
-
-
         //如果没有数据，弹出对话框
         if(tracksManager.getTracks().size() == 0){
             dialog.setTitle("此时间段内没有数据");
@@ -291,15 +219,9 @@ public class TestddActivity extends Activity {
             return;
         }
 
-        double start_latitude;
-        double start_longitude;
-        double end_latitude;
-        double end_longitude;
         Date startdate = new Date();
         Message message;
         messageList = new ArrayList<Message>();
-
-
 
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {
@@ -312,14 +234,10 @@ public class TestddActivity extends Activity {
 
             //获取当前路线段的开始和结束点
             TrackPoint startP = trackList.get(0);
-            start_latitude = startP.point.latitude;
-            start_longitude=startP.point.longitude;
             startdate = startP.time;
             geoCoder1 = new GeoCodering(this,startP.point,i,0);
 
             TrackPoint endP = trackList.get(trackList.size() - 1);
-            end_latitude = endP.point.latitude;
-            end_longitude = endP.point.longitude;
             geoCoder2 = new GeoCodering(this,endP.point,i,1);
 
 
@@ -353,11 +271,15 @@ public class TestddActivity extends Activity {
 //            map.put("ItemEndTime", "结束时间:" + sdfWithSecond.format(endP.time));
 //            map.put("ItemDistance", "距离:" + distanceKM + "千米" + diatanceM + "米");
 //            listItem.add(map);
+
         }
         ItemList.get(GroupPosition).setMessagelist(messageList);
         adapter.notifyDataSetChanged();
 
+        tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
     }
+
+
 
 
 
@@ -371,6 +293,7 @@ public class TestddActivity extends Activity {
 
     private void init(){
         watiDialog = new ProgressDialog(this);
+
 
         dialog = new AlertDialog.Builder(this)
                 .setPositiveButton("继续查询",
@@ -411,14 +334,22 @@ public class TestddActivity extends Activity {
         adapter = new ExpandableAdapter(this,ItemList);
         expandableListView.setAdapter(adapter);
         addContentView(expandableListView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                Toast.makeText(TestddActivity.this, "你点击的是第"+(groupPosition+1)+"的菜单下的第"+(childPosition+1)+"选项", Toast.LENGTH_SHORT).show();
-                return false;
+                Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
+//                MaptabFragment.trackDataList = tracksManager.getTrack(childPosition);
+//                HashMap<String, ArrayList<ArrayList<TrackPoint>>> map = tracksManager.getMapTrack();
+//                ArrayList<ArrayList<TrackPoint>> tracks1 = map.get(String.valueOf(groupPosition));
+//                MaptabFragment.trackDataList = tracks1.get(childPosition);
+                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+                finish();
+                return true;
             }
         });
+
     }
 
     void GetHistoryTrack(int groupPosition)

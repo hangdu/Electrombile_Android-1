@@ -10,6 +10,7 @@ import com.baidu.mapapi.utils.DistanceUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -18,7 +19,9 @@ import java.util.TimeZone;
  */
 public class TracksManager {
     private static ArrayList<ArrayList<TrackPoint>> tracks;
-    //private ArrayList<ArrayList<LatLng>> tracks;
+    private static ArrayList<ArrayList<ArrayList<TrackPoint>>> GroupTracks;
+
+
     private final String TAG = "TracksManager";
     private final String KET_TIME = "createdAt";
     private final String KET_LONG = "lon";
@@ -26,15 +29,15 @@ public class TracksManager {
     private final long MAX_TIMEINRVAL = 30 * 60;//30分钟
     private final long MAX_DISTANCE = 200;//30分钟
     private CmdCenter mCenter;
+    private HashMap<String, ArrayList<ArrayList<TrackPoint>>> map;
 
     public TracksManager(Context context){
-//
-//        tracks.add(dts);
         tracks = new ArrayList<ArrayList<TrackPoint>>();
         mCenter = CmdCenter.getInstance(context);
+        map = new HashMap<>();
     }
 
-    public  static ArrayList<ArrayList<TrackPoint>> getTracks(){
+    public static ArrayList<ArrayList<TrackPoint>> getTracks(){
         return tracks;
     }
 
@@ -54,7 +57,8 @@ public class TracksManager {
             return !((point.longitude > 108) && (point.longitude < 116) && (point.latitude > 29) && (point.latitude < 33));
     }
 
-    public void setTranks(List<AVObject> objects){
+    public void setTranks(int groupposition,List<AVObject> objects){
+        tracks = new ArrayList<>();
         Log.i("Track managet-----", "setTranks" + objects.size());
         if(objects == null) return;
         AVObject lastSavedObject = null;
@@ -66,6 +70,7 @@ public class TracksManager {
             if(dataList == null){
                 dataList = new ArrayList<TrackPoint>();
                 tracks.add(dataList);
+
             }
             double lat = thisObject.getDouble(KET_LAT);
             double lon = thisObject.getDouble(KET_LONG);
@@ -114,12 +119,12 @@ public class TracksManager {
             lastSavedPoint = bdPoint;
 
         }
-
         //当只有一个列表且列表内只有一个数据时，移除
         if(tracks.size() == 1 && tracks.get(0).size() <= 1){
             tracks.remove(tracks.size() - 1);
         }
-        Log.i(TAG, "tracks size:" + tracks.size());
+        Log.i(TAG, "tracks1 size:" + tracks.size());
+        SetMapTrack(groupposition,tracks);
     }
 
     public static class TrackPoint {
@@ -136,4 +141,24 @@ public class TracksManager {
             point = new LatLng(lat, lon);
         }
     }
+
+    public void SetMapTrack(int groupposition, ArrayList<ArrayList<TrackPoint>> tracks){
+        String grouppositon_str = String.valueOf(groupposition);
+        map.put(grouppositon_str, tracks);
+
+        int size =tracks.size();
+
+        HashMap<String, ArrayList<ArrayList<TrackPoint>>> map1 = map;
+        Log.d(" tracks_size",String.valueOf(size));
+    }
+
+    public HashMap<String, ArrayList<ArrayList<TrackPoint>>> getMapTrack(){
+        return map;
+    }
+
+    public void RefreshTracks()
+    {
+        tracks = new ArrayList<>();
+    }
+
 }
