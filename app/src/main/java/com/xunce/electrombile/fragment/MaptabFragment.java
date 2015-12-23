@@ -41,6 +41,7 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
@@ -61,7 +62,7 @@ public class MaptabFragment extends BaseFragment {
 
     //保存数据所需要的最短距离
     private static final double MIN_DISTANCE = 100;
-    private static final int DELAY = 5000;
+    private static final int DELAY = 1000;
     private int CurrentDelay;
     public static MapView mMapView;
     //maptabFragment 维护一组历史轨迹坐标列表
@@ -83,7 +84,10 @@ public class MaptabFragment extends BaseFragment {
     private Button btnSpeedAdjust;
     //电动车标志
     private Marker markerMobile;
+    private Marker markerMobile1;
     private MarkerOptions option2;
+    private MarkerOptions option3;
+
     //轨迹图层
     private Overlay tracksOverlay;
     private TextView tvUpdateTime;
@@ -103,12 +107,15 @@ public class MaptabFragment extends BaseFragment {
     //轨迹显示图层
     private Overlay lineDraw;
     //移动图标的动画
-    private ImageView moveMarker;
-    private MapViewLayoutParams moveMarkerParams;
+//    private ImageView moveMarker;
+//    private MapViewLayoutParams moveMarkerParams;
 
     private SeekBar seekBar;
     private int CurrentSpeed;
     private int Progress;
+
+    private LatLng southwest;
+    private LatLng northeast;
     /**
      * 处理消息
      */
@@ -156,11 +163,33 @@ public class MaptabFragment extends BaseFragment {
 
     }
 
-    private void ChangePositionSoon()
-    {
-        Point p1 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(playOrder).point);
-        Point p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(Progress).point);
-        carAnimation(p1, p2, 0);
+
+    void findMinMaxLatlan(List<TrackPoint> IN_trackDataList){
+        double latitude_min = IN_trackDataList.get(0).point.latitude;
+        double latitude_max = latitude_min;
+        double longitude_min = IN_trackDataList.get(0).point.longitude;
+        double longitude_max = longitude_min;
+        double latitude;
+        double longitude;
+        for(int i=0;i<IN_trackDataList.size();i++){
+            latitude = IN_trackDataList.get(i).point.latitude;
+            if(latitude_min>latitude){
+                latitude_min = latitude;
+            }
+            if(latitude_max<latitude){
+                latitude_max = latitude;
+            }
+
+            longitude = IN_trackDataList.get(i).point.longitude;
+            if(longitude_min>longitude){
+                longitude_min=longitude;
+            }
+            if(longitude_max<longitude){
+                longitude_max = longitude;
+            }
+        }
+        southwest = new LatLng(latitude_min,longitude_min);
+        northeast = new LatLng(latitude_max,longitude_max);
     }
 
     @Override
@@ -232,26 +261,8 @@ public class MaptabFragment extends BaseFragment {
             point = new LatLng(30.5171, 114.4392);
         }
 
-        //构建Marker图标
-        BitmapDescriptor bitmap = BitmapDescriptorFactory
-                .fromResource(R.drawable.icon_gcoding);
-        //构建MarkerOption，用于在地图上添加Marker
-        option2 = new MarkerOptions()
-                .position(point)
-                .icon(bitmap);
         //在地图上添加Marker，并显示
-        markerMobile = (Marker) mBaiduMap.addOverlay(option2);
-        markerMobile.setVisible(false);
-
-
-        moveMarkerParams = new MapViewLayoutParams.Builder()
-                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
-                .height(100)
-                .width(100)
-                .position(markerMobile.getPosition())
-                .build();
-        mMapView.removeView(moveMarker);
-        mMapView.addView(moveMarker, moveMarkerParams);
+        markerMobile.setPosition(point);
 
         //将电动车位置移至中心
         MapStatus mMapStatus = new MapStatus.Builder()
@@ -299,6 +310,7 @@ public class MaptabFragment extends BaseFragment {
         super.onResume();
         //检查历史轨迹列表，若不为空，则需要绘制轨迹
         if (trackDataList.size() > 0) {
+            findMinMaxLatlan(trackDataList);
             reSetMoveMarkerLocation(trackDataList.get(0).point);
             enterPlayTrackMode();
             drawLine();
@@ -324,9 +336,6 @@ public class MaptabFragment extends BaseFragment {
 
         mBaiduMap.setOnMarkerClickListener(new BaiduMap.OnMarkerClickListener() {
             public boolean onMarkerClick(final Marker marker) {
-//                if(marker == markerMobile){
-//                //    mBaiduMap.hideInfoWindow();
-//                }
                 return true;
             }
         });
@@ -347,7 +356,9 @@ public class MaptabFragment extends BaseFragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 playHandler.removeMessages(handleKey.CHANGE_POINT.ordinal());
                 playOrder = Progress;
-                ChangePositionSoon();
+                LatLng p2 = trackDataList.get(Progress).point;
+                markerMobile.setPosition(p2);
+
                 if(true == isPlaying)
                 {
                     Message msg = Message.obtain();
@@ -487,36 +498,30 @@ public class MaptabFragment extends BaseFragment {
                 dialog.show();
             }
         });
-        //移动的图标
-        moveMarker = new ImageView(m_context);
-        moveMarker.setImageResource(R.drawable.move_marker);
-
         //按钮容器
         ll_map = (LinearLayout) v.findViewById(R.id.ll_map);
+
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_marka);
+        //构建MarkerOption，用于在地图上添加Marker
+        LatLng point = new LatLng(30.5171, 114.4392);
+        option2 = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        markerMobile = (Marker) mBaiduMap.addOverlay(option2);
     }
 
     /**
      * 重新设置车辆图标位置
      */
     private void reSetMoveMarkerLocation(LatLng point) {
-        mMapView.removeView(moveMarker);
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(point)
-                .zoom(mBaiduMap.getMapStatus().zoom)
-                .build();
-        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        //改变地图状态
-        mBaiduMap.animateMapStatus(mMapStatusUpdate);
-        moveMarkerParams = new MapViewLayoutParams.Builder()
-                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
-                .height(100)
-                .width(100)
-                .position(point)
-                .build();
-        mMapView.addView(moveMarker, moveMarkerParams);
-        LogUtil.log.e(TAG, "reSetMoveMarkerLocation");
+        markerMobile.setPosition(point);
 
+        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast)
+                .include(southwest).build();
+        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(bounds);
+        mBaiduMap.setMapStatus(u);
     }
 
     /**
@@ -524,12 +529,12 @@ public class MaptabFragment extends BaseFragment {
      */
     private void enterPlayTrackMode() {
         Progress = 0;
-        SetSeekbar(0);
+        seekBar.setProgress(0);
         isPlaying = true;
         playOrder = 0;
         playHandler.removeMessages(handleKey.SET_MARKER.ordinal());
         mBaiduMap.hideInfoWindow();
-//        markerMobile.setVisible(false);
+        markerMobile.setVisible(true);
         btnClearTrack.setVisibility(View.VISIBLE);
 
         btnPlay.setVisibility(View.VISIBLE);
@@ -540,7 +545,6 @@ public class MaptabFragment extends BaseFragment {
         m_context.getMain_radio().setVisibility(View.GONE);
         ll_map.setVisibility(View.GONE);
 
-        int size = trackDataList.size();
         seekBar.setMax(trackDataList.size()-1);
     }
 
@@ -551,7 +555,7 @@ public class MaptabFragment extends BaseFragment {
         isPlaying = false;
         playOrder = 0;
         mBaiduMap.showInfoWindow(mInfoWindow);
-//        markerMobile.setVisible(true);
+        markerMobile.setVisible(true);
         btnClearTrack.setVisibility(View.INVISIBLE);
         btnPlay.setVisibility(View.INVISIBLE);
         btnPause.setVisibility(View.INVISIBLE);
@@ -574,9 +578,11 @@ public class MaptabFragment extends BaseFragment {
 //        markerMobile.setVisible(false);
         mBaiduMap.hideInfoWindow();
         Point p1 = mBaiduMap.getProjection().toScreenLocation(markerMobile.getPosition());
-        Point p2 = mBaiduMap.getProjection().toScreenLocation(track.point);
-        Log.e(TAG, "p1.x:" + p1.x + "p1.y:" + p1.y + "p2.x:" + p2.x + "p2.y:" + p2.y);
-        carAnimation(p1, p2, CurrentDelay);
+//        Point p2 = mBaiduMap.getProjection().toScreenLocation(track.point);
+        LatLng p2 = track.point;
+//        Log.e(TAG, "p1.x:" + p1.x + "p1.y:" + p1.y + "p2.x:" + p2.x + "p2.y:" + p2.y);
+//        carAnimation(p1, p2, CurrentDelay);
+        markerMobile.setPosition(p2);
         //延迟出现定位图标
         Message msg = Message.obtain();
         msg.what = handleKey.SET_MARKER.ordinal();
@@ -589,14 +595,10 @@ public class MaptabFragment extends BaseFragment {
     /**
      * 车的动画
      */
-    private void carAnimation(Point p1, Point p2, int time) {
-        Animation myAnimation_Translate = new TranslateAnimation(0, p2.x - p1.x, 0, p2.y - p1.y);
-        myAnimation_Translate.setDuration(time);
-        myAnimation_Translate.setFillEnabled(true);
-        myAnimation_Translate.setFillAfter(true);
-        myAnimation_Translate.setFillBefore(true);
-        moveMarker.startAnimation(myAnimation_Translate);
-    }
+//    private void carAnimation(Point p1, LatLng p2, int time) {
+//
+//        markerMobile.setPosition(p2);
+//    }
 
 
     /**
@@ -613,11 +615,13 @@ public class MaptabFragment extends BaseFragment {
     private void playLocateMobile(int track) {
         if (mBaiduMap == null) return;
         Point p1 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track).point);
-        Point p2;
+        LatLng p2;
         if (track == 0) {
             Log.e(TAG, "track==" + track);
-            p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
-            carAnimation(p1, p2, CurrentDelay);
+//            p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
+            p2 = trackDataList.get(track + 1).point;
+//            carAnimation(p1, p2, CurrentDelay);
+            markerMobile.setPosition(p2);
         } else if ((track + 1) == (trackDataList.size())) {
             //不运动
             Log.e(TAG, "track==" + track);
@@ -626,8 +630,10 @@ public class MaptabFragment extends BaseFragment {
             return;
         } else {
             Log.e(TAG, "track==" + track);
-            p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
-            carAnimation(p1, p2, CurrentDelay);
+//            p2 = mBaiduMap.getProjection().toScreenLocation(trackDataList.get(track + 1).point);
+            p2 = trackDataList.get(track + 1).point;
+//            carAnimation(p1, p2, CurrentDelay);
+            markerMobile.setPosition(p2);
         }
         refreshTrack(trackDataList.get(track));
         playOrder += 1;
@@ -660,7 +666,7 @@ public class MaptabFragment extends BaseFragment {
      * 划线
      */
     private void drawLine() {
-        mBaiduMap.clear();
+//        mBaiduMap.clear();
         ArrayList<LatLng> points = new ArrayList<>();
         for (TrackPoint tp : trackDataList) {
             points.add(tp.point);
@@ -729,7 +735,3 @@ public class MaptabFragment extends BaseFragment {
         SET_MARKER
     }
 }
-
-
-//test
-//test
