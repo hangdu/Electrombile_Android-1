@@ -46,6 +46,30 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/SeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp">
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            />
+
+        <Button
+            android:id="@+id/SpeedAdjust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*1"
+            />
+
+    </LinearLayout>
+    
+
+
+    <LinearLayout
         android:id="@+id/ll_map"
         android:layout_width="320dp"
         android:layout_height="40dp"
