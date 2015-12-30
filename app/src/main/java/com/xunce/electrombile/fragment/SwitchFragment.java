@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -32,6 +34,7 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
+import com.xunce.electrombile.view.MyHorizontalScrollView;
 
 import org.json.JSONException;
 
@@ -47,6 +50,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
     private TextView tvWeather;
+    private Button ChangeAutobike;
+    private Button TodayWeather;
+    private ImageView headImage;
+    private MyHorizontalScrollView myHorizontalScrollView;
 
 
 
@@ -54,6 +61,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
+            //???
             locationTVClickedListener = (LocationTVClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement OnArticleSelectedListener");
@@ -94,9 +102,39 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
-    }
+      }
 
     private void initView() {
+        myHorizontalScrollView = (MyHorizontalScrollView) getActivity().findViewById(R.id.myHorizontalScrollView);
+        myHorizontalScrollView.InitView();
+
+        ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
+        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
+        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
+        ChangeAutobike.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //先查看现在车辆管理的情况是怎么样的 这段代码还不确定放在哪里
+                //侧滑的代码补进来
+                myHorizontalScrollView.toggle();
+            }
+        });
+
+        TodayWeather.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //补充关于天气的代码
+            }
+        });
+
+        headImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //补充关于更换头像的代码
+            }
+        });
+
+
         //天气按钮
         tvWeather = (TextView) getActivity().findViewById(R.id.weather);
         tvWeather.setOnClickListener(new OnClickListener() {
@@ -150,9 +188,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
         switch_fragment_tvLocation.setText(result.getAddress().trim());
     }
-
-
-
 
 
     @Override
@@ -271,6 +306,4 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         }
     }
-
-
 }

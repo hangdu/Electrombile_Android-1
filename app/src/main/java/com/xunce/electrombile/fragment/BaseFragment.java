@@ -39,9 +39,9 @@ public class BaseFragment extends Fragment{
     }
 
    @Override
-        public void onResume() {
-            super.onResume();
-        }
+    public void onResume() {
+        super.onResume();
+    }
 
     @Override
     public void onAttach(Activity activity) {
