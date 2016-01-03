@@ -307,6 +307,7 @@ public class BindListActivity extends BaseActivity {
                     }
                     switchManagedCar = new SwitchManagedCar(BindListActivity.this,getApplicationContext(),
                             (String)bindList.get(i).get("IMEI"),setManager.getIMEI());
+                    Historys.finishAct(FragmentActivity.class);
                     reStartFragAct();
 
                 }

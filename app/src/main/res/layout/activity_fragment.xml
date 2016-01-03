@@ -29,13 +29,13 @@
             android:drawableTop="@drawable/switch_icon"
             android:text="主页" />
 
-        <RadioButton
-            android:id="@+id/rbInformation"
-            style="@style/main_tab_bottom"
-            android:background="@drawable/rb_fragment_act"
-            android:checked="false"
-            android:drawableTop="@drawable/switch_icon"
-            android:text="资讯" />
+        <!--<RadioButton-->
+            <!--android:id="@+id/rbInformation"-->
+            <!--style="@style/main_tab_bottom"-->
+            <!--android:background="@drawable/rb_fragment_act"-->
+            <!--android:checked="false"-->
+            <!--android:drawableTop="@drawable/switch_icon"-->
+            <!--android:text="资讯" />-->
 
         <Button
             android:id="@+id/btn_AlarmState"

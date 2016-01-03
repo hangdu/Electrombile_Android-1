@@ -77,7 +77,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public SwitchFragment switchFragment;
     public MaptabFragment maptabFragment;
     public SettingsFragment settingsFragment;
-    public InformationFragment informationFragment;
+//    public InformationFragment informationFragment;
     public SettingManager setManager;
     //viewpager切换使用
     private CustomViewPager mViewPager;
@@ -384,6 +384,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             return;
         }
         try {
+            //向服务器发送命令
             mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
         } catch (MqttException e) {
             e.printStackTrace();
@@ -393,7 +394,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     /**
      * 查询并判断是否该建立MQTT连接
      */
-    private void queryIMEI() {
+    public void queryIMEI() {
         if (setManager.getIMEI().isEmpty()) {
             AVQuery<AVObject> query = new AVQuery<>("Bindings");
             final AVUser currentUser = AVUser.getCurrentUser();
@@ -472,7 +473,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
         settingsFragment = new SettingsFragment();
-        informationFragment = new InformationFragment();
+//        informationFragment = new InformationFragment();
     }
 
     /**
@@ -481,7 +482,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void initData() {
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
-        list.add(informationFragment);
+//        list.add(informationFragment);
         list.add(maptabFragment);
         list.add(settingsFragment);
         HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager(), list);
@@ -494,17 +495,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         mViewPager.setCurrentItem(0, false);
                         checkId = 0;
                         break;
-                    case R.id.rbInformation:
+//                    case R.id.rbInformation:
+//                        mViewPager.setCurrentItem(1, false);
+//                        checkId = 1;
+//                        break;
+                    case R.id.rbMap:
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
                         break;
-                    case R.id.rbMap:
+                    case R.id.rbSettings:
                         mViewPager.setCurrentItem(2, false);
                         checkId = 2;
-                        break;
-                    case R.id.rbSettings:
-                        mViewPager.setCurrentItem(3, false);
-                        checkId = 3;
                         break;
                     default:
                         break;

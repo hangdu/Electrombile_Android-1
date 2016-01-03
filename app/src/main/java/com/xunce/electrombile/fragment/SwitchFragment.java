@@ -126,13 +126,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         initView();
       }
 
-    private void reStartFragAct() {
+    private void reSubscribe() {
         Intent intent;
         intent = new Intent("com.xunce.electrombile.alarmservice");
         m_context.stopService(intent);
-        intent = new Intent(m_context, FragmentActivity.class);
-        startActivity(intent);
-        m_context.finish();
+        (m_context).closeStateAlarmBtn();
+        (m_context).queryIMEI();
     }
 
     private void initView() {
@@ -164,7 +163,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
                 //实际逻辑改变
                 switchManagedCar = new SwitchManagedCar(m_context, m_context, IMEI_now, IMEI_previous);
-                reStartFragAct();
+                reSubscribe();
             }
         });
 

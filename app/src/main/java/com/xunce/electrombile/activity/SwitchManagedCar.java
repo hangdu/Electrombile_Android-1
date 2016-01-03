@@ -31,8 +31,6 @@ public class SwitchManagedCar {
         boolean isUnSubscribe = unSubscribe(mac);
         if (isUnSubscribe) {
             RefreshSettingManager();
-            Historys.finishAct(FragmentActivity.class);
-//            reStartFragAct();  这个地方放在类的外面执行
         } else {
             ToastUtils.showShort(mcontext, "清除订阅失败!,请检查网络后再试!");
         }
