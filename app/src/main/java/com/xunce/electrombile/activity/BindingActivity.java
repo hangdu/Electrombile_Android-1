@@ -158,6 +158,7 @@ public class BindingActivity extends BaseActivity implements View.OnClickListene
                                 return;
                             }
                             bindDevice.put("device", avObjects.get(0));
+                            //Log.d("tag",avObjects.get(0));
                             if (list.size() > 0) {
                                 bindDevice.put("isAdmin", false);
                                 ToastUtils.showShort(BindingActivity.this, "您正在绑定附属车辆...");

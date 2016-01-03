@@ -2,17 +2,28 @@ package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -31,12 +42,20 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.activity.FragmentActivity;
+import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
+import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
 
 import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
     private static String TAG = "SwitchFragment";
@@ -54,8 +73,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button TodayWeather;
     private ImageView headImage;
     private MyHorizontalScrollView myHorizontalScrollView;
-
-
+    private TextView BindedCarIMEI;
+    private ArrayList<String> OtherCar;
+    private SwitchManagedCar switchManagedCar;
+    private Handler mhandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg){
+            myHorizontalScrollView.UpdateListview();
+        }
+    };
 
     @Override
     public void onAttach(Activity activity) {
@@ -79,8 +105,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
-
-
     }
 
     private void initLocation() {
@@ -104,9 +128,50 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         initView();
       }
 
+    private void reStartFragAct() {
+        Intent intent;
+        intent = new Intent("com.xunce.electrombile.alarmservice");
+        m_context.stopService(intent);
+        intent = new Intent(m_context, FragmentActivity.class);
+        startActivity(intent);
+        m_context.finish();
+    }
+
     private void initView() {
+
+        BindedCarIMEI = (TextView)getActivity().findViewById(R.id.menutext1);
+
+        OtherCar = new ArrayList();
         myHorizontalScrollView = (MyHorizontalScrollView) getActivity().findViewById(R.id.myHorizontalScrollView);
+
         myHorizontalScrollView.InitView();
+        myHorizontalScrollView.setHandler(mhandler);
+        myHorizontalScrollView.otherCarlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //UI界面改变
+                String IMEI_previous = BindedCarIMEI.getText().toString();
+                String IMEI_now = OtherCar.get(position);
+
+                BindedCarIMEI.setText(IMEI_now);
+
+                myHorizontalScrollView.list.remove(position);
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("whichcar",IMEI_previous);
+                map.put("img",R.drawable.img_1);
+                myHorizontalScrollView.list.add(map);
+                myHorizontalScrollView.UpdateListview();
+                OtherCar.remove(position);
+                OtherCar.add(IMEI_previous);
+
+                //实际逻辑改变
+                switchManagedCar = new SwitchManagedCar(m_context,m_context,IMEI_now,IMEI_previous);
+                reStartFragAct();
+            }
+        });
+
+        refreshBindList();
+
 
         ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
         TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
@@ -114,9 +179,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //先查看现在车辆管理的情况是怎么样的 这段代码还不确定放在哪里
                 //侧滑的代码补进来
                 myHorizontalScrollView.toggle();
+                if (myHorizontalScrollView.getIsOpen()) {
+                    myHorizontalScrollView.UpdateListview();
+                }
             }
         });
 
@@ -133,6 +200,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //补充关于更换头像的代码
             }
         });
+
+
 
 
         //天气按钮
@@ -305,5 +374,44 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 Log.e(TAG, "服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
             }
         }
+    }
+
+    //刷新车列表
+    public void refreshBindList() {
+        AVUser currentUser = AVUser.getCurrentUser();
+        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+        query.whereEqualTo("user", currentUser);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    Log.e("BINDLISTACT", list.size() + "");
+                    if (list.size() > 0) {
+                        myHorizontalScrollView.list.clear();
+                        OtherCar.clear();
+                        HashMap<String, Object> map = null;
+                        for (int i = 0; i < list.size(); i++) {
+                            //判断这个IMEI是不是正在被监管的车辆
+                            if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
+                            {
+                                BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
+                            }
+                            else{
+                                map = new HashMap<>();
+                                map.put("whichcar",list.get(i).get("IMEI"));
+                                map.put("img", R.drawable.img_1);
+                                myHorizontalScrollView.list.add(map);
+                                OtherCar.add((String)list.get(i).get("IMEI"));
+                            }
+
+                        }
+//                        myHorizontalScrollView.UpdateListview();
+                    }
+                } else {
+                    e.printStackTrace();
+//                    ToastUtils.showShort(BindListActivity.this, "查询错误");
+                }
+            }
+        });
     }
 }

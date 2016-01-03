@@ -4,7 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
+import android.os.*;
+//import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+
 
 public class BindListActivity extends BaseActivity {
 
@@ -43,6 +47,8 @@ public class BindListActivity extends BaseActivity {
     private TextView tv_default;
     private HashMap<Integer, AVObject> bindList = null;
     private ProgressDialog progressDialog = null;
+    private SwitchManagedCar switchManagedCar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +165,6 @@ public class BindListActivity extends BaseActivity {
         if (progressDialog != null) {
             progressDialog.show();
         }
-
     }
 
     //添加设备
@@ -195,14 +200,14 @@ public class BindListActivity extends BaseActivity {
      *
      * @param i 传入的是 IMEI选项
      */
-    private void isUnSubscribed(int i) {
-        ToastUtils.showShort(BindListActivity.this, "清除订阅成功!");
-        setManager.cleanDevice();
-        setManager.setIMEI((String) bindList.get(i).get("IMEI"));
-        Historys.finishAct(FragmentActivity.class);
-        progressDialog.dismiss();
-        reStartFragAct();
-    }
+//    private void isUnSubscribed(int i) {
+//        ToastUtils.showShort(BindListActivity.this, "清除订阅成功!");
+//        setManager.cleanDevice();
+//        setManager.setIMEI((String) bindList.get(i).get("IMEI"));
+//        Historys.finishAct(FragmentActivity.class);
+//        progressDialog.dismiss();
+//        reStartFragAct();
+//    }
 
     /**
      * 重新启动fragmentActivity
@@ -300,13 +305,9 @@ public class BindListActivity extends BaseActivity {
                         ToastUtils.showShort(BindListActivity.this, "正在使用此设备，无须切换~");
                         return;
                     }
-                    MqttAndroidClient mac = getMqttAndroidClient();
-                    boolean isUnSubscribe = unSubscribe(mac);
-                    if (isUnSubscribe) {
-                        isUnSubscribed(i);
-                    } else {
-                        ToastUtils.showShort(BindListActivity.this, "清除订阅失败!,请检查网络后再试!");
-                    }
+                    switchManagedCar = new SwitchManagedCar(BindListActivity.this,getApplicationContext(),
+                            (String)bindList.get(i).get("IMEI"),setManager.getIMEI());
+                    reStartFragAct();
 
                 }
             });

@@ -44,7 +44,6 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_toRightOf="@id/menuimage1"
-                android:text="车辆一"
                 android:textSize="20dp" />
         </RelativeLayout>
 

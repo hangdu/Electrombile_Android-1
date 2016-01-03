@@ -1,6 +1,8 @@
 package com.xunce.electrombile.view;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -24,22 +26,29 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
     private int myMenuPaddingRight = 50;
     private boolean once = false;
     private boolean IsOpen = false;
-    private ListView otherCarlistView;
+    public ListView otherCarlistView;
     public ArrayList<HashMap<String, Object>> list;
     private SimpleAdapter simpleAdapter;
     private Context mContext;
+    private Handler handler;
+
 
     public MyHorizontalScrollView(Context context,AttributeSet attrs){
         super(context,attrs);
         mContext = context;
+
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics outMetrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(outMetrics);
         screenWidth = outMetrics.widthPixels;// 屏幕宽度
         myMenuPaddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, context.getResources()
                 .getDisplayMetrics());
-//        InitView();
 
+//        InitView();
+    }
+
+    public void setHandler(Handler mhandler){
+        handler = mhandler;
     }
 
     /**
@@ -70,9 +79,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
         //刚载入界面的时候隐藏Menu菜单也就是ScrollView向左滑动菜单自身的大小
         if(changed){
             this.scrollTo(myMenuWidth, 0);//向左滑动，相当于把右边的内容页拖到正中央，菜单隐藏
-
         }
-
     }
 
     @Override
@@ -87,6 +94,8 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
                 }else{
                     this.smoothScrollTo(0, 0); //打开左滑菜单
                     IsOpen = true;
+                    Message msg = Message.obtain();
+                    handler.sendMessage(msg);
                 }
                 return true;
         }
@@ -126,13 +135,17 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
 
     private void getData() {
         // 初始化
-        HashMap<String, Object> map = null;
-        for (int i = 1; i <= 5; i++) {
-            map = new HashMap<String, Object>();
-            map.put("whichcar",String.valueOf(i+1));
-            map.put("img", R.drawable.img_1);
-            list.add(map);
-        }
+//        HashMap<String, Object> map = null;
+//        for (int i = 1; i <= 5; i++) {
+//            map = new HashMap<String, Object>();
+//            map.put("whichcar",String.valueOf(i+1));
+//            map.put("img", R.drawable.img_1);
+//            list.add(map);
+//        }
+    }
+
+    public boolean getIsOpen(){
+        return IsOpen;
     }
 }
 
