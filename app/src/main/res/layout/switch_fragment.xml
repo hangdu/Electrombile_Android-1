@@ -112,92 +112,92 @@
                         android:text = "剩余电量"/>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/ll_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dip"
-                    android:layout_below="@+id/ll_power"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/ll_container"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="100dip"-->
+                    <!--android:layout_below="@+id/ll_power"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:weightSum="2">-->
 
-                    <LinearLayout
-                        android:id="@+id/ll_a"
-                        android:layout_width="0dp"
-                        android:layout_height="50dip"
-                        android:layout_below="@+id/ll_power"
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/ll_a"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="50dip"-->
+                        <!--android:layout_below="@+id/ll_power"-->
 
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/switch_frag_location"
-                        android:orientation="vertical">
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_marginRight="8dp"-->
+                        <!--android:layout_marginTop="4dp"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:background="@drawable/switch_frag_location"-->
+                        <!--android:orientation="vertical">-->
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="8dp"
-                            android:src="@drawable/switch_fragment_map_location" />
+                        <!--<ImageView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="50dp"-->
+                            <!--android:layout_gravity="center_horizontal"-->
+                            <!--android:layout_marginTop="8dp"-->
+                            <!--android:src="@drawable/switch_fragment_map_location" />-->
 
-                        <TextView
-                            android:id="@+id/switch_fragment_tvLocation"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="24dp"
-                            android:text="当前位置"
-                            android:textColor="@color/white"
-                            android:textSize="16sp" />
-                    </LinearLayout>
+                        <!--<TextView-->
+                            <!--android:id="@+id/switch_fragment_tvLocation"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center_horizontal"-->
+                            <!--android:layout_marginTop="24dp"-->
+                            <!--android:text="当前位置"-->
+                            <!--android:textColor="@color/white"-->
+                            <!--android:textSize="16sp" />-->
+                    <!--</LinearLayout>-->
 
-                    <ImageView
-                        android:layout_width="1dp"
-                        android:layout_height="50dip"
-                        android:src="@drawable/line_between_two_frag" />
+                    <!--<ImageView-->
+                        <!--android:layout_width="1dp"-->
+                        <!--android:layout_height="50dip"-->
+                        <!--android:src="@drawable/line_between_two_frag" />-->
 
-                    <LinearLayout
-                        android:id="@+id/ll_b"
-                        android:layout_width="0dp"
-                        android:layout_height="50dip"
-                        android:layout_below="@+id/ll_temp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_toRightOf="@+id/ll_a"
-                        android:layout_weight="1"
-                        android:background="@drawable/switch_frag_weather"
-                        android:orientation="vertical">
+                    <!--<LinearLayout-->
+                        <!--android:id="@+id/ll_b"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="50dip"-->
+                        <!--android:layout_below="@+id/ll_temp"-->
+                        <!--android:layout_marginLeft="8dp"-->
+                        <!--android:layout_marginRight="8dp"-->
+                        <!--android:layout_marginTop="4dp"-->
+                        <!--android:layout_toRightOf="@+id/ll_a"-->
+                        <!--android:layout_weight="1"-->
+                        <!--android:background="@drawable/switch_frag_weather"-->
+                        <!--android:orientation="vertical">-->
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="50dp"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="8dp"
-                            android:src="@drawable/iv_weather" />
+                        <!--<ImageView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="50dp"-->
+                            <!--android:layout_gravity="center_horizontal"-->
+                            <!--android:layout_marginTop="8dp"-->
+                            <!--android:src="@drawable/iv_weather" />-->
 
-                        <TextView
-                            android:id="@+id/weather"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginLeft="2dp"
-                            android:layout_marginRight="2dp"
-                            android:layout_marginTop="24dp"
-                            android:ellipsize="end"
-                            android:maxLines="3"
-                            android:text="现在天气"
-                            android:textColor="@color/white"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-                </LinearLayout>
+                        <!--<TextView-->
+                            <!--android:id="@+id/weather"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center_horizontal"-->
+                            <!--android:layout_marginLeft="2dp"-->
+                            <!--android:layout_marginRight="2dp"-->
+                            <!--android:layout_marginTop="24dp"-->
+                            <!--android:ellipsize="end"-->
+                            <!--android:maxLines="3"-->
+                            <!--android:text="现在天气"-->
+                            <!--android:textColor="@color/white"-->
+                            <!--android:textSize="16sp" />-->
+                    <!--</LinearLayout>-->
+                <!--</LinearLayout>-->
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="248dp"
-                    android:layout_below="@+id/ll_container"
-                    android:background="@drawable/third_bg_fragment">
-                </RelativeLayout>
+                <!--<RelativeLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="248dp"-->
+                    <!--android:layout_below="@+id/ll_container"-->
+                    <!--android:background="@drawable/third_bg_fragment">-->
+                <!--</RelativeLayout>-->
 
 
 

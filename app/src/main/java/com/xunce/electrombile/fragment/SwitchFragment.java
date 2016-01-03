@@ -65,10 +65,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private boolean alarmState = false;
     //缓存view
     private View rootView;
-    //设置当前位置
-    private TextView switch_fragment_tvLocation;
     private LocationTVClickedListener locationTVClickedListener;
-    private TextView tvWeather;
     private Button ChangeAutobike;
     private Button TodayWeather;
     private ImageView headImage;
@@ -76,6 +73,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView BindedCarIMEI;
     private ArrayList<String> OtherCar;
     private SwitchManagedCar switchManagedCar;
+    String WeatherData;
     private Handler mhandler = new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -157,25 +155,22 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
                 myHorizontalScrollView.list.remove(position);
                 HashMap<String, Object> map = new HashMap<String, Object>();
-                map.put("whichcar",IMEI_previous);
-                map.put("img",R.drawable.img_1);
+                map.put("whichcar", IMEI_previous);
+                map.put("img", R.drawable.img_1);
                 myHorizontalScrollView.list.add(map);
                 myHorizontalScrollView.UpdateListview();
                 OtherCar.remove(position);
                 OtherCar.add(IMEI_previous);
 
                 //实际逻辑改变
-                switchManagedCar = new SwitchManagedCar(m_context,m_context,IMEI_now,IMEI_previous);
+                switchManagedCar = new SwitchManagedCar(m_context, m_context, IMEI_now, IMEI_previous);
                 reStartFragAct();
             }
         });
 
         refreshBindList();
 
-
         ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
-        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
-        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,13 +182,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
+
+        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
         TodayWeather.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //补充关于天气的代码
+                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+                builder.setMessage(WeatherData.trim());
+                builder.create();
+                builder.show();
             }
         });
 
+
+        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
         headImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,28 +203,25 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-
-
-
         //天气按钮
-        tvWeather = (TextView) getActivity().findViewById(R.id.weather);
-        tvWeather.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
-                builder.setMessage(tvWeather.getText().toString().trim());
-                builder.create();
-                builder.show();
-            }
-        });
+//        tvWeather = (TextView) getActivity().findViewById(R.id.weather);
+//        tvWeather.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+//                builder.setMessage(tvWeather.getText().toString().trim());
+//                builder.create();
+//                builder.show();
+//            }
+//        });
 
-        switch_fragment_tvLocation = (TextView) getActivity().findViewById(R.id.switch_fragment_tvLocation);
-        switch_fragment_tvLocation.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                locationTVClickedListener.locationTVClicked();
-            }
-        });
+//        switch_fragment_tvLocation = (TextView) getActivity().findViewById(R.id.switch_fragment_tvLocation);
+//        switch_fragment_tvLocation.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                locationTVClickedListener.locationTVClicked();
+//            }
+//        });
     }
 
     @Override
@@ -255,7 +254,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (result.error != SearchResult.ERRORNO.NO_ERROR) {
             return;
         }
-        switch_fragment_tvLocation.setText(result.getAddress().trim());
+//        switch_fragment_tvLocation.setText(result.getAddress().trim());
     }
 
 
@@ -323,13 +322,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                             setWeather(data);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            tvWeather.setText("查询失败");
+//                            tvWeather.setText("查询失败");
+//                            TodayWeather.setText("查询失败");
+                            ToastUtils.showShort(m_context, "天气查询失败");
                         }
 
                     }
 
                     private void setWeather(WeatherBean data) {
-                        String tmp = "气温：" + data.temp + "\n" +
+                        WeatherData = "气温：" + data.temp + "\n" +
                                 "天气状况：" + data.weather + "\n" +
                                 "城市：" + data.city + "\n" +
                                 "风速：" + data.WS + "\n" +
@@ -337,7 +338,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                                 "最低气温：" + data.l_tmp + "\n" +
                                 "最高气温：" + data.h_tmp + "\n" +
                                 "风向：" + data.WD + "\n";
-                        tvWeather.setText(tmp);
                     }
 
                     @Override
