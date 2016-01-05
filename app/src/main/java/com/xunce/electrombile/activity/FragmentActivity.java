@@ -87,8 +87,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     //接收广播
     public MyReceiver receiver;
 
-    Button btnAlarmState;
-    boolean alarmState;
+//    Button btnAlarmState;
+//    boolean alarmState;
 
     /**
      * The handler. to process exit()
@@ -157,11 +157,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             mac.registerResources(this);
             sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
-        if (setManager.getAlarmFlag()) {
-            openStateAlarmBtn();
-        } else {
-            closeStateAlarmBtn();
-        }
+//        if (setManager.getAlarmFlag()) {
+//            openStateAlarmBtn();
+//        } else {
+//            closeStateAlarmBtn();
+//        }
     }
 
     @Override
@@ -194,22 +194,22 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
 
     //显示常驻通知栏
-    public void showNotification(String text) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(
-                getApplicationContext().NOTIFICATION_SERVICE);
-        Intent intent = new Intent(this, FragmentActivity.class);
-        PendingIntent contextIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("安全宝")
-                .setWhen(System.currentTimeMillis())
-                .setTicker("安全宝正在设置~")
-                .setOngoing(true)
-                .setContentText(text)
-                .setContentIntent(contextIntent)
-                .build();
-        notificationManager.notify(R.string.app_name, notification);
-    }
+//    public void showNotification(String text) {
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(
+//                getApplicationContext().NOTIFICATION_SERVICE);
+//        Intent intent = new Intent(this, FragmentActivity.class);
+//        PendingIntent contextIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//        Notification notification = new NotificationCompat.Builder(this)
+//                .setSmallIcon(R.mipmap.ic_launcher)
+//                .setContentTitle("安全宝")
+//                .setWhen(System.currentTimeMillis())
+//                .setTicker("安全宝正在设置~")
+//                .setOngoing(true)
+//                .setContentText(text)
+//                .setContentIntent(contextIntent)
+//                .build();
+//        notificationManager.notify(R.string.app_name, notification);
+//    }
 
     //取消显示常驻通知栏
     public void cancelNotification() {
@@ -409,7 +409,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      */
     private void initView() {
         main_radio = (RadioGroup) findViewById(R.id.main_radio);
-        btnAlarmState = (Button) findViewById(R.id.btn_AlarmState);
+//        btnAlarmState = (Button) findViewById(R.id.btn_AlarmState);
         mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
@@ -448,12 +448,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
         });
         main_radio.check(checkId);
-        if (setManager.getAlarmFlag()) {
-            showNotification("安全宝防盗系统已启动");
-            openStateAlarmBtn();
-        } else {
-            closeStateAlarmBtn();
-        }
+//        if (setManager.getAlarmFlag()) {
+//            showNotification("安全宝防盗系统已启动");
+//            openStateAlarmBtn();
+//        } else {
+//            closeStateAlarmBtn();
+//        }
     }
 
 
@@ -502,17 +502,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-    //点击打开报警按钮时按钮样式的响应操作
-    public void openStateAlarmBtn() {
-        alarmState = true;
-        btnAlarmState.setText("防盗关闭");
-        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
-    }
+//    //点击打开报警按钮时按钮样式的响应操作
+//    public void openStateAlarmBtn() {
+//        alarmState = true;
+//        btnAlarmState.setText("防盗关闭");
+//        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
+//    }
 
-    //点击关闭报警按钮时按钮样式的响应操作
-    public void closeStateAlarmBtn() {
-        alarmState = false;
-        btnAlarmState.setText("防盗开启");
-        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
-    }
+//    //点击关闭报警按钮时按钮样式的响应操作
+//    public void closeStateAlarmBtn() {
+//        alarmState = false;
+//        btnAlarmState.setText("防盗开启");
+//        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
+//    }
 }
