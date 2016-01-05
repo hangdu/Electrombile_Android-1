@@ -95,6 +95,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
                     this.smoothScrollTo(0, 0); //打开左滑菜单
                     IsOpen = true;
                     Message msg = Message.obtain();
+                    msg.what = 1;
                     handler.sendMessage(msg);
                 }
                 return true;

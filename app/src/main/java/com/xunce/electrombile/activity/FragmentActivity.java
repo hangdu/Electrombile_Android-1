@@ -77,7 +77,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public SwitchFragment switchFragment;
     public MaptabFragment maptabFragment;
     public SettingsFragment settingsFragment;
-//    public InformationFragment informationFragment;
     public SettingManager setManager;
     //viewpager切换使用
     private CustomViewPager mViewPager;
@@ -86,10 +85,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     //退出使用
     private boolean isExit = false;
     //接收广播
-    private MyReceiver receiver;
+    public MyReceiver receiver;
 
-    private Button btnAlarmState;
-    private boolean alarmState = false;
+    Button btnAlarmState;
+    boolean alarmState;
+
     /**
      * The handler. to process exit()
      */
@@ -128,6 +128,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         queryIMEI();
 //        //注册广播
         Historys.put(this);
+
+        registerBroadCast();
     }
 
     @Override
@@ -190,47 +192,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         checkId = 1;
     }
 
-    public void alarmStatusChange(View view) {
-        if (alarmState) {
-            if (!setManager.getIMEI().isEmpty()) {
-                if (NetworkUtils.isNetworkConnected(this)) {
-                    //关闭报警
-                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
-                    cancelNotification();
-                    sendMessage(this, mCenter.cmdFenceOff(), setManager.getIMEI());
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
-
-                } else {
-                    ToastUtils.showShort(this, "网络连接失败");
-                }
-            } else {
-                ToastUtils.showShort(this, "请等待设备绑定");
-            }
-        } else {
-            if (NetworkUtils.isNetworkConnected(this)) {
-                //打开报警
-                if (!setManager.getIMEI().isEmpty()) {
-                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
-                    cancelNotification();
-                    VibratorUtil.Vibrate(this, 700);
-                    sendMessage(this, mCenter.cmdFenceOn(), setManager.getIMEI());
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
-                } else {
-                    ToastUtils.showShort(this, "请先绑定设备");
-                }
-            } else {
-                ToastUtils.showShort(this, "网络连接失败");
-            }
-        }
-    }
 
     //显示常驻通知栏
     public void showNotification(String text) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(
-                getApplicationContext()
-                        .NOTIFICATION_SERVICE);
+                getApplicationContext().NOTIFICATION_SERVICE);
         Intent intent = new Intent(this, FragmentActivity.class);
         PendingIntent contextIntent = PendingIntent.getActivity(this, 0, intent, 0);
         Notification notification = new NotificationCompat.Builder(this)
@@ -250,17 +216,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         NotificationManager notificationManager = (NotificationManager) getSystemService(getApplicationContext()
                 .NOTIFICATION_SERVICE);
         notificationManager.cancel(R.string.app_name);
-    }
-
-    public void msgSuccessArrived() {
-        if (setManager.getAlarmFlag()) {
-            showNotification("安全宝防盗系统已启动");
-            openStateAlarmBtn();
-        } else {
-            showNotification("安全宝防盗系统已关闭");
-            VibratorUtil.Vibrate(this, 500);
-            closeStateAlarmBtn();
-        }
     }
 
     /**
@@ -289,20 +244,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         if (waitDialog != null) {
             waitDialog.dismiss();
         }
-    }
-
-    //点击打开报警按钮时按钮样式的响应操作
-    public void openStateAlarmBtn() {
-        alarmState = true;
-        btnAlarmState.setText("防盗关闭");
-        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
-    }
-
-    //点击关闭报警按钮时按钮样式的响应操作
-    public void closeStateAlarmBtn() {
-        alarmState = false;
-        btnAlarmState.setText("防盗开启");
-        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
     }
 
     /**
@@ -344,7 +285,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 public void onSuccess(IMqttToken asyncActionToken) {
                     subscribe(mac);
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                    registerBroadCast();
+//                    registerBroadCast();
                     startAlarmService();
                 }
 
@@ -473,7 +414,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
         settingsFragment = new SettingsFragment();
-//        informationFragment = new InformationFragment();
     }
 
     /**
@@ -482,7 +422,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void initData() {
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
-//        list.add(informationFragment);
         list.add(maptabFragment);
         list.add(settingsFragment);
         HomePagerAdapter mAdapter = new HomePagerAdapter(getSupportFragmentManager(), list);
@@ -495,10 +434,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         mViewPager.setCurrentItem(0, false);
                         checkId = 0;
                         break;
-//                    case R.id.rbInformation:
-//                        mViewPager.setCurrentItem(1, false);
-//                        checkId = 1;
-//                        break;
                     case R.id.rbMap:
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
@@ -519,7 +454,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         } else {
             closeStateAlarmBtn();
         }
-
     }
 
 
@@ -550,7 +484,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 界面切换
      */
     class HomePagerAdapter extends FragmentPagerAdapter {
-
         private List<Fragment> list;
 
         public HomePagerAdapter(FragmentManager fm, List<Fragment> list) {
@@ -569,4 +502,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
+    //点击打开报警按钮时按钮样式的响应操作
+    public void openStateAlarmBtn() {
+        alarmState = true;
+        btnAlarmState.setText("防盗关闭");
+        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
+    }
+
+    //点击关闭报警按钮时按钮样式的响应操作
+    public void closeStateAlarmBtn() {
+        alarmState = false;
+        btnAlarmState.setText("防盗开启");
+        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
+    }
 }
