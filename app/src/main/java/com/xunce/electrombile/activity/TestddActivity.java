@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.xunce.electrombile.view.RefreshableView;
 
 public class TestddActivity extends Activity {
 
@@ -99,9 +101,26 @@ public class TestddActivity extends Activity {
     static int GroupPosition = 0;
     ArrayList<ArrayList<TrackPoint>> tracks;
 
+    ExpandableListView expandableListView;
+
+    RefreshableView refreshableView;
+    private int Refresh_count = 1;
+
+    private Handler mhandler = new Handler(){
+        @Override
+        public void handleMessage(android.os.Message msg){
+            Refresh_count++;
+            ConstructListview(Refresh_count);
+            refreshableView.finishRefreshing();
+            adapter.notifyDataSetChanged();
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_testdd);
         init();
 
         tracksManager = new TracksManager(getApplicationContext());
@@ -119,6 +138,60 @@ public class TestddActivity extends Activity {
             tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
             updateListView();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!NetworkUtils.isNetworkConnected(this)){
+            NetworkUtils.networkDialogNoCancel(this);
+        }
+    }
+
+    private void init(){
+        watiDialog = new ProgressDialog(this);
+        dialog = new AlertDialog.Builder(this)
+                .setPositiveButton("继续查询",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+
+                            }
+                        }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+
+                    }
+                }).create();
+
+        ConstructListview(1);
+
+        expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
+        adapter = new ExpandableAdapter(this,ItemList);
+        expandableListView.setAdapter(adapter);
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
+
+                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+                finish();
+                return true;
+            }
+        });
+
+        refreshableView = (RefreshableView)findViewById(R.id.refreshable_view_Date);
+        refreshableView.setOnRefreshListener(new RefreshableView.PullToRefreshListener() {
+            @Override
+            public void onRefresh() {
+                android.os.Message msg = android.os.Message.obtain();
+                mhandler.sendMessage(msg);
+            }
+        }, 1);
+
     }
 
     @Override
@@ -279,79 +352,6 @@ public class TestddActivity extends Activity {
         tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
     }
 
-
-
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(!NetworkUtils.isNetworkConnected(this)){
-            NetworkUtils.networkDialogNoCancel(this);
-        }
-    }
-
-    private void init(){
-        watiDialog = new ProgressDialog(this);
-
-
-        dialog = new AlertDialog.Builder(this)
-                .setPositiveButton("继续查询",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-
-                            }
-                        }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-
-                    }
-                }).create();
-
-        List<Message> test = new ArrayList<Message>();
-//        test.add(new Message("12:00", "location1", "location2"));
-
-        //创建了一种pattern
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-        String[] result = new String[7];
-        //parse作用: 把String型的字符串转换成特定格式的date类型
-        Calendar c = Calendar.getInstance();
-        result[0] = sdf.format(c.getTime());
-        for(int i=1;i<result.length;i++){
-            c.add(Calendar.DAY_OF_MONTH, -1);
-            result[i] = sdf.format(c.getTime());
-        }
-
-        for(int i = 0;i<7;i++)
-        {
-            ItemList.add(new Item(result[i],test,true));
-        }
-
-        ExpandableListView expandableListView = new ExpandableListView(this);
-        adapter = new ExpandableAdapter(this,ItemList);
-        expandableListView.setAdapter(adapter);
-        addContentView(expandableListView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
-//                MaptabFragment.trackDataList = tracksManager.getTrack(childPosition);
-//                HashMap<String, ArrayList<ArrayList<TrackPoint>>> map = tracksManager.getMapTrack();
-//                ArrayList<ArrayList<TrackPoint>> tracks1 = map.get(String.valueOf(groupPosition));
-//                MaptabFragment.trackDataList = tracks1.get(childPosition);
-                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
-                finish();
-                return true;
-            }
-        });
-
-    }
-
     void GetHistoryTrack(int groupPosition)
     {
         GroupPosition = groupPosition;
@@ -366,52 +366,57 @@ public class TestddActivity extends Activity {
         totalSkip = 0;
         if(totalAVObjects != null)
             totalAVObjects.clear();
-       switch (groupPosition) {
-           //如果减出了负数  会不会有问题?
-           case 0:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 1:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 2:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 3:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 4:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 5:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
-           case 6:
-               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-6, 0, 0, 0);
-               startT= gcStart.getTime();
-               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
-               endT = gcEnd.getTime();
-               break;
 
-       }
+        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+        startT= gcStart.getTime();
+        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+        endT = gcEnd.getTime();
+//       switch (groupPosition) {
+//
+//           case 0:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 1:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 2:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 3:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 4:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 5:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//           case 6:
+//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-6, 0, 0, 0);
+//               startT= gcStart.getTime();
+//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
+//               endT = gcEnd.getTime();
+//               break;
+//
+//       }
         findCloud(startT, endT, 0);
     }
 
@@ -427,5 +432,26 @@ public class TestddActivity extends Activity {
         }
         adapter.notifyDataSetChanged();
         return;
+    }
+
+
+    private void ConstructListview(int Count)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        String[] result = new String[7*Count];
+        //parse作用: 把String型的字符串转换成特定格式的date类型
+        Calendar c = Calendar.getInstance();
+        result[0] = sdf.format(c.getTime());
+        List<Message> test = new ArrayList<Message>();
+
+        for(int i=1;i<result.length;i++){
+            c.add(Calendar.DAY_OF_MONTH, -1);
+            result[i] = sdf.format(c.getTime());
+        }
+
+        for(int i = result.length-7;i<result.length;i++)
+        {
+            ItemList.add(new Item(result[i],test,true));
+        }
     }
 }

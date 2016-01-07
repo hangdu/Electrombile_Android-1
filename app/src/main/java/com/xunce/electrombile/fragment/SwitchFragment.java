@@ -382,6 +382,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //补充关于更换头像的代码
             }
         });
+
+        (m_context).receiver.setAlarmHandler(mhandler);
     }
 
 

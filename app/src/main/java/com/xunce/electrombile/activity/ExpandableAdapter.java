@@ -131,23 +131,6 @@ public class ExpandableAdapter extends BaseExpandableListAdapter{
 
     @Override
     public void onGroupExpanded(int groupPosition) {
-        //test
-//        GeoCoder geoCoder = GeoCoder.newInstance();
-//        OnGetGeoCoderResultListener listener = new OnGetGeoCoderResultListener() {
-//            @Override
-//            public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
-//
-//            }
-//
-//            @Override
-//            public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
-//                String address = reverseGeoCodeResult.getAddress();
-//
-//            }
-//        };
-//        // 设置地理编码检索监听者
-//        geoCoder.setOnGetGeoCodeResultListener(listener);
-//        geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(new LatLng(30,30)));
         activity.GetHistoryTrack(groupPosition);
     }
 }

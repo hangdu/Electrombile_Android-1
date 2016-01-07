@@ -130,6 +130,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         Historys.put(this);
 
         registerBroadCast();
+
+
     }
 
     @Override
@@ -155,7 +157,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         super.onResume();
         if (mac != null && mac.isConnected()) {
             mac.registerResources(this);
-            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
+//            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
 //        if (setManager.getAlarmFlag()) {
 //            openStateAlarmBtn();
