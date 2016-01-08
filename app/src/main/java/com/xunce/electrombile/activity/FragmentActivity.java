@@ -87,6 +87,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     //接收广播
     public MyReceiver receiver;
 
+    int Count = 0;
+
+    private boolean IsCarSwitched = false;
+
 //    Button btnAlarmState;
 //    boolean alarmState;
 
@@ -189,9 +193,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     public void locationTVClicked() {
-        checkId = R.id.rbMap;
-        main_radio.check(checkId);
-        checkId = 1;
+        maptabFragment.HideInfowindow();
+        IsCarSwitched = true;
+
     }
 
 
@@ -437,8 +441,22 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         checkId = 0;
                         break;
                     case R.id.rbMap:
+                        Count++;
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
+
+                        //打开应用之后第一次点击mapfragment  就会进行车辆定位
+                        if(1 == Count){
+                            maptabFragment.InitCarLocation();
+                        }
+                        if(true == IsCarSwitched){
+                            IsCarSwitched = false;
+                            maptabFragment.InitCarLocation();
+                            maptabFragment.setCarname();
+
+                        }
+
+                        //添加逻辑代码
                         break;
                     case R.id.rbSettings:
                         mViewPager.setCurrentItem(2, false);

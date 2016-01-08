@@ -9,6 +9,44 @@
         android:layout_below="@id/viewpager"
         android:clickable="true" />
 
+    <RelativeLayout
+        android:id="@+id/findcar_container"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true">
+
+        <Button
+            android:id="@+id/find_car"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:text = "精确找车"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/find_car"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_CarName"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text = "车辆名称:"/>
+
+            <TextView
+                android:id="@+id/tv_CarPosition"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text = "车辆位置:"/>
+        </LinearLayout>
+
+
+
+
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/history_container"
         android:layout_width="wrap_content"

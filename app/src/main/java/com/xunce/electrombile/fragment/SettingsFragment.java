@@ -41,6 +41,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private View rootView;
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    //没有重写oncreate函数
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
@@ -56,10 +63,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
+
 
     @Override
     public void onClick(View view) {

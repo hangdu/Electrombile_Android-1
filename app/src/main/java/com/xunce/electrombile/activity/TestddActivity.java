@@ -434,7 +434,7 @@ public class TestddActivity extends Activity {
         return;
     }
 
-
+   //更新ItemList
     private void ConstructListview(int Count)
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");

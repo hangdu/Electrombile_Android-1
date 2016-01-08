@@ -104,6 +104,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             switch (msg.what){
                 case 1://处理侧滑的message
                     myHorizontalScrollView.UpdateListview();
+
                     break;
                 case 2:
                     cancelWaitTimeOut();
@@ -123,97 +124,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     };
 
-
-    public void alarmStatusChange() {
-        Count++;
-        if(1 == Count)
-        {
-            (m_context).receiver.setAlarmHandler(mhandler);
-        }
-
-        if (alarmState) {
-            if (!setManager.getIMEI().isEmpty()) {
-                if (NetworkUtils.isNetworkConnected(m_context)) {
-                    //关闭报警
-                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
-                    cancelNotification();
-                    (m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
-
-                } else {
-                    ToastUtils.showShort(m_context, "网络连接失败");
-                }
-            } else {
-                ToastUtils.showShort(m_context, "请等待设备绑定");
-            }
-        } else {
-            if (NetworkUtils.isNetworkConnected(m_context)) {
-                //打开报警
-                if (!setManager.getIMEI().isEmpty()) {
-                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
-                    cancelNotification();
-                    VibratorUtil.Vibrate(m_context, 700);
-                    (m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
-                } else {
-                    ToastUtils.showShort(m_context, "请先绑定设备");
-                }
-            } else {
-                ToastUtils.showShort(m_context, "网络连接失败");
-            }
-        }
-    }
-
-    public void showWaitDialog() {
-        LayoutInflater inflater = (LayoutInflater) (m_context).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.dialog_wait, null);
-        Animation animation = AnimationUtils.loadAnimation(m_context, R.anim.alpha);
-        view.findViewById(R.id.iv).startAnimation(animation);
-        waitDialog = new Dialog(m_context, R.style.Translucent_NoTitle_trans);
-        waitDialog.addContentView(view, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        waitDialog.setContentView(view);
-        waitDialog.setCancelable(false);
-        waitDialog.show();
-        WindowManager.LayoutParams params = waitDialog.getWindow().getAttributes();
-        params.y = -156;
-        waitDialog.getWindow().setAttributes(params);
-    }
-
-    /**
-     * 取消显示等待框
-     */
-    public void dismissWaitDialog() {
-        if (waitDialog != null) {
-            waitDialog.dismiss();
-        }
-    }
-
-    /**
-     * 取消等待框的显示
-     */
-    public void cancelWaitTimeOut() {
-        if (waitDialog != null) {
-            dismissWaitDialog();
-            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
-        }
-    }
-
-
-    //取消显示常驻通知栏
-    public void cancelNotification() {
-        NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(m_context
-                .NOTIFICATION_SERVICE);
-        notificationManager.cancel(R.string.app_name);
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //???
             locationTVClickedListener = (LocationTVClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement OnArticleSelectedListener");
@@ -231,21 +145,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
+
+
     }
 
-    private void initLocation() {
-        LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
-        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
-        int span = 1000;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
-        option.setIgnoreKillProcess(false);//可选，默认false，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认杀死
-        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-        mLocationClient.setLocOption(option);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.switch_fragment, container, false);
+        }
+        return rootView;
     }
 
     @Override
@@ -254,60 +164,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         initView();
       }
 
-
-
-    //点击打开报警按钮时按钮样式的响应操作
-    public void openStateAlarmBtn() {
-        alarmState = true;
-        btnAlarmState1.setText("防盗关闭");
-        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_2);
-    }
-
-    //点击关闭报警按钮时按钮样式的响应操作
-    public void closeStateAlarmBtn() {
-        alarmState = false;
-        btnAlarmState1.setText("防盗开启");
-        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_1);
-    }
-
-    public void msgSuccessArrived() {
-        if (setManager.getAlarmFlag()) {
-            showNotification("安全宝防盗系统已启动");
-            openStateAlarmBtn();
-        } else {
-            showNotification("安全宝防盗系统已关闭");
-            VibratorUtil.Vibrate(m_context, 500);
-            closeStateAlarmBtn();
-        }
-    }
-
-    //显示常驻通知栏
-    public void showNotification(String text) {
-        NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(
-                m_context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(m_context, FragmentActivity.class);
-        PendingIntent contextIntent = PendingIntent.getActivity(m_context, 0, intent, 0);
-        Notification notification = new NotificationCompat.Builder(m_context)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("安全宝")
-                .setWhen(System.currentTimeMillis())
-                .setTicker("安全宝正在设置~")
-                .setOngoing(true)
-                .setContentText(text)
-                .setContentIntent(contextIntent)
-                .build();
-        notificationManager.notify(R.string.app_name, notification);
-    }
-
     private void initView() {
-        //防盗开关的初始化
-//        if (setManager.getAlarmFlag()) {
-//            showNotification("安全宝防盗系统已启动");
-//            openStateAlarmBtn();
-//        } else {
-//            closeStateAlarmBtn();
-//        }
-
         btnAlarmState1 = (Button) getActivity().findViewById(R.id.btn_AlarmState1);
         btnAlarmState1.setOnClickListener(new OnClickListener() {
             @Override
@@ -345,10 +202,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //实际逻辑改变
                 switchManagedCar = new SwitchManagedCar(m_context, m_context, IMEI_now, IMEI_previous);
                 reSubscribe();
+
+                //把mapfragment里的车辆名称更新
+                locationTVClickedListener.locationTVClicked();
+
+
             }
         });
 
         refreshBindList();
+
 
         ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
         ChangeAutobike.setOnClickListener(new OnClickListener() {
@@ -384,9 +247,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         (m_context).receiver.setAlarmHandler(mhandler);
+
+        //从设置切换回主页的时候  会执行这个函数  如果主页中的侧滑菜单是打开的  那么就关闭侧滑菜单
+        if(myHorizontalScrollView.getIsOpen() == true)
+        {
+            myHorizontalScrollView.toggle();
+        }
     }
-
-
 
     @Override
     public void onResume() {
@@ -399,14 +266,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (rootView == null) {
-            rootView = inflater.inflate(R.layout.switch_fragment, container, false);
-        }
-        return rootView;
-    }
 
     public void reverserGeoCedec(LatLng pCenter) {
         mSearch.reverseGeoCode(new ReverseGeoCodeOption()
@@ -546,6 +405,21 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
+    private void initLocation() {
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy
+        );//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+        int span = 1000;
+        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+        option.setIgnoreKillProcess(false);//可选，默认false，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认杀死
+        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
+        mLocationClient.setLocOption(option);
+    }
+
     //刷新车列表
     public void refreshBindList() {
         AVUser currentUser = AVUser.getCurrentUser();
@@ -592,5 +466,133 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 //        (m_context).closeStateAlarmBtn();
         closeStateAlarmBtn();
         (m_context).queryIMEI();
+    }
+
+    public void alarmStatusChange() {
+        Count++;
+        if(1 == Count)
+        {
+            (m_context).receiver.setAlarmHandler(mhandler);
+        }
+
+        if (alarmState) {
+            if (!setManager.getIMEI().isEmpty()) {
+                if (NetworkUtils.isNetworkConnected(m_context)) {
+                    //关闭报警
+                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
+                    cancelNotification();
+                    (m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
+                    showWaitDialog();
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+
+                } else {
+                    ToastUtils.showShort(m_context, "网络连接失败");
+                }
+            } else {
+                ToastUtils.showShort(m_context, "请等待设备绑定");
+            }
+        } else {
+            if (NetworkUtils.isNetworkConnected(m_context)) {
+                //打开报警
+                if (!setManager.getIMEI().isEmpty()) {
+                    //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
+                    cancelNotification();
+                    VibratorUtil.Vibrate(m_context, 700);
+                    (m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
+                    showWaitDialog();
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+                } else {
+                    ToastUtils.showShort(m_context, "请先绑定设备");
+                }
+            } else {
+                ToastUtils.showShort(m_context, "网络连接失败");
+            }
+        }
+    }
+
+    public void showWaitDialog() {
+        LayoutInflater inflater = (LayoutInflater) (m_context).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_wait, null);
+        Animation animation = AnimationUtils.loadAnimation(m_context, R.anim.alpha);
+        view.findViewById(R.id.iv).startAnimation(animation);
+        waitDialog = new Dialog(m_context, R.style.Translucent_NoTitle_trans);
+        waitDialog.addContentView(view, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        waitDialog.setContentView(view);
+        waitDialog.setCancelable(false);
+        waitDialog.show();
+        WindowManager.LayoutParams params = waitDialog.getWindow().getAttributes();
+        params.y = -156;
+        waitDialog.getWindow().setAttributes(params);
+    }
+
+    /**
+     * 取消显示等待框
+     */
+    public void dismissWaitDialog() {
+        if (waitDialog != null) {
+            waitDialog.dismiss();
+        }
+    }
+
+    /**
+     * 取消等待框的显示
+     */
+    public void cancelWaitTimeOut() {
+        if (waitDialog != null) {
+            dismissWaitDialog();
+            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        }
+    }
+
+
+    //取消显示常驻通知栏
+    public void cancelNotification() {
+        NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(m_context
+                .NOTIFICATION_SERVICE);
+        notificationManager.cancel(R.string.app_name);
+    }
+
+    //点击打开报警按钮时按钮样式的响应操作
+    public void openStateAlarmBtn() {
+        alarmState = true;
+        btnAlarmState1.setText("防盗关闭");
+        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_2);
+    }
+
+    //点击关闭报警按钮时按钮样式的响应操作
+    public void closeStateAlarmBtn() {
+        alarmState = false;
+        btnAlarmState1.setText("防盗开启");
+        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_1);
+    }
+
+    public void msgSuccessArrived() {
+        if (setManager.getAlarmFlag()) {
+            showNotification("安全宝防盗系统已启动");
+            openStateAlarmBtn();
+        } else {
+            showNotification("安全宝防盗系统已关闭");
+            VibratorUtil.Vibrate(m_context, 500);
+            closeStateAlarmBtn();
+        }
+    }
+
+    //显示常驻通知栏
+    public void showNotification(String text) {
+        NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(
+                m_context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(m_context, FragmentActivity.class);
+        PendingIntent contextIntent = PendingIntent.getActivity(m_context, 0, intent, 0);
+        Notification notification = new NotificationCompat.Builder(m_context)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("安全宝")
+                .setWhen(System.currentTimeMillis())
+                .setTicker("安全宝正在设置~")
+                .setOngoing(true)
+                .setContentText(text)
+                .setContentIntent(contextIntent)
+                .build();
+        notificationManager.notify(R.string.app_name, notification);
     }
 }
