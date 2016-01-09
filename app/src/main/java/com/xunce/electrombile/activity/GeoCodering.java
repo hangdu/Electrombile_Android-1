@@ -32,7 +32,7 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
         this.Start_End_Type = Start_End_Type;
         init();
     }
-
+    
     void init() {
         SDKInitializer.initialize(context);
         // 初始化搜索模块，注册事件监听
@@ -63,6 +63,8 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
             return;
         }
         ReverseGeoCodeResult = result.getAddress();
+
+        //是由testddactivity调用的
         activity.RefreshMessageList(TrackPosition, Start_End_Type, result.getAddress());
     }
 }

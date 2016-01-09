@@ -43,10 +43,17 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
 import com.xunce.electrombile.activity.FindActivity;
+import com.xunce.electrombile.activity.GeoCodering;
 import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager;
@@ -58,7 +65,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MaptabFragment extends BaseFragment {
+public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
 
 
     //保存数据所需要的最短距离
@@ -76,7 +83,7 @@ public class MaptabFragment extends BaseFragment {
     public boolean isPlaying = false;
     private TextView btnLocation;
     private TextView btnRecord;
-    private TextView tvFindEle;
+//    private TextView tvFindEle;
     private Button btnPlay;
     private Button btnPause;
     private Button btnClearTrack;
@@ -110,6 +117,10 @@ public class MaptabFragment extends BaseFragment {
     private boolean btnPlayClicked;
 
     private TextView tv_CarName;
+    private TextView tv_CarPosition;
+    private Button find_car;
+
+    GeoCoder mSearch = null;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -139,6 +150,11 @@ public class MaptabFragment extends BaseFragment {
                         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
                         mBaiduMap.showInfoWindow(mInfoWindow);
+
+                        //设置车辆位置  填到textview中
+                        mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                                .location(trackPoint.point));
+
                     }
                     break;
                 }
@@ -188,6 +204,9 @@ public class MaptabFragment extends BaseFragment {
 
                     }
                 }).create();
+
+        mSearch = GeoCoder.newInstance();
+        mSearch.setOnGetGeoCodeResultListener(this);
     }
 
     @Override
@@ -209,6 +228,7 @@ public class MaptabFragment extends BaseFragment {
 
         //在主页切换了被管理车辆之后  这个函数也是需要再执行一遍的
 //        InitCarLocation();
+
     }
 
     public void InitCarLocation(){
@@ -366,19 +386,7 @@ public class MaptabFragment extends BaseFragment {
             }
         });
 
-       //精确找车
-        tvFindEle = (TextView) v.findViewById(R.id.tv_find_ele);
-        tvFindEle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //检查网络
-                if (checkNetwork()) return;
-                //检查是否绑定
-                if (checkBind()) return;
-                Intent intent = new Intent(m_context, FindActivity.class);
-                startActivity(intent);
-            }
-        });
+
 
         //定位电动车按钮
         btnLocation = (TextView) v.findViewById(R.id.btn_location);
@@ -448,6 +456,26 @@ public class MaptabFragment extends BaseFragment {
         tv_CarName = (TextView) v.findViewById(R.id.tv_CarName);
         //如果setManager.getIMEI()为空会怎么样
         tv_CarName.setText("车辆名称:"+setManager.getIMEI());
+
+        tv_CarPosition = (TextView) v.findViewById(R.id.tv_CarPosition);
+
+        //精确找车
+        find_car = (Button) v.findViewById(R.id.find_car);
+        find_car.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //检查网络
+                if (checkNetwork()) return;
+                //检查是否绑定
+                if (checkBind()) return;
+                Intent intent = new Intent(m_context, FindActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+        //精确找车
+//        tvFindEle = (TextView) v.findViewById(R.id.tv_find_ele);
 
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_marka);
@@ -580,6 +608,8 @@ public class MaptabFragment extends BaseFragment {
         msg.obj = track;
         playHandler.sendMessage(msg);
         refreshTrack(track);
+
+//        geoCoder = new GeoCodering(this,startP.point,i,0);
     }
 
 
@@ -748,7 +778,10 @@ public class MaptabFragment extends BaseFragment {
     public void setCarname()
     {
         tv_CarName.setText("车辆名称:"+setManager.getIMEI());
+        tv_CarPosition.setText("车辆位置:");
     }
+
+
 
     //当切换了车辆之后需要把那个infowindow隐藏掉
     public void HideInfowindow()
@@ -757,5 +790,20 @@ public class MaptabFragment extends BaseFragment {
             mBaiduMap.hideInfoWindow();
 
         }
+    }
+
+    @Override
+    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
+        LogUtil.log.i("进入位置设置:" + result.getAddress());
+        if (result.error != SearchResult.ERRORNO.NO_ERROR) {
+            return;
+        }
+        String reverseGeoCodeResult = result.getAddress();
+        tv_CarPosition.setText("车辆位置:"+reverseGeoCodeResult);
+    }
+
+    @Override
+    public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+
     }
 }

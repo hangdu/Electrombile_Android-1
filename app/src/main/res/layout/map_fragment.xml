@@ -41,10 +41,6 @@
                 android:layout_height="50dp"
                 android:text = "车辆位置:"/>
         </LinearLayout>
-
-
-
-
     </RelativeLayout>
 
     <LinearLayout
@@ -109,63 +105,48 @@
 
     <LinearLayout
         android:id="@+id/ll_map"
-        android:layout_width="320dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="60dp"
-        android:background="@drawable/map_tiao_fragment_act"
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:background="#ffffff"
         android:weightSum="3">
 
         <TextView
             android:id="@+id/btn_record"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:background="@drawable/common_btn_white"
             android:clickable="true"
             android:drawableLeft="@drawable/history_trail"
             android:gravity="center"
             android:singleLine="true"
             android:text="历史轨迹"
+            android:textSize="22sp"
             android:textColor="#8d8d8d" />
 
         <View
             android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#848484" />
+            android:layout_height="8dp"/>
+
+
 
         <TextView
             android:id="@+id/btn_location"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:background="@drawable/common_btn_white"
             android:clickable="true"
             android:drawableLeft="@drawable/ic_location"
             android:gravity="center"
             android:singleLine="true"
             android:text="定位"
+            android:textSize="22sp"
             android:textColor="#8d8d8d" />
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#848484" />
 
-        <TextView
-            android:id="@+id/tv_find_ele"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/common_btn_white"
-            android:clickable="true"
-            android:drawableLeft="@drawable/find"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="精确找车"
-            android:textColor="#8d8d8d" />
 
     </LinearLayout>
 
