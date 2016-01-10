@@ -83,7 +83,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public boolean isPlaying = false;
     private TextView btnLocation;
     private TextView btnRecord;
-//    private TextView tvFindEle;
     private Button btnPlay;
     private Button btnPause;
     private Button btnClearTrack;
@@ -473,9 +472,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
             }
         });
-
-        //精确找车
-//        tvFindEle = (TextView) v.findViewById(R.id.tv_find_ele);
 
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_marka);

@@ -30,24 +30,24 @@
                     android:src="@mipmap/ic_launcher" />
 
                 <TextView
-                    android:id="@+id/tv_equip"
+                    android:id="@+id/layout_person_center1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="30dp"
                     android:layout_marginTop="60dp"
                     android:layout_toRightOf="@+id/iv_logo"
-                    android:text="广告招商"
+                    android:text="车主:"
                     android:textSize="25sp" />
 
-                <TextView
-                    android:id="@+id/tv_imei"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/tv_equip"
-                    android:layout_below="@+id/tv_equip"
-                    android:layout_marginTop="10dp"
-                    android:singleLine="true"
-                    android:text="当前设备号：" />
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_imei"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignLeft="@+id/tv_equip"-->
+                    <!--android:layout_below="@+id/tv_equip"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:singleLine="true"-->
+                    <!--android:text="当前设备号：" />-->
             </RelativeLayout>
 
             <LinearLayout
@@ -113,7 +113,7 @@
             <LinearLayout
                 android:id="@+id/layout_about"
                 style="@style/clickableLayout"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="2dp"
                 android:elevation="2dip">
 
                 <ImageView
@@ -127,20 +127,54 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/btn_logout"
+                android:id="@+id/layout_autolock"
                 style="@style/clickableLayout"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="2dp"
                 android:elevation="2dip">
 
                 <ImageView
                     style="@style/settings_fragment_iv"
-                    android:src="@color/transation" />
+                    android:src="@drawable/setting_tel" />
 
                 <TextView
                     style="@style/clickableLayoutTextview"
-                    android:text="退出登录"
+                    android:text="自动落锁"
                     android:textColor="@color/black" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_mapdownload"
+                style="@style/clickableLayout"
+                android:layout_marginTop="2dp"
+                android:elevation="2dip">
+
+                <ImageView
+                    style="@style/settings_fragment_iv"
+                    android:src="@drawable/setting_tel" />
+
+                <TextView
+                    style="@style/clickableLayoutTextview"
+                    android:text="地图下载"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="24dp"
+                android:elevation="2dip">
+
+
+                <Button
+                    android:id="@+id/btn_logout"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="退出登录"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
 
             <!--<LinearLayout-->
             <!--android:id="@+id/layout_bind"-->

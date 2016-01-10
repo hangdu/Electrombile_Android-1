@@ -32,7 +32,7 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
         this.Start_End_Type = Start_End_Type;
         init();
     }
-    
+
     void init() {
         SDKInitializer.initialize(context);
         // 初始化搜索模块，注册事件监听

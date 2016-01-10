@@ -247,7 +247,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * 初始化布局
      */
     private void initView(View view) {
-        ((TextView) (view.findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
+//        ((TextView) (view.findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
         view.findViewById(R.id.layout_about).setOnClickListener(this);
         view.findViewById(R.id.layout_help).setOnClickListener(this);
         view.findViewById(R.id.btn_logout).setOnClickListener(this);

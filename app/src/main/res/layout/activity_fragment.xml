@@ -65,7 +65,7 @@
             android:background="@drawable/rb_fragment_act"
             android:checked="false"
             android:drawableTop="@drawable/setting_icon"
-            android:text="设置" />
+            android:text="我" />
     </RadioGroup>
 
 

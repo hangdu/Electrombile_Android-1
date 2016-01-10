@@ -7,146 +7,101 @@
     tools:context="com.xunce.electrombile.activity.account.PersonalCenterActivity">
 
     <RelativeLayout
-        android:id="@+id/rl_1"
-        android:layout_width="match_parent"
-        android:layout_height="184dp"
-        android:background="@color/white"
-        android:elevation="2dip">
-
-        <ImageView
-            android:id="@+id/head_portrait"
-            android:layout_width="135dp"
-            android:layout_height="135dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="24dp"
-            android:onClick="changeHeadPortrait"
-            android:src="@drawable/iv_person_head" />
-
+        style="@style/clickableLayout">
         <TextView
-            android:id="@+id/tv_equip"
+            android:layout_centerHorizontal="true"
+            style="@style/clickableLayoutTextview"
+            android:text = "车主中心"/>
+
+        <Button
+            android:layout_alignParentLeft="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="60dp"
-            android:layout_toRightOf="@+id/head_portrait"
-            android:text="个人中心"
-            android:textSize="25sp" />
+            android:text = "回撤"/>
 
-        <TextView
-            android:id="@+id/tv_imei"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/tv_equip"
-            android:layout_below="@+id/tv_equip"
-            android:layout_marginTop="10dp"
-            android:singleLine="true"
-            android:text="设备卡号：" />
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/ll_iv_container"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginTop="24dp"
-        android:background="@color/white"
-        android:elevation="2dip"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:id="@+id/layout_UserName"
+        style="@style/clickableLayout"
+        android:layout_marginTop="8dp"
+        android:elevation="2dip">
 
         <ImageView
-            android:id="@+id/car1View"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="addDevice1Photo"
-            android:src="@drawable/iv_add_photo_person_act" />
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/setting_tel" />
 
-        <ImageView
-            android:id="@+id/car2View"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="addDevice2Photo"
-            android:src="@drawable/iv_add_photo_person_act"
-            android:visibility="gone" />
+        <TextView
+            style="@style/clickableLayoutTextview"
+            android:text="用户昵称"
+            android:textColor="@color/black" />
 
-        <ImageView
-            android:id="@+id/car3View"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="addDevice3Photo"
-            android:src="@drawable/iv_add_photo_person_act"
-            android:visibility="gone" />
-
-        <ImageView
-            android:id="@+id/car4View"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginLeft="5dp"
-            android:onClick="addDevice4Photo"
-            android:src="@drawable/iv_add_photo_person_act"
-            android:visibility="gone" />
+        <TextView
+            android:id = "@+id/tv_UserName"
+            style="@style/clickableLayoutTextview"
+            android:text="哈哈"
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll__car_number_container"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="24dp"
-        android:background="@color/white"
-        android:elevation="2dip"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:id="@+id/layout_Gender"
+        style="@style/clickableLayout"
+        android:layout_marginTop="2dp"
+        android:elevation="2dip">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/setting_tel" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="5dp"
-            android:text="车辆牌照:"
-            android:textSize="24sp" />
+            style="@style/clickableLayoutTextview"
+            android:text="性       别"
+            android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/et_car_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/white"
-            android:hint="请输入车辆牌照"
-            android:padding="5dp"
-            android:textSize="22sp" />
-
+        <TextView
+            android:id="@+id/tv_Gender"
+            style="@style/clickableLayoutTextview"
+            android:text="男"
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll__sim_container"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:elevation="2dip"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:id="@+id/layout_BirthDate"
+        style="@style/clickableLayout"
+        android:layout_marginTop="2dp"
+        android:elevation="2dip">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/setting_tel" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="5dp"
-            android:text="SIM卡号:"
-            android:textSize="24sp" />
+            style="@style/clickableLayoutTextview"
+            android:text="出生年代"
+            android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/et_sim_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/white"
-            android:hint="请输入SIM卡号"
-            android:inputType="number"
-            android:padding="5dp"
-            android:textSize="22sp" />
+        <TextView
+            android:id="@+id/tv_BirthDate"
+            style="@style/clickableLayoutTextview"
+            android:text="1987-02-18"
+            android:textColor="@color/black" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_ChangePassword"
+        style="@style/clickableLayout"
+        android:layout_marginTop="60dp"
+        android:elevation="2dip">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/setting_tel" />
+
+        <TextView
+            style="@style/clickableLayoutTextview"
+            android:text="修改密码"
+            android:textColor="@color/black" />
+
+
+    </LinearLayout>
 </LinearLayout>
