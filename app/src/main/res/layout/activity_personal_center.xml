@@ -7,6 +7,7 @@
     tools:context="com.xunce.electrombile.activity.account.PersonalCenterActivity">
 
     <RelativeLayout
+
         style="@style/clickableLayout">
         <TextView
             android:layout_centerHorizontal="true"
@@ -14,6 +15,7 @@
             android:text = "车主中心"/>
 
         <Button
+            android:id = "@+id/btn_back"
             android:layout_alignParentLeft="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -25,6 +27,7 @@
         android:id="@+id/layout_UserName"
         style="@style/clickableLayout"
         android:layout_marginTop="8dp"
+        android:focusableInTouchMode="true"
         android:elevation="2dip">
 
         <ImageView
@@ -36,11 +39,14 @@
             android:text="用户昵称"
             android:textColor="@color/black" />
 
-        <TextView
-            android:id = "@+id/tv_UserName"
-            style="@style/clickableLayoutTextview"
-            android:text="哈哈"
-            android:textColor="@color/black" />
+
+        <EditText
+            android:id="@+id/tv_UserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/white"
+            android:padding="5dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,7 +67,6 @@
         <TextView
             android:id="@+id/tv_Gender"
             style="@style/clickableLayoutTextview"
-            android:text="男"
             android:textColor="@color/black" />
     </LinearLayout>
 
@@ -83,7 +88,6 @@
         <TextView
             android:id="@+id/tv_BirthDate"
             style="@style/clickableLayoutTextview"
-            android:text="1987-02-18"
             android:textColor="@color/black" />
     </LinearLayout>
 

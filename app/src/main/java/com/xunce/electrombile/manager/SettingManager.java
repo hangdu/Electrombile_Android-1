@@ -37,6 +37,10 @@ public class SettingManager {
      * The phone num.
      */
     private final String PHONE_NUM = "phoneNumber";
+
+    private final String NICKNAME = "nickname";
+    private final String GENDER = "gender";
+    private final String BIRTHDATE="birthdate";
     // 手机号码
     /**
      * The password.
@@ -160,6 +164,31 @@ public class SettingManager {
      */
     public void setPhoneNumber(String phoneNumber) {
         spf.edit().putString(PHONE_NUM, phoneNumber).commit();
+    }
+
+    public void setNickname(String nickname) {
+        spf.edit().putString(NICKNAME, nickname).commit();
+    }
+    public String getNickname() {
+        return spf.getString(NICKNAME,"test");
+    }
+
+
+    public void setGender(String gender){
+        spf.edit().putString(GENDER, gender).commit();
+    }
+
+    public String getGender(){
+        return spf.getString(GENDER,"女");
+    }
+
+
+    public void setBirthDate(String birthDate){
+        spf.edit().putString(BIRTHDATE, birthDate).commit();
+    }
+
+    public String getBirthdate(){
+        return spf.getString(BIRTHDATE,"1994-01-01");
     }
 
     /**

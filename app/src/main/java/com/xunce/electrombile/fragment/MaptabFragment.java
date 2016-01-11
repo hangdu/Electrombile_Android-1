@@ -62,6 +62,7 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -802,4 +803,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
 
     }
+
+
+
 }
