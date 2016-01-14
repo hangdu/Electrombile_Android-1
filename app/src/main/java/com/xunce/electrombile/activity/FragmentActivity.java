@@ -447,6 +447,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         if(1 == Count){
                             maptabFragment.InitCarLocation();
                         }
+                        if(setManager.getFlagCarSwitched().equals("切换")){
+                            setManager.setFlagCarSwitched("没有切换");
+                            maptabFragment.InitCarLocation();
+                            maptabFragment.setCarname();
+                        }
                         if(true == IsCarSwitched){
                             IsCarSwitched = false;
                             maptabFragment.InitCarLocation();

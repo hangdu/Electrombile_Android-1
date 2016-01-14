@@ -77,16 +77,44 @@ public class CarInfoEditActivity extends Activity {
             }
         });
 
-//        btn_DeviceChange = (Button)findViewById(R.id.btn_DeviceChange);
-//        btn_DeviceChange.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//            }
-//        });
+        //设备切换
+        btn_DeviceChange = (Button)findViewById(R.id.btn_DeviceChange);
+        btn_DeviceChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeviceChange();
+
+            }
+        });
         Flag_Maincar = JudgeMainCarOrNot();
 
+    }
+
+    //设备解绑
+    private void DeviceUnbinded(){
+        Intent intent;
+        intent = new Intent("com.xunce.electrombile.alarmservice");
+        CarInfoEditActivity.this.stopService(intent);
+        intent = new Intent();
+        //判断正在查看的设备是否是正在被管理的成立
+
+
+        intent.putExtra("string_key","设备解绑");
+        intent.putExtra("boolean_key",Flag_Maincar);
+
+        setResult(RESULT_OK,intent);
+        CarInfoEditActivity.this.finish();
+    }
+
+
+    //设备切换
+    private void DeviceChange(){
+        Intent intent = new Intent();
+        intent.putExtra("string_key","设备切换");
+        intent.putExtra("boolean_key",Flag_Maincar);
+        setResult(RESULT_OK,intent);
+        //解除订阅
+        CarInfoEditActivity.this.finish();
     }
 
     private void releaseBinding() {
@@ -123,18 +151,9 @@ public class CarInfoEditActivity extends Activity {
                                         setManager.cleanDevice();
                                     }
 
-                                    ToastUtils.showShort(CarInfoEditActivity.this, "解除绑定成功!");
+//                                    ToastUtils.showShort(CarInfoEditActivity.this, "解除绑定成功!");
                                     progressDialog.dismiss();
-                                    Intent intent;
-                                    intent = new Intent("com.xunce.electrombile.alarmservice");
-                                    CarInfoEditActivity.this.stopService(intent);
-                                    intent = new Intent();
-                                    //判断正在查看的设备是否是正在被管理的成立
-
-                                    intent.putExtra("boolean_key",Flag_Maincar);
-
-                                    setResult(RESULT_OK,intent);
-                                    CarInfoEditActivity.this.finish();
+                                    DeviceUnbinded();
                                 }
                             }
                         });
@@ -148,10 +167,7 @@ public class CarInfoEditActivity extends Activity {
                 }
             }
         });
-
-
     }
-
 
     private boolean unSubscribe(MqttAndroidClient mac) {
         //订阅命令字
@@ -178,6 +194,7 @@ public class CarInfoEditActivity extends Activity {
     //判断正在查看的设备是否是主设备
     Boolean JudgeMainCarOrNot(){
         if(setManager.getIMEI().equals(IMEI)){
+            btn_DeviceChange.setVisibility(View.INVISIBLE);
             return true;
         }
         else{

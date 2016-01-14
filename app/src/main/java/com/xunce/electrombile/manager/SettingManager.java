@@ -43,6 +43,7 @@ public class SettingManager {
     private final String BIRTHDATE="birthdate";
     private final String AUTOLOCKSTATUS = "autolockstatus";
     private final String AUTOLOCKTIME = "autolocktime";
+    private final String FLAGCARSWITCHED = "flagcarswitched";
     // 手机号码
     /**
      * The password.
@@ -182,6 +183,14 @@ public class SettingManager {
 
     public String getGender(){
         return spf.getString(GENDER,"女");
+    }
+
+    public void setFlagCarSwitched(String flagCarSwitched){
+        spf.edit().putString(FLAGCARSWITCHED,flagCarSwitched).commit();
+    }
+
+    public String getFlagCarSwitched(){
+        return spf.getString(FLAGCARSWITCHED,"没有切换");
     }
 
 

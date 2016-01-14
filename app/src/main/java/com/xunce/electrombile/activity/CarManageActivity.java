@@ -1,7 +1,6 @@
 package com.xunce.electrombile.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -41,9 +40,6 @@ public class CarManageActivity extends Activity {
     Button btn_AddDevice;
     int OthercarPositon;
 
-    //设置一个变量记录被点击的是主车辆还是其他车辆
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +65,6 @@ public class CarManageActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                Log.d("test","test");
-
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", tv_CurrentCar.getText());
                 startActivityForResult(intentCarEdit, 0);
@@ -111,16 +106,41 @@ public class CarManageActivity extends Activity {
                 if(RESULT_OK == resultCode){
                 //现在这个部分是有问题的  先把绑定设备的功能添加进去再来做这一个部分
                     //将intent里面的数据解析出来
-                    Boolean Flag_Maincar = data.getBooleanExtra("boolean_key",false);
-                    if(true == Flag_Maincar){
-                        CaseManagedCarUnbinded();
+                    String s = data.getStringExtra("string_key");
+                    if(s.equals("设备解绑")){
+                        Boolean Flag_Maincar = data.getBooleanExtra("boolean_key",false);
+                        if(true == Flag_Maincar){
+                            CaseManagedCarUnbinded();
+                        }
+                        else{
+                            caseOtherCarUnbind();
+                        }
                     }
+                    //设备切换
                     else{
-                        caseOtherCarUnbind();
+                        caseDeviceChange();
                     }
                 }
                 break;
         }
+    }
+
+    void caseDeviceChange(){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("WhichCar", tv_CurrentCar.getText());
+        map.put("img",R.drawable.img_1);
+
+        String s = Othercarlist.get(OthercarPositon).get("WhichCar").toString();
+        settingManager.setIMEI(s);
+        //UI变化
+        tv_CurrentCar.setText(s);
+        Othercarlist.set(OthercarPositon, map);
+        adapter.notifyDataSetChanged();
+        //逻辑上切换
+        reSubscribe();
+
+        //这句话没有起到应有的作用    为什么为什么为什么.....
+        settingManager.setFlagCarSwitched("切换");
     }
 
     void initEvents(){
@@ -154,16 +174,14 @@ public class CarManageActivity extends Activity {
 
             }
         });
-
         getBindList.QueryBindList();
     }
-
-
 
     //在二级界面的时候正在被管理的car被解绑了
     void CaseManagedCarUnbinded(){
         //如果没有其他的车被绑定了  还没有处理相关的情况
         if(Othercarlist == null){
+            //被绑定的只有一辆车  而且这辆车被解绑了  这种情况要怎么处理????
 
         }
         else{
@@ -174,10 +192,7 @@ public class CarManageActivity extends Activity {
             Othercarlist.remove(0);
             //数据更新
             adapter.notifyDataSetChanged();
-
             //逻辑上的改变 需要重新订阅一次
-            //接口里的函数
-
             reSubscribe();
         }
     }
