@@ -106,6 +106,7 @@ public class DeviceActivity extends BaseActivity {
                         }).setNegativeButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        //确定要解除绑定的操作
                         progressDialog.show();
                         releaseBind.setClickable(false);
                         releaseBinding();

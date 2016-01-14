@@ -165,8 +165,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * 跳转到设备界面
      */
     private void goToDeviceAct() {
-        Intent intent = new Intent(m_context, DeviceActivity.class);
-//        Intent intent = new Intent(m_context, CarManageActivity.class);
+//        Intent intent = new Intent(m_context, DeviceActivity.class);
+        Intent intent = new Intent(m_context, CarManageActivity.class);
         startActivity(intent);
     }
 
