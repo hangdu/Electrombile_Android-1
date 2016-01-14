@@ -54,6 +54,7 @@ import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
+import com.xunce.electrombile.activity.GetBindList;
 import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.manager.SettingManager;
@@ -90,6 +91,86 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     String WeatherData;
     Button btnAlarmState1;
     private static int Count = 0;
+    private GetBindList getBindList;
+
+
+    //刷新车列表
+//    public void refreshBindList() {
+//        AVUser currentUser = AVUser.getCurrentUser();
+//        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+//        query.whereEqualTo("user", currentUser);
+//        query.findInBackground(new FindCallback<AVObject>() {
+//            @Override
+//            public void done(List<AVObject> list, AVException e) {
+//                if (e == null) {
+//                    Log.e("BINDLISTACT", list.size() + "");
+//                    if (list.size() > 0) {
+//                        myHorizontalScrollView.list.clear();
+//                        OtherCar.clear();
+//                        HashMap<String, Object> map = null;
+//                        for (int i = 0; i < list.size(); i++) {
+//                            //判断这个IMEI是不是正在被监管的车辆
+//                            if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
+//                            {
+//                                BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
+//                            }
+//                            else{
+//                                map = new HashMap<>();
+//                                map.put("whichcar",list.get(i).get("IMEI"));
+//                                map.put("img", R.drawable.img_1);
+//                                myHorizontalScrollView.list.add(map);
+//                                OtherCar.add((String)list.get(i).get("IMEI"));
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    e.printStackTrace();
+////                    ToastUtils.showShort(BindListActivity.this, "查询错误");
+//                }
+//            }
+//        });
+//    }
+
+    public void refreshBindList(){
+        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
+            @Override
+            public void onGetBindListSuccess(List<AVObject> list) {
+                if (list.size() > 0) {
+
+                    //下面这句话不应该在这里执行
+                    myHorizontalScrollView.list.clear();
+                    OtherCar.clear();
+                    HashMap<String, Object> map = null;
+                    for (int i = 0; i < list.size(); i++) {
+                        //判断这个IMEI是不是正在被监管的车辆
+                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
+                        {
+                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
+                        }
+                        else{
+                            map = new HashMap<>();
+                            map.put("whichcar",list.get(i).get("IMEI"));
+                            map.put("img", R.drawable.img_1);
+                            myHorizontalScrollView.list.add(map);
+                            OtherCar.add((String)list.get(i).get("IMEI"));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onGetBindListFail() {
+                ToastUtils.showShort(m_context, "查询错误");
+
+            }
+        });
+
+        getBindList.QueryBindList();
+
+    }
+
+
+
     public Handler timeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -147,6 +228,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.start();
 
 
+
     }
 
     @Override
@@ -165,11 +247,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
       }
 
     private void initView() {
+        getBindList = new GetBindList();
+
         btnAlarmState1 = (Button) getActivity().findViewById(R.id.btn_AlarmState1);
         btnAlarmState1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 alarmStatusChange();
+
 
             }
         });
@@ -264,6 +349,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
+
     }
 
 
@@ -420,44 +506,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mLocationClient.setLocOption(option);
     }
 
-    //刷新车列表
-    public void refreshBindList() {
-        AVUser currentUser = AVUser.getCurrentUser();
-        AVQuery<AVObject> query = new AVQuery<>("Bindings");
-        query.whereEqualTo("user", currentUser);
-        query.findInBackground(new FindCallback<AVObject>() {
-            @Override
-            public void done(List<AVObject> list, AVException e) {
-                if (e == null) {
-                    Log.e("BINDLISTACT", list.size() + "");
-                    if (list.size() > 0) {
-                        myHorizontalScrollView.list.clear();
-                        OtherCar.clear();
-                        HashMap<String, Object> map = null;
-                        for (int i = 0; i < list.size(); i++) {
-                            //判断这个IMEI是不是正在被监管的车辆
-                            if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
-                            {
-                                BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
-                            }
-                            else{
-                                map = new HashMap<>();
-                                map.put("whichcar",list.get(i).get("IMEI"));
-                                map.put("img", R.drawable.img_1);
-                                myHorizontalScrollView.list.add(map);
-                                OtherCar.add((String)list.get(i).get("IMEI"));
-                            }
-
-                        }
-//                        myHorizontalScrollView.UpdateListview();
-                    }
-                } else {
-                    e.printStackTrace();
-//                    ToastUtils.showShort(BindListActivity.this, "查询错误");
-                }
-            }
-        });
-    }
 
     private void reSubscribe() {
         Intent intent;

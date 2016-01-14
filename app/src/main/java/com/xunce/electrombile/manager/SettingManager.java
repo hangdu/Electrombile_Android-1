@@ -41,6 +41,8 @@ public class SettingManager {
     private final String NICKNAME = "nickname";
     private final String GENDER = "gender";
     private final String BIRTHDATE="birthdate";
+    private final String AUTOLOCKSTATUS = "autolockstatus";
+    private final String AUTOLOCKTIME = "autolocktime";
     // 手机号码
     /**
      * The password.
@@ -189,6 +191,22 @@ public class SettingManager {
 
     public String getBirthdate(){
         return spf.getString(BIRTHDATE,"1994-01-01");
+    }
+
+    public void setAutoLockStatus(String autoLockStatus){
+        spf.edit().putString(AUTOLOCKSTATUS, autoLockStatus).commit();
+    }
+
+    public String getAutoLockStatus(){
+        return spf.getString(AUTOLOCKSTATUS, "开启");
+    }
+
+    public void setAutoLockTime(int autolocktime){
+        spf.edit().putInt(AUTOLOCKTIME,autolocktime);
+    }
+
+    public int getAutoLockTime(){
+        return spf.getInt(AUTOLOCKTIME,5);
     }
 
     /**

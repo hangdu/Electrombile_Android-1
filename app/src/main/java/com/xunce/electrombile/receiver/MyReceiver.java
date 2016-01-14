@@ -154,12 +154,14 @@ public class MyReceiver extends BroadcastReceiver {
                 caseGetGPS(result);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
+                caseGetAutoLock(result);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
                 break;
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_GET:
                 break;
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_SET:
+                caseGetAutoLockTime(result);
                 break;
             default:
                 break;
@@ -167,7 +169,25 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseGetGPS(int result) {
+        //result为101的时候不能执行cancelWaitTimeOut()
         ((FragmentActivity) mContext).cancelWaitTimeOut();
+        dealErr(result);
+    }
+
+    private void caseGetAutoLock(int result){
+        //执行fragmentactivity中的函数
+        if(0 == result){
+            ((FragmentActivity)mContext).setAutolockTime();
+            return;
+        }
+        dealErr(result);
+    }
+
+    public void caseGetAutoLockTime(int result){
+        if(result == 0){
+            ToastUtils.showShort(mContext, "自动落锁成功");
+            return;
+        }
         dealErr(result);
     }
 

@@ -122,6 +122,23 @@ public class CmdCenter {
         return getCmdString(ProtocolConstants.CMD_SEEK_OFF).getBytes();
     }
 
+    //自动落锁系列命令
+    public byte[] cmdAutolockOn() {
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_LOCK_ON).getBytes();
+    }
+
+    public byte[] cmdAutolockOff() {
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_LOCK_OFF).getBytes();
+    }
+
+    public byte[] cmdAutolockTimeSet(int period){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_PERIOD_SET,period).getBytes();
+    }
+
+    public byte[] cmdAutolockTimeGet(){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_PERIOD_GET).getBytes();
+    }
+
     private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {
@@ -129,7 +146,22 @@ public class CmdCenter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return obj.toString();
+        String s = obj.toString();
+        return s;
+//        return obj.toString();
+    }
+
+    private String getCmdString(int cmd,int period) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(ProtocolConstants.CMD, cmd);
+            obj.put("period",period);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String s = obj.toString();
+        return s;
+//        return obj.toString();
     }
 
 

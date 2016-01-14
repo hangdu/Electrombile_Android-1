@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.avos.avoscloud.AVUser;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.AboutActivity;
+import com.xunce.electrombile.activity.Autolock;
+import com.xunce.electrombile.activity.CarManageActivity;
 import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
@@ -39,6 +41,9 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public int temp = 0;
     //缓存view
     private View rootView;
+    private String AutoLockStatus;
+    private String new_AutoLockStatus;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -60,6 +65,17 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
     }
 
@@ -104,6 +120,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 }
                 goToDeviceAct();
                 break;
+
+            //自动落锁
+            case R.id.layout_autolock:
+                gotoAutolockAct();
+                break;
+
+
             case R.id.rl_1l:
                 int what = 999;
                 m_context.timeHandler.removeMessages(what);
@@ -143,6 +166,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      */
     private void goToDeviceAct() {
         Intent intent = new Intent(m_context, DeviceActivity.class);
+//        Intent intent = new Intent(m_context, CarManageActivity.class);
         startActivity(intent);
     }
 
@@ -152,6 +176,20 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private void goToPersonCenterAct() {
         Intent intent = new Intent(m_context, PersonalCenterActivity.class);
         startActivity(intent);
+    }
+
+    private void gotoAutolockAct(){
+        Intent intent = new Intent(m_context, Autolock.class);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == 1){
+            new_AutoLockStatus = (m_context).setManager.getAutoLockStatus();
+
+
+        }
     }
 
     /**
@@ -254,6 +292,9 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
         view.findViewById(R.id.rl_1l).setOnClickListener(this);
+        view.findViewById(R.id.layout_autolock).setOnClickListener(this);
+
+        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
     }
 
     @Override
@@ -265,6 +306,20 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onDestroy() {
         super.onDestroy();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+
+
+
 
     @Override
     public void onDestroyView() {

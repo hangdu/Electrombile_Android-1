@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+
+        style="@style/clickableLayout">
+        <TextView
+            android:layout_centerHorizontal="true"
+            style="@style/clickableLayoutTextview"
+            android:text = "自动落锁设置"/>
+
+        <Button
+            android:id = "@+id/btn_back"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "回撤"/>
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:paddingTop="50px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text = "正在自动落锁中"/>
+
+    <RadioGroup
+        android:id = "@+id/RadioGroup_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id = "@+id/rb_openautolock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "开启"/>
+
+        <RadioButton
+            android:id = "@+id/rb_closeautolock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "关闭"/>
+
+    </RadioGroup>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="25dp"
+        android:background="#848484" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text = "自动落锁时间设置"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id = "@+id/RadioGroup_locktime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical"
+
+            android:background="@drawable/rectangular">
+            <RadioButton
+                android:id = "@+id/rb_5min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text = "5分钟后自动落锁"/>
+
+            <RadioButton
+                android:id = "@+id/rb_10min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "10分钟后自动落锁"/>
+
+            <RadioButton
+                android:id = "@+id/rb_15min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text = "15分钟后自动落锁"/>
+
+        </RadioGroup>
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="25dp"
+        android:background="#848484" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text = "何为自动落锁?"/>
+
+</LinearLayout>

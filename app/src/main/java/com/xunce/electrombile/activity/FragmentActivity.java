@@ -128,6 +128,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         Historys.put(this);
 
         registerBroadCast();
+
+        //判断自动落锁是否打开  如果打开  则向服务器发送相关命令
+
     }
 
     @Override
@@ -160,6 +163,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //        } else {
 //            closeStateAlarmBtn();
 //        }
+
     }
 
     @Override
@@ -285,6 +289,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
 //                    registerBroadCast();
                     startAlarmService();
+                    //开启自动落锁
+//                    AutoLockJudge();
                 }
 
                 @Override
@@ -318,7 +324,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * @param IMEI    要发送的设备号
      */
     public void sendMessage(Context context, byte[] message, String IMEI) {
-        if (mac == null) {
+        if (mac == null || !mac.isConnected()) {
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         }
@@ -527,4 +533,20 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //        btnAlarmState.setText("防盗开启");
 //        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
 //    }
+
+//    public void getAutoLockStatus(){
+//        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
+//    }
+
+    public void AutoLockJudge(){
+        if(setManager.getAutoLockStatus().equals("开启")){
+            //发命令
+            sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
+        }
+    }
+
+    public void setAutolockTime(){
+        int period = setManager.getAutoLockTime();
+        sendMessage(FragmentActivity.this,mCenter.cmdAutolockTimeSet(period),setManager.getIMEI());
+    }
 }
