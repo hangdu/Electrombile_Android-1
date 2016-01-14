@@ -52,12 +52,15 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.Constants.ProtocolConstants;
+import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.GetBindList;
 import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.mqtt.Connection;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -65,6 +68,7 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -508,12 +512,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
     private void reSubscribe() {
-        Intent intent;
-        intent = new Intent("com.xunce.electrombile.alarmservice");
-        m_context.stopService(intent);
-//        (m_context).closeStateAlarmBtn();
+//        Intent intent;
+//        intent = new Intent("com.xunce.electrombile.alarmservice");
+//        m_context.stopService(intent);
+
         closeStateAlarmBtn();
-        (m_context).queryIMEI();
+//        (m_context).queryIMEI();
+
+        Connection connection = Connections.getInstance(m_context).getConnection(ServiceConstants.handler);
+        MqttAndroidClient mac = connection.getClient();
+        (m_context).subscribe(mac);
     }
 
     public void alarmStatusChange() {

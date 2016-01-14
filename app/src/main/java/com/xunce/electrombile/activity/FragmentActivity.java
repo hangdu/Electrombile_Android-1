@@ -371,7 +371,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      *
      * @param mac mqtt的客户端
      */
-    private void subscribe(MqttAndroidClient mac) {
+    public void subscribe(MqttAndroidClient mac) {
         //订阅命令字
         String initTopic = setManager.getIMEI();
         String topic1 = "dev2app/" + initTopic + "/cmd";

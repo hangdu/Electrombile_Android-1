@@ -139,8 +139,8 @@ public class CarManageActivity extends Activity {
         //逻辑上切换
         reSubscribe();
 
-        //这句话没有起到应有的作用    为什么为什么为什么.....
         settingManager.setFlagCarSwitched("切换");
+        settingManager.setAlarmFlag(false);
     }
 
     void initEvents(){
