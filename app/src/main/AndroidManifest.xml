@@ -181,7 +181,11 @@
             android:theme="@style/App2Theme" />
         <activity android:name=".activity.TestddActivity" />
         <activity android:name=".activity.CarManageActivity" />
-        <activity android:name=".activity.CarInfoEditActivity"></activity>
+        <activity android:name=".activity.CarInfoEditActivity" />
+        <activity
+            android:name=".activity.account.RegisterActivity_Part1"
+            android:label="@string/title_activity_register_activity__part1" />
+        <activity android:name=".activity.account.SMSandPasswordActivity"></activity>
     </application>
 
 </manifest>

@@ -41,8 +41,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public int temp = 0;
     //缓存view
     private View rootView;
-    private String AutoLockStatus;
-    private String new_AutoLockStatus;
+    private String previous_AutoLockStatus;
+    private int previous_AutolockTime;
 
 
     @Override
@@ -179,6 +179,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void gotoAutolockAct(){
+        //在页面跳转之前先记录下来自动落锁的状态   页面回来之后比较一下状态有没有发生变化
+        //如果变化了   则下发相应的命令
+        //记录初始状态
+        previous_AutoLockStatus = (m_context).setManager.getAutoLockStatus();
+        if(previous_AutoLockStatus.equals("开启")){
+            previous_AutolockTime = (m_context).setManager.getAutoLockTime();
+        }
         Intent intent = new Intent(m_context, Autolock.class);
         startActivityForResult(intent, 1);
     }
@@ -186,9 +193,28 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == 1){
-            new_AutoLockStatus = (m_context).setManager.getAutoLockStatus();
+           //缺乏resultCode的判断
+            if((m_context).RESULT_OK == resultCode){
+                if((m_context).setManager.getAutoLockStatus().equals("开启")
+                        &&(m_context).setManager.getAutoLockStatus().equals(previous_AutoLockStatus)){
+                    if((m_context).setManager.getAutoLockTime()!=previous_AutolockTime){
+                        //下发命令  自动落锁相应的时间
+                        (m_context).OpenAutoLock();
+                    }
+                }
+                else if(!(m_context).setManager.getAutoLockStatus().equals(previous_AutoLockStatus)){
+                    if((m_context).setManager.getAutoLockStatus().equals("开启")){
+                        //自动落锁开启相应的时间
+                        (m_context).OpenAutoLock();
+                    }
 
+                    else{
+                        //关闭自动落锁
+                    (m_context).CloseAutoLock();
+                    }
+                }
 
+            }
         }
     }
 
@@ -294,7 +320,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.rl_1l).setOnClickListener(this);
         view.findViewById(R.id.layout_autolock).setOnClickListener(this);
 
-        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
+//        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
     }
 
     @Override

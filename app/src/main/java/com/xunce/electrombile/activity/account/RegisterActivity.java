@@ -50,6 +50,8 @@ import com.xunce.electrombile.utils.useful.StringUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -170,6 +172,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
      */
     @Override
     public void initViews() {
+        //注册的手机号
         etName = (EditText) findViewById(R.id.etName);
         etInputCode = (EditText) findViewById(R.id.etInputCode);
         etInputPsw = (EditText) findViewById(R.id.etInputPsw);
@@ -189,6 +192,8 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
         btnGetCode.setOnClickListener(this);
         btnReGetCode.setOnClickListener(this);
         btnSure.setOnClickListener(this);
+
+        //密码是否明文
         tbPswFlag.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
@@ -276,8 +281,16 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
     //再次获取验证码的方法
     private void reGetVerifyCode() {
         String phone = etName.getText().toString().trim();
-        if (StringUtils.isEmpty(phone) || phone.length() != 11) {
-            ToastUtils.showShort(this, "请输入正确的手机号码。");
+        if(StringUtils.isEmpty(phone)){
+            ToastUtils.showShort(this, "手机号码不能为空");
+            return;
+        }
+        if (phone.length() != 11) {
+            ToastUtils.showShort(this, "手机号码的长度不对");
+            return;
+        }
+        if(!isMobileNO(phone)){
+            ToastUtils.showShort(this, "手机号码不正确");
             return;
         }
         toogleUI(ui_statue.PHONE);
@@ -308,6 +321,12 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
                 handler.sendMessage(msg);
             }
         });
+    }
+
+    public boolean isMobileNO(String MobileNumber){
+        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2,5-9]))\\d{8}$");
+        Matcher m = p.matcher(MobileNumber);
+        return m.matches();
     }
 
     /**

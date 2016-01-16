@@ -290,7 +290,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //                    registerBroadCast();
                     startAlarmService();
                     //开启自动落锁
-//                    AutoLockJudge();
+//                    OpenAutoLock();
                 }
 
                 @Override
@@ -543,15 +543,16 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
 //    }
 
-    public void AutoLockJudge(){
-        if(setManager.getAutoLockStatus().equals("开启")){
-            //发命令
-            sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
-        }
+    public void OpenAutoLock(){
+//        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
     }
 
     public void setAutolockTime(){
         int period = setManager.getAutoLockTime();
         sendMessage(FragmentActivity.this,mCenter.cmdAutolockTimeSet(period),setManager.getIMEI());
+    }
+
+    public void CloseAutoLock(){
+        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOff(),setManager.getIMEI());
     }
 }

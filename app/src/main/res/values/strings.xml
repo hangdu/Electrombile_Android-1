@@ -83,7 +83,7 @@
     <string name="register_use_mobilephone">register by your tel</string>
     <string name="register_use_email">register by your mail</string>
     <string name="register_tips1">please input your real mai.\n if success you will get a letter</string>
-    <string name="register_phone_num">tel</string>
+    <string name="register_phone_num">手机号码</string>
     <string name="search_device_already_configure">device that already configure</string>
     <string name="account_manage">account manage</string>
     <string name="about">about</string>
@@ -127,5 +127,6 @@
     <string name="connecting">Connecting to</string>
     <string name="disconnecting">Disconnecting from</string>
     <string name="connectionError">An error occurred connecting to</string>
+    <string name="title_activity_register_activity__part1">RegisterActivity_Part1</string>
 
 </resources>

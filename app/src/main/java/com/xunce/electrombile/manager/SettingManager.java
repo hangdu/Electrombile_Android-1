@@ -211,7 +211,7 @@ public class SettingManager {
     }
 
     public void setAutoLockTime(int autolocktime){
-        spf.edit().putInt(AUTOLOCKTIME,autolocktime);
+        spf.edit().putInt(AUTOLOCKTIME,autolocktime).commit();
     }
 
     public int getAutoLockTime(){

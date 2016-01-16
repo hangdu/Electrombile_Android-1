@@ -154,9 +154,11 @@ public class MyReceiver extends BroadcastReceiver {
                 caseGetGPS(result);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
+                //开启自动落锁
                 caseGetAutoLock(result);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
+                caseCloseAutoLock(result);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_GET:
                 break;
@@ -178,6 +180,14 @@ public class MyReceiver extends BroadcastReceiver {
         //执行fragmentactivity中的函数
         if(0 == result){
             ((FragmentActivity)mContext).setAutolockTime();
+            return;
+        }
+        dealErr(result);
+    }
+
+    private void caseCloseAutoLock(int result){
+        if(0 == result){
+            ToastUtils.showShort(mContext, "自动落锁关闭");
             return;
         }
         dealErr(result);

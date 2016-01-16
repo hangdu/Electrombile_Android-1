@@ -57,6 +57,7 @@
         android:text = "自动落锁时间设置"/>
 
     <RelativeLayout
+        android:id = "@+id/relative_locktime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

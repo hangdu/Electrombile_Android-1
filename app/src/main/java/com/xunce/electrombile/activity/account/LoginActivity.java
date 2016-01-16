@@ -163,9 +163,14 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
             mLogin();
 			break;
 		case R.id.btnRegister:
-				// 打开注册Activity
+//				 打开注册Activity
+//			IntentUtils.getInstance().startActivity(this,
+//					RegisterActivity.class);
+
 			IntentUtils.getInstance().startActivity(this,
-					RegisterActivity.class);
+					RegisterActivity_Part1.class);
+
+
 			break;
 		}
 
