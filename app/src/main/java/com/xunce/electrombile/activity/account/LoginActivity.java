@@ -155,8 +155,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.tvForgot:
 			// 打开忘记密码Activity
-			IntentUtils.getInstance().startActivity(this,
-					ForgetPswActivity.class);
+//			IntentUtils.getInstance().startActivity(this, ForgetPswActivity.class);
+			IntentUtils.getInstance().startActivity(this, ForgetPassActivity2.class);
 			break;
 		case R.id.btnLogin:
             //登陆方法

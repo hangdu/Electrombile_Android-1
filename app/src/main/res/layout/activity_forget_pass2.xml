@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.xunce.electrombile.activity.account.RegisterActivity_Part1">
+    tools:context="com.xunce.electrombile.activity.account.ForgetPassActivity2">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text = "手机注册"/>
+            android:text = "找回密码"/>
 
         <Button
             android:id = "@+id/btn_back"
@@ -29,35 +29,25 @@
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/etName"
+        android:id="@+id/et_PhoneNumber"
         android:layout_width="274dp"
         android:layout_height="42dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/line_et"
-        android:hint="@string/register_phone_num"
+        android:hint="手机号码"
         android:inputType="phone"
-        android:paddingLeft="15dp"/>
+        android:paddingLeft="15dp" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_vertical"
         android:text = "为了安全,我们会向你的手机发送验证码"/>
 
     <Button
-        android:id="@+id/btn_NextStep"
+        android:id = "@+id/btn_NextStep"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text = "下一步"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text = "本人已阅读并同意注册协议"/>
 
 </LinearLayout>

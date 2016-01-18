@@ -188,7 +188,9 @@
         <activity android:name=".activity.account.SMSandPasswordActivity" />
         <activity android:name=".activity.BindingActivity2" />
         <activity android:name=".activity.WelcomeActivity" />
-        <activity android:name=".activity.InputIMEIActivity"></activity>
+        <activity android:name=".activity.InputIMEIActivity" />
+        <activity android:name=".activity.account.ForgetPassActivity2" />
+        <activity android:name=".activity.account.ResetPassActivity"></activity>
     </application>
 
 </manifest>

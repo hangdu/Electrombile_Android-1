@@ -34,7 +34,6 @@ import java.util.TimerTask;
 public class SMSandPasswordActivity extends Activity {
     private TextView tv_Current_Phone;
     private EditText et_SMSCode;
-    private TextView tv_LeftSecond;
     private Button btn_ResendSysCode;
     private EditText et_Password;
     private Button btn_NextStep;
@@ -43,7 +42,7 @@ public class SMSandPasswordActivity extends Activity {
     private int secondleft;
     private String phone;
     private String password;
-    private SettingManager settingManager;
+//    private SettingManager settingManager;
 
     ProgressDialog dialog;
 
@@ -61,11 +60,11 @@ public class SMSandPasswordActivity extends Activity {
                         btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_1_act);
                     } else {
                         btn_ResendSysCode.setText(secondleft + "秒后重新获取");
-
                     }
                     break;
+
                 case TOAST:
-//                    dialog.cancel();
+                    dialog.cancel();
                     ToastUtils.showShort(SMSandPasswordActivity.this, (String) msg.obj);
                     break;
 
@@ -78,6 +77,12 @@ public class SMSandPasswordActivity extends Activity {
                     //进入绑定设备的页面
                     Intent intent = new Intent(SMSandPasswordActivity.this, BindingActivity2.class);
                     startActivity(intent);
+                    break;
+
+                case LOGIN_TIMEOUT:
+                    handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+                    Toast.makeText(SMSandPasswordActivity.this, "请检查网络连接！", Toast.LENGTH_SHORT).show();
+//                    dialog.cancel();
                     break;
 
             }
@@ -103,26 +108,25 @@ public class SMSandPasswordActivity extends Activity {
     public void initView(){
         tv_Current_Phone = (TextView)findViewById(R.id.tv_Current_Phone);
         et_SMSCode = (EditText)findViewById(R.id.et_SMSCode);
-        tv_LeftSecond = (TextView)findViewById(R.id.tv_LeftSecond);
         btn_ResendSysCode = (Button)findViewById(R.id.btn_ResendSysCode);
         et_Password = (EditText)findViewById(R.id.et_Password);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
 
         btn_ResendSysCode.setEnabled(false);
         timer = new Timer();
-        settingManager = new SettingManager(SMSandPasswordActivity.this);
+//        settingManager = new SettingManager(SMSandPasswordActivity.this);
         dialog = new ProgressDialog(this);
         dialog.setMessage("处理中，请稍候...");
     }
 
     public void initEvent(){
-        //获取到手机号
+        //获取到当前手机号
         Intent intent = getIntent();
         phone = intent.getStringExtra("phone");
         tv_Current_Phone.setText(phone);
 
-        secondleft = 60;
         //开始60s倒计时
+        secondleft = 60;
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -136,7 +140,7 @@ public class SMSandPasswordActivity extends Activity {
                 //判断验证码是否为空
                 String code = et_SMSCode.getText().toString().trim();
                 if ("".equals(code)) {
-                    ToastUtils.showShort(getApplicationContext(), getString(R.string.validateCodeNull));
+                    ToastUtils.showShort(getApplicationContext(), "验证码不能为空!");
                     return;
                 }
 
@@ -156,10 +160,7 @@ public class SMSandPasswordActivity extends Activity {
                             msg.obj = "验证失败";
                             handler.sendMessage(msg);
                         } else {
-                            //成功验证
-//                            msg.what = handler_key.REG_SUCCESS.ordinal();
-//                            msg.obj = "注册成功";
-                            //更新密码
+                            //成功验证,接下来登陆进去更新密码
                             LoginInandUpdatePass();
                         }
                     }
@@ -177,7 +178,7 @@ public class SMSandPasswordActivity extends Activity {
     }
 
     private void RegetSysCode(){
-//        dialog.show();
+        dialog.show();
         btn_ResendSysCode.setEnabled(false);
         btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
         secondleft = 60;
@@ -213,11 +214,16 @@ public class SMSandPasswordActivity extends Activity {
             public void done(AVUser avUser, AVException e) {
                 if (e != null) {
                     LogUtil.log.i(e.toString());
-                    if (AVException.CONNECTION_FAILED != e.getCode()) {
-                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
-                    } else {
-                        handler.sendEmptyMessage(handler_key.LOGIN_TIMEOUT.ordinal());
-                    }
+//                    if (AVException.CONNECTION_FAILED != e.getCode()) {
+//                        handler.sendEmptyMessage(handler_key.LOGIN_TIMEOUT.ordinal());
+//                    }
+//                    else {
+//                        handler.sendEmptyMessage(handler_key.LOGIN_TIMEOUT.ordinal());
+//                    }
+                    Message msg = Message.obtain();
+                    msg.what = handler_key.TOAST.ordinal();
+                    msg.obj = e.toString();
+                    handler.sendMessage(msg);
                 }
 
                 //登录成功
@@ -234,17 +240,12 @@ public class SMSandPasswordActivity extends Activity {
                                 msg.what = handler_key.UPDATEPASS_ERROR.ordinal();
                             }
                             handler.sendMessage(msg);
-
                         }
                     });
                 }
             }
         });
-
-
     }
-
-
 
     private Boolean PasswordOK(){
         password = et_Password.getText().toString();
@@ -260,34 +261,12 @@ public class SMSandPasswordActivity extends Activity {
     }
 
     private enum handler_key {
-
-        /**
-         * 倒计时通知
-         */
         TICK_TIME,
-
-        /**
-         * 注册成功
-         */
         REG_SUCCESS,
-
-        /**
-         * Toast弹出通知
-         */
         TOAST,
-
         LOGIN_FAIL,
-
         LOGIN_TIMEOUT,
-
         UPDATEPASS_ERROR,
-
         UPDATEPASS_SUCCESS,
-
-
-
     }
-
-    //手机号被注册过  但是没有完成验证
-
 }

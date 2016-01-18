@@ -60,14 +60,12 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
 //                    times = 0;
                     progressDialog.cancel();
                     ToastUtils.showShort(BindingActivity2.this, msg.obj.toString());
-//                    onResume();
                     break;
             }
 
         }
 
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,21 +76,16 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
     private void initView() {
         scannerView = (ScannerView) findViewById(R.id.scanner_view);
-
-
         btn_InputIMEI = (Button)findViewById(R.id.btn_InputIMEI);
         btn_BuyProduct = (Button)findViewById(R.id.btn_BuyProduct);
-
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("连接中，请稍候...");
-
         settingManager = new SettingManager(BindingActivity2.this);
     }
 
     private void initEvent(){
         scannerView.setOnDecodeListener(this);
-
         btn_InputIMEI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,14 +93,10 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                 startActivity(intent);
             }
         });
-
     }
-
-
 
     @Override
     public void onDecodeCompletion(String barcodeFormat, String barcode, Bitmap bitmap) {
-        //需要修改的代码
         if (barcode != null) {
             if (barcode.contains("IMEI")) {
                 try {
@@ -117,13 +106,13 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     e.printStackTrace();
                     return;
                 }
-//                et_did.setText(IMEI);
 //                setManager.setIMEI(IMEI);
                 mHandler.sendEmptyMessage(handler_key.START_BIND.ordinal());
             }
         }
         else{
             //扫描失败
+            ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！");
         }
     }
 

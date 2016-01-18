@@ -4,10 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -42,31 +39,25 @@ public class RegisterActivity_Part1 extends BaseActivity {
         public void handleMessage(android.os.Message msg) {
             handler_key key = handler_key.values()[msg.what];
             switch(key){
+                case REG_SUCCESS_NOTVALID:
+                    dialog.cancel();
+                    gotoSMSandPassword();
+                    break;
+
                 case TOAST:
                     dialog.cancel();
-//                    ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
                     String s = (String) msg.obj;
-
-
-                    if(s.equals("注册成功还未验证")){
-                        gotoSMSandPassword();
-
-                    }
-
-                    else if(s.equals("该用户已经被注册,请直接登录")){
+                    if(s.equals("该用户已经被注册,请直接登录")){
                         ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
                         finish();
                     }
                     //发送验证码失败
                     else{
-//                        ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
+                        ToastUtils.showShort(RegisterActivity_Part1.this, s);
                     }
-
-
                     break;
 
             }
-
         }
     };
 
@@ -85,22 +76,8 @@ public class RegisterActivity_Part1 extends BaseActivity {
     }
 
     private enum handler_key {
-
-        /**
-         * 倒计时通知
-         */
-        TICK_TIME,
-
-        /**
-         * 注册成功
-         */
-        REG_SUCCESS,
-
-        /**
-         * Toast弹出通知
-         */
+        REG_SUCCESS_NOTVALID,
         TOAST,
-
     }
 
     @Override
@@ -125,8 +102,8 @@ public class RegisterActivity_Part1 extends BaseActivity {
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
 
         //这句话没有起到应有的作用.....
-        btn_NextStep.setClickable(false);
-        btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
+//        btn_NextStep.setClickable(false);
+//        btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
 
         dialog = new ProgressDialog(this);
         dialog.setMessage("处理中，请稍候...");
@@ -140,30 +117,30 @@ public class RegisterActivity_Part1 extends BaseActivity {
 
     @Override
     public void initEvents(){
-        et_PhoneNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.toString().equals("")){
-                    btn_NextStep.setClickable(false);
-                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
-                }
-                else{
-                    btn_NextStep.setClickable(true);
-                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_2);
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+//        et_PhoneNumber.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                if(s.toString().equals("")){
+//                    btn_NextStep.setClickable(false);
+//                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
+//                }
+//                else{
+//                    btn_NextStep.setClickable(true);
+//                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_2);
+//                }
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        });
 
         btn_NextStep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,21 +173,19 @@ public class RegisterActivity_Part1 extends BaseActivity {
                     public void done(AVException e) {
                         android.os.Message msg = android.os.Message.obtain();
                         if (e == null) {
+                            //这个地方需要执行setManager.setPhoneNumber(phone)吗???
                             setManager.setPhoneNumber(phone);
-                            LogUtil.log.i(getString(R.string.registerSuccess));
                             ToastUtils.showShort(getApplicationContext(), getString(R.string.registerSuccess));
-                            msg.what = handler_key.TOAST.ordinal();
-                            msg.obj = "注册成功还未验证";
+                            msg.what = handler_key.REG_SUCCESS_NOTVALID.ordinal();
                             handler.sendMessage(msg);
                         } else {
                             LogUtil.log.e("注册" + e.toString());
                             if (e.getCode() == 214) {
                                 //有两种情况:1.用户已经注册并且验证过了  2.用户注册了;但是没有验证和重设密码
                                 LoginIn();
-
                             } else {
                                 msg.what = handler_key.TOAST.ordinal();
-                                msg.obj = "发送失败";
+                                msg.obj = "发送验证码失败";
                                 handler.sendMessage(msg);
                             }
                         }
@@ -233,13 +208,14 @@ public class RegisterActivity_Part1 extends BaseActivity {
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "该用户已经被注册,请直接登录";
                         handler.sendMessage(msg);
-
                     }
-                    if (AVException.CONNECTION_FAILED != e.getCode()) {
-//                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
-                    } else {
-                        //
-//                        handler.sendEmptyMessage(handler_key.LOGIN_TIMEOUT.ordinal());
+//                    if (AVException.CONNECTION_FAILED != e.getCode()) {
+////                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
+//                    }
+                   else {
+                        msg.what = handler_key.TOAST.ordinal();
+                        msg.obj = e.toString();
+                        handler.sendEmptyMessage(handler_key.TOAST.ordinal());
                     }
                 }
                 else{
@@ -273,7 +249,8 @@ public class RegisterActivity_Part1 extends BaseActivity {
             public void done(AVException e) {
                 if (e == null) {
                     gotoSMSandPassword();
-                } else {
+                }
+                else {
                     LogUtil.log.e("phoneNumber" + user.getMobilePhoneNumber() + "code:" + e.getCode() + e.toString());
                     android.os.Message msg = new android.os.Message();
                     msg.what = handler_key.TOAST.ordinal();
