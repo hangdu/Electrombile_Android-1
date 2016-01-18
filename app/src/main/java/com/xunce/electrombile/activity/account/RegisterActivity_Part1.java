@@ -14,20 +14,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.RequestMobileCodeCallback;
 import com.avos.avoscloud.SignUpCallback;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
-import com.xunce.electrombile.activity.Message;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,9 +33,9 @@ public class RegisterActivity_Part1 extends BaseActivity {
     private Button btn_Back;
     private Button btn_NextStep;
     ProgressDialog dialog;
-    Timer timer;
     public AlertDialog.Builder builder;
-    int secondleft;
+    private String phone;
+    AVUser user;
 
     Handler handler = new Handler(){
         @Override
@@ -49,17 +46,23 @@ public class RegisterActivity_Part1 extends BaseActivity {
                     dialog.cancel();
 //                    ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
                     String s = (String) msg.obj;
-                    if(s.equals("发送验证码成功")){
-                        //跳转到下一个页面  填写验证码和密码
+
+
+                    if(s.equals("注册成功还未验证")){
                         gotoSMSandPassword();
 
+                    }
+
+                    else if(s.equals("该用户已经被注册,请直接登录")){
+                        ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
+                        finish();
                     }
                     //发送验证码失败
                     else{
 //                        ToastUtils.showShort(RegisterActivity_Part1.this, (String) msg.obj);
                     }
 
-                    dialog.cancel();
+
                     break;
 
             }
@@ -67,8 +70,10 @@ public class RegisterActivity_Part1 extends BaseActivity {
         }
     };
 
+
     public void gotoSMSandPassword(){
         Intent intent = new Intent(RegisterActivity_Part1.this, SMSandPasswordActivity.class);
+        intent.putExtra("phone", phone);
         startActivity(intent);
     }
 
@@ -164,8 +169,8 @@ public class RegisterActivity_Part1 extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //判断手机号是否是对的
-                final String phone = et_PhoneNumber.getText().toString().trim();
-                if(StringUtils.isEmpty(phone)){
+                phone = et_PhoneNumber.getText().toString().trim();
+                if (StringUtils.isEmpty(phone)) {
                     ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码不能为空");
                     return;
                 }
@@ -173,47 +178,108 @@ public class RegisterActivity_Part1 extends BaseActivity {
                     ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码的长度不对");
                     return;
                 }
-                if(!isMobileNO(phone)){
+                if (!isMobileNO(phone)) {
                     ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码不正确");
                     return;
                 }
-                //进行其他的操作
 
                 dialog.show();
 
-                //对于这个倒计时  还没有理解
-                secondleft = 60;
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        handler.sendEmptyMessage(handler_key.TICK_TIME.ordinal());
-                    }
-                }, 1000, 1000);
-//                AVUser user = new AVUser();
-//                user.setUsername(phone);
-//                user.setPassword("123456");
-//                user.setMobilePhoneNumber(phone);
-
-                AVOSCloud.requestSMSCodeInBackground(phone, new RequestMobileCodeCallback() {
+                user = new AVUser();
+                user.setUsername(phone);
+                //先将密码统一写成123456  之后再更新
+                user.setPassword("123456");
+                user.setMobilePhoneNumber(phone);
+                //此方法会注册并且发送验证短信
+                user.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(AVException e) {
                         android.os.Message msg = android.os.Message.obtain();
-                        if(e == null){
-                            //发送短信验证码成功
+                        if (e == null) {
+                            setManager.setPhoneNumber(phone);
+                            LogUtil.log.i(getString(R.string.registerSuccess));
+                            ToastUtils.showShort(getApplicationContext(), getString(R.string.registerSuccess));
                             msg.what = handler_key.TOAST.ordinal();
-                            msg.obj = "发送验证码成功";
+                            msg.obj = "注册成功还未验证";
                             handler.sendMessage(msg);
-                        }
-                        else{
+                        } else {
                             LogUtil.log.e("注册" + e.toString());
-                            msg.what = handler_key.TOAST.ordinal();
-                            msg.obj = "发送验证码失败";
-                            handler.sendMessage(msg);
+                            if (e.getCode() == 214) {
+                                //有两种情况:1.用户已经注册并且验证过了  2.用户注册了;但是没有验证和重设密码
+                                LoginIn();
+
+                            } else {
+                                msg.what = handler_key.TOAST.ordinal();
+                                msg.obj = "发送失败";
+                                handler.sendMessage(msg);
+                            }
                         }
                     }
                 });
+            }
+        });
+    }
 
+    public void LoginIn() {
+        AVUser.logInInBackground(phone, "123456", new LogInCallback<AVUser>() {
+            @Override
+            public void done(AVUser avUser, AVException e) {
+                if (e != null) {
+                    android.os.Message msg = android.os.Message.obtain();
+                    LogUtil.log.i(e.toString());
+                    if(e.getCode() == 210){
+                        //该用户已经注册并且验证   但是此处密码错误
+                        setManager.setPhoneNumber(phone);
+                        msg.what = handler_key.TOAST.ordinal();
+                        msg.obj = "该用户已经被注册,请直接登录";
+                        handler.sendMessage(msg);
+
+                    }
+                    if (AVException.CONNECTION_FAILED != e.getCode()) {
+//                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
+                    } else {
+                        //
+//                        handler.sendEmptyMessage(handler_key.LOGIN_TIMEOUT.ordinal());
+                    }
+                }
+                else{
+                    android.os.Message msg = android.os.Message.obtain();
+                    //成功登陆:1.没有验证的用户2.已经验证但是密码是123456的用户
+                    if (avUser != null) {
+                        if (avUser.isMobilePhoneVerified()) {
+                            //已经验证的用户   请直接登陆
+//                            handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
+                            Log.d("test","test");
+                            msg.what = handler_key.TOAST.ordinal();
+                            msg.obj = "该用户已经被注册,请直接登录";
+                            handler.sendMessage(msg);
+                        }
+                        else{
+                            //没有验证的用户  请继续完成验证
+                            getVerifiedCode();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    //手机号码已经被注册过  但是没有完成验证
+    public void getVerifiedCode() {
+        //此方法会再次发送验证短信
+        user.setMobilePhoneNumber(user.getUsername());
+        AVUser.requestMobilePhoneVerifyInBackground(user.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    gotoSMSandPassword();
+                } else {
+                    LogUtil.log.e("phoneNumber" + user.getMobilePhoneNumber() + "code:" + e.getCode() + e.toString());
+                    android.os.Message msg = new android.os.Message();
+                    msg.what = handler_key.TOAST.ordinal();
+                    msg.obj = e.toString();
+                    handler.sendMessage(msg);
+                }
             }
         });
     }

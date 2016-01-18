@@ -38,7 +38,6 @@
         android:hint="@string/register_phone_num"
         android:inputType="phone"
         android:paddingLeft="15dp"
-        android:textColor="@color/white"
         android:textColorHint="@color/base_color_text_white" />
 
     <TextView
@@ -61,8 +60,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text = "本人已阅读并同意注册协议"/>
-
-
-
 
 </LinearLayout>

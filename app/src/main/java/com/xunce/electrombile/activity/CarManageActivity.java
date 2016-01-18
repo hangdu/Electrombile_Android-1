@@ -75,7 +75,7 @@ public class CarManageActivity extends Activity {
         btn_AddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CarManageActivity.this, BindingActivity.class);
+                Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
                 startActivity(intent);
 
             }

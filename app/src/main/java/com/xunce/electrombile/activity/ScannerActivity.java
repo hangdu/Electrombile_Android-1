@@ -12,7 +12,7 @@ import com.xunce.electrombile.R;
 /**
  * 二维码扫描页面
  * 
- */
+ */	
 public class ScannerActivity extends Activity implements
 		OnDecodeCompletionListener {
 	private ScannerView scannerView;

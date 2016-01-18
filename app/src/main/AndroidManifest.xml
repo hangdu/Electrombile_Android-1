@@ -185,7 +185,10 @@
         <activity
             android:name=".activity.account.RegisterActivity_Part1"
             android:label="@string/title_activity_register_activity__part1" />
-        <activity android:name=".activity.account.SMSandPasswordActivity"></activity>
+        <activity android:name=".activity.account.SMSandPasswordActivity" />
+        <activity android:name=".activity.BindingActivity2" />
+        <activity android:name=".activity.WelcomeActivity" />
+        <activity android:name=".activity.InputIMEIActivity"></activity>
     </application>
 
 </manifest>

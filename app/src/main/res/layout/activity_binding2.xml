@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation = "vertical"
+    tools:context="com.xunce.electrombile.activity.BindingActivity2">
+
+    <com.covics.zxingscanner.ScannerView
+        android:id="@+id/scanner_view"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="10" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id = "@+id/btn_InputIMEI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "输入产品序列号"/>
+
+        <Button
+            android:id = "@+id/btn_BuyProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "购买产品"/>
+    </LinearLayout>
+</LinearLayout>
