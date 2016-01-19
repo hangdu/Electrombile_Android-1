@@ -11,8 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.RequestMobileCodeCallback;
 import com.avos.avoscloud.SignUpCallback;
@@ -21,7 +23,7 @@ import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
-
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,7 +94,6 @@ public class RegisterActivity_Part1 extends BaseActivity {
         } else {
             builder = null;
         }
-
     }
 
     @Override
@@ -100,10 +101,6 @@ public class RegisterActivity_Part1 extends BaseActivity {
         et_PhoneNumber = (EditText)findViewById(R.id.etName);
         btn_Back = (Button)findViewById(R.id.btn_back);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
-
-        //这句话没有起到应有的作用.....
-//        btn_NextStep.setClickable(false);
-//        btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
 
         dialog = new ProgressDialog(this);
         dialog.setMessage("处理中，请稍候...");
@@ -117,31 +114,6 @@ public class RegisterActivity_Part1 extends BaseActivity {
 
     @Override
     public void initEvents(){
-//        et_PhoneNumber.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                if(s.toString().equals("")){
-//                    btn_NextStep.setClickable(false);
-//                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_1);
-//                }
-//                else{
-//                    btn_NextStep.setClickable(true);
-//                    btn_NextStep.setBackgroundResource(R.drawable.btn_switch_selector_2);
-//                }
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        });
-
         btn_NextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,14 +152,9 @@ public class RegisterActivity_Part1 extends BaseActivity {
                             handler.sendMessage(msg);
                         } else {
                             LogUtil.log.e("注册" + e.toString());
-                            if (e.getCode() == 214) {
-                                //有两种情况:1.用户已经注册并且验证过了  2.用户注册了;但是没有验证和重设密码
-                                LoginIn();
-                            } else {
-                                msg.what = handler_key.TOAST.ordinal();
-                                msg.obj = "发送验证码失败";
-                                handler.sendMessage(msg);
-                            }
+                            QueryUser();
+                            //有两种情况:1.用户已经注册并且验证过了  2.用户注册了;但是没有验证
+                            //此时需要做的是通过手机号 从用户数据库中查询到相应的那条记录,然后看该用户是否验证过
                         }
                     }
                 });
@@ -195,46 +162,31 @@ public class RegisterActivity_Part1 extends BaseActivity {
         });
     }
 
-    public void LoginIn() {
-        AVUser.logInInBackground(phone, "123456", new LogInCallback<AVUser>() {
+
+    public void QueryUser(){
+        AVQuery<AVObject> query = new AVQuery<>("_User");
+        query.whereEqualTo("username", phone);
+        query.findInBackground(new FindCallback<AVObject>() {
             @Override
-            public void done(AVUser avUser, AVException e) {
-                if (e != null) {
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
                     android.os.Message msg = android.os.Message.obtain();
-                    LogUtil.log.i(e.toString());
-                    if(e.getCode() == 210){
-                        //该用户已经注册并且验证   但是此处密码错误
-                        setManager.setPhoneNumber(phone);
+                    //list中只有一个数据
+                    AVUser user = (AVUser)list.get(0);
+//                    Boolean MobileNumberVerified = user.isMobilePhoneVerified();
+                    if(user.isMobilePhoneVerified()){
+                        //注册过且已经验证
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "该用户已经被注册,请直接登录";
                         handler.sendMessage(msg);
                     }
-//                    if (AVException.CONNECTION_FAILED != e.getCode()) {
-////                        handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
-//                    }
-                   else {
-                        msg.what = handler_key.TOAST.ordinal();
-                        msg.obj = e.toString();
-                        handler.sendEmptyMessage(handler_key.TOAST.ordinal());
+                    else{
+//                        注册过没验证
+                        getVerifiedCode();
                     }
-                }
-                else{
-                    android.os.Message msg = android.os.Message.obtain();
-                    //成功登陆:1.没有验证的用户2.已经验证但是密码是123456的用户
-                    if (avUser != null) {
-                        if (avUser.isMobilePhoneVerified()) {
-                            //已经验证的用户   请直接登陆
-//                            handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
-                            Log.d("test","test");
-                            msg.what = handler_key.TOAST.ordinal();
-                            msg.obj = "该用户已经被注册,请直接登录";
-                            handler.sendMessage(msg);
-                        }
-                        else{
-                            //没有验证的用户  请继续完成验证
-                            getVerifiedCode();
-                        }
-                    }
+                } else {
+                    e.printStackTrace();
+                    ToastUtils.showShort(RegisterActivity_Part1.this,e.toString());
                 }
             }
         });
@@ -242,7 +194,6 @@ public class RegisterActivity_Part1 extends BaseActivity {
 
     //手机号码已经被注册过  但是没有完成验证
     public void getVerifiedCode() {
-        //此方法会再次发送验证短信
         user.setMobilePhoneNumber(user.getUsername());
         AVUser.requestMobilePhoneVerifyInBackground(user.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
             @Override

@@ -46,10 +46,6 @@ public class CarInfoEditActivity extends Activity {
 
         Intent intent = getIntent();
         IMEI = intent.getStringExtra("string_key");
-
-
-
-
     }
 
     @Override

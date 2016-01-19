@@ -34,6 +34,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private String IMEI;
     private ProgressDialog progressDialog;
     private SettingManager settingManager;
+    private String FromActivity;
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg){
@@ -52,8 +53,14 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     ToastUtils.showShort(BindingActivity2.this, "设备登陆成功");
                     progressDialog.cancel();
 //                    Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
-                    Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
-                    startActivity(intent);
+                    if(FromActivity.equals("SMSandPasswordActivity")){
+                        Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
+                        startActivity(intent);
+                    }
+                    else if(FromActivity.equals("CarManageActivity")){
+                        Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                     break;
                 case FAILED:
@@ -89,10 +96,15 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         btn_InputIMEI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(BindingActivity2.this,InputIMEIActivity.class);
+                Intent intent = new Intent(BindingActivity2.this, InputIMEIActivity.class);
+                intent.putExtra("From",FromActivity);
                 startActivity(intent);
             }
         });
+
+        //解析是从哪个activity跳转过来的
+        Intent intent = getIntent();
+        FromActivity = intent.getStringExtra("From");
     }
 
     @Override

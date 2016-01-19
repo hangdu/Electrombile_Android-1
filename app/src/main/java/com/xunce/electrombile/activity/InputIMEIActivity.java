@@ -28,6 +28,7 @@ public class InputIMEIActivity extends Activity {
     private String IMEI;
     private ProgressDialog progressDialog;
     private SettingManager settingManager;
+    private String FromActivity;
     private enum handler_key{
         START_BIND,
         SUCCESS,
@@ -44,9 +45,14 @@ public class InputIMEIActivity extends Activity {
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(InputIMEIActivity.this, "设备登陆成功");
                     progressDialog.cancel();
-//                    Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
-                    Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
-                    startActivity(intent);
+                    if(FromActivity.equals("SMSandPasswordActivity")){
+                        Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
+                        startActivity(intent);
+                    }
+                    else if(FromActivity.equals("CarManageActivity")){
+                        Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                     break;
                 case FAILED:
@@ -99,6 +105,10 @@ public class InputIMEIActivity extends Activity {
                 }
             }
         });
+
+        //解析是从哪个activity跳转过来的
+        Intent intent = getIntent();
+        FromActivity = intent.getStringExtra("From");
     }
 
     private void timeOut(){

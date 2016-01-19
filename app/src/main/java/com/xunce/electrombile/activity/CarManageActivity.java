@@ -76,6 +76,7 @@ public class CarManageActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
+                intent.putExtra("From","CarManageActivity");
                 startActivity(intent);
 
             }

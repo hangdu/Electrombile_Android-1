@@ -76,6 +76,7 @@ public class SMSandPasswordActivity extends Activity {
                     ToastUtils.showShort(SMSandPasswordActivity.this, "成功修改密码");
                     //进入绑定设备的页面
                     Intent intent = new Intent(SMSandPasswordActivity.this, BindingActivity2.class);
+                    intent.putExtra("From","SMSandPasswordActivity");
                     startActivity(intent);
                     break;
 
