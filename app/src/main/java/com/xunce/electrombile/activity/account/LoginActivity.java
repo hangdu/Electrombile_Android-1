@@ -29,15 +29,23 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.AVObject;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
+import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.utils.system.IntentUtils;
+import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -77,6 +85,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * The dialog.
 	 */
 	private ProgressDialog dialog;
+
+	private Boolean HaveDevice;
 	/**
 	 * The handler.
 	 */
@@ -85,33 +95,75 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			super.handleMessage(msg);
 			handler_key key = handler_key.values()[msg.what];
 			switch (key) {
+				case FIND_DEVICE_FAIL:
+					Intent intent = new Intent(LoginActivity.this, BindingActivity2.class);
+					intent.putExtra("From","LoginActivity");
+					startActivity(intent);
+					finish();
+					break;
+
+				case FIND_DEVICE_SUCCESS:
+					IntentUtils.getInstance().startActivity(LoginActivity.this, FragmentActivity.class);
+					finish();
+					break;
+
+				case TOAST:
+					ToastUtils.showShort(LoginActivity.this,msg.obj.toString());
+
 			// 登陆成功
-			case LOGIN_SUCCESS:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT)
-						.show();
-				dialog.cancel();
-				IntentUtils.getInstance().startActivity(LoginActivity.this,
-						FragmentActivity.class);
-				finish();
-				break;
+				case LOGIN_SUCCESS:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT)
+							.show();
+					dialog.cancel();
+
+					//成功登陆之后需要判断该用户有没有绑定设备:如果没有绑定的话,需要跳转到设备绑定的页面;如果已经绑定过的话,就跳转到主页面
+					QueryBindList();
+					break;
+
 			// 登陆失败
-			case LOGIN_FAIL:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "用户名或密码错误" + "",
-                        Toast.LENGTH_SHORT).show();
-				dialog.cancel();
-				break;
-			// 登录超时
-			case LOGIN_TIMEOUT:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "登陆超时,请检查网络连接！", Toast.LENGTH_SHORT)
-						.show();
-				dialog.cancel();
-				break;
-			}
+				case LOGIN_FAIL:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "用户名或密码错误" + "",
+							Toast.LENGTH_SHORT).show();
+					dialog.cancel();
+					break;
+				// 登录超时
+				case LOGIN_TIMEOUT:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "登陆超时,请检查网络连接！", Toast.LENGTH_SHORT)
+							.show();
+					dialog.cancel();
+					break;
+				}
 		}
 	};
+
+	public void QueryBindList(){
+		AVUser currentUser = AVUser.getCurrentUser();
+		AVQuery<AVObject> query = new AVQuery<>("Bindings");
+		query.whereEqualTo("user", currentUser);
+		query.findInBackground(new FindCallback<AVObject>() {
+			@Override
+			public void done(List<AVObject> list, AVException e) {
+				Message msg = Message.obtain();
+				if (e == null) {
+					if(list.isEmpty()){
+						//列表为空  没有绑定任何设备
+						msg.what = handler_key.FIND_DEVICE_FAIL.ordinal();
+					}
+					else{
+						msg.what = handler_key.FIND_DEVICE_SUCCESS.ordinal();
+					}
+				} else {
+					e.printStackTrace();
+					msg.what = handler_key.TOAST.ordinal();
+					msg.obj = e.toString();
+				}
+				handler.sendMessage(msg);
+			}
+		});
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -267,6 +319,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		 */
 		LOGIN_TIMEOUT,
 
+		FIND_DEVICE_SUCCESS,
+
+		FIND_DEVICE_FAIL,
+
+		TOAST,
 	}
 
 }

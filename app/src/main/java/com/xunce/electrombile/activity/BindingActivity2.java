@@ -52,13 +52,13 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(BindingActivity2.this, "设备登陆成功");
                     progressDialog.cancel();
-//                    Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
-                    if(FromActivity.equals("SMSandPasswordActivity")){
-                        Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
+
+                    if(FromActivity.equals("CarManageActivity")){
+                        Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
                         startActivity(intent);
                     }
-                    else if(FromActivity.equals("CarManageActivity")){
-                        Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
+                    else{
+                        Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
                         startActivity(intent);
                     }
                     finish();

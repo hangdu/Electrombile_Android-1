@@ -45,12 +45,13 @@ public class InputIMEIActivity extends Activity {
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(InputIMEIActivity.this, "设备登陆成功");
                     progressDialog.cancel();
-                    if(FromActivity.equals("SMSandPasswordActivity")){
-                        Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
+
+                    if(FromActivity.equals("CarManageActivity")){
+                        Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
                         startActivity(intent);
                     }
-                    else if(FromActivity.equals("CarManageActivity")){
-                        Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
+                    else{
+                        Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
                         startActivity(intent);
                     }
                     finish();
