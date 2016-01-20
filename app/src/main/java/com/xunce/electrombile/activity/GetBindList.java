@@ -1,8 +1,4 @@
 package com.xunce.electrombile.activity;
-
-import android.os.*;
-import android.util.Log;
-
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;

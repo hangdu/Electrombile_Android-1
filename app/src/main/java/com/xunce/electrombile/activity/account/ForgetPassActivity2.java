@@ -2,6 +2,7 @@ package com.xunce.electrombile.activity.account;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,21 +71,37 @@ public class ForgetPassActivity2 extends Activity {
             @Override
             public void onClick(View v) {
                 phone = et_PhoneNumber.getText().toString().trim();
-                if (StringUtils.isEmpty(phone)) {
-                    ToastUtils.showShort(ForgetPassActivity2.this, "手机号码不能为空");
+
+                if(!IsPhoneNomberOK(phone,ForgetPassActivity2.this)){
                     return;
                 }
-                if (phone.length() != 11) {
-                    ToastUtils.showShort(ForgetPassActivity2.this, "手机号码的长度不对");
-                    return;
+                else{
+                    sendVerifyCode(phone);
                 }
-                if (!isMobileNO(phone)) {
-                    ToastUtils.showShort(ForgetPassActivity2.this, "手机号码不正确");
-                    return;
-                }
-                sendVerifyCode(phone);
+
             }
         });
+    }
+
+    //用一个静态方法来判断手机号是否合理
+    public static Boolean IsPhoneNomberOK(String phone,Context context){
+        if (StringUtils.isEmpty(phone)) {
+            ToastUtils.showShort(context, "手机号码不能为空");
+            return false;
+        }
+        if (phone.length() != 11) {
+            ToastUtils.showShort(context, "手机号码的长度不对");
+            return false;
+        }
+
+        //正则表达式匹配
+        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2,5-9]))\\d{8}$");
+        Matcher m = p.matcher(phone);
+        if (!m.matches()) {
+            ToastUtils.showShort(context, "手机号码不正确");
+            return false;
+        }
+        return true;
     }
 
     private void sendVerifyCode(final String phone) {
@@ -117,9 +134,4 @@ public class ForgetPassActivity2 extends Activity {
         TOAST,
     };
 
-    public boolean isMobileNO(String MobileNumber){
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2,5-9]))\\d{8}$");
-        Matcher m = p.matcher(MobileNumber);
-        return m.matches();
-    }
 }

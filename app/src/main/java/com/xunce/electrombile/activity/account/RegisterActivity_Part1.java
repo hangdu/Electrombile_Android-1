@@ -106,12 +106,6 @@ public class RegisterActivity_Part1 extends BaseActivity {
         dialog.setMessage("处理中，请稍候...");
     }
 
-    public boolean isMobileNO(String MobileNumber){
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,2,5-9]))\\d{8}$");
-        Matcher m = p.matcher(MobileNumber);
-        return m.matches();
-    }
-
     @Override
     public void initEvents(){
         btn_NextStep.setOnClickListener(new View.OnClickListener() {
@@ -119,16 +113,8 @@ public class RegisterActivity_Part1 extends BaseActivity {
             public void onClick(View v) {
                 //判断手机号是否是对的
                 phone = et_PhoneNumber.getText().toString().trim();
-                if (StringUtils.isEmpty(phone)) {
-                    ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码不能为空");
-                    return;
-                }
-                if (phone.length() != 11) {
-                    ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码的长度不对");
-                    return;
-                }
-                if (!isMobileNO(phone)) {
-                    ToastUtils.showShort(RegisterActivity_Part1.this, "手机号码不正确");
+
+                if(!ForgetPassActivity2.IsPhoneNomberOK(phone,RegisterActivity_Part1.this)){
                     return;
                 }
 
@@ -172,15 +158,14 @@ public class RegisterActivity_Part1 extends BaseActivity {
                 if (e == null) {
                     android.os.Message msg = android.os.Message.obtain();
                     //list中只有一个数据
-                    AVUser user = (AVUser)list.get(0);
+                    AVUser user = (AVUser) list.get(0);
 //                    Boolean MobileNumberVerified = user.isMobilePhoneVerified();
-                    if(user.isMobilePhoneVerified()){
+                    if (user.isMobilePhoneVerified()) {
                         //注册过且已经验证
                         msg.what = handler_key.TOAST.ordinal();
                         msg.obj = "该用户已经被注册,请直接登录";
                         handler.sendMessage(msg);
-                    }
-                    else{
+                    } else {
 //                        注册过没验证
                         getVerifiedCode();
                     }
