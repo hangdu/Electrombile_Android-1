@@ -231,7 +231,6 @@ public class MaptabFragment extends BaseFragment {
                 .build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-
     }
 
     @Override
@@ -326,8 +325,7 @@ public class MaptabFragment extends BaseFragment {
             }
         });
 
-        //定位电动车按钮
-        btnLocation = (TextView) v.findViewById(R.id.btn_location);
+        //找车按钮
         tvFindEle = (TextView) v.findViewById(R.id.tv_find_ele);
         tvFindEle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -340,6 +338,8 @@ public class MaptabFragment extends BaseFragment {
                 startActivity(intent);
             }
         });
+        //定位电动车按钮
+        btnLocation = (TextView) v.findViewById(R.id.btn_location);
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -552,7 +552,7 @@ public class MaptabFragment extends BaseFragment {
      * 获取最新的位置
      */
     public void updateLocation() {
-        if ((m_context).mac != null && (m_context).mac.isConnected())
+        if ((m_context).mac != null )
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
