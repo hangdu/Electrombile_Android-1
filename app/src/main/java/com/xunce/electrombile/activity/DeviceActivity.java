@@ -150,7 +150,7 @@ public class DeviceActivity extends BaseActivity {
                                     Historys.finishAct(FragmentActivity.class);
                                     progressDialog.dismiss();
                                     Intent intent;
-                                    intent = new Intent("com.xunce.electrombile.alarmservice");
+                                    intent = new Intent("com.xunce.electrombile.alarmservice").setPackage(getPackageName());
                                     DeviceActivity.this.stopService(intent);
                                     intent = new Intent(DeviceActivity.this, BindingActivity.class);
                                     startActivity(intent);

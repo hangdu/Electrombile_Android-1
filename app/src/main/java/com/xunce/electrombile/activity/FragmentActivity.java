@@ -44,28 +44,33 @@ import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * Created by heyukun on 2015/3/24.
- * 修改 by liyanbo
+ * Created by heyukun on 2015/3/24. 修改 by liyanbo
  */
 
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener,
         LocationTVClickedListener {
     private static final String TAG = "FragmentActivity:";
+    private static final int DELAYTIME = 500;
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -87,6 +92,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
 //    Button btnAlarmState;
 //    boolean alarmState;
+
+//    private Button btnAlarmState;
+//    private boolean alarmState = false;
+//
+//    private Button testbtn;
 
     /**
      * The handler. to process exit()
@@ -194,25 +204,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     }
 
-
-    //显示常驻通知栏
-//    public void showNotification(String text) {
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(
-//                getApplicationContext().NOTIFICATION_SERVICE);
-//        Intent intent = new Intent(this, FragmentActivity.class);
-//        PendingIntent contextIntent = PendingIntent.getActivity(this, 0, intent, 0);
-//        Notification notification = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.mipmap.ic_launcher)
-//                .setContentTitle("安全宝")
-//                .setWhen(System.currentTimeMillis())
-//                .setTicker("安全宝正在设置~")
-//                .setOngoing(true)
-//                .setContentText(text)
-//                .setContentIntent(contextIntent)
-//                .build();
-//        notificationManager.notify(R.string.app_name, notification);
-//    }
-
     //取消显示常驻通知栏
     public void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(getApplicationContext()
@@ -271,16 +262,46 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        Connection connection = Connection.createConnection(ServiceConstants.clientId,
+        final Connection connection = Connection.createConnection(ServiceConstants.clientId,
                 ServiceConstants.MQTT_HOST,
                 ServiceConstants.PORT,
                 FragmentActivity.this,
                 false);
         ServiceConstants.handler = connection.handle();
         MqttConnectOptions mcp = new MqttConnectOptions();
-        mcp.setCleanSession(true);
+        /*
+         * true :那么在客户机建立连接时，将除去客户机的任何旧预订。当客户机断开连接时，会除去客户机在会话期间创建的任何新预订。
+         * false:那么客户机创建的任何预订都会被添加至客户机在连接之前就已存在的所有预订。当客户机断开连接时，所有预订仍保持活动状态。
+         * 简单来讲，true的话就是每次连接都要重新订阅，false的话就是不用重新订阅
+         */
+        mcp.setCleanSession(false);
         connection.addConnectionOptions(mcp);
         mac = connection.getClient();
+
+        mac.setCallback(new MqttCallback() {
+            @Override
+            public void connectionLost(Throwable throwable) {
+                //设置重连
+//                com.orhanobut.logger.Logger.w("这是回调方法中尝试重连");
+                if (mac != null) {
+                    try {
+                        mac.connect();
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+//                com.orhanobut.logger.Logger.i("收到MQTT服务器的消息：" + s);
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+                //publish后会执行到这里
+            }
+        });
         try {
             mac.connect(mcp, this, new IMqttActionListener() {
                 @Override
@@ -288,7 +309,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     subscribe(mac);
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
 //                    registerBroadCast();
-                    startAlarmService();
+
+                    //ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+//                    com.orhanobut.logger.Logger.d("服务器连接成功,host地址是：%s", connection.getHostName());
+//                    registerBroadCast();
+
+//                    startAlarmService();
                     //开启自动落锁
 //                    OpenAutoLock();
                 }
@@ -296,6 +322,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+//                    com.orhanobut.logger.Logger.w("服务器连接失败");
                     Log.d(TAG, exception.toString());
                 }
             });
@@ -304,6 +331,43 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             e1.printStackTrace();
         }
 
+    }
+
+
+    /**
+     * Mqtt重连当前mac客户端
+     */
+    public void reMqttConnection() {
+        if (mac != null) {
+            try {
+                mac.connect();
+                ToastUtils.showShort(FragmentActivity.this,"等候重连");
+//                com.orhanobut.logger.Logger.w("等候重连结束");
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 延时发送消息
+     *
+     * @param message 发送的内容
+     * @param IMEI    设备IMEI号
+     */
+    public void DelaySendMessage(final byte[] message, final String IMEI) {
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                //execute the task
+                try {
+//                    subscribe(mac);
+//                    com.orhanobut.logger.Logger.w("我发送了数据");
+                    mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, DELAYTIME);
     }
 
     /**
@@ -323,11 +387,18 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * @param message 要发送的命令
      * @param IMEI    要发送的设备号
      */
-    public void sendMessage(Context context, byte[] message, String IMEI) {
-        if (mac == null || !mac.isConnected()) {
+
+    public void sendMessage(Context context, final byte[] message, final String IMEI) {
+        if (mac == null) {
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
+        } else if (!mac.isConnected()) {
+//            com.orhanobut.logger.Logger.w("MQTT尚未连接服务器，我先连接再发消息");
+            reMqttConnection();
+            DelaySendMessage(message, IMEI);
+            return;
         }
+//        com.orhanobut.logger.Logger.w("发送数据");
         try {
             //向服务器发送命令
             mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
@@ -339,7 +410,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     /**
      * 查询并判断是否该建立MQTT连接
      */
-    public void queryIMEI() {
+    public void queryIMEI(){
         if (setManager.getIMEI().isEmpty()) {
             AVQuery<AVObject> query = new AVQuery<>("Bindings");
             final AVUser currentUser = AVUser.getCurrentUser();
@@ -363,6 +434,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         } else {
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
+//            com.orhanobut.logger.Logger.d("登陆成功");
         }
     }
 
@@ -471,12 +543,21 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
         });
         main_radio.check(checkId);
+
 //        if (setManager.getAlarmFlag()) {
 //            showNotification("安全宝防盗系统已启动");
 //            openStateAlarmBtn();
 //        } else {
 //            closeStateAlarmBtn();
 //        }
+
+//        if (setManager.getAlarmFlag()) {
+//            showNotification("安全宝防盗系统已启动");
+//            openStateAlarmBtn();
+//        } else {
+//            closeStateAlarmBtn();
+//        }
+
     }
 
 

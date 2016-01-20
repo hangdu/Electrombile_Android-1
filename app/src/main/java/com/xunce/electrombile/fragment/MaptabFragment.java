@@ -252,10 +252,27 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (checkBind()) return;
 
         if (mBaiduMap != null) {
-            m_context.showWaitDialog();
+//            m_context.showWaitDialog();
             m_context.timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
             updateLocation();
         }
+
+//        moveMarkerParams = new MapViewLayoutParams.Builder()
+//                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
+//                .height(100)
+//                .width(100)
+//                .position(markerMobile.getPosition())
+//                .build();
+//        mMapView.removeView(moveMarker);
+//        mMapView.addView(moveMarker, moveMarkerParams);
+//
+//        //将电动车位置移至中心
+//        MapStatus mMapStatus = new MapStatus.Builder()
+//                .target(point)
+//                .zoom(mBaiduMap.getMapStatus().zoom * Double.valueOf(1.5).floatValue())
+//                .build();
+//        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+//        mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
 
@@ -385,8 +402,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 pausePlay();
             }
         });
-
-
 
         //定位电动车按钮
         btnLocation = (TextView) v.findViewById(R.id.btn_location);
@@ -661,7 +676,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      * 获取最新的位置
      */
     public void updateLocation() {
-        if ((m_context).mac != null && (m_context).mac.isConnected())
+        if ((m_context).mac != null )
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
 
     }
@@ -807,3 +822,4 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
 }
+

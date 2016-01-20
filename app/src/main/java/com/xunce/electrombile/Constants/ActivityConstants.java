@@ -1,5 +1,10 @@
 package com.xunce.electrombile.Constants;
 
+import android.graphics.drawable.Drawable;
+
+import com.malinskiy.materialicons.IconDrawable;
+import com.malinskiy.materialicons.Iconify;
+
 /**
  * Created by lybvinci on 2015/10/21.
  */
@@ -19,6 +24,5 @@ public class ActivityConstants {
     public static final String subscribe = "subscribe";
     public static final String messageArrived = "messageArrived";
     public static final String onConnectionLost = "onConnectionLost";
-
 
 }

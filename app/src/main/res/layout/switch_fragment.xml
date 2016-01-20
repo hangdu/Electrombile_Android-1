@@ -225,5 +225,54 @@
 
 
 
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="248dp"-->
+        <!--android:layout_below="@+id/ll_container"-->
+        <!--android:background="@drawable/third_bg_fragment">-->
+
+
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:id="@+id/btn_AlarmState"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--app:borderWidth="0dp"-->
+        <!--app:backgroundTint="@color/green"-->
+        <!--app:rippleColor="@color/avoscloud_blue"-->
+        <!--app:elevation="6dp"-->
+        <!--android:text="开启小安宝"-->
+        <!--app:pressedTranslationZ="12dp"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:textColor="@color/base_color_text_white"-->
+        <!--android:src="@drawable/btn_switch_selector_1" />-->
+
+        <!--<Button-->
+        <!--android:id="@+id/btn_AlarmState"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:background="@drawable/btn_switch_selector_1"-->
+        <!--android:text="开启小安宝"-->
+        <!--android:textColor="@color/base_color_text_white" />-->
+
+        <!--<ImageView-->
+        <!--android:id="@+id/iv_SystemState"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:background="@drawable/switch_fragment_zhuangtai2" />-->
+    <!--</RelativeLayout>-->
+
+
+    <!--<TextView-->
+    <!--android:id="@+id/weather"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/btn_SystemState"-->
+    <!--android:text="正在更新天气..."-->
+    <!--android:textColor="@color/blue"-->
+    <!--android:textSize="18sp" />-->
 
 

@@ -21,9 +21,9 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.AboutActivity;
 import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.CarManageActivity;
-import com.xunce.electrombile.activity.DeviceActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
+import com.xunce.electrombile.activity.MapOfflineActivity;
 import com.xunce.electrombile.activity.TestActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
@@ -121,9 +121,15 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 goToDeviceAct();
                 break;
 
+
             //自动落锁
             case R.id.layout_autolock:
                 gotoAutolockAct();
+                break;
+
+            //离线地图
+            case R.id.layout_map_offline:
+                goToMapOffline();
                 break;
 
 
@@ -170,6 +176,14 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         startActivity(intent);
     }
 
+    /**
+     * 跳转到离线地图界面
+     */
+    private void goToMapOffline(){
+        Intent intent = new Intent(m_context,MapOfflineActivity.class);
+        startActivity(intent);
+        //TODO 添加选择是否WIFI环境下自动下载地图的功能
+    }
     /**
      * 跳转到个人中心界面
      */
@@ -318,9 +332,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
         view.findViewById(R.id.rl_1l).setOnClickListener(this);
+
         view.findViewById(R.id.layout_autolock).setOnClickListener(this);
 
 //        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
+
+        view.findViewById(R.id.layout_map_offline).setOnClickListener(this);
+
     }
 
     @Override
@@ -342,8 +360,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onStop() {
         super.onStop();
     }
-
-
 
 
 

@@ -2,6 +2,7 @@ package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+
 import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -12,6 +13,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -39,6 +48,10 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.offline.MKOLSearchRecord;
+import com.baidu.mapapi.map.offline.MKOLUpdateElement;
+import com.baidu.mapapi.map.offline.MKOfflineMap;
+import com.baidu.mapapi.map.offline.MKOfflineMapListener;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -51,18 +64,26 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
+
 import com.xunce.electrombile.Constants.ProtocolConstants;
+
+import com.orhanobut.logger.Logger;
+
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.GetBindList;
 import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
+
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
+
+import com.xunce.electrombile.utils.system.WIFIUtil;
+
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
@@ -75,7 +96,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
+    private static final int DELAYTIME = 1000;
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
@@ -96,84 +119,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     Button btnAlarmState1;
     private static int Count = 0;
     private GetBindList getBindList;
+    static MKOfflineMap mkOfflineMap;
 
+    private TextView tvWeather;
 
-    //刷新车列表
-//    public void refreshBindList() {
-//        AVUser currentUser = AVUser.getCurrentUser();
-//        AVQuery<AVObject> query = new AVQuery<>("Bindings");
-//        query.whereEqualTo("user", currentUser);
-//        query.findInBackground(new FindCallback<AVObject>() {
-//            @Override
-//            public void done(List<AVObject> list, AVException e) {
-//                if (e == null) {
-//                    Log.e("BINDLISTACT", list.size() + "");
-//                    if (list.size() > 0) {
-//                        myHorizontalScrollView.list.clear();
-//                        OtherCar.clear();
-//                        HashMap<String, Object> map = null;
-//                        for (int i = 0; i < list.size(); i++) {
-//                            //判断这个IMEI是不是正在被监管的车辆
-//                            if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
-//                            {
-//                                BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
-//                            }
-//                            else{
-//                                map = new HashMap<>();
-//                                map.put("whichcar",list.get(i).get("IMEI"));
-//                                map.put("img", R.drawable.img_1);
-//                                myHorizontalScrollView.list.add(map);
-//                                OtherCar.add((String)list.get(i).get("IMEI"));
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    e.printStackTrace();
-////                    ToastUtils.showShort(BindListActivity.this, "查询错误");
-//                }
-//            }
-//        });
-//    }
-
-    public void refreshBindList(){
-        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
-            @Override
-            public void onGetBindListSuccess(List<AVObject> list) {
-                if (list.size() > 0) {
-
-                    //下面这句话不应该在这里执行
-                    myHorizontalScrollView.list.clear();
-                    OtherCar.clear();
-                    HashMap<String, Object> map = null;
-                    for (int i = 0; i < list.size(); i++) {
-                        //判断这个IMEI是不是正在被监管的车辆
-                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
-                        {
-                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
-                        }
-                        else{
-                            map = new HashMap<>();
-                            map.put("whichcar",list.get(i).get("IMEI"));
-                            map.put("img", R.drawable.img_1);
-                            myHorizontalScrollView.list.add(map);
-                            OtherCar.add((String)list.get(i).get("IMEI"));
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onGetBindListFail() {
-                ToastUtils.showShort(m_context, "查询错误");
-
-            }
-        });
-
-        getBindList.QueryBindList();
-
-    }
-
-
+    private static String localcity;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -203,7 +153,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 5:
                     closeStateAlarmBtn();
                     break;
-
             }
             return;
         }
@@ -231,8 +180,18 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         initLocation();
         mLocationClient.start();
 
-
-
+        mkOfflineMap = new MKOfflineMap(); //初始化离线地图
+        mkOfflineMap.init(new MKOfflineMapListener() {
+            @Override
+            public void onGetOfflineMapState(int i, int i1) {
+            }
+        });
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                offlineMapAutoDownload(); //检查网络是否可以离线下载
+                //execute the task
+            }
+        }, DELAYTIME);
     }
 
     @Override
@@ -347,11 +306,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onResume() {
         super.onResume();
-        if (setManager.getAlarmFlag()) {
-            openStateAlarmBtn();
-            showNotification("安全宝防盗系统已启动");
-        } else {
-            closeStateAlarmBtn();
+//        if (setManager.getAlarmFlag()) {
+//            openStateAlarmBtn();
+//            showNotification("安全宝防盗系统已启动");
+//        } else {
+//            closeStateAlarmBtn();
+//        }
+        (m_context).receiver.setAlarmHandler(mhandler);
+
+        if ((m_context).mac != null && (m_context).mac.isConnected())
+        {
+            (m_context).sendMessage(m_context, mCenter.cmdFenceGet(), setManager.getIMEI());
+        }
+        else{
+            ToastUtils.showShort(m_context,"mqtt连接失败");
         }
 
     }
@@ -471,6 +439,39 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 });
     }
 
+    /**
+     * 判断是不是在WIFI环境下，如果是就自动下载离线地图
+     */
+    private void offlineMapAutoDownload() {
+        if (WIFIUtil.isWIFI(getActivity())) {
+            com.orhanobut.logger.Logger.d("没错，就是在WIFI环境下，我要开始下载离线地图了");
+            downloadOfflinemap();
+        } else {
+            com.orhanobut.logger.Logger.d("没连WIFI，不敢下……");
+        }
+    }
+
+    private static void downloadOfflinemap() {
+        if (localcity != null) {
+            Logger.d("我获取到了城市的名字%s", localcity);
+            MKOLUpdateElement element = LocalCityelement();
+            if (element != null) {
+                Logger.d("以前好像下过了，我看看下完没");
+                if (element.status != MKOLUpdateElement.FINISHED) {
+                    Logger.d("没下完，我接着下");
+                    mkOfflineMap.start(element.cityID);
+                }
+            } else {
+                Logger.d("以前没下过");
+                ArrayList<MKOLSearchRecord> records = mkOfflineMap.searchCity(localcity);
+                for (MKOLSearchRecord record : records) {
+                    Logger.d("下载:%d", record.cityID);
+                    mkOfflineMap.start(record.cityID);
+                }
+            }
+        }
+    }
+
     public interface LocationTVClickedListener {
         void locationTVClicked();
     }
@@ -482,13 +483,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
                 Log.i(TAG, "离线定位成功，离线定位结果也是有效的");
                 String city = location.getCity();
                 httpGetWeather(city);
+                localcity = city;
             } else {
                 Log.e(TAG, "服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
             }
@@ -554,9 +558,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     //等状态设置成功之后再改变按钮的显示状态，并且再更改标志位等的保存。
                     cancelNotification();
                     VibratorUtil.Vibrate(m_context, 700);
-                    (m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
-                    showWaitDialog();
-                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+                    //发送命令之前判断一下   mqtt连接是否正常
+                    if ((m_context).mac != null && (m_context).mac.isConnected())
+                    {
+                        (m_context).sendMessage(m_context, mCenter.cmdFenceOn(), setManager.getIMEI());
+                        showWaitDialog();
+                        timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
+                    }
+                    else{
+                        ToastUtils.showShort(m_context,"mqtt连接失败");
+                    }
+
                 } else {
                     ToastUtils.showShort(m_context, "请先绑定设备");
                 }
@@ -650,5 +662,68 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 .setContentIntent(contextIntent)
                 .build();
         notificationManager.notify(R.string.app_name, notification);
+    }
+
+    private static MKOLUpdateElement LocalCityelement() {
+        ArrayList<MKOLUpdateElement> localCitylist = mkOfflineMap.getAllUpdateInfo();
+        if (localCitylist != null) {
+            for (MKOLUpdateElement element : localCitylist) {
+                element.cityName.contains(localcity);
+                return element;
+            }
+        }
+        return null;
+    }
+
+    public static class NetWorkListen extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo wifiInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiInfo != null && wifiInfo.isConnected()) {
+                com.orhanobut.logger.Logger.d("没错，就是在WIFI环境下，我要看看获取到城市名字了没");
+                downloadOfflinemap();
+            } else {
+                Logger.d("没连WIFI");
+            }
+        }
+    }
+
+    public void refreshBindList(){
+        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
+            @Override
+            public void onGetBindListSuccess(List<AVObject> list) {
+                if (list.size() > 0) {
+
+                    //下面这句话不应该在这里执行
+                    myHorizontalScrollView.list.clear();
+                    OtherCar.clear();
+                    HashMap<String, Object> map = null;
+                    for (int i = 0; i < list.size(); i++) {
+                        //判断这个IMEI是不是正在被监管的车辆
+                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
+                        {
+                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
+                        }
+                        else{
+                            map = new HashMap<>();
+                            map.put("whichcar",list.get(i).get("IMEI"));
+                            map.put("img", R.drawable.img_1);
+                            myHorizontalScrollView.list.add(map);
+                            OtherCar.add((String)list.get(i).get("IMEI"));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onGetBindListFail() {
+                ToastUtils.showShort(m_context, "查询错误");
+
+            }
+        });
+
+        getBindList.QueryBindList();
+
     }
 }

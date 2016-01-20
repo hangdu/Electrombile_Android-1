@@ -11,7 +11,6 @@
         android:layout_height="0dp"
         android:layout_weight="5" />
 
-
     <RadioGroup
         android:id="@+id/main_radio"
         android:layout_width="match_parent"

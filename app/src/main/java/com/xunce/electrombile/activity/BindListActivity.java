@@ -175,7 +175,7 @@ public class BindListActivity extends BaseActivity {
 //            setManager.cleanDevice();
             Historys.finishAct(FragmentActivity.class);
             Intent intent;
-            intent = new Intent("com.xunce.electrombile.alarmservice");
+            intent = new Intent("com.xunce.electrombile.alarmservice").setPackage(getPackageName());
             BindListActivity.this.stopService(intent);
             intent = new Intent(this, BindingActivity.class);
             startActivity(intent);
