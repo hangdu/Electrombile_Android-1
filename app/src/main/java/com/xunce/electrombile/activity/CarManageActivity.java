@@ -39,6 +39,9 @@ public class CarManageActivity extends Activity {
 
     Button btn_AddDevice;
     int OthercarPositon;
+//    MqttConnectManager mqttConnectManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,17 @@ public class CarManageActivity extends Activity {
 //                Log.d("test","test");
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", tv_CurrentCar.getText());
+
+                String NextCarIMEI;
+                if(Othercarlist.size()>=1){
+                    NextCarIMEI = Othercarlist.get(0).get("WhichCar").toString();
+                }
+                else{
+                    NextCarIMEI = "空";
+                }
+
+                intentCarEdit.putExtra("NextCarIMEI",NextCarIMEI);
+
                 startActivityForResult(intentCarEdit, 0);
             }
         });
@@ -94,6 +108,7 @@ public class CarManageActivity extends Activity {
                 OthercarPositon = position;
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
+//                intentCarEdit.putExtra("NextCarIMEI");
                 startActivityForResult(intentCarEdit, 0);
 
             }
@@ -137,11 +152,12 @@ public class CarManageActivity extends Activity {
         tv_CurrentCar.setText(s);
         Othercarlist.set(OthercarPositon, map);
         adapter.notifyDataSetChanged();
-        //逻辑上切换
-        reSubscribe();
+        //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
+//        reSubscribe();
+//        mqttConnectManager = MqttConnectManager.getInstance();
+
 
         settingManager.setFlagCarSwitched("切换");
-        settingManager.setAlarmFlag(false);
     }
 
     void initEvents(){
@@ -182,19 +198,19 @@ public class CarManageActivity extends Activity {
     void CaseManagedCarUnbinded(){
         //如果没有其他的车被绑定了  还没有处理相关的情况
         if(Othercarlist == null){
-            //被绑定的只有一辆车  而且这辆车被解绑了  这种情况要怎么处理????
+            //被绑定的只有一辆车 根本就不会到这个分支来 之前就处理了
 
         }
         else{
             //把现在的IMEI号设置为Othercarlist里的第一辆车
-            settingManager.setIMEI((String) Othercarlist.get(0).get("WhichCar"));
+//            settingManager.setIMEI((String) Othercarlist.get(0).get("WhichCar"));
             //UI上的改变
             tv_CurrentCar.setText((String)Othercarlist.get(0).get("WhichCar"));
             Othercarlist.remove(0);
             //数据更新
             adapter.notifyDataSetChanged();
             //逻辑上的改变 需要重新订阅一次
-            reSubscribe();
+//            reSubscribe();
         }
     }
 
@@ -205,34 +221,34 @@ public class CarManageActivity extends Activity {
 
     }
 
-    private void reSubscribe() {
-        Connection connection = Connections.getInstance(CarManageActivity.this).getConnection(ServiceConstants.handler);
-        MqttAndroidClient mac = connection.getClient();
-        subscribe(mac);
-    }
+//    private void reSubscribe() {
+//        Connection connection = Connections.getInstance(CarManageActivity.this).getConnection(ServiceConstants.handler);
+//        MqttAndroidClient mac = connection.getClient();
+//        subscribe(mac);
+//    }
 
-    private void subscribe(MqttAndroidClient mac) {
-        //订阅命令字
-        String initTopic = settingManager.getIMEI();
-        String topic1 = "dev2app/" + initTopic + "/cmd";
-        //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
-        //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
-        //订阅报警
-        String topic4 = "dev2app/" + initTopic + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
-        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
-                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
-        try {
-            mac.subscribe(topic, qos);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
-        } catch (MqttException e) {
-            e.printStackTrace();
-            ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
-        }
-    }
+//    private void subscribe(MqttAndroidClient mac) {
+//        //订阅命令字
+//        String initTopic = settingManager.getIMEI();
+//        String topic1 = "dev2app/" + initTopic + "/cmd";
+//        //订阅GPS数据
+//        String topic2 = "dev2app/" + initTopic + "/gps";
+//        //订阅上报的信号强度
+//        String topic3 = "dev2app/" + initTopic + "/433";
+//        //订阅报警
+//        String topic4 = "dev2app/" + initTopic + "/alarm";
+//        String[] topic = {topic1, topic2, topic3, topic4};
+//        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
+//                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+//        try {
+//            mac.subscribe(topic, qos);
+//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
+//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
+//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
+//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
+//        } catch (MqttException e) {
+//            e.printStackTrace();
+//            ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
+//        }
+//    }
 }

@@ -46,6 +46,7 @@ public class SettingManager {
     private final String AUTOLOCKSTATUS = "autolockstatus";
     private final String AUTOLOCKTIME = "autolocktime";
     private final String FLAGCARSWITCHED = "flagcarswitched";
+    private final String MQTTSTATUS = "MqttStatus";
     // 手机号码
     /**
      * The password.
@@ -177,6 +178,17 @@ public class SettingManager {
     public String getNickname() {
         return spf.getString(NICKNAME,"test");
     }
+
+    public void setMqttStatus(Boolean MqttStatus){
+        spf.edit().putBoolean(MQTTSTATUS, MqttStatus).commit();
+    }
+
+    public Boolean getMqttStatus() {
+        return spf.getBoolean(MQTTSTATUS,false);
+    }
+
+
+
 
 
     public void setGender(String gender){

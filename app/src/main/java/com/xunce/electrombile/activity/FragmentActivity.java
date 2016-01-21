@@ -90,13 +90,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     private boolean IsCarSwitched = false;
 
-//    Button btnAlarmState;
-//    boolean alarmState;
+    MqttConnectOptions mcp;
 
-//    private Button btnAlarmState;
-//    private boolean alarmState = false;
-//
-//    private Button testbtn;
+    Connection connection;
+
+    MqttConnectManager.OnMqttConnectListener onMqttConnectListener;
+
+    MqttConnectManager mqttConnectManager;
+
+
 
     /**
      * The handler. to process exit()
@@ -129,6 +131,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         setContentView(R.layout.activity_fragment);
         mCenter = CmdCenter.getInstance(this);
         setManager = new SettingManager(this);
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mqttConnectManager.setContext(getApplicationContext());
         //初始化界面
         initView();
         initData();
@@ -139,7 +143,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
         registerBroadCast();
 
-        //判断自动落锁是否打开  如果打开  则向服务器发送相关命令
+
 
     }
 
@@ -149,6 +153,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
         }
+
+
     }
 
     @Override
@@ -166,26 +172,22 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         super.onResume();
         if (mac != null && mac.isConnected()) {
             mac.registerResources(this);
-//            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
-//        if (setManager.getAlarmFlag()) {
-//            openStateAlarmBtn();
-//        } else {
-//            closeStateAlarmBtn();
-//        }
-
     }
 
-    @Override
-    protected void onDestroy() {
-        cancelNotification();
-        if (mac != null) {
-            mac.unregisterResources();
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+
+    private void GetAlarmStatusFromServer(){
+        //mqtt连接是耗时的操作
+        if (mac != null && mac.isConnected())
+        {
+            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
         }
-        if (TracksManager.getTracks() != null) TracksManager.clearTracks();
-        super.onDestroy();
+        else{
+            //绝对不会到这个分支来
+            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
+        }
     }
+
 
     @Override
     public void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint) {
@@ -262,75 +264,104 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        final Connection connection = Connection.createConnection(ServiceConstants.clientId,
-                ServiceConstants.MQTT_HOST,
-                ServiceConstants.PORT,
-                FragmentActivity.this,
-                false);
-        ServiceConstants.handler = connection.handle();
-        MqttConnectOptions mcp = new MqttConnectOptions();
-        /*
-         * true :那么在客户机建立连接时，将除去客户机的任何旧预订。当客户机断开连接时，会除去客户机在会话期间创建的任何新预订。
-         * false:那么客户机创建的任何预订都会被添加至客户机在连接之前就已存在的所有预订。当客户机断开连接时，所有预订仍保持活动状态。
-         * 简单来讲，true的话就是每次连接都要重新订阅，false的话就是不用重新订阅
-         */
-        mcp.setCleanSession(false);
-        connection.addConnectionOptions(mcp);
-        mac = connection.getClient();
-
-        mac.setCallback(new MqttCallback() {
+        mqttConnectManager.getMqttConnection();
+        mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
             @Override
-            public void connectionLost(Throwable throwable) {
-                //设置重连
-//                com.orhanobut.logger.Logger.w("这是回调方法中尝试重连");
-                if (mac != null) {
-                    try {
-                        mac.connect();
-                    } catch (MqttException e) {
-                        e.printStackTrace();
-                    }
-                }
+            public void MqttConnectSuccess() {
+                mac = mqttConnectManager.getMac();
+                subscribe(mac);
+                ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                setManager.setMqttStatus(true);
+                GetAlarmStatusFromServer();
             }
 
             @Override
-            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-//                com.orhanobut.logger.Logger.i("收到MQTT服务器的消息：" + s);
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-                //publish后会执行到这里
+            public void MqttConnectFail() {
+                ToastUtils.showShort(FragmentActivity.this,"连接服务器失败");
             }
         });
+
+
+
+
+//        connection = Connection.createConnection(ServiceConstants.clientId,
+//                ServiceConstants.MQTT_HOST,
+//                ServiceConstants.PORT,
+//                FragmentActivity.this,
+//                false);
+//        ServiceConstants.handler = connection.handle();
+//        mcp = new MqttConnectOptions();
+//        mcp.setCleanSession(false);
+//        connection.addConnectionOptions(mcp);
+//        mac = connection.getClient();
+//
+//        mac.setCallback(new MqttCallback() {
+//            @Override
+//            public void connectionLost(Throwable throwable) {
+//                setManager.setMqttStatus(false);
+//                ReMqttConnect();
+//            }
+//
+//            @Override
+//            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+////                com.orhanobut.logger.Logger.i("收到MQTT服务器的消息：" + s);
+//            }
+//
+//            @Override
+//            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+//                //publish后会执行到这里
+//            }
+//        });
+//        try {
+//            mac.connect(mcp, this, new IMqttActionListener() {
+//                @Override
+//                public void onSuccess(IMqttToken asyncActionToken) {
+//                    subscribe(mac);
+//                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+//                    setManager.setMqttStatus(true);
+//
+//                    GetAlarmStatusFromServer();
+////                    registerBroadCast();
+//
+//                    //ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+////                    com.orhanobut.logger.Logger.d("服务器连接成功,host地址是：%s", connection.getHostName());
+////                    registerBroadCast();
+//
+////                    startAlarmService();
+//                    //开启自动落锁
+////                    OpenAutoLock();
+//                }
+//
+//                @Override
+//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+//                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
+////                    com.orhanobut.logger.Logger.w("服务器连接失败");
+//                    Log.d(TAG, exception.toString());
+//                }
+//            });
+//            Connections.getInstance(FragmentActivity.this).addConnection(connection);
+//        } catch (MqttException e1) {
+//            e1.printStackTrace();
+//        }
+    }
+
+    private void ReMqttConnect(){
         try {
             mac.connect(mcp, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    subscribe(mac);
-                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-//                    registerBroadCast();
-
-                    //ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-//                    com.orhanobut.logger.Logger.d("服务器连接成功,host地址是：%s", connection.getHostName());
-//                    registerBroadCast();
-
-//                    startAlarmService();
-                    //开启自动落锁
-//                    OpenAutoLock();
+                    ToastUtils.showShort(FragmentActivity.this, "mac非空,重连服务器连接成功");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
-//                    com.orhanobut.logger.Logger.w("服务器连接失败");
-                    Log.d(TAG, exception.toString());
+                    ToastUtils.showShort(FragmentActivity.this, "mac非空,重连服务器连接失败");
                 }
             });
             Connections.getInstance(FragmentActivity.this).addConnection(connection);
         } catch (MqttException e1) {
             e1.printStackTrace();
         }
-
     }
 
 
@@ -394,7 +425,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             return;
         } else if (!mac.isConnected()) {
 //            com.orhanobut.logger.Logger.w("MQTT尚未连接服务器，我先连接再发消息");
-            reMqttConnection();
+//            reMqttConnection();
+            ReMqttConnect();
             DelaySendMessage(message, IMEI);
             return;
         }
@@ -543,23 +575,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
         });
         main_radio.check(checkId);
-
-//        if (setManager.getAlarmFlag()) {
-//            showNotification("安全宝防盗系统已启动");
-//            openStateAlarmBtn();
-//        } else {
-//            closeStateAlarmBtn();
-//        }
-
-//        if (setManager.getAlarmFlag()) {
-//            showNotification("安全宝防盗系统已启动");
-//            openStateAlarmBtn();
-//        } else {
-//            closeStateAlarmBtn();
-//        }
-
     }
-
 
     /**
      * 重复按下返回键退出app方法
@@ -606,20 +622,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-//    //点击打开报警按钮时按钮样式的响应操作
-//    public void openStateAlarmBtn() {
-//        alarmState = true;
-//        btnAlarmState.setText("防盗关闭");
-//        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_2);
-//    }
-
-//    //点击关闭报警按钮时按钮样式的响应操作
-//    public void closeStateAlarmBtn() {
-//        alarmState = false;
-//        btnAlarmState.setText("防盗开启");
-//        btnAlarmState.setBackgroundResource(R.drawable.btn_switch_selector_1);
-//    }
-
 //    public void getAutoLockStatus(){
 //        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
 //    }
@@ -635,5 +637,23 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     public void CloseAutoLock(){
         sendMessage(FragmentActivity.this,mCenter.cmdAutolockOff(),setManager.getIMEI());
+    }
+
+
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        cancelNotification();
+        if (mac != null) {
+            mac.unregisterResources();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        }
+        if (TracksManager.getTracks() != null) TracksManager.clearTracks();
+        super.onDestroy();
     }
 }

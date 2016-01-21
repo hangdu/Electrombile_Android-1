@@ -229,17 +229,18 @@ public class MyReceiver extends BroadcastReceiver {
             if (ProtocolConstants.ON == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
 
-                Message msg = Message.obtain();
-                msg.what = 4;
-                alarmHandler.sendMessage(msg);
             } else if (ProtocolConstants.OFF == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
 
-                Message msg1 = Message.obtain();
-                msg1.what = 5;
-                alarmHandler.sendMessage(msg1);
+//                Message msg1 = Message.obtain();
+//                msg1.what = 5;
+//                alarmHandler.sendMessage(msg1);
             }
-            ToastUtils.showShort(mContext, "查询状态成功");
+
+            Message msg = Message.obtain();
+            msg.what = 4;
+            alarmHandler.sendMessage(msg);
+            ToastUtils.showShort(mContext, "查询小安宝开关状态成功");
         } else {
             dealErr(result);
         }

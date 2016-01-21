@@ -148,11 +148,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     msgSuccessArrived();
                     break;
                 case 4:
-                    openStateAlarmBtn();
+                    if (setManager.getAlarmFlag()) {
+                        openStateAlarmBtn();
+                        showNotification("安全宝防盗系统已启动");
+                    } else {
+                        closeStateAlarmBtn();
+                    }
                     break;
-                case 5:
-                    closeStateAlarmBtn();
-                    break;
+//                case 5:
+//                    closeStateAlarmBtn();
+//                    break;
             }
             return;
         }
@@ -192,6 +197,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
+
+
+        (m_context).receiver.setAlarmHandler(mhandler);
+
+
     }
 
     @Override
@@ -306,22 +316,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onResume() {
         super.onResume();
-//        if (setManager.getAlarmFlag()) {
-//            openStateAlarmBtn();
-//            showNotification("安全宝防盗系统已启动");
-//        } else {
-//            closeStateAlarmBtn();
-//        }
-        (m_context).receiver.setAlarmHandler(mhandler);
-
-        if ((m_context).mac != null && (m_context).mac.isConnected())
-        {
-            (m_context).sendMessage(m_context, mCenter.cmdFenceGet(), setManager.getIMEI());
+        if (setManager.getAlarmFlag()) {
+            openStateAlarmBtn();
+            showNotification("安全宝防盗系统已启动");
+        } else {
+            closeStateAlarmBtn();
         }
-        else{
-            ToastUtils.showShort(m_context,"mqtt连接失败");
-        }
-
     }
 
 

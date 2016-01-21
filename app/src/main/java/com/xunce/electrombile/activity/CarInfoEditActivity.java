@@ -24,6 +24,7 @@ import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
@@ -46,6 +47,9 @@ public class CarInfoEditActivity extends Activity {
     Button btn_DeviceChange;
     Boolean Flag_Maincar;
     Boolean LastCar;
+    MqttConnectManager mqttConnectManager;
+    public CmdCenter mCenter;
+    String NextCarIMEI;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -65,10 +69,23 @@ public class CarInfoEditActivity extends Activity {
 
     public void AfterDeleteSuccess(){
         if(LastCar == true){
-            //跳转到登录界面  并且把之前的activity清空栈
-            Intent intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
+            //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈???
+            if(mqttConnectManager.returnMqttStatus()){
+                if(mqttConnectManager.unSubscribe(IMEI,CarInfoEditActivity.this)){
+                    AVUser currentUser = AVUser.getCurrentUser();
+                    currentUser.logOut();
+                    Intent intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else{
+                    ToastUtils.showShort(CarInfoEditActivity.this,"解订阅失败  但是数据库记录已经删除了");
+                }
+            }
+            else{
+                ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");
+            }
+
         }
         else{
             //回退到车辆管理的界面
@@ -85,6 +102,7 @@ public class CarInfoEditActivity extends Activity {
 
         Intent intent = getIntent();
         IMEI = intent.getStringExtra("string_key");
+        NextCarIMEI = intent.getStringExtra("NextCarIMEI");
         LastCar = false;
     }
 
@@ -128,21 +146,56 @@ public class CarInfoEditActivity extends Activity {
 
     //设备解绑
     private void DeviceUnbinded(){
-        Intent intent;
-        intent = new Intent("com.xunce.electrombile.alarmservice");
-        CarInfoEditActivity.this.stopService(intent);
-        intent = new Intent();
+      //解绑的不是最后一辆车
+        if(true == Flag_Maincar){
+            if(mqttConnectManager.returnMqttStatus()){
+                mqttConnectManager.unSubscribe(IMEI,CarInfoEditActivity.this);
+                if(!NextCarIMEI.equals("空")){
+                    setManager.setIMEI(NextCarIMEI);
+                    mqttConnectManager.subscribe(NextCarIMEI, CarInfoEditActivity.this);
+                    mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), NextCarIMEI);
+                }
+                else{
+                    Log.d("test","test");
+                }
+
+            }
+            else{
+                ToastUtils.showShort(CarInfoEditActivity.this, "mqtt连接断开");
+            }
+        }
+
+
+        Intent intent = new Intent(CarInfoEditActivity.this,CarManageActivity.class);
+//        intent = new Intent("com.xunce.electrombile.alarmservice");
+//        CarInfoEditActivity.this.stopService(intent);
 
         intent.putExtra("string_key","设备解绑");
         intent.putExtra("boolean_key",Flag_Maincar);
 
         setResult(RESULT_OK, intent);
-        CarInfoEditActivity.this.finish();
+        startActivity(intent);
+        finish();
     }
 
 
     //设备切换
     private void DeviceChange(){
+        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mCenter = CmdCenter.getInstance(this);
+        if(mqttConnectManager.returnMqttStatus()){
+            //mqtt连接良好
+            mqttConnectManager.unSubscribe(setManager.getIMEI(),CarInfoEditActivity.this);
+            setManager.setIMEI(IMEI);
+            mqttConnectManager.subscribe(IMEI, CarInfoEditActivity.this);
+            mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), IMEI);
+            ToastUtils.showShort(CarInfoEditActivity.this,"切换成功");
+        }
+        else{
+            ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");
+        }
+
         Intent intent = new Intent();
         intent.putExtra("string_key","设备切换");
         intent.putExtra("boolean_key", Flag_Maincar);
@@ -193,11 +246,14 @@ public class CarInfoEditActivity extends Activity {
 
 
     private void releaseBinding() {
+
         if (!NetworkUtils.isNetworkConnected(this)) {
             ToastUtils.showShort(this, "网络连接失败");
             progressDialog.dismiss();
             return;
         }
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mCenter = CmdCenter.getInstance(this);
         QueryBindList();
     }
 
@@ -229,18 +285,11 @@ public class CarInfoEditActivity extends Activity {
                             public void onClick(DialogInterface dialog, int which) {
                                 LastCar = true;
                                 dialog.dismiss();
-                                //解绑该设备号
 
-                                if(unSubscribe()){
-                                    android.os.Message msg = Message.obtain();
-                                    //已经成功解绑
-                                    msg.what = handler_key.DELETE_RECORD.ordinal();
-                                    mHandler.sendMessage(msg);
-                                }
-                                else{
-                                    ToastUtils.showShort(CarInfoEditActivity.this,"解绑失败");
-                                    return;
-                                }
+                                android.os.Message msg = Message.obtain();
+                                msg.what = handler_key.DELETE_RECORD.ordinal();
+                                mHandler.sendMessage(msg);
+
                             }
                         });
                         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -258,25 +307,21 @@ public class CarInfoEditActivity extends Activity {
 
                     else{
                         //解绑之前还剩下至少两辆车
-                        //先判断被解绑的设备是否是主设备; 解绑该设备号
+                        //两种情况:1.解绑主设备  2.解绑从设备
                         if(setManager.getIMEI().equals(IMEI)){
-                            //现在正在查看的且被解绑的是主车辆
+                            //1.解绑主设备
                             Flag_Maincar = true;
+
                         }
                         else{
+                            //2.解绑从设备
                             Flag_Maincar = false;
                         }
 
-                        if(unSubscribe()){
-                            android.os.Message msg = Message.obtain();
-                            //已经成功解绑
-                            msg.what = handler_key.DELETE_RECORD.ordinal();
-                            mHandler.sendMessage(msg);
-                        }
-                        else{
-                            ToastUtils.showShort(CarInfoEditActivity.this,"解绑失败");
-                            return;
-                        }
+                        android.os.Message msg = Message.obtain();
+                        //已经成功解绑
+                        msg.what = handler_key.DELETE_RECORD.ordinal();
+                        mHandler.sendMessage(msg);
                     }
                 }
                 else {

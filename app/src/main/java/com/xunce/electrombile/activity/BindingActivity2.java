@@ -18,7 +18,9 @@ import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.covics.zxingscanner.OnDecodeCompletionListener;
 import com.covics.zxingscanner.ScannerView;
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -35,6 +37,15 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private ProgressDialog progressDialog;
     private SettingManager settingManager;
     private String FromActivity;
+    private MqttConnectManager mqttConnectManager;
+    public CmdCenter mCenter;
+    public String previous_IMEI;
+    public Handler timeHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            ToastUtils.showShort(BindingActivity2.this, "绑定设备超时");
+        }
+    };
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg){
@@ -48,31 +59,83 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     break;
 
                 case SUCCESS:
+                    //在cleanDevice中将setAlarmFlag设为false了,此时需要从服务器查询
+                    previous_IMEI = settingManager.getIMEI();
                     settingManager.cleanDevice();
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(BindingActivity2.this, "设备登陆成功");
                     progressDialog.cancel();
+                    getAlarmStatus();
+//                    gotoAct();
 
-                    if(FromActivity.equals("CarManageActivity")){
-                        Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
-                        startActivity(intent);
-                    }
-                    else{
-                        Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
-                        startActivity(intent);
-                    }
-                    finish();
+
                     break;
                 case FAILED:
 //                    times = 0;
                     progressDialog.cancel();
                     ToastUtils.showShort(BindingActivity2.this, msg.obj.toString());
                     break;
+
+                case BIND_DEVICE_NUMBER:
+                    int BindedDeviceNum = (int)msg.obj;
+                    getAlarmStatus_next(BindedDeviceNum);
+                    break;
             }
 
         }
 
     };
+
+
+    private void getAlarmStatus_next(int BindedDeviceNum){
+        if(1 == BindedDeviceNum){
+            //刚刚绑定的就是第一个设备:订阅;查询
+            mqttConnectManager.subscribe(settingManager.getIMEI(),BindingActivity2.this);
+            mqttConnectManager.sendMessage(getApplicationContext(),mCenter.cmdFenceGet(),settingManager.getIMEI());
+
+        }
+        else if(BindedDeviceNum > 1){
+            //
+            if(mqttConnectManager.unSubscribe(previous_IMEI,BindingActivity2.this)){
+                //解订阅成功
+                mqttConnectManager.subscribe(settingManager.getIMEI(),BindingActivity2.this);
+                mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+            }
+        }
+        gotoAct();
+    }
+
+    private void getAlarmStatus(){
+        mCenter = CmdCenter.getInstance(this);
+        mqttConnectManager = MqttConnectManager.getInstance();
+        if(mqttConnectManager.getMac() == null){
+            //说明是fragmentActivity还没有进去  可以在fragmentActivity中再去查询开关状态
+            gotoAct();
+        }
+        else{
+            //说明是fragmentActivity已经在栈中
+            if(mqttConnectManager.returnMqttStatus()){
+                //需要判断这个是不是绑定的第一个设备
+                QueryBindList();
+            }
+            else{
+                ToastUtils.showShort(BindingActivity2.this,"在Binding中mqtt连接断开了");
+            }
+        }
+    }
+
+
+    public void gotoAct(){
+        if(FromActivity.equals("CarManageActivity")){
+            Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
+            startActivity(intent);
+        }
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +191,9 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         }
     }
 
+    //查询正在绑定的设备是不是第一个设备
+
+
 
     @Override
     protected void onResume() {
@@ -145,6 +211,8 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         START_BIND,
         SUCCESS,
         FAILED,
+        BIND_MAINCAR_SUCCESS,
+        BIND_DEVICE_NUMBER,
     }
 
     private void timeOut(){
@@ -161,8 +229,33 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         }.start();
     }
 
+    public void QueryBindList(){
+        AVUser currentUser = AVUser.getCurrentUser();
+        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+        query.whereEqualTo("user", currentUser);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    Message msg = Message.obtain();
+                    msg.what = handler_key.BIND_DEVICE_NUMBER.ordinal();
+                    msg.obj = list.size();
+                    mHandler.sendMessage(msg);
+
+
+                } else {
+                    e.printStackTrace();
+                    ToastUtils.showShort(BindingActivity2.this,"查询绑定设备数目出错");
+
+                }
+            }
+        });
+    }
+
+
 
     private void startBind(final String IMEI){
+        timeHandler.sendEmptyMessageDelayed(1, 10000);
         final AVObject bindDevice = new AVObject("Bindings");
         final AVUser currentUser = AVUser.getCurrentUser();
         bindDevice.put("user", currentUser);
@@ -182,6 +275,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                             Log.d("成功", "IMEI查询到" + list.size() + " 条符合条件的数据");
                             //一个设备可以绑定多个用户,但是这个类是唯一的，确保不重复生成相同的对象。
                             if (list.size() > 0) {
+                                //因为约束条件既有user又有IMEI  所以查询结果要么是找不到,要么是找到一个
                                 android.os.Message message = new android.os.Message();
                                 message.what = handler_key.FAILED.ordinal();
                                 message.obj = "设备已经被绑定！";
@@ -196,6 +290,14 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                             } else {
                                 bindDevice.put("isAdmin", true);
                                 ToastUtils.showShort(BindingActivity2.this, "您正在绑定主车辆...");
+
+                                //增加查询小安宝开关状态的逻辑代码
+
+//                                android.os.Message message = new android.os.Message();
+//                                message.what = handler_key.BIND_MAINCAR_SUCCESS.ordinal();
+//
+//                                mHandler.sendMessage(message);
+                                timeHandler.removeMessages(1);
                             }
                             bindDevice.put("IMEI", IMEI);
                             bindDevice.saveInBackground(new SaveCallback() {

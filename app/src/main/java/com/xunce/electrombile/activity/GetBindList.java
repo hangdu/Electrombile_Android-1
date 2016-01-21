@@ -48,4 +48,8 @@ public class GetBindList {
     public void setonGetBindListListener(OnGetBindListListener var1) {
         this.onGetBindListListener = var1;
     }
+
+
+
+
 }
