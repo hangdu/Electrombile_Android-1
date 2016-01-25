@@ -60,6 +60,7 @@ import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,6 +122,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button find_car;
 
     GeoCoder mSearch = null;
+
+//    static public Date endT;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -792,8 +795,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_CarName.setText("车辆名称:"+setManager.getIMEI());
         tv_CarPosition.setText("车辆位置:");
     }
-
-
 
     //当切换了车辆之后需要把那个infowindow隐藏掉
     public void HideInfowindow()

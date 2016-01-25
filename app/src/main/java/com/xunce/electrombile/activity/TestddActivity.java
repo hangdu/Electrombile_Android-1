@@ -107,6 +107,7 @@ public class TestddActivity extends Activity{
     int totalTrackNumber = 0;
     int ReverseNumber = 0;
     Boolean DatabaseExistFlag;
+    Boolean SecondTableExistFlag;
     Date todayDate;
     Boolean FlagRecentDate;//30天之内
 
@@ -165,15 +166,6 @@ public class TestddActivity extends Activity{
         }
     }
 
-//    private Boolean IfDatabaseExist() {
-//        File dbtest = new File("/data/data/com.xunce.electrombile/databases/IMEI_8650670216630370.db");
-//        if (dbtest.exists()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
     private void IfDatabaseExist() {
         String path = "/data/data/com.xunce.electrombile/databases/IMEI_"+sm.getIMEI()+".db";
         File dbtest = new File(path);
@@ -185,6 +177,8 @@ public class TestddActivity extends Activity{
             DatabaseExistFlag = false;
         }
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,8 +199,8 @@ public class TestddActivity extends Activity{
 
         if (TracksBean.getInstance().getTracksData().size() != 0) {
             tracksManager.clearTracks();
-            tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
-            updateListView();
+//            tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
+//            updateListView();
         }
 
 
@@ -250,6 +244,7 @@ public class TestddActivity extends Activity{
                 Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
 
                 MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+                closeDatabaseCollect();
                 finish();
                 return true;
             }
@@ -264,9 +259,6 @@ public class TestddActivity extends Activity{
                 mhandler.sendMessage(msg);
             }
         }, 1);
-
-
-
     }
 
     @Override
@@ -276,10 +268,10 @@ public class TestddActivity extends Activity{
 
     private void findCloud(final Date st, final Date et, int skip) {
         //创建数据库
-
         if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
-            dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-
+            if(dbManage == null){
+                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+            }
             //什么时候需要创建这张表  当为近期的数据的时候
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
             String date = sdf.format(endT);
@@ -426,7 +418,6 @@ public class TestddActivity extends Activity{
 
     void GetHistoryTrack(int groupPosition)
     {
-
         GroupPosition = groupPosition;
         //由groupPosition得到对应的日期
         GregorianCalendar gcStart = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
@@ -464,17 +455,15 @@ public class TestddActivity extends Activity{
         else{
             IfDatabaseExist();
             if(true == DatabaseExistFlag){
-                //看里面有没有想要的数据
+                String TableName = "IMEI_"+sm.getIMEI()+".db";
+
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
 
+                IfDatabaseExist();
+                IfSecondTableExist();
 
-                //test
-//                dbManage.RefreshDateTrack();
+                //看里面有没有想要的数据
 
-                //delete是为了测试
-//                dbManage.delete();
-//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-//                String date = formatter.format(endT);
                 //由毫秒转换成秒
                 long timeStamp = endT.getTime()/1000;
 
@@ -490,7 +479,6 @@ public class TestddActivity extends Activity{
                     if(dbManage.dateTrackList.get(0).trackNumber == -1){
                         //为空数据
                         messageList = new ArrayList<Message>();
-                        //不知道这个地方有没有问题
                         Message message = new Message("无数据",
                                 null,null);
                         messageList.add(message);
@@ -500,12 +488,16 @@ public class TestddActivity extends Activity{
 
                     }
                     else{
+                        //有一条轨迹
                         messageList = new ArrayList<Message>();
                         Message message = new Message(dbManage.dateTrackList.get(0).time,
                                 dbManage.dateTrackList.get(0).StartPoint,dbManage.dateTrackList.get(0).EndPoint);
                         messageList.add(message);
                         ItemList.get(GroupPosition).setMessagelist(messageList);
                         adapter.notifyDataSetChanged();
+
+                        getSecondTableData();
+
                         return;
                     }
                 }
@@ -518,6 +510,9 @@ public class TestddActivity extends Activity{
                     }
                     ItemList.get(GroupPosition).setMessagelist(messageList);
                     adapter.notifyDataSetChanged();
+
+                    getSecondTableData();
+
                     return;
                 }
             }
@@ -526,6 +521,18 @@ public class TestddActivity extends Activity{
                 return;
             }
         }
+    }
+
+    private void getSecondTableData(){
+        //提取二级数据库的数据
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        String date = sdf.format(endT);
+        dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+        dbManageSecond.querySecondTable(dbManage.dateTrackList.size());
+
+        //把数据库的数据填充到tracksManager的tracks中
+        tracksManager.setTracksData(dbManageSecond.trackList);
+        tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
     }
 
     //由经纬度转换成了具体的地址之后就调用这个函数
@@ -553,8 +560,6 @@ public class TestddActivity extends Activity{
         return;
     }
 
-
-
    //更新ItemList
     private void ConstructListview(int Count)
     {
@@ -576,8 +581,53 @@ public class TestddActivity extends Activity{
         }
     }
 
+    //关闭数据库连接
+    private void closeDatabaseCollect(){
+        if(dbManage!=null){
+            dbManage.closeDB();
+        }
+        if(dbManageSecond!=null){
+            dbManageSecond.closeDB();
+        }
+    }
+
+    private void IfSecondTableExist(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        String date = sdf.format(endT);
+
+        String path = "/data/data/com.xunce.electrombile/databases/"+date+"_IMEI_"+sm.getIMEI()+".db";
+        File dbtest = new File(path);
+        if (dbtest.exists()) {
+            Log.d("test", "test");
+            SecondTableExistFlag = true;
+        } else {
+            Log.d("test", "test");
+            SecondTableExistFlag = false;
+        }
+
+    }
+
+    //test
+//                先删除二级数据库  在删除一级数据库
+//                List<String> dateList = dbManage.getAllDateInDateTrackTable();
+//                for(int i = 0;i<dateList.size();i++){
+//                    String SecondTableName = dateList.get(i)+"_IMEI_"+sm.getIMEI()+".db";
+//                    Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
+//                    Log.d("test","test");
+//                }
+//                Boolean delete = getApplication().deleteDatabase(TableName);
+
+    //test
+
+
+    //    private Boolean IfDatabaseExist() {
+//        File dbtest = new File("/data/data/com.xunce.electrombile/databases/IMEI_8650670216630370.db");
+//        if (dbtest.exists()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
 
     //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
-
-
 }

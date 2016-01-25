@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import com.xunce.electrombile.manager.TracksManager;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,9 +27,14 @@ public class DBManage {
     ContentValues cv;
     public List<DateTrack> dateTrackList;
     public List<DateTrackSecond> dateTrackSecondList;
+    public ArrayList<ArrayList<TracksManager.TrackPoint>>  trackList;
+    String IMEI;
+
+    private String date;
 
     public DBManage(Context context,String IMEI){
         mcontext = context;
+        this.IMEI = IMEI;
         String TableName = "IMEI_"+IMEI+".db";
         dbHelper = new MyDatabaseHelper(mcontext,TableName,null,5);
         sqldb = dbHelper.getWritableDatabase();
@@ -36,6 +43,7 @@ public class DBManage {
 
     //第二种表的构造函数
     public DBManage(Context context,String IMEI,String date){
+        this.date = date;
         mcontext = context;
         String TableName = date+"_IMEI_"+IMEI+".db";
         dbHelper = new MyDatabaseHelper(mcontext,TableName,null,5);
@@ -127,7 +135,7 @@ public class DBManage {
 
     public void insertSecondTable(int trackNumber,long timestamp,double longitude,double latitude){
         cv.put("trackNumber",trackNumber);
-        cv.put("timestamp",timestamp);
+        cv.put("timestamp", timestamp);
         cv.put("longitude",longitude);
         cv.put("latitude",latitude);
         long res = sqldb2.insert("datetracksecond", null, cv);
@@ -141,7 +149,7 @@ public class DBManage {
     }
 
     public void deleteSecondTable(){
-        int res = sqldb.delete("datetracksecond", null, null);
+        int res = sqldb2.delete("datetracksecond", null, null);
         if(0 == res){
             Toast.makeText(mcontext,"删除失败",Toast.LENGTH_SHORT).show();
         }
@@ -150,46 +158,79 @@ public class DBManage {
         }
     }
 
-    public int querySecondTable(String filter){
-        Cursor mCursor = sqldb.query("datetracksecond", null, filter, null, null, null, null);
+    public void querySecondTable(int TotalTrackNumber){
+        //有几条轨迹就按照几条轨迹装载好
+        trackList = new ArrayList<>();
 
-        int resultCount = mCursor.getCount();
-        if(0 == resultCount){
-            return 0;
+        ArrayList<TracksManager.TrackPoint> track;
+        TracksManager.TrackPoint trackPoint;
+
+        for(int j=0;j<TotalTrackNumber;j++){
+            track = new ArrayList<>();
+
+            String filter = "trackNumber="+j;
+            Cursor mCursor = sqldb2.query("datetracksecond", null, filter, null, null, null, null);
+            int result = mCursor.getCount();
+            if (mCursor.moveToFirst()) {
+                do {
+                    //点的集合  形成的一条轨迹
+                    long timestamp = mCursor.getLong(mCursor.getColumnIndex("timestamp"));
+                    double longitude = mCursor.getDouble(mCursor.getColumnIndex("longitude"));
+                    double latitude = mCursor.getDouble(mCursor.getColumnIndex("latitude"));
+
+                    trackPoint = new TracksManager.TrackPoint(new Date(1000*timestamp),latitude,longitude);
+                    track.add(trackPoint);
+                } while (mCursor.moveToNext());
+            }
+            trackList.add(track);
+            if (mCursor != null && !mCursor.isClosed()) {
+                mCursor.close();
+            }
+        }
+    }
+
+    public void closeDB(){
+        if(sqldb != null){
+            sqldb.close();
         }
 
-        dateTrackSecondList = new ArrayList<>();
-        if (mCursor.moveToFirst()) {
-            do {
-                DateTrackSecond dateTrackSecond = new DateTrackSecond();
-
-                dateTrackSecond.trackNumber = mCursor.getInt(mCursor.getColumnIndex("trackNumber"));
-                dateTrackSecond.timestamp = mCursor.getLong(mCursor.getColumnIndex("timestamp"));
-                dateTrackSecond.longitude = mCursor.getDouble(mCursor.getColumnIndex("longitude"));
-                dateTrackSecond.latitude = mCursor.getDouble(mCursor.getColumnIndex("latitude"));
-
-                dateTrackSecondList.add(dateTrackSecond);
-            } while (mCursor.moveToNext());
+        if(sqldb2 != null){
+            sqldb2.close();
         }
-        //这个地方不是很懂
-        if (mCursor != null && !mCursor.isClosed()) {
-            mCursor.close();
-        }
-        return resultCount;
     }
 
 
     //String日期转换成Date数据类型
-//    private Date StringtoDate(String StringDate){
-//        SimpleDateFormat fmt =new SimpleDateFormat("yyyy年MM月dd日");
-//        Date date = new Date();
-//        try{
-//            date = fmt.parse(StringDate);
-//        }catch(ParseException e){
-//            Toast.makeText(mcontext,"日期解析失败",Toast.LENGTH_SHORT);
-//        }
-//        return date;
-//    }
+    private Date StringtoDate(String StringDate){
+        SimpleDateFormat fmt =new SimpleDateFormat("yyyy年MM月dd日");
+        Date date = new Date();
+        try{
+            date = fmt.parse(StringDate);
+        }catch(ParseException e){
+            Toast.makeText(mcontext,"日期解析失败",Toast.LENGTH_SHORT);
+        }
+        return date;
+    }
 
-    //有两张表 第一张记录的是一级界面
+    //在一级数据库里把所有的时间戳都记录下来  转换成日期  装到一个list中去
+    public List<String> getAllDateInDateTrackTable(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        List<String> dateList = new ArrayList<>();
+
+//        String TableName = "IMEI_"+IMEI+".db";
+        Cursor mCursor = sqldb.query(true, "datetrack", new String[]{"timestamp"}, null, null, "timestamp", null, null, null);
+        if (mCursor.moveToFirst()) {
+            do {
+                //点的集合  形成的一条轨迹
+                long timestamp = mCursor.getLong(mCursor.getColumnIndex("timestamp"));
+                Date date = new Date(1000*timestamp);
+                String date_string = sdf.format(date);
+                dateList.add(date_string);
+            } while (mCursor.moveToNext());
+        }
+        if (mCursor != null && !mCursor.isClosed()) {
+            mCursor.close();
+        }
+        return dateList;
+    }
 }

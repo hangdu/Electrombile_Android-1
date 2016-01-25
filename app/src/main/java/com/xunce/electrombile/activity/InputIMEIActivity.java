@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.*;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
@@ -29,10 +31,14 @@ public class InputIMEIActivity extends Activity {
     private ProgressDialog progressDialog;
     private SettingManager settingManager;
     private String FromActivity;
+    private String previous_IMEI;
+    private MqttConnectManager mqttConnectManager;
+    public CmdCenter mCenter;
     private enum handler_key{
         START_BIND,
         SUCCESS,
         FAILED,
+        BIND_DEVICE_NUMBER,
     }
 
     private Handler mHandler = new Handler(){
@@ -41,20 +47,12 @@ public class InputIMEIActivity extends Activity {
             handler_key key = handler_key.values()[msg.what];
             switch(key){
                 case SUCCESS:
+                    previous_IMEI = settingManager.getIMEI();
                     settingManager.cleanDevice();
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(InputIMEIActivity.this, "设备登陆成功");
                     progressDialog.cancel();
-
-                    if(FromActivity.equals("CarManageActivity")){
-                        Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
-                        startActivity(intent);
-                    }
-                    else{
-                        Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
-                        startActivity(intent);
-                    }
-                    finish();
+                    getAlarmStatus();
                     break;
                 case FAILED:
 //                    times = 0;
@@ -62,11 +60,86 @@ public class InputIMEIActivity extends Activity {
                     ToastUtils.showShort(InputIMEIActivity.this, msg.obj.toString());
 //                    onResume();
                     break;
+
+                case BIND_DEVICE_NUMBER:
+                    int BindedDeviceNum = (int)msg.obj;
+                    getAlarmStatus_next(BindedDeviceNum);
+                    break;
             }
 
         }
 
     };
+
+
+    public void gotoAct(){
+        if(FromActivity.equals("CarManageActivity")){
+            Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
+            startActivity(intent);
+        }
+        finish();
+    }
+
+    private void getAlarmStatus(){
+        mCenter = CmdCenter.getInstance(this);
+        mqttConnectManager = MqttConnectManager.getInstance();
+        if(mqttConnectManager.getMac() == null){
+            //说明是fragmentActivity还没有进去  可以在fragmentActivity中再去查询开关状态
+            gotoAct();
+        }
+        else{
+            //说明是fragmentActivity已经在栈中
+            if(mqttConnectManager.returnMqttStatus()){
+                //需要判断这个是不是绑定的第一个设备
+                QueryBindList();
+            }
+            else{
+                ToastUtils.showShort(InputIMEIActivity.this,"在Binding中mqtt连接断开了");
+            }
+        }
+    }
+
+    public void QueryBindList(){
+        AVUser currentUser = AVUser.getCurrentUser();
+        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+        query.whereEqualTo("user", currentUser);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    android.os.Message msg = Message.obtain();
+                    msg.what = handler_key.BIND_DEVICE_NUMBER.ordinal();
+                    msg.obj = list.size();
+                    mHandler.sendMessage(msg);
+                } else {
+                    e.printStackTrace();
+                    ToastUtils.showShort(InputIMEIActivity.this,"查询绑定设备数目出错");
+                }
+            }
+        });
+    }
+
+    private void getAlarmStatus_next(int BindedDeviceNum){
+        if(1 == BindedDeviceNum){
+            //刚刚绑定的就是第一个设备:订阅;查询
+            mqttConnectManager.subscribe(settingManager.getIMEI(),InputIMEIActivity.this);
+            mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+
+        }
+        else if(BindedDeviceNum > 1){
+            //
+            if(mqttConnectManager.unSubscribe(previous_IMEI,InputIMEIActivity.this)){
+                //解订阅成功
+                mqttConnectManager.subscribe(settingManager.getIMEI(),InputIMEIActivity.this);
+                mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+            }
+        }
+        gotoAct();
+    }
 
 
     @Override

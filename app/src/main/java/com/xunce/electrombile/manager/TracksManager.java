@@ -85,6 +85,7 @@ public class TracksManager {
             //如果本次循环数据跟上一个已保存的数据坐标相同，则跳过
             double dis = Math.abs(DistanceUtil.getDistance(lastSavedPoint, bdPoint));
             Log.i("******", dis + "");
+            //如果上次的点和这次的点之间的距离小于200m就不记录了  这样合理吗????
             if(lastSavedObject != null && dis  <= MAX_DISTANCE){
                 //Log.i("","distance should less 200M:::" + dis);
                 continue;
@@ -156,7 +157,7 @@ public class TracksManager {
 
         int size =tracks.size();
 
-        HashMap<String, ArrayList<ArrayList<TrackPoint>>> map1 = map;
+//        HashMap<String, ArrayList<ArrayList<TrackPoint>>> map1 = map;
         Log.d(" tracks_size",String.valueOf(size));
     }
 

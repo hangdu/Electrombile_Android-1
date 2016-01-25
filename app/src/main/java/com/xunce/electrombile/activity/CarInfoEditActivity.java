@@ -24,6 +24,7 @@ import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
@@ -171,7 +172,7 @@ public class CarInfoEditActivity extends Activity {
 //        CarInfoEditActivity.this.stopService(intent);
 
         intent.putExtra("string_key","设备解绑");
-        intent.putExtra("boolean_key",Flag_Maincar);
+        intent.putExtra("boolean_key", Flag_Maincar);
 
         setResult(RESULT_OK, intent);
         startActivity(intent);
@@ -214,9 +215,9 @@ public class CarInfoEditActivity extends Activity {
         query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
-                if(e == null){
+                if (e == null) {
                     //list的size一定是1
-                    if(list.size() == 1){
+                    if (list.size() == 1) {
                         AVObject avObject = list.get(0);
                         avObject.deleteInBackground(new DeleteCallback() {
                             @Override
@@ -227,15 +228,12 @@ public class CarInfoEditActivity extends Activity {
                                     msg.what = handler_key.DELETE_SUCCESS.ordinal();
                                     mHandler.sendMessage(msg);
 
-                                }
-                                else{
-                                    ToastUtils.showShort(CarInfoEditActivity.this,e.toString());
+                                } else {
+                                    ToastUtils.showShort(CarInfoEditActivity.this, e.toString());
                                 }
                             }
                         });
-                    }
-
-                   else{
+                    } else {
                         ToastUtils.showShort(CarInfoEditActivity.this, "list的size一定是1  哪里出错了?");
                     }
                 }
@@ -245,6 +243,7 @@ public class CarInfoEditActivity extends Activity {
     }
 
 
+    //设备解绑
     private void releaseBinding() {
 
         if (!NetworkUtils.isNetworkConnected(this)) {
@@ -254,8 +253,28 @@ public class CarInfoEditActivity extends Activity {
         }
         mqttConnectManager = MqttConnectManager.getInstance();
         mCenter = CmdCenter.getInstance(this);
+        //删除本地的数据库文件  待测试
+        deleteDatabaseFile();
         QueryBindList();
     }
+
+    //解绑一台设备的时候需要把本地相关的一级和二级数据库文件也删除掉
+    private void deleteDatabaseFile(){
+        //先删除二级数据库  在删除一级数据库
+        //先看一下本地有没有相应的数据库文件
+        DBManage dbManage = new DBManage(CarInfoEditActivity.this,IMEI);
+        List<String> dateList = dbManage.getAllDateInDateTrackTable();
+        dbManage.closeDB();
+
+        String TableName = "IMEI_"+IMEI+".db";
+        for(int i = 0;i<dateList.size();i++){
+            String SecondTableName = dateList.get(i)+"_IMEI_"+IMEI+".db";
+            Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
+            Log.d("test","test");
+        }
+        Boolean delete = getApplication().deleteDatabase(TableName);
+    }
+
 
     enum handler_key{
         DELETE_RECORD,
