@@ -10,6 +10,7 @@ import com.baidu.mapapi.utils.DistanceUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
@@ -103,13 +104,20 @@ public class TracksManager {
 
             //打印当前点信息
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
+//            sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
 //            Log.i("ddd", "objid:" + thisObject.getObjectId() +
 //                    "lat:" + thisObject.getDouble(KET_LAT) +
 //                    "lon" + thisObject.getDouble(KET_LONG) +
 //                    "time" + sdf.format(thisObject.getCreatedAt().getTime()));
+//            Date s = thisObject.getCreatedAt();
+//            GregorianCalendar gc = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
+//            gc.set(s.getYear(),s.getMonth(),s.getDay(),s.getHours(),s.getMinutes(),s.getSeconds());
+//            TrackPoint p = new TrackPoint(gc.getTime(), bdPoint);
+
 
             TrackPoint p = new TrackPoint(thisObject.getCreatedAt(), bdPoint);
+            //不确定这样处理会不会有什么错误   现在关于日期处理的这个部分还没有搞得很清楚
+            p.time.setHours(p.time.getHours()+16);
             if(isOutOfHubei(bdPoint)){
                 Log.i(TAG, "out range");
                 continue;

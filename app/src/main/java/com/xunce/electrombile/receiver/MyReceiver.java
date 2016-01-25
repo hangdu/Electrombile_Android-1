@@ -119,7 +119,7 @@ public class MyReceiver extends BroadcastReceiver {
 
     private void onCmdArrived(Protocol protocol) {
         int cmd = protocol.getCmd();
-        int result = protocol.getResult();
+        int code = protocol.getCode();
         timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
         switch (cmd) {
             //如果是设置围栏的命令
@@ -130,7 +130,7 @@ public class MyReceiver extends BroadcastReceiver {
                 alarmHandler.sendMessage(msg);
 
 //                ((FragmentActivity) mContext).cancelWaitTimeOut();
-                caseFence(result, true, "防盗开启成功");
+                caseFence(code, true, "防盗开启成功");
                 break;
             //如果是设置关闭围栏的命令
             case ProtocolConstants.CMD_FENCE_OFF:
@@ -139,34 +139,34 @@ public class MyReceiver extends BroadcastReceiver {
                 msg1.what = 2;
                 alarmHandler.sendMessage(msg1);
 //                ((FragmentActivity) mContext).cancelWaitTimeOut();
-                caseFence(result, false, "防盗关闭成功");
+                caseFence(code, false, "防盗关闭成功");
                 break;
             //如果是获取围栏的命令
             case ProtocolConstants.CMD_FENCE_GET:
-                caseFenceGet(protocol, result);
+                caseFenceGet(protocol, code);
                 break;
             //如果是开始找车的命令
             case ProtocolConstants.CMD_SEEK_ON:
-                caseSeek(result, "开始找车");
+                caseSeek(code, "开始找车");
                 break;
             //如果是停止找车的命令
             case ProtocolConstants.CMD_SEEK_OFF:
-                caseSeek(result, "停止找车");
+                caseSeek(code, "停止找车");
                 break;
             case ProtocolConstants.CMD_LOCATION:
-                caseGetGPS(result);
+                caseGetGPS(code);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
                 //开启自动落锁
-                caseGetAutoLock(result);
+                caseGetAutoLock(code);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
-                caseCloseAutoLock(result);
+                caseCloseAutoLock(code);
                 break;
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_GET:
                 break;
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_SET:
-                caseGetAutoLockTime(result);
+                caseGetAutoLockTime(code);
                 break;
             default:
                 break;
@@ -246,8 +246,8 @@ public class MyReceiver extends BroadcastReceiver {
         }
     }
 
-    private void caseFence(int result, boolean successAlarmFlag, String success) {
-        if (ProtocolConstants.ERR_SUCCESS == result) {
+    private void caseFence(int code, boolean successAlarmFlag, String success) {
+        if (ProtocolConstants.ERR_SUCCESS == code) {
             ((FragmentActivity) mContext).setManager.setAlarmFlag(successAlarmFlag);
 
             Message msg = Message.obtain();
@@ -256,7 +256,7 @@ public class MyReceiver extends BroadcastReceiver {
 
             ToastUtils.showShort(mContext, success);
         } else {
-            dealErr(result);
+            dealErr(code);
         }
     }
 

@@ -55,6 +55,11 @@ public class Protocol implements Serializable {
         throw new NullPointerException();
     }
 
+    public int getCode() {
+        throw new NullPointerException();
+    }
+
+
     public float getLng() {
         throw new NullPointerException();
     }

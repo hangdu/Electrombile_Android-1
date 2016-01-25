@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -94,9 +95,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     Connection connection;
 
-    MqttConnectManager.OnMqttConnectListener onMqttConnectListener;
-
     MqttConnectManager mqttConnectManager;
+
+
 
 
 
@@ -120,6 +121,13 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             ToastUtils.showShort(FragmentActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
+
+    //获取当前的IMEI号  然后获取到数据表
+//    public void getDatabase(){
+//        String IMEI = setManager.getIMEI();
+//        String TableName = "IMEI_"+IMEI;
+//
+//    }
 
     public RadioGroup getMain_radio() {
         return main_radio;
@@ -280,69 +288,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 ToastUtils.showShort(FragmentActivity.this,"连接服务器失败");
             }
         });
-
-
-
-
-//        connection = Connection.createConnection(ServiceConstants.clientId,
-//                ServiceConstants.MQTT_HOST,
-//                ServiceConstants.PORT,
-//                FragmentActivity.this,
-//                false);
-//        ServiceConstants.handler = connection.handle();
-//        mcp = new MqttConnectOptions();
-//        mcp.setCleanSession(false);
-//        connection.addConnectionOptions(mcp);
-//        mac = connection.getClient();
-//
-//        mac.setCallback(new MqttCallback() {
-//            @Override
-//            public void connectionLost(Throwable throwable) {
-//                setManager.setMqttStatus(false);
-//                ReMqttConnect();
-//            }
-//
-//            @Override
-//            public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
-////                com.orhanobut.logger.Logger.i("收到MQTT服务器的消息：" + s);
-//            }
-//
-//            @Override
-//            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-//                //publish后会执行到这里
-//            }
-//        });
-//        try {
-//            mac.connect(mcp, this, new IMqttActionListener() {
-//                @Override
-//                public void onSuccess(IMqttToken asyncActionToken) {
-//                    subscribe(mac);
-//                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-//                    setManager.setMqttStatus(true);
-//
-//                    GetAlarmStatusFromServer();
-////                    registerBroadCast();
-//
-//                    //ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-////                    com.orhanobut.logger.Logger.d("服务器连接成功,host地址是：%s", connection.getHostName());
-////                    registerBroadCast();
-//
-////                    startAlarmService();
-//                    //开启自动落锁
-////                    OpenAutoLock();
-//                }
-//
-//                @Override
-//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    ToastUtils.showShort(FragmentActivity.this, "服务器连接失败");
-////                    com.orhanobut.logger.Logger.w("服务器连接失败");
-//                    Log.d(TAG, exception.toString());
-//                }
-//            });
-//            Connections.getInstance(FragmentActivity.this).addConnection(connection);
-//        } catch (MqttException e1) {
-//            e1.printStackTrace();
-//        }
     }
 
     private void ReMqttConnect(){

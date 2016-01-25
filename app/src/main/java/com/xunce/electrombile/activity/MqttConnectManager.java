@@ -73,7 +73,7 @@ public class MqttConnectManager {
         mac.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
-                settingManager.setMqttStatus(false);
+//                settingManager.setMqttStatus(false);
                 ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
                 //设置重连
 //                com.orhanobut.logger.Logger.w("这是回调方法中尝试重连");

@@ -818,8 +818,5 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
 
     }
-
-
-
 }
 

@@ -31,6 +31,7 @@ public class ProtocolConstants {
     public final static String CMD = "cmd";
     public final static String RESULT = "result";
     public final static String STATE = "state";
+    public final static String CODE = "code";
     public final static String LAT = "lat";
     public final static String LNG = "lng";
     public final static String TIMESTAMP = "timestamp";

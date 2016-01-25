@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
+import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -34,12 +36,16 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.TracksBean;
+import com.xunce.electrombile.database.DBManage;
+import com.xunce.electrombile.database.DateTrack;
+import com.xunce.electrombile.database.DateTrackSecond;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,17 +58,9 @@ import java.util.TimeZone;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.xunce.electrombile.view.RefreshableView;
 
-public class TestddActivity extends Activity {
+public class TestddActivity extends Activity{
 
     private final String TAG = "RecordActivity";
-    Button btnCuston;
-    Button btnBegin;
-    Button btnEnd;
-    Button btnOK;
-    Button btnOneDay;
-    Button btnTwoDay;
-    DatePicker dpBegin;
-    DatePicker dpEnd;
 //    ListView m_listview;
     TracksManager tracksManager;
     List<Item> ItemList = new ArrayList<>();
@@ -106,20 +104,92 @@ public class TestddActivity extends Activity {
     RefreshableView refreshableView;
     private int Refresh_count = 1;
 
+    int totalTrackNumber = 0;
+    int ReverseNumber = 0;
+    Boolean DatabaseExistFlag;
+    Date todayDate;
+    Boolean FlagRecentDate;//30天之内
+
+    public DBManage dbManage;
+    public DBManage dbManageSecond;
+
+
     private Handler mhandler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg){
-            Refresh_count++;
-            ConstructListview(Refresh_count);
-            refreshableView.finishRefreshing();
-            adapter.notifyDataSetChanged();
+            switch(msg.what){
+                case 0:
+                    Refresh_count++;
+                    ConstructListview(Refresh_count);
+                    refreshableView.finishRefreshing();
+                    adapter.notifyDataSetChanged();
+                    break;
+
+                case 1:
+                    insertDatabase();
+                    break;
+            }
+        }
+    };
+
+    //存到数据库
+    private void insertDatabase(){
+        //前面已经加过判断数据是近期数据的逻辑了
+        //获取到当天的日期
+//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+        long timeStamp = endT.getTime()/1000;
+
+        for(int i = 0;i<messageList.size();i++){
+            dbManage.insert(timeStamp,i,messageList.get(i).getStartLocation(),
+                    messageList.get(i).getEndLocation(),messageList.get(i).getTime());
         }
 
-    };
+        insertDateTrackSecond();
+        return;
+    }
+
+    private void insertDateTrackSecond(){
+        ArrayList<ArrayList<TrackPoint>> tracks = tracksManager.getTracks();
+        for(int i = 0;i<tracks.size();i++){
+            for(int j = 0;j<tracks.get(i).size();j++){
+                //下面这5句是为test用
+                DateTrackSecond dateTrackSecond = new DateTrackSecond();
+                dateTrackSecond.trackNumber = i;
+                dateTrackSecond.timestamp = tracks.get(i).get(j).time.getTime()/1000;
+                dateTrackSecond.latitude = tracks.get(i).get(j).point.latitude;
+                dateTrackSecond.longitude = tracks.get(i).get(j).point.longitude;
+
+                dbManageSecond.insertSecondTable(i, tracks.get(i).get(j).time.getTime() / 1000,
+                        tracks.get(i).get(j).point.longitude,tracks.get(i).get(j).point.latitude);
+            }
+        }
+    }
+
+//    private Boolean IfDatabaseExist() {
+//        File dbtest = new File("/data/data/com.xunce.electrombile/databases/IMEI_8650670216630370.db");
+//        if (dbtest.exists()) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+    private void IfDatabaseExist() {
+        String path = "/data/data/com.xunce.electrombile/databases/IMEI_"+sm.getIMEI()+".db";
+        File dbtest = new File(path);
+        if (dbtest.exists()) {
+            Log.d("test", "test");
+            DatabaseExistFlag = true;
+        } else {
+            Log.d("test", "test");
+            DatabaseExistFlag = false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SDKInitializer.initialize(TestddActivity.this);
         setContentView(R.layout.activity_testdd);
         init();
 
@@ -138,6 +208,8 @@ public class TestddActivity extends Activity {
             tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
             updateListView();
         }
+
+
     }
 
     @Override
@@ -188,9 +260,12 @@ public class TestddActivity extends Activity {
             @Override
             public void onRefresh() {
                 android.os.Message msg = android.os.Message.obtain();
+                msg.what = 0;
                 mhandler.sendMessage(msg);
             }
         }, 1);
+
+
 
     }
 
@@ -200,6 +275,17 @@ public class TestddActivity extends Activity {
     }
 
     private void findCloud(final Date st, final Date et, int skip) {
+        //创建数据库
+
+        if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+            dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+
+            //什么时候需要创建这张表  当为近期的数据的时候
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            String date = sdf.format(endT);
+            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+        }
+
         totalSkip += skip;
         final int finalSkip = totalSkip;
         AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
@@ -218,30 +304,26 @@ public class TestddActivity extends Activity {
                 //  Log.i(TAG, e + "");
                 if (e == null) {
                     if (avObjects.size() == 0) {
-                        dialog.setTitle("此时间段内没有数据");
-                        dialog.show();
                         watiDialog.dismiss();
+                        //如果查的不是今天的数据 ,且确实是30天之内的数据   才会把无数据插入数据库
+                        if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+                            String date = formatter.format(endT);
+                            long timeStamp = endT.getTime()/1000;
+                            //存到数据库
+                            dbManage.insert(timeStamp, -1, null, null, null);
+                        }
 
-                        List<Message> test = new ArrayList<Message>();
-                        ItemList.get(GroupPosition).setMessagelist(test);
+                        messageList = new ArrayList<Message>();
+                        //不知道这个地方有没有问题
+                        Message message = new Message("无数据",
+                                null,null);
+                        messageList.add(message);
+                        ItemList.get(GroupPosition).setMessagelist(messageList);
                         adapter.notifyDataSetChanged();
                         return;
                     }
 
-                    if (avObjects.size() > 0)
-                        //     Log.e(TAG,"oooooooooooooook--------" + avObjects.size());
-                        if (avObjects.size() == 0) {
-                            clearListViewWhenFail();
-                            dialog.setTitle("此时间段内没有数据");
-                            dialog.show();
-                            watiDialog.dismiss();
-
-                            List<Message> test = new ArrayList<Message>();
-                            ItemList.get(GroupPosition).setMessagelist(test);
-                            adapter.notifyDataSetChanged();
-
-                            return;
-                        }
                     for (AVObject thisObject : avObjects) {
                         totalAVObjects.add(thisObject);
                     }
@@ -251,26 +333,17 @@ public class TestddActivity extends Activity {
                     }
                     if ((totalAVObjects.size() > 1000) && (avObjects.size() < 1000) ||
                             (totalSkip == 0) && (avObjects.size() < 1000)) {
-//                        tracksManager.clearTracks();
-
-//                        //清楚本地数据
-//                        TracksBean.getInstance().getTracksData().clear();
-
-//                        tracks = new ArrayList<>();
-                        //将leancloud里得到的数据写到track里去
-                        tracksManager.setTranks(GroupPosition,totalAVObjects);
+                        tracksManager.setTranks(GroupPosition, totalAVObjects);
 
 //                        //更新本地数据
                         TracksBean.getInstance().setTracksData(tracksManager.getTracks());
 
                         updateListView();
                         watiDialog.dismiss();
-//                        listItemAdapter.notifyDataSetChanged();
                     }
 
                 } else {
                     clearListViewWhenFail();
-
                     dialog.setTitle("查询失败");
                     dialog.show();
                     watiDialog.dismiss();
@@ -289,6 +362,7 @@ public class TestddActivity extends Activity {
         if(tracksManager.getTracks().size() == 0){
             dialog.setTitle("此时间段内没有数据");
             dialog.show();
+
             return;
         }
 
@@ -303,20 +377,19 @@ public class TestddActivity extends Activity {
                 //tracksManager.getTracks().remove(i);
                 continue;
             }
+            totalTrackNumber++;
             ArrayList<TrackPoint> trackList = tracksManager.getTracks().get(i);
 
             //获取当前路线段的开始和结束点
             TrackPoint startP = trackList.get(0);
             startdate = startP.time;
             geoCoder1 = new GeoCodering(this,startP.point,i,0);
-
             TrackPoint endP = trackList.get(trackList.size() - 1);
             geoCoder2 = new GeoCodering(this,endP.point,i,1);
 
-
             message = new Message(String.valueOf(startdate.getHours())+":"+String.valueOf(startdate.getMinutes()),
-                    geoCoder1.ReverseGeoCodeResult,
-                    geoCoder2.ReverseGeoCodeResult);
+                    null,
+                    null);
             messageList.add(message);
 
                 //计算开始点和结束点时间间隔
@@ -325,7 +398,6 @@ public class TestddActivity extends Activity {
             long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
             double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
             int secodes = (int)((minutes - Math.floor(minutes)) * 60);
-
 
             //计算路程
             double distance = 0;
@@ -354,11 +426,13 @@ public class TestddActivity extends Activity {
 
     void GetHistoryTrack(int groupPosition)
     {
+
         GroupPosition = groupPosition;
         //由groupPosition得到对应的日期
         GregorianCalendar gcStart = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
         gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         startT= gcStart.getTime();
+        todayDate = startT;
 
         GregorianCalendar gcEnd = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
         gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
@@ -371,58 +445,94 @@ public class TestddActivity extends Activity {
         startT= gcStart.getTime();
         gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
         endT = gcEnd.getTime();
-//       switch (groupPosition) {
-//
-//           case 0:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 1:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 2:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-1, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 3:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-2, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 4:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-3, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 5:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-4, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//           case 6:
-//               gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-6, 0, 0, 0);
-//               startT= gcStart.getTime();
-//               gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-5, 0, 0, 0);
-//               endT = gcEnd.getTime();
-//               break;
-//
-//       }
-        findCloud(startT, endT, 0);
+
+        //如果查询的数据是30天之外的  就不要直接和leancloud交互了,不要存取数据库
+        if(groupPosition>30){
+            FlagRecentDate = false;
+            findCloud(startT, endT, 0);
+            return;
+        }
+
+        FlagRecentDate = true;
+
+        if(startT.equals(todayDate)){
+            //直接从leancloud上获取数据
+            findCloud(startT, endT, 0);
+            return;
+
+        }
+        else{
+            IfDatabaseExist();
+            if(true == DatabaseExistFlag){
+                //看里面有没有想要的数据
+                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+
+
+                //test
+//                dbManage.RefreshDateTrack();
+
+                //delete是为了测试
+//                dbManage.delete();
+//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+//                String date = formatter.format(endT);
+                //由毫秒转换成秒
+                long timeStamp = endT.getTime()/1000;
+
+                String filter = "timestamp="+timeStamp;
+                int resultCount = dbManage.query(filter);
+                if(0 == resultCount){
+                    //之前没有查过,数据库里没有相关的数据
+                    findCloud(startT, endT, 0);
+                    return;
+                }
+                else if(1 == resultCount){
+                    //判断是只有一条数据还是空数据
+                    if(dbManage.dateTrackList.get(0).trackNumber == -1){
+                        //为空数据
+                        messageList = new ArrayList<Message>();
+                        //不知道这个地方有没有问题
+                        Message message = new Message("无数据",
+                                null,null);
+                        messageList.add(message);
+                        ItemList.get(GroupPosition).setMessagelist(messageList);
+                        adapter.notifyDataSetChanged();
+                        return;
+
+                    }
+                    else{
+                        messageList = new ArrayList<Message>();
+                        Message message = new Message(dbManage.dateTrackList.get(0).time,
+                                dbManage.dateTrackList.get(0).StartPoint,dbManage.dateTrackList.get(0).EndPoint);
+                        messageList.add(message);
+                        ItemList.get(GroupPosition).setMessagelist(messageList);
+                        adapter.notifyDataSetChanged();
+                        return;
+                    }
+                }
+                else{
+                    messageList = new ArrayList<Message>();
+                    for(int i = 0;i<dbManage.dateTrackList.size();i++){
+                        Message message = new Message(dbManage.dateTrackList.get(i).time,
+                                dbManage.dateTrackList.get(i).StartPoint,dbManage.dateTrackList.get(i).EndPoint);
+                        messageList.add(message);
+                    }
+                    ItemList.get(GroupPosition).setMessagelist(messageList);
+                    adapter.notifyDataSetChanged();
+                    return;
+                }
+            }
+            else{
+                findCloud(startT, endT, 0);
+                return;
+            }
+        }
     }
 
     //由经纬度转换成了具体的地址之后就调用这个函数
     void RefreshMessageList(int TrackPosition,int Start_End_TYPE,String result)
     {
+        ReverseNumber++;
+
         if(0 == Start_End_TYPE)
         {
             ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setStartLocation(result);
@@ -431,8 +541,19 @@ public class TestddActivity extends Activity {
             ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setEndLocation(result);
         }
         adapter.notifyDataSetChanged();
+
+        if(ReverseNumber == totalTrackNumber*2){
+            if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+                //确实是近期的数据才会插入到数据库
+                android.os.Message msg = android.os.Message.obtain();
+                msg.what = 1;
+                mhandler.sendMessage(msg);
+            }
+        }
         return;
     }
+
+
 
    //更新ItemList
     private void ConstructListview(int Count)
@@ -454,4 +575,9 @@ public class TestddActivity extends Activity {
             ItemList.add(new Item(result[i],test,true));
         }
     }
+
+
+    //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
+
+
 }

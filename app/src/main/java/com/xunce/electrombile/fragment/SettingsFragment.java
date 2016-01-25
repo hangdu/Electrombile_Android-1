@@ -24,6 +24,7 @@ import com.xunce.electrombile.activity.CarManageActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
 import com.xunce.electrombile.activity.MapOfflineActivity;
+import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.TestActivity;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
@@ -43,6 +44,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private View rootView;
     private String previous_AutoLockStatus;
     private int previous_AutolockTime;
+    MqttConnectManager mqttConnectManager;
 
 
     @Override

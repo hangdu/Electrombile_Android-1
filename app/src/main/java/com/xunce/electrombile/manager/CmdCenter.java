@@ -86,6 +86,7 @@ public class CmdCenter {
         mSettingManager = new SettingManager(c);
     }
 
+    //由GPS坐标转换成百度经纬度坐标
     public LatLng convertPoint(LatLng sourcePoint) {
         CoordinateConverter cdc = new CoordinateConverter();
         cdc.from(CoordinateConverter.CoordType.GPS);
