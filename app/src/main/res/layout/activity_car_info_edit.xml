@@ -93,13 +93,9 @@
         android:layout_marginTop="5dp"
         android:orientation="horizontal">
         <TextView
+            android:id = "@+id/tv_phoneNumber"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设备手机号:"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <Button

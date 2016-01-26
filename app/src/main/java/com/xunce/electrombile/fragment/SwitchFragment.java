@@ -73,9 +73,11 @@ import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.GetBindList;
+import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
 
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
@@ -113,7 +115,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private MyHorizontalScrollView myHorizontalScrollView;
     private TextView BindedCarIMEI;
     private ArrayList<String> OtherCar;
-    private SwitchManagedCar switchManagedCar;
+//    private SwitchManagedCar switchManagedCar;
     private Dialog waitDialog;
     String WeatherData;
     Button btnAlarmState1;
@@ -124,6 +126,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tvWeather;
 
     private static String localcity;
+    private MqttConnectManager mqttConnectManager;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -197,11 +200,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
-
-
         (m_context).receiver.setAlarmHandler(mhandler);
-
-
     }
 
     @Override
@@ -258,9 +257,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 OtherCar.add(IMEI_previous);
 
                 //实际逻辑改变
-                switchManagedCar = new SwitchManagedCar(m_context, m_context, IMEI_now, IMEI_previous);
-                reSubscribe();
-
+//                switchManagedCar = new SwitchManagedCar(m_context, m_context, IMEI_now, IMEI_previous);
+//                reSubscribe();
+                DeviceChange(IMEI_previous,IMEI_now);
                 //把mapfragment里的车辆名称更新
                 locationTVClickedListener.locationTVClicked();
 
@@ -310,6 +309,23 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         if(myHorizontalScrollView.getIsOpen() == true)
         {
             myHorizontalScrollView.toggle();
+        }
+    }
+
+    //设备切换
+    private void DeviceChange(String previous_IMEI,String current_IMEI){
+        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
+        mqttConnectManager = MqttConnectManager.getInstance();
+        if(mqttConnectManager.returnMqttStatus()){
+            //mqtt连接良好
+            mqttConnectManager.unSubscribe(previous_IMEI,m_context);
+            setManager.setIMEI(current_IMEI);
+            mqttConnectManager.subscribe(current_IMEI,m_context);
+            mqttConnectManager.sendMessage(m_context, (m_context).mCenter.cmdFenceGet(), current_IMEI);
+            ToastUtils.showShort(m_context,"切换成功");
+        }
+        else{
+            ToastUtils.showShort(m_context,"mqtt连接失败");
         }
     }
 
@@ -515,18 +531,18 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
 
-    private void reSubscribe() {
-//        Intent intent;
-//        intent = new Intent("com.xunce.electrombile.alarmservice");
-//        m_context.stopService(intent);
-
-        closeStateAlarmBtn();
-//        (m_context).queryIMEI();
-
-        Connection connection = Connections.getInstance(m_context).getConnection(ServiceConstants.handler);
-        MqttAndroidClient mac = connection.getClient();
-        (m_context).subscribe(mac);
-    }
+//    private void reSubscribe() {
+////        Intent intent;
+////        intent = new Intent("com.xunce.electrombile.alarmservice");
+////        m_context.stopService(intent);
+//
+//        closeStateAlarmBtn();
+////        (m_context).queryIMEI();
+//
+//        Connection connection = Connections.getInstance(m_context).getConnection(ServiceConstants.handler);
+//        MqttAndroidClient mac = connection.getClient();
+//        (m_context).subscribe(mac);
+//    }
 
     public void alarmStatusChange() {
         Count++;

@@ -51,6 +51,7 @@ public class CarInfoEditActivity extends Activity {
     MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     String NextCarIMEI;
+    private TextView tv_phoneNumber;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -119,6 +120,10 @@ public class CarInfoEditActivity extends Activity {
         tv_CarIMEI.setText(IMEI);
 
         setManager = new SettingManager(CarInfoEditActivity.this);
+        tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
+        String s = "当前手机号:"+setManager.getPhoneNumber();
+        tv_phoneNumber.setText(s);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在设置,请稍后");
 
@@ -242,7 +247,6 @@ public class CarInfoEditActivity extends Activity {
         });
     }
 
-
     //设备解绑
     private void releaseBinding() {
 
@@ -349,30 +353,6 @@ public class CarInfoEditActivity extends Activity {
                 }
             }
         });
-    }
-
-    private boolean unSubscribe() {
-        Connection connection = Connections.getInstance(CarInfoEditActivity.this).getConnection(ServiceConstants.handler);
-        MqttAndroidClient mac = connection.getClient();
-        //订阅命令字
-        String initTopic = IMEI;
-        String topic1 = "dev2app/" + initTopic + "/cmd";
-        //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
-        //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
-
-        String topic4 = "dev2app/" + initTopic + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
-        try {
-            mac.unsubscribe(topic);
-            return true;
-        } catch (MqttException e) {
-            e.printStackTrace();
-            ToastUtils.showShort(this, "取消订阅失败!请稍后重启再试！");
-            return false;
-        }
-
     }
 
     //判断正在查看的设备是否是主设备
