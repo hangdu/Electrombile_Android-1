@@ -460,7 +460,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      */
     private void initView() {
         main_radio = (RadioGroup) findViewById(R.id.main_radio);
-//        btnAlarmState = (Button) findViewById(R.id.btn_AlarmState);
         mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
@@ -564,24 +563,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             return list.size();
         }
     }
-
-//    public void getAutoLockStatus(){
-//        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
-//    }
-
-    public void OpenAutoLock(){
-//        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOn(),setManager.getIMEI());
-    }
-
-    public void setAutolockTime(){
-        int period = setManager.getAutoLockTime();
-        sendMessage(FragmentActivity.this,mCenter.cmdAutolockTimeSet(period),setManager.getIMEI());
-    }
-
-    public void CloseAutoLock(){
-        sendMessage(FragmentActivity.this,mCenter.cmdAutolockOff(),setManager.getIMEI());
-    }
-
 
     @Override
     public void onStop(){

@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.fragment.SettingsFragment;
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,7 +25,6 @@ public class Autolock extends BaseActivity{
     private RadioGroup radioGroup_locktime;
     private RadioButton rb_switchstatus;
     private RadioButton rb_autolockTime;
-    private int LockTime;
     private SettingManager settingManager;
 
     private RadioButton rb_switchOpen;
@@ -33,6 +34,9 @@ public class Autolock extends BaseActivity{
     private RadioButton rb_Open15min;
 
     RelativeLayout relative_locktime;
+    MqttConnectManager mqttConnectManager;
+    public CmdCenter mCenter;
+    static public int period;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,32 +58,32 @@ public class Autolock extends BaseActivity{
 
         initRadioButton();
 
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mCenter = CmdCenter.getInstance(Autolock.this);
+
         radioGroup_switch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 rb_switchstatus = (RadioButton) findViewById(checkedId);
-//                Toast.makeText(Autolock.this, rb_switchstatus.getText(), Toast.LENGTH_SHORT);
-//                String s = (String) rb_switchstatus.getText();
-//                settingManager.setAutoLockStatus(s);
-//                if (s.equals("开启")) {
-//                    relative_locktime.setVisibility(View.VISIBLE);
-//                    //设置相应的时间
-//                    int LockTime = settingManager.getAutoLockTime();
-//                    switch(LockTime){
-//                        case 5:
-//                            rb_Open5min.setChecked(true);
-//                            break;
-//                        case 10:
-//                            rb_Open10min.setChecked(true);
-//                            break;
-//                        case 15:
-//                            rb_Open15min.setChecked(true);
-//                            break;
-//                    }
-//
-//                } else if (s.equals("关闭")) {
-//                    relative_locktime.setVisibility(View.INVISIBLE);
-//                }
+                Toast.makeText(Autolock.this, rb_switchstatus.getText(), Toast.LENGTH_SHORT);
+                String s = (String) rb_switchstatus.getText();
+
+                if (s.equals("开启")) {
+                    relative_locktime.setVisibility(View.VISIBLE);
+                    rb_Open5min.setChecked(true);
+                    period = 5;
+                    //向服务器发消息
+                    if(mqttConnectManager.returnMqttStatus()){
+                        mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockOn(),settingManager.getIMEI());
+                    }
+                    else{
+                        ToastUtils.showShort(Autolock.this,"mqtt连接失败");
+                    }
+                }
+                else if(s.equals("关闭")){
+                    mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockOff(),settingManager.getIMEI());
+                    relative_locktime.setVisibility(View.INVISIBLE);
+                }
             }
         });
 
@@ -87,9 +91,14 @@ public class Autolock extends BaseActivity{
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 rb_autolockTime = (RadioButton) findViewById(checkedId);
-                String s = (String) rb_autolockTime.getText();
-                LockTime = findLockTime();
-                settingManager.setAutoLockTime(LockTime);
+                int Autolockperiod = findLockTime();
+                if(mqttConnectManager.returnMqttStatus()){
+                    period = Autolockperiod;
+                    mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockTimeSet(Autolockperiod),settingManager.getIMEI());
+                }
+                else{
+                    ToastUtils.showShort(Autolock.this,"mqtt连接失败");
+                }
             }
         });
     }
@@ -99,7 +108,7 @@ public class Autolock extends BaseActivity{
 
     }
 
-    int findLockTime(){
+    private int findLockTime(){
         String s = (String)rb_autolockTime.getText();
         String regEx="[^0-9]";
         Pattern p = Pattern.compile(regEx);
@@ -117,28 +126,28 @@ public class Autolock extends BaseActivity{
     }
 
     //初始化落锁状态
-    void initRadioButton(){
-//        Boolean AutoLockStatus = settingManager.getAutoLockStatus();
-//        if(AutoLockStatus.equals("关闭")){
-//            rb_switchClose.setChecked(true);
-//            //自动落锁关闭的情况下   落锁时间的设置就隐藏掉
-//            relative_locktime.setVisibility(View.INVISIBLE);
-//        }
-//        else{
-//            //开启状态
-//            rb_switchOpen.setChecked(true);
-//            int LockTime = settingManager.getAutoLockTime();
-//            switch(LockTime){
-//                case 5:
-//                    rb_Open5min.setChecked(true);
-//                    break;
-//                case 10:
-//                    rb_Open10min.setChecked(true);
-//                    break;
-//                case 15:
-//                    rb_Open15min.setChecked(true);
-//                    break;
-//            }
-//        }
+    private void initRadioButton(){
+        Boolean AutoLockStatus = settingManager.getAutoLockStatus();
+        if(AutoLockStatus == false){
+            rb_switchClose.setChecked(true);
+            //自动落锁关闭的情况下   落锁时间的设置就隐藏掉
+            relative_locktime.setVisibility(View.INVISIBLE);
+        }
+        else{
+            //开启状态
+            rb_switchOpen.setChecked(true);
+            int LockTime = settingManager.getAutoLockTime();
+            switch(LockTime){
+                case 5:
+                    rb_Open5min.setChecked(true);
+                    break;
+                case 10:
+                    rb_Open10min.setChecked(true);
+                    break;
+                case 15:
+                    rb_Open15min.setChecked(true);
+                    break;
+            }
+        }
     }
 }

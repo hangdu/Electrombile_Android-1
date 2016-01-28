@@ -42,9 +42,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public int temp = 0;
     //缓存view
     private View rootView;
-    private Boolean previous_AutoLockStatus;
-    private int previous_AutolockTime;
-    MqttConnectManager mqttConnectManager;
+    private TextView tv_autolockstatus;
 
 
     @Override
@@ -78,10 +76,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onResume() {
         super.onResume();
-
+        refreshAutolockStatus();
     }
-
-
 
     @Override
     public void onClick(View view) {
@@ -134,21 +130,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 goToMapOffline();
                 break;
 
-
-//            case R.id.rl_1l:
-//                int what = 999;
-//                m_context.timeHandler.removeMessages(what);
-//                if (temp == 10) {
-//                    Intent intent = new Intent(m_context, TestActivity.class);
-//                    startActivity(intent);
-//                    temp = 0;
-//                    return;
-//                }
-//                temp += 1;
-//                Message msg = Message.obtain();
-//                msg.what = what;
-//                m_context.timeHandler.sendMessageDelayed(msg, 3000);
-
             default:
                 break;
         }
@@ -173,7 +154,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * 跳转到设备界面
      */
     private void goToDeviceAct() {
-//        Intent intent = new Intent(m_context, DeviceActivity.class);
         Intent intent = new Intent(m_context, CarManageActivity.class);
         startActivity(intent);
     }
@@ -195,43 +175,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     }
 
     private void gotoAutolockAct(){
-        //在页面跳转之前先记录下来自动落锁的状态   页面回来之后比较一下状态有没有发生变化
-        //如果变化了   则下发相应的命令
-        //记录初始状态
-        previous_AutoLockStatus = (m_context).setManager.getAutoLockStatus();
-        if(previous_AutoLockStatus.equals("开启")){
-            previous_AutolockTime = (m_context).setManager.getAutoLockTime();
-        }
         Intent intent = new Intent(m_context, Autolock.class);
-        startActivityForResult(intent, 1);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == 1){
-           //缺乏resultCode的判断
-            if((m_context).RESULT_OK == resultCode){
-                if((m_context).setManager.getAutoLockStatus().equals("开启")
-                        &&(m_context).setManager.getAutoLockStatus().equals(previous_AutoLockStatus)){
-                    if((m_context).setManager.getAutoLockTime()!=previous_AutolockTime){
-                        //下发命令  自动落锁相应的时间
-                        (m_context).OpenAutoLock();
-                    }
-                }
-                else if(!(m_context).setManager.getAutoLockStatus().equals(previous_AutoLockStatus)){
-                    if((m_context).setManager.getAutoLockStatus().equals("开启")){
-                        //自动落锁开启相应的时间
-                        (m_context).OpenAutoLock();
-                    }
-
-                    else{
-                        //关闭自动落锁
-                    (m_context).CloseAutoLock();
-                    }
-                }
-
-            }
-        }
+        startActivity(intent);
     }
 
     /**
@@ -327,14 +272,28 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * 初始化布局
      */
     private void initView(View view) {
+        tv_autolockstatus = (TextView)getActivity().findViewById(R.id.tv_autolockstatus);
         view.findViewById(R.id.layout_about).setOnClickListener(this);
         view.findViewById(R.id.layout_help).setOnClickListener(this);
         view.findViewById(R.id.btn_logout).setOnClickListener(this);
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
         view.findViewById(R.id.layout_autolock).setOnClickListener(this);
-//        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
         view.findViewById(R.id.layout_map_offline).setOnClickListener(this);
+        refreshAutolockStatus();
+    }
+
+    private void refreshAutolockStatus(){
+        //设置自动落锁的开关状态
+        if(setManager.getAutoLockStatus() == true){
+            int period = setManager.getAutoLockTime();
+            String s = period+"分钟状态开启";
+            tv_autolockstatus.setText(s);
+        }
+
+        else{
+            tv_autolockstatus.setText("状态关闭");
+        }
     }
 
     @Override
@@ -356,8 +315,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onStop() {
         super.onStop();
     }
-
-
 
     @Override
     public void onDestroyView() {

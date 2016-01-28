@@ -13,6 +13,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.Constants.ActivityConstants;
 import com.xunce.electrombile.Constants.ProtocolConstants;
+import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.fragment.SwitchFragment;
 import com.xunce.electrombile.manager.TracksManager;
@@ -166,7 +167,7 @@ public class MyReceiver extends BroadcastReceiver {
 
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
                 //开启自动落锁
-                caseGetAutoLock(code);
+                caseOpenAutoLock(code);
                 break;
 
             case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
@@ -178,7 +179,7 @@ public class MyReceiver extends BroadcastReceiver {
                 break;
 
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_SET:
-                caseGetAutoLockTime(code);
+                caseSetAutoLockTime(code);
                 break;
 
             //获取自动落锁的状态
@@ -197,10 +198,14 @@ public class MyReceiver extends BroadcastReceiver {
         dealErr(result);
     }
 
-    private void caseGetAutoLock(int result){
+    private void caseOpenAutoLock(int result){
         //执行fragmentactivity中的函数
         if(0 == result){
-            ((FragmentActivity)mContext).setAutolockTime();
+            //默认是自动落锁5分钟
+            ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
+                    ((FragmentActivity)mContext).mCenter.cmdAutolockTimeSet(5),((FragmentActivity) mContext).setManager.getIMEI());
+
+            ((FragmentActivity)mContext).setManager.setAutoLockStatus(true);
             return;
         }
         dealErr(result);
@@ -209,6 +214,7 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseCloseAutoLock(int result){
         if(0 == result){
             ToastUtils.showShort(mContext, "自动落锁关闭");
+            ((FragmentActivity) mContext).setManager.setAutoLockStatus(false);
             return;
         }
         dealErr(result);
@@ -223,9 +229,12 @@ public class MyReceiver extends BroadcastReceiver {
         dealErr(code);
     }
 
-    public void caseGetAutoLockTime(int result){
+    public void caseSetAutoLockTime(int result){
         if(result == 0){
+           //自动落锁时间成功设置之后  把时间写到本地
             ToastUtils.showShort(mContext, "自动落锁成功");
+            ((FragmentActivity) mContext).setManager.setAutoLockTime(Autolock.period);
+
             return;
         }
         dealErr(result);
