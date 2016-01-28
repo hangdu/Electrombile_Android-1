@@ -14,11 +14,11 @@
     <RadioGroup
         android:id="@+id/main_radio"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="146px"
         android:layout_gravity="bottom"
         android:background="#0e000000"
         android:orientation="horizontal"
-        android:weightSum="5">
+        android:weightSum="3">
 
         <RadioButton
             android:id="@+id/rbSwitch"
@@ -27,28 +27,6 @@
             android:checked="true"
             android:drawableTop="@drawable/switch_icon"
             android:text="主页" />
-
-        <!--<RadioButton-->
-            <!--android:id="@+id/rbInformation"-->
-            <!--style="@style/main_tab_bottom"-->
-            <!--android:background="@drawable/rb_fragment_act"-->
-            <!--android:checked="false"-->
-            <!--android:drawableTop="@drawable/switch_icon"-->
-            <!--android:text="资讯" />-->
-
-        <!--<Button-->
-            <!--android:id="@+id/btn_AlarmState"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_weight="1"-->
-            <!--android:background="@drawable/btn_switch_selector_1"-->
-            <!--android:drawableTop="@drawable/map_icon"-->
-            <!--android:gravity="center"-->
-            <!--android:onClick="alarmStatusChange"-->
-            <!--android:padding="0dp"-->
-            <!--android:text="防盗开启"-->
-            <!--android:textSize="16sp" />-->
 
         <RadioButton
             android:id="@+id/rbMap"
@@ -64,8 +42,7 @@
             android:background="@drawable/rb_fragment_act"
             android:checked="false"
             android:drawableTop="@drawable/setting_icon"
-            android:text="我" />
+            android:text="设置" />
+
     </RadioGroup>
-
-
 </LinearLayout>

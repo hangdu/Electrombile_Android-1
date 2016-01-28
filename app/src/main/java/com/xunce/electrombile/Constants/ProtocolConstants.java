@@ -60,6 +60,8 @@ public class ProtocolConstants {
     //    10	APP_CMD_AUTO_PERIOD_GET	查询自动锁车的检测周期
     public final static int APP_CMD_AUTO_PERIOD_GET = 10;
 
+    public final static int APP_CMD_AUTOLOCK_GET = 11;
+
     //围栏打开状态
     public final static int ON = 1;
     //围栏关闭状态

@@ -97,10 +97,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     MqttConnectManager mqttConnectManager;
 
-
-
-
-
     /**
      * The handler. to process exit()
      */
@@ -121,13 +117,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             ToastUtils.showShort(FragmentActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
-
-    //获取当前的IMEI号  然后获取到数据表
-//    public void getDatabase(){
-//        String IMEI = setManager.getIMEI();
-//        String TableName = "IMEI_"+IMEI;
-//
-//    }
 
     public RadioGroup getMain_radio() {
         return main_radio;
@@ -150,9 +139,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         Historys.put(this);
 
         registerBroadCast();
-
-
-
     }
 
     @Override
@@ -189,6 +175,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         if (mac != null && mac.isConnected())
         {
             sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
+        }
+        else{
+            //绝对不会到这个分支来
+            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
+        }
+    }
+
+    private void GetAutoLockStatusFromServer(){
+        if (mac != null && mac.isConnected())
+        {
+            sendMessage(FragmentActivity.this, mCenter.APP_CMD_AUTOLOCK_GET(), setManager.getIMEI());
         }
         else{
             //绝对不会到这个分支来
@@ -281,6 +278,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
                 setManager.setMqttStatus(true);
                 GetAlarmStatusFromServer();
+                GetAutoLockStatusFromServer();
             }
 
             @Override

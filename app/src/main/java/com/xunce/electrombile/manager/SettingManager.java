@@ -216,12 +216,12 @@ public class SettingManager {
         return spf.getString(BIRTHDATE,"1994-01-01");
     }
 
-    public void setAutoLockStatus(String autoLockStatus){
-        spf.edit().putString(AUTOLOCKSTATUS, autoLockStatus).commit();
+    public void setAutoLockStatus(Boolean autoLockStatus){
+        spf.edit().putBoolean(AUTOLOCKSTATUS, autoLockStatus).commit();
     }
 
-    public String getAutoLockStatus(){
-        return spf.getString(AUTOLOCKSTATUS, "开启");
+    public Boolean getAutoLockStatus(){
+        return spf.getBoolean(AUTOLOCKSTATUS, false);
     }
 
     public void setAutoLockTime(int autolocktime){

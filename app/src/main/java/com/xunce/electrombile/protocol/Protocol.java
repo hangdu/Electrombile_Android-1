@@ -27,6 +27,15 @@ public class Protocol implements Serializable {
         }
     }
 
+    protected final String keyForValue(String key,String tmp){
+        try {
+            return JSONUtils.ParseJSON(tmp, key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public int getTimestamp() {
         throw new NullPointerException();
     }
@@ -52,6 +61,10 @@ public class Protocol implements Serializable {
     ;
 
     public int getState() {
+        throw new NullPointerException();
+    }
+
+    public int getNewState() {
         throw new NullPointerException();
     }
 

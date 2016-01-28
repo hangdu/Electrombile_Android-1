@@ -140,6 +140,10 @@ public class CmdCenter {
         return getCmdString(ProtocolConstants.APP_CMD_AUTO_PERIOD_GET).getBytes();
     }
 
+    public byte[] APP_CMD_AUTOLOCK_GET(){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTOLOCK_GET).getBytes();
+    }
+
     private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {

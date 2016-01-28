@@ -165,5 +165,6 @@
     <color name="btn_normal_color">#45d28e</color>
     <color name="btn_pressed_color">#d0d344</color>
     <color name="edit_text_color">#c0efd9</color>
+    <color name="grey1">#4e4e4e</color>
 
 </resources>

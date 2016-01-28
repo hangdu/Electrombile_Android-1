@@ -29,7 +29,6 @@ public class CmdProtocol extends Protocol {
     public int getResult() {
         String temp = keyForValue(ProtocolConstants.RESULT);
         if (isEmpty(temp)) return -1;
-        result = Integer.parseInt(temp);
         return result;
     }
 
@@ -42,6 +41,17 @@ public class CmdProtocol extends Protocol {
     }
 
     @Override
+    public int getNewState() {
+        String temp = keyForValue(ProtocolConstants.RESULT);
+        if (isEmpty(temp)) return -1;
+
+        String s = keyForValue(ProtocolConstants.STATE,temp);
+        state = Integer.parseInt(s);
+        return state;
+    }
+
+
+    @Override
     public int getCode(){
         String temp = keyForValue(ProtocolConstants.CODE);
         if (isEmpty(temp)) return -1;
@@ -51,9 +61,11 @@ public class CmdProtocol extends Protocol {
 
     @Override
     public int getPeriod() {
-        String temp = keyForValue(ProtocolConstants.PERIOD);
+        String temp = keyForValue(ProtocolConstants.RESULT);
         if (isEmpty(temp)) return -1;
-        period = Integer.parseInt(temp);
+
+        String s = keyForValue(ProtocolConstants.PERIOD,temp);
+        period = Integer.parseInt(s);
         return period;
     }
 }

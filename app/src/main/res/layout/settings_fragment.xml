@@ -14,48 +14,26 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/rl_1l"
+                android:id="@+id/ll_button"
                 android:layout_width="match_parent"
-                android:layout_height="184dp"
-                android:background="@drawable/layout_selector"
-                android:clickable="true"
-                android:elevation="2dip">
-
-                <ImageView
-                    android:id="@+id/iv_logo"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="24dp"
-                    android:src="@mipmap/ic_launcher"/>
+                android:background="#1dcf96"
+                android:layout_height="132px">
 
                 <TextView
-                    android:id="@+id/layout_person_center1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="60dp"
-                    android:layout_toRightOf="@+id/iv_logo"
-                    android:text="车主:"
-                    android:textSize="25sp" />
-
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_imei"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignLeft="@+id/tv_equip"-->
-                    <!--android:layout_below="@+id/tv_equip"-->
-                    <!--android:layout_marginTop="10dp"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:text="当前设备号：" />-->
-=======
+                    android:layout_centerInParent="true"
+                    android:text = "我"
+                    android:textSize="48px"
+                    android:textColor="#d0f9e5"/>
             </RelativeLayout>
+
 
             <LinearLayout
                 android:id="@+id/layout_person_center"
                 style="@style/clickableLayout"
                 android:layout_below="@+id/rl_1"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="2dp"
                 android:elevation="1dip">
 
                 <ImageView
@@ -64,16 +42,12 @@
 
                 <TextView
                     style="@style/clickableLayoutTextview"
-                    android:text="个人中心"
+                    android:text="车主信息"
                     android:textColor="@color/black"/>
 
             </LinearLayout>
 
-            <!--<View-->
-            <!--android:layout_width="300dp"-->
-            <!--android:layout_height="1dp"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:background="@color/transation" />-->
+
 
             <LinearLayout
                 android:id="@+id/layout_help"
@@ -105,9 +79,8 @@
 
                 <TextView
                     style="@style/clickableLayoutTextview"
-                    android:text="设备管理"
+                    android:text="车辆管理"
                     android:textColor="@color/black"/>
-
             </LinearLayout>
 
             <LinearLayout
@@ -123,7 +96,7 @@
 
                 <TextView
                     style="@style/clickableLayoutTextview"
-                    android:text="离线地图"
+                    android:text="地图下载"
                     android:textColor="@color/black"/>
             </LinearLayout>
 
@@ -160,22 +133,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/layout_mapdownload"
-                style="@style/clickableLayout"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/setting_tel" />
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="地图下载"
-                    android:textColor="@color/black" />
-            </LinearLayout>
-
             <RelativeLayout
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
@@ -190,102 +147,7 @@
                     android:layout_centerHorizontal="true"
                     android:text="退出登录"
                     android:textColor="@color/black" />
-
-
             </RelativeLayout>
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/layout_bind"-->
-            <!--style="@style/clickableLayout">-->
-
-            <!--<ImageView-->
-            <!--style="@style/settings_fragment_iv"-->
-            <!--android:src="@drawable/setting_bangdingshebei" />-->
-
-            <!--<TextView-->
-            <!--style="@style/clickableLayoutTextview"-->
-            <!--android:text="绑定设备"-->
-            <!--android:textColor="@color/black" />-->
-            <!--</LinearLayout>-->
-
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/layout_release_bind"-->
-            <!--style="@style/clickableLayout"-->
-            <!--android:layout_below="@+id/layout_about"-->
-            <!--android:layout_marginTop="1dp">-->
-
-            <!--<ImageView-->
-            <!--style="@style/settings_fragment_iv"-->
-            <!--android:src="@drawable/setting_tel" />-->
-
-            <!--<TextView-->
-            <!--style="@style/clickableLayoutTextview"-->
-            <!--android:text="解除绑定"-->
-            <!--android:textColor="@color/black" />-->
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/layout_addSOS"-->
-            <!--style="@style/clickableLayout"-->
-            <!--android:layout_below="@+id/layout_release_bind"-->
-            <!--android:layout_marginTop="1dp"-->
-            <!--android:visibility="gone">-->
-
-            <!--<ImageView-->
-            <!--style="@style/settings_fragment_iv"-->
-            <!--android:src="@drawable/setting_tel" />-->
-
-            <!--<TextView-->
-            <!--style="@style/clickableLayoutTextview"-->
-            <!--android:text="添加管理员"-->
-            <!--android:textColor="@color/black" />-->
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/layout_bind_list"-->
-            <!--style="@style/clickableLayout"-->
-            <!--android:layout_below="@+id/layout_addSOS"-->
-            <!--android:layout_marginTop="1dp">-->
-
-            <!--<ImageView-->
-            <!--style="@style/settings_fragment_iv"-->
-            <!--android:src="@drawable/setting_tel" />-->
-
-            <!--<TextView-->
-            <!--style="@style/clickableLayoutTextview"-->
-            <!--android:text="设备列表"-->
-            <!--android:textColor="@color/black" />-->
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-            <!--android:id="@+id/layout_find"-->
-            <!--style="@style/clickableLayout"-->
-            <!--android:layout_below="@+id/layout_bind_list"-->
-            <!--android:layout_marginTop="1dp">-->
-
-            <!--<ImageView-->
-            <!--style="@style/settings_fragment_iv"-->
-            <!--android:src="@drawable/setting_tel" />-->
-
-            <!--<TextView-->
-            <!--style="@style/clickableLayoutTextview"-->
-            <!--android:text="快速找车"-->
-            <!--android:textColor="@color/black" />-->
-            <!--</LinearLayout>-->
-
-            <!--<Button-->
-            <!--android:id="@+id/btn_logout"-->
-            <!--android:layout_width="300dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="50dp"-->
-            <!--android:background="@drawable/special_btn"-->
-            <!--android:paddingBottom="10dp"-->
-            <!--android:paddingTop="10dp"-->
-            <!--android:text="退出登录"-->
-            <!--android:textColor="@color/black"-->
-            <!--android:textSize="20sp" />-->
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

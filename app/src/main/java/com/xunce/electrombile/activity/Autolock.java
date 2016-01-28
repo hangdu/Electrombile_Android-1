@@ -59,27 +59,27 @@ public class Autolock extends BaseActivity{
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 rb_switchstatus = (RadioButton) findViewById(checkedId);
 //                Toast.makeText(Autolock.this, rb_switchstatus.getText(), Toast.LENGTH_SHORT);
-                String s = (String) rb_switchstatus.getText();
-                settingManager.setAutoLockStatus(s);
-                if (s.equals("开启")) {
-                    relative_locktime.setVisibility(View.VISIBLE);
-                    //设置相应的时间
-                    int LockTime = settingManager.getAutoLockTime();
-                    switch(LockTime){
-                        case 5:
-                            rb_Open5min.setChecked(true);
-                            break;
-                        case 10:
-                            rb_Open10min.setChecked(true);
-                            break;
-                        case 15:
-                            rb_Open15min.setChecked(true);
-                            break;
-                    }
-
-                } else if (s.equals("关闭")) {
-                    relative_locktime.setVisibility(View.INVISIBLE);
-                }
+//                String s = (String) rb_switchstatus.getText();
+//                settingManager.setAutoLockStatus(s);
+//                if (s.equals("开启")) {
+//                    relative_locktime.setVisibility(View.VISIBLE);
+//                    //设置相应的时间
+//                    int LockTime = settingManager.getAutoLockTime();
+//                    switch(LockTime){
+//                        case 5:
+//                            rb_Open5min.setChecked(true);
+//                            break;
+//                        case 10:
+//                            rb_Open10min.setChecked(true);
+//                            break;
+//                        case 15:
+//                            rb_Open15min.setChecked(true);
+//                            break;
+//                    }
+//
+//                } else if (s.equals("关闭")) {
+//                    relative_locktime.setVisibility(View.INVISIBLE);
+//                }
             }
         });
 
@@ -118,27 +118,27 @@ public class Autolock extends BaseActivity{
 
     //初始化落锁状态
     void initRadioButton(){
-        String AutoLockStatus = settingManager.getAutoLockStatus();
-        if(AutoLockStatus.equals("关闭")){
-            rb_switchClose.setChecked(true);
-            //自动落锁关闭的情况下   落锁时间的设置就隐藏掉
-            relative_locktime.setVisibility(View.INVISIBLE);
-        }
-        else{
-            //开启状态
-            rb_switchOpen.setChecked(true);
-            int LockTime = settingManager.getAutoLockTime();
-            switch(LockTime){
-                case 5:
-                    rb_Open5min.setChecked(true);
-                    break;
-                case 10:
-                    rb_Open10min.setChecked(true);
-                    break;
-                case 15:
-                    rb_Open15min.setChecked(true);
-                    break;
-            }
-        }
+//        Boolean AutoLockStatus = settingManager.getAutoLockStatus();
+//        if(AutoLockStatus.equals("关闭")){
+//            rb_switchClose.setChecked(true);
+//            //自动落锁关闭的情况下   落锁时间的设置就隐藏掉
+//            relative_locktime.setVisibility(View.INVISIBLE);
+//        }
+//        else{
+//            //开启状态
+//            rb_switchOpen.setChecked(true);
+//            int LockTime = settingManager.getAutoLockTime();
+//            switch(LockTime){
+//                case 5:
+//                    rb_Open5min.setChecked(true);
+//                    break;
+//                case 10:
+//                    rb_Open10min.setChecked(true);
+//                    break;
+//                case 15:
+//                    rb_Open15min.setChecked(true);
+//                    break;
+//            }
+//        }
     }
 }

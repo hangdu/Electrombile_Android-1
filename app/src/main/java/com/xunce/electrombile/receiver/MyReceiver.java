@@ -120,7 +120,9 @@ public class MyReceiver extends BroadcastReceiver {
     private void onCmdArrived(Protocol protocol) {
         int cmd = protocol.getCmd();
         int code = protocol.getCode();
+        int result = protocol.getResult();
         timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+
         switch (cmd) {
             //如果是设置围栏的命令
             case ProtocolConstants.CMD_FENCE_ON:
@@ -132,6 +134,7 @@ public class MyReceiver extends BroadcastReceiver {
 //                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(code, true, "防盗开启成功");
                 break;
+
             //如果是设置关闭围栏的命令
             case ProtocolConstants.CMD_FENCE_OFF:
                 //新加代码
@@ -141,33 +144,48 @@ public class MyReceiver extends BroadcastReceiver {
 //                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(code, false, "防盗关闭成功");
                 break;
+
             //如果是获取围栏的命令
             case ProtocolConstants.CMD_FENCE_GET:
-                caseFenceGet(protocol, code);
+                caseFenceGet(code,protocol);
                 break;
+
             //如果是开始找车的命令
             case ProtocolConstants.CMD_SEEK_ON:
                 caseSeek(code, "开始找车");
                 break;
+
             //如果是停止找车的命令
             case ProtocolConstants.CMD_SEEK_OFF:
                 caseSeek(code, "停止找车");
                 break;
+
             case ProtocolConstants.CMD_LOCATION:
                 caseGetGPS(code);
                 break;
+
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
                 //开启自动落锁
                 caseGetAutoLock(code);
                 break;
+
             case ProtocolConstants.APP_CMD_AUTO_LOCK_OFF:
                 caseCloseAutoLock(code);
                 break;
+
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_GET:
+                caseGetAutolockPeriod(code, protocol);
                 break;
+
             case ProtocolConstants.APP_CMD_AUTO_PERIOD_SET:
                 caseGetAutoLockTime(code);
                 break;
+
+            //获取自动落锁的状态
+            case ProtocolConstants.APP_CMD_AUTOLOCK_GET:
+                caseGetAutoLockStatus(code,protocol);
+                break;
+
             default:
                 break;
         }
@@ -196,12 +214,42 @@ public class MyReceiver extends BroadcastReceiver {
         dealErr(result);
     }
 
+    private void caseGetAutolockPeriod(int code,Protocol protocol) {
+        if (0 == code) {
+            int period = protocol.getPeriod();
+            ((FragmentActivity) mContext).setManager.setAutoLockTime(period);
+            return;
+        }
+        dealErr(code);
+    }
+
     public void caseGetAutoLockTime(int result){
         if(result == 0){
             ToastUtils.showShort(mContext, "自动落锁成功");
             return;
         }
         dealErr(result);
+    }
+
+    public void caseGetAutoLockStatus(int code,Protocol protocol){
+        if(code == 0){
+            //已经获取到了自动落锁的状态
+            int state = protocol.getNewState();
+            if(state == 1){
+                ToastUtils.showShort(mContext, "自动落锁为打开状态");
+                ((FragmentActivity) mContext).setManager.setAutoLockStatus(true);
+                //若为打开状态  还要查询到自动落锁的时间
+                ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
+                        ((FragmentActivity)mContext).mCenter.cmdAutolockTimeGet(),((FragmentActivity) mContext).setManager.getIMEI());
+
+            }
+            else if(state == 0){
+                ToastUtils.showShort(mContext, "自动落锁为关闭状态");
+                ((FragmentActivity) mContext).setManager.setAutoLockStatus(false);
+            }
+            return;
+        }
+        dealErr(code);
     }
 
     private void caseSeek(int result, String success) {
@@ -223,18 +271,15 @@ public class MyReceiver extends BroadcastReceiver {
         mContext.sendBroadcast(intent7);
     }
 
-    private void caseFenceGet(Protocol protocol, int result) {
-        if (ProtocolConstants.ERR_SUCCESS == result) {
-            int state = protocol.getState();
+    private void caseFenceGet(int code,Protocol protocol) {
+        if (ProtocolConstants.ERR_SUCCESS == code) {
+            int state = protocol.getNewState();
+
             if (ProtocolConstants.ON == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
 
             } else if (ProtocolConstants.OFF == state) {
                 ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
-
-//                Message msg1 = Message.obtain();
-//                msg1.what = 5;
-//                alarmHandler.sendMessage(msg1);
             }
 
             Message msg = Message.obtain();
@@ -242,7 +287,7 @@ public class MyReceiver extends BroadcastReceiver {
             alarmHandler.sendMessage(msg);
             ToastUtils.showShort(mContext, "查询小安宝开关状态成功");
         } else {
-            dealErr(result);
+            dealErr(code);
         }
     }
 

@@ -42,7 +42,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public int temp = 0;
     //缓存view
     private View rootView;
-    private String previous_AutoLockStatus;
+    private Boolean previous_AutoLockStatus;
     private int previous_AutolockTime;
     MqttConnectManager mqttConnectManager;
 
@@ -135,19 +135,19 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 break;
 
 
-            case R.id.rl_1l:
-                int what = 999;
-                m_context.timeHandler.removeMessages(what);
-                if (temp == 10) {
-                    Intent intent = new Intent(m_context, TestActivity.class);
-                    startActivity(intent);
-                    temp = 0;
-                    return;
-                }
-                temp += 1;
-                Message msg = Message.obtain();
-                msg.what = what;
-                m_context.timeHandler.sendMessageDelayed(msg, 3000);
+//            case R.id.rl_1l:
+//                int what = 999;
+//                m_context.timeHandler.removeMessages(what);
+//                if (temp == 10) {
+//                    Intent intent = new Intent(m_context, TestActivity.class);
+//                    startActivity(intent);
+//                    temp = 0;
+//                    return;
+//                }
+//                temp += 1;
+//                Message msg = Message.obtain();
+//                msg.what = what;
+//                m_context.timeHandler.sendMessageDelayed(msg, 3000);
 
             default:
                 break;
@@ -327,20 +327,14 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * 初始化布局
      */
     private void initView(View view) {
-//        ((TextView) (view.findViewById(R.id.tv_imei))).setText("设备号：" + setManager.getIMEI());
         view.findViewById(R.id.layout_about).setOnClickListener(this);
         view.findViewById(R.id.layout_help).setOnClickListener(this);
         view.findViewById(R.id.btn_logout).setOnClickListener(this);
         view.findViewById(R.id.layout_person_center).setOnClickListener(this);
         view.findViewById(R.id.rl_1).setOnClickListener(this);
-        view.findViewById(R.id.rl_1l).setOnClickListener(this);
-
         view.findViewById(R.id.layout_autolock).setOnClickListener(this);
-
 //        AutoLockStatus = (m_context).setManager.getAutoLockStatus();
-
         view.findViewById(R.id.layout_map_offline).setOnClickListener(this);
-
     }
 
     @Override

@@ -24,20 +24,31 @@
                 <RelativeLayout
                     android:id="@+id/ll_button"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:background="#1dcf96"
+                    android:layout_height="132px">
                     <Button
                         android:id = "@+id/ChangeAutobike"
+                        android:layout_width="60dp"
+                        android:layout_height="48dp"
+                        android:layout_alignParentLeft = "true"
+                        android:layout_marginLeft="40px"
+                        android:layout_centerVertical="true"
+                        android:text="切换"/>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft = "true"
-                        android:layout_alignParentTop = "true"
-                        android:text = "切换" />
+                        android:layout_centerInParent="true"
+                        android:text = "小安宝"
+                        android:textSize="48px"
+                        android:textColor="#d0f9e5"/>
                     <Button
                         android:id="@+id/weather1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight = "true"
-                        android:layout_alignParentTop = "true"
+                        android:layout_marginRight="40px"
+                        android:layout_centerVertical="true"
                         android:text = "天气" />
 
                 </RelativeLayout>
@@ -46,7 +57,7 @@
                 <RelativeLayout
                     android:id="@+id/ll_temp"
                     android:layout_width="match_parent"
-                    android:layout_height="220dp"
+                    android:layout_height="740px"
                     android:layout_below="@+id/ll_button"
                     android:background="#33000000">
 
@@ -61,143 +72,161 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:background="@drawable/iv_person_head" />
+                    
+                    <ImageView
+                        android:id="@+id/img_weather"
+                        android:layout_alignParentRight = "true"
+                        android:layout_marginRight="20px"
+                        android:layout_marginTop="30px"
+                        android:layout_width="215px"
+                        android:layout_height="215px"
+                        android:background="@drawable/rain"/>
+                    <TextView
+                        android:id="@+id/tv_temperature"
+                        android:layout_alignRight="@+id/img_weather"
+                        android:layout_below="@+id/img_weather"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text = "温度:"/>
+                    <TextView
+                        android:id="@+id/tv_weatherCondition"
+                        android:layout_alignRight="@+id/img_weather"
+                        android:layout_below="@+id/tv_temperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="天气状况:"/>
+                    <TextView
+                        android:layout_below="@+id/tv_weatherCondition"
+                        android:layout_alignRight="@+id/img_weather"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="地区:武汉市洪山区"/>
                 </RelativeLayout>
-
+                
                 <LinearLayout
-                    android:id="@+id/ll_protect"
+                    android:id="@+id/ll_PowerandDistance"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/ll_temp"
+                    android:layout_height="250px"
                     android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/ProtectDays"
+                    <RelativeLayout
+                        android:layout_weight="1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text = "保护日"/>
-                    <Button
-                        android:id="@+id/Angels"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text = "环保天使"/>
-                </LinearLayout>
+                        android:layout_height="match_parent">
+                        
+                        <ImageView
+                            android:id="@+id/img_battery"
+                            android:layout_width="100px"
+                            android:layout_height="100px"
+                            android:layout_marginLeft="40px"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/baterry"/>
 
-                <LinearLayout
-                    android:id="@+id/ll_distance"
+                        <TextView
+                            android:id="@+id/tv_battery"
+                            android:layout_marginTop="70px"
+                            android:layout_toRightOf="@id/img_battery"
+                            android:layout_marginLeft="30px"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#009f53"
+                            android:text = "50%电量"
+                            android:textSize="52px"/>
+
+                        <TextView
+                            android:layout_below="@id/tv_battery"
+                            android:layout_alignLeft="@id/tv_battery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="38px"
+                            android:textColor="#595959"
+                            android:text="预计可行驶60公里"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="1px"
+                            android:layout_height="220px"
+                            android:background="#d8d8d8"
+                            android:layout_centerInParent="true"/>
+
+                    </RelativeLayout>
+
+
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:id="@+id/img_distance"
+                            android:layout_width="100px"
+                            android:layout_height="100px"
+                            android:layout_marginLeft="40px"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/distance"/>
+
+                        <TextView
+                            android:id="@+id/tv_total"
+                            android:layout_marginTop="70px"
+                            android:layout_toRightOf="@id/img_distance"
+                            android:layout_marginLeft="30px"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#009f53"
+                            android:text = "累计行驶"
+                            android:textSize="52px"/>
+
+                        <TextView
+                            android:id="@+id/tv_distance"
+                            android:layout_below="@id/tv_total"
+                            android:layout_alignLeft="@id/tv_total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="38px"
+                            android:textColor="#595959"
+                            android:text="0.00公里"/>
+
+                    </RelativeLayout>
+                </LinearLayout>
+                
+                <RelativeLayout
+                    android:layout_below = "@+id/ll_PowerandDistance"
+                    android:layout_marginTop="40px"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/ll_protect"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/TotalDistance"
+                    android:layout_height="200px"
+                    android:background="#e5e5e5">
+                    
+                    <ImageView
+                        android:id="@+id/img_sim"
+                        android:layout_width="100px"
+                        android:layout_height="100px"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="40px"
+                        android:background="@drawable/sim"/>
+
+                    <TextView
+                        android:id="@+id/tv1"
+                        android:layout_toRightOf="@+id/img_sim"
+                        android:layout_marginLeft="120px"
+                        android:layout_marginTop="36px"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text = "总公里数"/>
-                    <Button
-                        android:id="@+id/SIM"
+                        android:textSize="38px"
+                        android:textColor="#595959"
+                        android:text="小安宝流量"/>
+
+                    <TextView
+                        android:layout_below="@+id/tv1"
+                        android:layout_marginTop="18px"
+                        android:layout_alignLeft="@+id/tv1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text = "SIM服务"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_power"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/ll_distance"
-                    android:orientation="horizontal">
-                    <Button
-                        android:id="@+id/Power"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text = "剩余电量"/>
-                </LinearLayout>
-
-                <!--<LinearLayout-->
-                    <!--android:id="@+id/ll_container"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="100dip"-->
-                    <!--android:layout_below="@+id/ll_power"-->
-                    <!--android:orientation="horizontal"-->
-                    <!--android:weightSum="2">-->
-
-                    <!--<LinearLayout-->
-                        <!--android:id="@+id/ll_a"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="50dip"-->
-                        <!--android:layout_below="@+id/ll_power"-->
-
-                        <!--android:layout_marginLeft="8dp"-->
-                        <!--android:layout_marginRight="8dp"-->
-                        <!--android:layout_marginTop="4dp"-->
-                        <!--android:layout_weight="1"-->
-                        <!--android:background="@drawable/switch_frag_location"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<ImageView-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="50dp"-->
-                            <!--android:layout_gravity="center_horizontal"-->
-                            <!--android:layout_marginTop="8dp"-->
-                            <!--android:src="@drawable/switch_fragment_map_location" />-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/switch_fragment_tvLocation"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_gravity="center_horizontal"-->
-                            <!--android:layout_marginTop="24dp"-->
-                            <!--android:text="当前位置"-->
-                            <!--android:textColor="@color/white"-->
-                            <!--android:textSize="16sp" />-->
-                    <!--</LinearLayout>-->
-
-                    <!--<ImageView-->
-                        <!--android:layout_width="1dp"-->
-                        <!--android:layout_height="50dip"-->
-                        <!--android:src="@drawable/line_between_two_frag" />-->
-
-                    <!--<LinearLayout-->
-                        <!--android:id="@+id/ll_b"-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="50dip"-->
-                        <!--android:layout_below="@+id/ll_temp"-->
-                        <!--android:layout_marginLeft="8dp"-->
-                        <!--android:layout_marginRight="8dp"-->
-                        <!--android:layout_marginTop="4dp"-->
-                        <!--android:layout_toRightOf="@+id/ll_a"-->
-                        <!--android:layout_weight="1"-->
-                        <!--android:background="@drawable/switch_frag_weather"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<ImageView-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="50dp"-->
-                            <!--android:layout_gravity="center_horizontal"-->
-                            <!--android:layout_marginTop="8dp"-->
-                            <!--android:src="@drawable/iv_weather" />-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/weather"-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:layout_gravity="center_horizontal"-->
-                            <!--android:layout_marginLeft="2dp"-->
-                            <!--android:layout_marginRight="2dp"-->
-                            <!--android:layout_marginTop="24dp"-->
-                            <!--android:ellipsize="end"-->
-                            <!--android:maxLines="3"-->
-                            <!--android:text="现在天气"-->
-                            <!--android:textColor="@color/white"-->
-                            <!--android:textSize="16sp" />-->
-                    <!--</LinearLayout>-->
-                <!--</LinearLayout>-->
-
-                <!--<RelativeLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="248dp"-->
-                    <!--android:layout_below="@+id/ll_container"-->
-                    <!--android:background="@drawable/third_bg_fragment">-->
-                <!--</RelativeLayout>-->
+                        android:textSize="52px"
+                        android:textColor="#009f53"
+                        android:text="sim卡流量"/>
+                </RelativeLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -215,64 +244,11 @@
                         android:textSize="16sp" />
                 </RelativeLayout>
 
-
-
             </LinearLayout>
 
         </LinearLayout>
     </com.xunce.electrombile.view.MyHorizontalScrollView>
 </RelativeLayout>
 
-
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="248dp"-->
-        <!--android:layout_below="@+id/ll_container"-->
-        <!--android:background="@drawable/third_bg_fragment">-->
-
-
-
-        <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:layout_width="100dp"-->
-        <!--android:layout_height="100dp"-->
-        <!--android:id="@+id/btn_AlarmState"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--app:borderWidth="0dp"-->
-        <!--app:backgroundTint="@color/green"-->
-        <!--app:rippleColor="@color/avoscloud_blue"-->
-        <!--app:elevation="6dp"-->
-        <!--android:text="开启小安宝"-->
-        <!--app:pressedTranslationZ="12dp"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--android:textColor="@color/base_color_text_white"-->
-        <!--android:src="@drawable/btn_switch_selector_1" />-->
-
-        <!--<Button-->
-        <!--android:id="@+id/btn_AlarmState"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:background="@drawable/btn_switch_selector_1"-->
-        <!--android:text="开启小安宝"-->
-        <!--android:textColor="@color/base_color_text_white" />-->
-
-        <!--<ImageView-->
-        <!--android:id="@+id/iv_SystemState"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:background="@drawable/switch_fragment_zhuangtai2" />-->
-    <!--</RelativeLayout>-->
-
-
-    <!--<TextView-->
-    <!--android:id="@+id/weather"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_below="@+id/btn_SystemState"-->
-    <!--android:text="正在更新天气..."-->
-    <!--android:textColor="@color/blue"-->
-    <!--android:textSize="18sp" />-->
 
 
