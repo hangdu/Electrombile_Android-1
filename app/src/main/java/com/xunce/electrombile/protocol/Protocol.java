@@ -2,6 +2,7 @@ package com.xunce.electrombile.protocol;
 
 import android.text.TextUtils;
 
+import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 
 import org.json.JSONException;
@@ -59,6 +60,10 @@ public class Protocol implements Serializable {
     }
 
     ;
+
+    public TracksManager.TrackPoint getNewResult(){
+        throw new NullPointerException();
+    }
 
     public int getState() {
         throw new NullPointerException();

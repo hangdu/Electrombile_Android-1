@@ -97,7 +97,7 @@ public class MyReceiver extends BroadcastReceiver {
                     protocol = createFactory(select, s);
                     Log.i(TAG, "得到GPS");
                     ((FragmentActivity) mContext).cancelWaitTimeOut();
-                    onGPSArrived(protocol);
+                     onGPSArrived(protocol);
                 } else if (destinationName.contains("433")) {
                     select = 0x03;
                     protocol = createFactory(select, s);
@@ -162,7 +162,7 @@ public class MyReceiver extends BroadcastReceiver {
                 break;
 
             case ProtocolConstants.CMD_LOCATION:
-                caseGetGPS(code);
+                caseGetGPS(code,protocol);
                 break;
 
             case ProtocolConstants.APP_CMD_AUTO_LOCK_ON:
@@ -192,10 +192,28 @@ public class MyReceiver extends BroadcastReceiver {
         }
     }
 
-    private void caseGetGPS(int result) {
+    //这个函数是主动查询gps的时候执行的函数 后面那个服务器主动上报用的
+    private void caseGetGPS(int code,Protocol protocol) {
         //result为101的时候不能执行cancelWaitTimeOut()
         ((FragmentActivity) mContext).cancelWaitTimeOut();
-        dealErr(result);
+
+        switch (code) {
+            case ProtocolConstants.ERR_SUCCESS:
+                cmdGPSgetresult(protocol,code);
+                return;
+
+            case ProtocolConstants.ERR_WAITING:
+                cmdGPSgetresult(protocol,code);
+                return;
+            case ProtocolConstants.ERR_OFFLINE:
+                ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
+                break;
+            case ProtocolConstants.ERR_INTERNAL:
+                ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
+                break;
+        }
+
+//        dealErr(code);
     }
 
     private void caseOpenAutoLock(int result){
@@ -335,6 +353,7 @@ public class MyReceiver extends BroadcastReceiver {
         if (Flat == -1 || Flong == -1) {
             return;
         }
+
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         TracksManager.TrackPoint trackPoint = null;
         trackPoint = new TracksManager.TrackPoint(curDate, ((FragmentActivity) mContext).mCenter.convertPoint(new LatLng(Flat, Flong)));
@@ -346,7 +365,13 @@ public class MyReceiver extends BroadcastReceiver {
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
             }
             ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);
+            
         }
+    }
+
+    private void cmdGPSgetresult(Protocol protocol,int code){
+        TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+        ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
     }
 
     public void setAlarmHandler(Handler AlarmHandler){

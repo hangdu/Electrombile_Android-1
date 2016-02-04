@@ -122,7 +122,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button find_car;
 
     GeoCoder mSearch = null;
-    
+
+//    private int locateCode;
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -231,6 +232,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 //        InitCarLocation();
 
     }
+
+//    public void setLocateCode(int code){
+//        this.locateCode = code;
+//    }
 
     public void InitCarLocation(){
 //        LatLng point;
