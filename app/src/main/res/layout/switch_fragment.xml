@@ -25,13 +25,13 @@
                     android:id="@+id/ll_button"
                     android:layout_width="match_parent"
                     android:background="#1dcf96"
-                    android:layout_height="132px">
+                    android:layout_height="44dp">
                     <Button
                         android:id = "@+id/ChangeAutobike"
                         android:layout_width="60dp"
                         android:layout_height="48dp"
                         android:layout_alignParentLeft = "true"
-                        android:layout_marginLeft="40px"
+                        android:layout_marginLeft="13dp"
                         android:layout_centerVertical="true"
                         android:text="切换"/>
 
@@ -47,7 +47,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight = "true"
-                        android:layout_marginRight="40px"
+                        android:layout_marginRight="13dp"
                         android:layout_centerVertical="true"
                         android:text = "天气" />
 
@@ -57,7 +57,7 @@
                 <RelativeLayout
                     android:id="@+id/ll_temp"
                     android:layout_width="match_parent"
-                    android:layout_height="740px"
+                    android:layout_height="247dp"
                     android:layout_below="@+id/ll_button"
                     android:background="#33000000">
 
@@ -76,10 +76,10 @@
                     <ImageView
                         android:id="@+id/img_weather"
                         android:layout_alignParentRight = "true"
-                        android:layout_marginRight="20px"
-                        android:layout_marginTop="30px"
-                        android:layout_width="215px"
-                        android:layout_height="215px"
+                        android:layout_marginRight="7dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
                         android:background="@drawable/rain"/>
                     <TextView
                         android:id="@+id/tv_temperature"
@@ -106,7 +106,7 @@
                 <LinearLayout
                     android:id="@+id/ll_PowerandDistance"
                     android:layout_width="match_parent"
-                    android:layout_height="250px"
+                    android:layout_height="83dp"
                     android:orientation="horizontal">
                     <RelativeLayout
                         android:layout_weight="1"
@@ -115,21 +115,21 @@
                         
                         <ImageView
                             android:id="@+id/img_battery"
-                            android:layout_width="100px"
-                            android:layout_height="100px"
-                            android:layout_marginLeft="40px"
+                            android:layout_width="33dp"
+                            android:layout_height="33dp"
+                            android:layout_marginLeft="13dp"
                             android:layout_centerVertical="true"
                             android:background="@drawable/baterry"/>
 
                         <TextView
                             android:id="@+id/tv_battery"
-                            android:layout_marginTop="70px"
+                            android:layout_marginTop="23dp"
                             android:layout_toRightOf="@id/img_battery"
-                            android:layout_marginLeft="30px"
+                            android:layout_marginLeft="10dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#009f53"
-                            android:text = "50%电量"
+                            android:text = "50%"
                             android:textSize="52px"/>
 
                         <TextView
@@ -146,8 +146,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
                         <ImageView
-                            android:layout_width="1px"
-                            android:layout_height="220px"
+                            android:layout_width="0.3dp"
+                            android:layout_height="73dp"
                             android:background="#d8d8d8"
                             android:layout_centerInParent="true"/>
 
@@ -169,9 +169,9 @@
 
                         <TextView
                             android:id="@+id/tv_total"
-                            android:layout_marginTop="70px"
+                            android:layout_marginTop="33dp"
                             android:layout_toRightOf="@id/img_distance"
-                            android:layout_marginLeft="30px"
+                            android:layout_marginLeft="33dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#009f53"
@@ -193,24 +193,24 @@
                 
                 <RelativeLayout
                     android:layout_below = "@+id/ll_PowerandDistance"
-                    android:layout_marginTop="40px"
+                    android:layout_marginTop="13dp"
                     android:layout_width="match_parent"
-                    android:layout_height="200px"
+                    android:layout_height="67dp"
                     android:background="#e5e5e5">
                     
                     <ImageView
                         android:id="@+id/img_sim"
-                        android:layout_width="100px"
-                        android:layout_height="100px"
+                        android:layout_width="33dp"
+                        android:layout_height="33dp"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="40px"
+                        android:layout_marginLeft="13dp"
                         android:background="@drawable/sim"/>
 
                     <TextView
                         android:id="@+id/tv1"
                         android:layout_toRightOf="@+id/img_sim"
-                        android:layout_marginLeft="120px"
-                        android:layout_marginTop="36px"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginTop="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="38px"
@@ -219,7 +219,7 @@
 
                     <TextView
                         android:layout_below="@+id/tv1"
-                        android:layout_marginTop="18px"
+                        android:layout_marginTop="6dp"
                         android:layout_alignLeft="@+id/tv1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

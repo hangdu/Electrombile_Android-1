@@ -83,8 +83,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public TrackPoint currentTrack;
     //正在播放轨迹标志
     public boolean isPlaying = false;
-    private TextView btnLocation;
-    private TextView btnRecord;
+    private Button btnLocation;
+    private Button btnRecord;
     private Button btnPlay;
     private Button btnPause;
     private Button btnClearTrack;
@@ -98,7 +98,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tvStatus;
     private InfoWindow mInfoWindow;
     private View markerView;
-    private LinearLayout ll_map;
+    private RelativeLayout ll_map;
     private RelativeLayout rl_carmessage;
     //dialogs
     private Dialog networkDialog;
@@ -122,9 +122,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button find_car;
 
     GeoCoder mSearch = null;
-
-//    static public Date endT;
-
+    
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -407,7 +405,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         //定位电动车按钮
-        btnLocation = (TextView) v.findViewById(R.id.btn_location);
+        btnLocation = (Button) v.findViewById(R.id.btn_location);
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -425,7 +423,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         //历史记录按钮
-        btnRecord = (TextView) v.findViewById(R.id.btn_record);
+        btnRecord = (Button) v.findViewById(R.id.btn_record);
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -469,7 +467,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
         //按钮容器
-        ll_map = (LinearLayout) v.findViewById(R.id.ll_map);
+        ll_map = (RelativeLayout) v.findViewById(R.id.ll_map);
         rl_carmessage = (RelativeLayout)v.findViewById(R.id.findcar_container);
         tv_CarName = (TextView) v.findViewById(R.id.tv_CarName);
         //如果setManager.getIMEI()为空会怎么样
