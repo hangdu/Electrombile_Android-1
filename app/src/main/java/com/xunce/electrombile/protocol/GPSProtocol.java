@@ -38,6 +38,4 @@ public class GPSProtocol extends Protocol {
         lat = Float.parseFloat(tmp);
         return lat;
     }
-
-
 }

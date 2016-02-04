@@ -129,7 +129,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mCenter = CmdCenter.getInstance(this);
         setManager = new SettingManager(this);
         mqttConnectManager = MqttConnectManager.getInstance();
-        mqttConnectManager.setContext(getApplicationContext());
+        mqttConnectManager.setContext(FragmentActivity.this);
         //初始化界面
         initView();
         initData();
@@ -277,6 +277,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 subscribe(mac);
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
                 setManager.setMqttStatus(true);
+                //开启报警服务
+                startAlarmService();
+
                 GetAlarmStatusFromServer();
                 GetAutoLockStatusFromServer();
             }
@@ -350,6 +353,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void startAlarmService() {
         Intent intent = new Intent();
         intent.setAction("com.xunce.electrombile.alarmservice");
+        String packageName = getPackageName();
         intent.setPackage(getPackageName());
         FragmentActivity.this.startService(intent);
     }

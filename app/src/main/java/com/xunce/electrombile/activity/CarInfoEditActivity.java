@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
@@ -40,18 +41,19 @@ import java.util.List;
 
 public class CarInfoEditActivity extends Activity {
     TextView tv_CarIMEI;
-    EditText et_CarName;
-    Button btn_DeleteDevice;
+//    EditText et_CarName;
+    RelativeLayout btn_DeleteDevice;
     String IMEI;
     SettingManager setManager;
     private ProgressDialog progressDialog;
-    Button btn_DeviceChange;
+    RelativeLayout btn_DeviceChange;
     Boolean Flag_Maincar;
     Boolean LastCar;
     MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     String NextCarIMEI;
     private TextView tv_phoneNumber;
+    private TextView tv_carType;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -74,9 +76,18 @@ public class CarInfoEditActivity extends Activity {
             //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈???
             if(mqttConnectManager.returnMqttStatus()){
                 if(mqttConnectManager.unSubscribe(IMEI,CarInfoEditActivity.this)){
+
+                    //关闭小安宝报警的服务
+                    Intent intent;
+                    intent = new Intent();
+                    intent.setAction("com.xunce.electrombile.alarmservice");
+                    intent.setPackage(CarInfoEditActivity.this.getPackageName());
+                    CarInfoEditActivity.this.stopService(intent);
+
                     AVUser currentUser = AVUser.getCurrentUser();
                     currentUser.logOut();
-                    Intent intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
+
+                    intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -117,18 +128,20 @@ public class CarInfoEditActivity extends Activity {
 
     void initView(){
         tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
-        tv_CarIMEI.setText(IMEI);
+        tv_CarIMEI.setText("设备号:"+IMEI);
 
         setManager = new SettingManager(CarInfoEditActivity.this);
         tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
-        String s = "当前手机号:"+setManager.getPhoneNumber();
+        String s = "手机号:"+setManager.getPhoneNumber();
         tv_phoneNumber.setText(s);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在设置,请稍后");
 
-        et_CarName = (EditText)findViewById(R.id.et_CarName);
-        btn_DeleteDevice = (Button)findViewById(R.id.btn_DeleteDevice);
+        tv_carType = (TextView)findViewById(R.id.tv_carType);
+
+//        et_CarName = (EditText)findViewById(R.id.et_CarName);
+        btn_DeleteDevice = (RelativeLayout)findViewById(R.id.relativelayout_DeviceUnbind);
         btn_DeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,7 +151,7 @@ public class CarInfoEditActivity extends Activity {
         });
 
         //设备切换
-        btn_DeviceChange = (Button)findViewById(R.id.btn_DeviceChange);
+        btn_DeviceChange = (RelativeLayout)findViewById(R.id.relativeLayout_DeviceChange);
         btn_DeviceChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +159,9 @@ public class CarInfoEditActivity extends Activity {
 
             }
         });
-        Flag_Maincar = JudgeMainCarOrNot();
+
+        JudgeMainCarOrNot();
+
 
     }
 
@@ -170,12 +185,7 @@ public class CarInfoEditActivity extends Activity {
                 ToastUtils.showShort(CarInfoEditActivity.this, "mqtt连接断开");
             }
         }
-
-
         Intent intent = new Intent(CarInfoEditActivity.this,CarManageActivity.class);
-//        intent = new Intent("com.xunce.electrombile.alarmservice");
-//        CarInfoEditActivity.this.stopService(intent);
-
         intent.putExtra("string_key","设备解绑");
         intent.putExtra("boolean_key", Flag_Maincar);
 
@@ -356,13 +366,15 @@ public class CarInfoEditActivity extends Activity {
     }
 
     //判断正在查看的设备是否是主设备
-    Boolean JudgeMainCarOrNot(){
+    void JudgeMainCarOrNot(){
         if(setManager.getIMEI().equals(IMEI)){
+            Flag_Maincar = true;
+            tv_carType.setText("主车辆");
             btn_DeviceChange.setVisibility(View.INVISIBLE);
-            return true;
         }
         else{
-            return false;
+            Flag_Maincar = false;
+            tv_carType.setText("其他车辆");
         }
     }
 }

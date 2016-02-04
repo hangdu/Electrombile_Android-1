@@ -199,11 +199,11 @@ public class MyReceiver extends BroadcastReceiver {
 
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:
-                cmdGPSgetresult(protocol,code);
+                cmdGPSgetresult(protocol);
                 return;
 
             case ProtocolConstants.ERR_WAITING:
-                cmdGPSgetresult(protocol,code);
+                cmdGPSgetresult(protocol);
                 return;
             case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
@@ -365,11 +365,11 @@ public class MyReceiver extends BroadcastReceiver {
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
             }
             ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);
-            
+
         }
     }
 
-    private void cmdGPSgetresult(Protocol protocol,int code){
+    private void cmdGPSgetresult(Protocol protocol){
         TracksManager.TrackPoint trackPoint = protocol.getNewResult();
         ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
     }

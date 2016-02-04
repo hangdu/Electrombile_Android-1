@@ -39,9 +39,6 @@ public class CarManageActivity extends Activity {
 
     Button btn_AddDevice;
     int OthercarPositon;
-//    MqttConnectManager mqttConnectManager;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +57,13 @@ public class CarManageActivity extends Activity {
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
         listview = (ListView)findViewById(R.id.OtherCarListview);
 
-        Othercarlist = new ArrayList<Map<String, Object>>();
+        Othercarlist = new ArrayList<>();
         settingManager = new SettingManager(CarManageActivity.this);
 
         layout_CurrentCar = (RelativeLayout)findViewById(R.id.RelativeLayout_currentcar);
         layout_CurrentCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.d("test","test");
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", tv_CurrentCar.getText());
 
@@ -80,7 +76,6 @@ public class CarManageActivity extends Activity {
                 }
 
                 intentCarEdit.putExtra("NextCarIMEI",NextCarIMEI);
-
                 startActivityForResult(intentCarEdit, 0);
             }
         });
@@ -101,7 +96,6 @@ public class CarManageActivity extends Activity {
                 new int[]{R.id.img,R.id.WhichCar});
 
         listview.setAdapter(adapter);
-
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -144,7 +138,7 @@ public class CarManageActivity extends Activity {
     void caseDeviceChange(){
         HashMap<String, Object> map = new HashMap<>();
         map.put("WhichCar", tv_CurrentCar.getText());
-        map.put("img",R.drawable.img_1);
+        map.put("img",R.drawable.othercar);
 
         String s = Othercarlist.get(OthercarPositon).get("WhichCar").toString();
         settingManager.setIMEI(s);
@@ -155,8 +149,6 @@ public class CarManageActivity extends Activity {
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
 //        reSubscribe();
 //        mqttConnectManager = MqttConnectManager.getInstance();
-
-
         settingManager.setFlagCarSwitched("切换");
     }
 
@@ -176,15 +168,13 @@ public class CarManageActivity extends Activity {
                         else{
                             map = new HashMap<String, Object>();
                             map.put("WhichCar",list.get(i).get("IMEI"));
-                            map.put("img",R.drawable.img_1);
+                            map.put("img",R.drawable.othercar);
                             Othercarlist.add(map);
                         }
                     }
-                    //数据更新
                     adapter.notifyDataSetChanged();
                 }
             }
-
             @Override
             public void onGetBindListFail() {
                 ToastUtils.showShort(CarManageActivity.this, "查询错误");
@@ -199,7 +189,6 @@ public class CarManageActivity extends Activity {
         //如果没有其他的车被绑定了  还没有处理相关的情况
         if(Othercarlist == null){
             //被绑定的只有一辆车 根本就不会到这个分支来 之前就处理了
-
         }
         else{
             //把现在的IMEI号设置为Othercarlist里的第一辆车
@@ -216,39 +205,6 @@ public class CarManageActivity extends Activity {
 
     private void caseOtherCarUnbind(){
         Othercarlist.remove(OthercarPositon);
-        //数据更新
         adapter.notifyDataSetChanged();
-
     }
-
-//    private void reSubscribe() {
-//        Connection connection = Connections.getInstance(CarManageActivity.this).getConnection(ServiceConstants.handler);
-//        MqttAndroidClient mac = connection.getClient();
-//        subscribe(mac);
-//    }
-
-//    private void subscribe(MqttAndroidClient mac) {
-//        //订阅命令字
-//        String initTopic = settingManager.getIMEI();
-//        String topic1 = "dev2app/" + initTopic + "/cmd";
-//        //订阅GPS数据
-//        String topic2 = "dev2app/" + initTopic + "/gps";
-//        //订阅上报的信号强度
-//        String topic3 = "dev2app/" + initTopic + "/433";
-//        //订阅报警
-//        String topic4 = "dev2app/" + initTopic + "/alarm";
-//        String[] topic = {topic1, topic2, topic3, topic4};
-//        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
-//                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
-//        try {
-//            mac.subscribe(topic, qos);
-//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
-//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
-//            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
-//        } catch (MqttException e) {
-//            e.printStackTrace();
-//            ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
-//        }
-//    }
 }

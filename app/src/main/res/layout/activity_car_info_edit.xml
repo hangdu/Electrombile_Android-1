@@ -3,110 +3,151 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
+    android:background="#f3f3f3"
     tools:context="com.xunce.electrombile.activity.CarInfoEditActivity">
 
     <RelativeLayout
-        android:id = "@+id/title"
+        android:id="@+id/ll_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_centerHorizontal="true"
-            style="@style/clickableLayoutTextview"
-            android:text = "车辆信息" />
-
+        android:background="#1dcf96"
+        android:layout_height="44dp">
         <Button
             android:id = "@+id/btn_back"
-            android:layout_alignParentLeft="true"
+            android:layout_width="60dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft = "true"
+            android:layout_marginLeft="13dp"
+            android:layout_centerVertical="true"
+            android:text="回撤"/>
+
+        <TextView
+            android:id="@+id/tv_carType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text = "回撤"/>
+            android:layout_centerInParent="true"
+            android:text = "其他车辆"
+            android:textSize="16sp"
+            android:textColor="#d0f9e5"/>
     </RelativeLayout>
 
-
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="22dp">
+        <ImageView
+            android:id="@+id/img_car"
+            android:layout_width="105dp"
+            android:layout_height="114dp"
+            android:src="@drawable/car_pic"/>
+
+        <LinearLayout
+            android:layout_toRightOf="@+id/img_car"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="27dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="车辆名称"
+                android:textColor="#363636"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="绑定日期"
+                android:textColor="#363636"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id = "@+id/tv_CarIMEI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设备号"
+                android:textColor="#363636"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id = "@+id/tv_phoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="手机号"
+                android:textColor="#363636"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/changeCarName"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="35dp"
+        android:background="#ffffff">
+
+        <TextView
+            android:layout_marginLeft="29dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="修改名称"
+            android:textColor="#363636"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/changeCarPic"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="7dp"
+        android:background="#ffffff">
+
+        <TextView
+            android:layout_marginLeft="28dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="修改照片"
+            android:textColor="#363636"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id = "@+id/relativeLayout_DeviceChange"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="45dp"
+        android:clickable="true"
+        android:background="#ffffff">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="37dp"
+            android:textSize="14dp"
+            android:textColor="#464646"
+            android:text="切换" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativelayout_DeviceUnbind"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
         android:layout_marginTop="2dp"
-        android:focusableInTouchMode="true"
-        android:orientation="horizontal">
+        android:clickable="true"
+        android:background="#ffffff">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text = "车辆名称:      "/>
-        <EditText
-            android:id = "@+id/et_CarName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:text = "车1"/>
-
-    </LinearLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text = "设备相关信息"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="车辆设备号:"/>
-
-        <TextView
-            android:id = "@+id/tv_CarIMEI"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="设备绑定日期:"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal">
-        <TextView
-            android:id = "@+id/tv_phoneNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <Button
-        android:id = "@+id/btn_DeleteDevice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "设备解绑"/>
-
-    <Button
-        android:id = "@+id/btn_DeviceChange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "设备切换"/>
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="37dp"
+            android:textSize="14dp"
+            android:textColor="#464646"
+            android:text="设备解绑" />
+    </RelativeLayout>
 </LinearLayout>

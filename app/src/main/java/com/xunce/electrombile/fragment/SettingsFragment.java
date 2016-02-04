@@ -99,26 +99,27 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 }
                 loginOut();
                 break;
-            //关于条目
+            //关于
             case R.id.layout_about:
                 Intent intentAbout = new Intent(m_context, AboutActivity.class);
                 startActivity(intentAbout);
                 break;
-            //个人中心条目
+
+            //个人中心
             case R.id.layout_person_center:
                 if (!hasUser()) {
                     return;
                 }
                 goToPersonCenterAct();
                 break;
-            //设备管理条目
+
+            //设备管理
             case R.id.rl_1:
                 if (!hasUser()) {
                     return;
                 }
                 goToDeviceAct();
                 break;
-
 
             //自动落锁
             case R.id.layout_autolock:
