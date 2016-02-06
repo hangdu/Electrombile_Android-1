@@ -105,7 +105,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 startActivity(intentAbout);
                 break;
 
-            //个人中心
+            //车主信息
             case R.id.layout_person_center:
                 if (!hasUser()) {
                     return;

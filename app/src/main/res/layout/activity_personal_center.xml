@@ -7,20 +7,24 @@
     tools:context="com.xunce.electrombile.activity.account.PersonalCenterActivity">
 
     <RelativeLayout
-
-        style="@style/clickableLayout">
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#1dcf96">
         <TextView
-            android:layout_centerHorizontal="true"
-            style="@style/clickableLayoutTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#ffffff"
+            android:textSize="17.33sp"
             android:text = "车主中心"/>
 
         <Button
             android:id = "@+id/btn_back"
-            android:layout_alignParentLeft="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text = "回撤"/>
-
+            android:layout_marginLeft="13.33dp"
+            android:layout_centerVertical="true"
+            android:layout_width="20dp"
+            android:layout_height="17dp"
+            android:background="@drawable/back"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -29,10 +33,6 @@
         android:layout_marginTop="8dp"
         android:focusableInTouchMode="true"
         android:elevation="2dip">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/setting_tel" />
 
         <TextView
             style="@style/clickableLayoutTextview"
@@ -54,11 +54,6 @@
         style="@style/clickableLayout"
         android:layout_marginTop="2dp"
         android:elevation="2dip">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/setting_tel" />
-
         <TextView
             style="@style/clickableLayoutTextview"
             android:text="性       别"
@@ -75,10 +70,6 @@
         style="@style/clickableLayout"
         android:layout_marginTop="2dp"
         android:elevation="2dip">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/setting_tel" />
 
         <TextView
             style="@style/clickableLayoutTextview"
@@ -97,9 +88,6 @@
         android:layout_marginTop="60dp"
         android:elevation="2dip">
 
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/setting_tel" />
 
         <TextView
             style="@style/clickableLayoutTextview"

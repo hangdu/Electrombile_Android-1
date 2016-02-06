@@ -2,12 +2,16 @@ package com.xunce.electrombile.activity.account;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -20,7 +24,9 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.UpdatePasswordCallback;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
+import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 public class PersonalCenterActivity extends BaseActivity{
     private EditText tv_UserName;
@@ -31,26 +37,14 @@ public class PersonalCenterActivity extends BaseActivity{
     LinearLayout layout_BirthDate;
     LinearLayout layout_ChangePassword;
 
-    //修改密码的dialog
-    AlertDialog dialog;
-    LinearLayout passDialog;
-
-    EditText oldPass;
-    EditText newPass;
-
     private SettingManager settingManager;
-
     Button btn_back;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_personal_center);
         super.onCreate(savedInstanceState);
     }
-
-
 
     @Override
     public void initViews() {
@@ -61,17 +55,6 @@ public class PersonalCenterActivity extends BaseActivity{
         layout_BirthDate = (LinearLayout)findViewById(R.id.layout_BirthDate);
         layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
         btn_back = (Button)findViewById(R.id.btn_back);
-
-        LayoutInflater inflater = (LayoutInflater)PersonalCenterActivity.this.getSystemService
-                (Context.LAYOUT_INFLATER_SERVICE);
-        passDialog= (LinearLayout) inflater.inflate(R.layout.changepassword, null);
-        oldPass = (EditText)passDialog.findViewById(R.id.et_oldpass);
-        newPass = (EditText)passDialog.findViewById(R.id.et_newpass);
-
-        //修改密码的dialog
-        createDialog();
-
-
 
         layout_gender.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +99,7 @@ public class PersonalCenterActivity extends BaseActivity{
         layout_ChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.show();
+                changePass();
             }
         });
 
@@ -129,73 +112,22 @@ public class PersonalCenterActivity extends BaseActivity{
         });
     }
 
+    private void changePass() {
+        //解析xml
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.changepassword, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
 
+        //找按钮
+        Button confirm = (Button) view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
 
-    @Override
-    public void initEvents() {
-        settingManager = new SettingManager(PersonalCenterActivity.this);
+        final EditText oldPass = (EditText)view.findViewById(R.id.et_oldpass);
+        final EditText newPass = (EditText)view.findViewById(R.id.et_newpass);
 
-        //获取setting中的昵称 出生年代 性别
-        tv_UserName.setText(settingManager.getNickname());
-        tv_Gender.setText(settingManager.getGender());
-        tv_BirthDate.setText(settingManager.getBirthdate());
-
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        //保存输入的数据
-//        setManager.setPersonCenterCarNumber(et_car_number.getText().toString().trim());
-//        setManager.setPersonCenterSimNumber(et_sim_number.getText().toString().trim());
-
-    }
-
-//    private void loadAndSetImg(ImageView imageView, String nameImg) {
-//        com.lidroid.xutils.BitmapUtils bitmapUtils = new com.lidroid.xutils.BitmapUtils(this);
-//        bitmapUtils.configDefaultLoadFailedImage(R.drawable.iv_person_head);//加载失败图片
-//        bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);//设置图片压缩类型
-//        bitmapUtils.configDefaultCacheExpiry(0);
-//        bitmapUtils.configDefaultAutoRotation(true);
-//        bitmapUtils.display(imageView, imgFilePath + nameImg);
-//    }
-
-//    public void changeHeadPortrait(View view) {
-//        photoNumber = 0;
-//        showDialog();
-//    }
-
-    private class ChoiceOnClickListener implements DialogInterface.OnClickListener {
-        private int which = 0;
-        @Override
-        public void onClick(DialogInterface dialogInterface, int which) {
-            this.which = which;
-        }
-
-        public int getWhich() {
-            return which;
-        }
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        settingManager.setNickname(tv_UserName.getText().toString().trim());
-        super.onBackPressed();
-
-    }
-
-    void createDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(PersonalCenterActivity.this);
-        builder.setTitle("修改密码");
-        builder.setView(passDialog);
-
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //判断旧密码是不是对的
-                String name = settingManager.getPhoneNumber();
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 String old_password = oldPass.getText().toString().trim();
                 String new_password = newPass.getText().toString().trim();
                 if(new_password.isEmpty() == false)
@@ -210,6 +142,7 @@ public class PersonalCenterActivity extends BaseActivity{
                                 Toast.makeText(PersonalCenterActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
                                 oldPass.setText("");
                                 newPass.setText("");
+                                dialog.dismiss();
                             } else {
                                 //原密码错误
                                 Toast.makeText(PersonalCenterActivity.this, "原密码错误,修改密码失败", Toast.LENGTH_SHORT).show();
@@ -225,14 +158,111 @@ public class PersonalCenterActivity extends BaseActivity{
                     oldPass.setText("");
                     newPass.setText("");
                 }
+
             }
         });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
             }
         });
-        dialog=builder.create();
+
+        //设置布局
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+        //设置宽度
+//        WindowManager m = this.getWindowManager();
+//        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+//        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
+////        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
+//        //虽然过时,为了兼容性,还是用老方法. API 13以上才能使用新方法
+//        p.width = (int) (d.getWidth() * 0.794); // 宽度设置为屏幕的0.65
+////        p.height = (int) (d.getHeight()*0.372);
+//        dialog.getWindow().setAttributes(p);
     }
 
+
+
+    @Override
+    public void initEvents() {
+        settingManager = new SettingManager(PersonalCenterActivity.this);
+        //获取setting中的昵称 出生年代 性别
+        tv_UserName.setText(settingManager.getNickname());
+        tv_Gender.setText(settingManager.getGender());
+        tv_BirthDate.setText(settingManager.getBirthdate());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    private class ChoiceOnClickListener implements DialogInterface.OnClickListener {
+        private int which = 0;
+        @Override
+        public void onClick(DialogInterface dialogInterface, int which) {
+            this.which = which;
+        }
+
+        public int getWhich() {
+            return which;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        settingManager.setNickname(tv_UserName.getText().toString().trim());
+        super.onBackPressed();
+
+    }
+
+//    void createDialog(){
+//        AlertDialog.Builder builder = new AlertDialog.Builder(PersonalCenterActivity.this);
+//        builder.setTitle("修改密码");
+//        builder.setView(passDialog);
+//
+//        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                //判断旧密码是不是对的
+//                String name = settingManager.getPhoneNumber();
+//                String old_password = oldPass.getText().toString().trim();
+//                String new_password = newPass.getText().toString().trim();
+//                if(new_password.isEmpty() == false)
+//                {
+//                    AVUser currentUser = AVUser.getCurrentUser();
+//                    currentUser.updatePasswordInBackground(old_password, new_password, new UpdatePasswordCallback() {
+//                        @Override
+//                        public void done(AVException e) {
+//                            Log.d("TAG", "something wrong");
+//                            if (e == null) {
+//                                //修改密码成功
+//                                Toast.makeText(PersonalCenterActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
+//                                oldPass.setText("");
+//                                newPass.setText("");
+//                            } else {
+//                                //原密码错误
+//                                Toast.makeText(PersonalCenterActivity.this, "原密码错误,修改密码失败", Toast.LENGTH_SHORT).show();
+//                                oldPass.setText("");
+//                                newPass.setText("");
+//                            }
+//                        }
+//                    });
+//                }
+//                //新密码为空
+//                else{
+//                    Toast.makeText(PersonalCenterActivity.this, "新密码为空,修改密码失败", Toast.LENGTH_SHORT).show();
+//                    oldPass.setText("");
+//                    newPass.setText("");
+//                }
+//            }
+//        });
+//        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                // User cancelled the dialog
+//            }
+//        });
+//        dialog=builder.create();
+//    }
 }
