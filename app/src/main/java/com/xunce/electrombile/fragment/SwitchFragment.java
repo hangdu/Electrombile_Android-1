@@ -244,7 +244,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 myHorizontalScrollView.list.remove(position);
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("whichcar", IMEI_previous);
-                map.put("img", R.drawable.img_1);
+                map.put("img", R.drawable.othercar);
                 myHorizontalScrollView.list.add(map);
                 myHorizontalScrollView.UpdateListview();
                 OtherCar.remove(position);
@@ -701,7 +701,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                         else{
                             map = new HashMap<>();
                             map.put("whichcar",list.get(i).get("IMEI"));
-                            map.put("img", R.drawable.img_1);
+                            map.put("img", R.drawable.othercar);
                             myHorizontalScrollView.list.add(map);
                             OtherCar.add((String)list.get(i).get("IMEI"));
                         }

@@ -122,7 +122,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
         String[] strings = {"img","whichcar"};
         int[] ids = {R.id.img,R.id.WhichCar};
         getData();
-        simpleAdapter = new SimpleAdapter(mContext, list, R.layout.item_othercarlistview, strings, ids);
+        simpleAdapter = new SimpleAdapter(mContext, list, R.layout.item_othercarlistview_green, strings, ids);
         otherCarlistView.setAdapter(simpleAdapter);
     }
 
