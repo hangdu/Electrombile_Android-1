@@ -3,6 +3,7 @@ package com.xunce.electrombile.activity.account;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
 
 public class RegisterActivity_Part1 extends BaseActivity {
     private EditText et_PhoneNumber;
-    private Button btn_Back;
+//    private Button btn_Back;
     private Button btn_NextStep;
     ProgressDialog dialog;
     public AlertDialog.Builder builder;
@@ -99,7 +100,7 @@ public class RegisterActivity_Part1 extends BaseActivity {
     @Override
     public void initViews() {
         et_PhoneNumber = (EditText)findViewById(R.id.etName);
-        btn_Back = (Button)findViewById(R.id.btn_back);
+//        btn_Back = (Button)findViewById(R.id.btn_back);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
 
         dialog = new ProgressDialog(this);
