@@ -23,21 +23,21 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_marginTop="100px"
+        android:layout_marginTop="33.33dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/img_phoneperson"
-            android:layout_marginLeft="215px"
-            android:layout_width="50px"
-            android:layout_height="56px"
+            android:layout_marginLeft="71.67dp"
+            android:layout_width="16.67dp"
+            android:layout_height="18.67dp"
             android:src="@drawable/phone_person"/>
         <com.xunce.electrombile.view.EditTextWithDel
             android:id="@+id/etName"
             android:layout_toRightOf="@+id/img_phoneperson"
-            android:layout_width="518px"
-            android:layout_height="56px"
-            android:layout_marginLeft="65px"
+            android:layout_width="172.67dp"
+            android:layout_height="18.67dp"
+            android:layout_marginLeft="21.67dp"
             android:background="@null"
             android:layout_centerVertical="true"
             android:hint="输入"
@@ -45,39 +45,38 @@
     </RelativeLayout>
 
     <View
-        android:layout_marginTop="40px"
-        android:layout_marginLeft="200px"
-        android:layout_width="700px"
-        android:layout_height="3px"
+        android:layout_marginTop="13.33dp"
+        android:layout_marginLeft="66.67dp"
+        android:layout_width="233.33dp"
+        android:layout_height="1dp"
         android:background= "#1dcf96" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="50px"
+        android:layout_marginTop="16.67dp"
         android:textColor="#717171"
-        android:textSize="32px"
+        android:textSize="10.67sp"
         android:text = "为了安全,我们会向你的手机发送验证码"/>
 
     <Button
         android:id="@+id/btn_NextStep"
-        android:layout_width="715px"
-        android:layout_height="90px"
-        android:layout_marginTop="50px"
+        android:layout_width="238.33dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16.67dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/nextstep_rect"
         android:textColor="#ffffff"
-        android:textSize="52px"
+        android:textSize="17.33sp"
         android:text = "下一步"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50px"
+        android:layout_marginTop="16.67dp"
         android:layout_gravity="center_horizontal"
         android:textColor="#717171"
-        android:textSize="32px"
+        android:textSize="10.67sp"
         android:text = "本人已阅读并同意注册协议"/>
-
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.xunce.electrombile.activity.account;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,8 +34,9 @@ import java.util.TimerTask;
 
 public class SMSandPasswordActivity extends Activity {
     private TextView tv_Current_Phone;
+    private TextView tv_leftsecond;
     private EditText et_SMSCode;
-    private Button btn_ResendSysCode;
+    private TextView btn_ResendSysCode;
     private EditText et_Password;
     private Button btn_NextStep;
 
@@ -56,10 +58,14 @@ public class SMSandPasswordActivity extends Activity {
                     if (secondleft <= 0) {
                         timer.cancel();
                         btn_ResendSysCode.setEnabled(true);
-                        btn_ResendSysCode.setText("重新获取");
-                        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_1_act);
+//                        btn_ResendSysCode.setText("重新获取");
+//                        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_1_act);
+                        //绿色
+                        btn_ResendSysCode.setTextColor(Color.parseColor("#1dcf94"));
+                        tv_leftsecond.setText("60");
                     } else {
-                        btn_ResendSysCode.setText(secondleft + "秒后重新获取");
+                        tv_leftsecond.setText(secondleft + "");
+                        btn_ResendSysCode.setTextColor(Color.parseColor("#8b8b8b"));
                     }
                     break;
 
@@ -109,9 +115,10 @@ public class SMSandPasswordActivity extends Activity {
     public void initView(){
         tv_Current_Phone = (TextView)findViewById(R.id.tv_Current_Phone);
         et_SMSCode = (EditText)findViewById(R.id.et_SMSCode);
-        btn_ResendSysCode = (Button)findViewById(R.id.btn_ResendSysCode);
+        btn_ResendSysCode = (TextView)findViewById(R.id.btn_ResendSysCode);
         et_Password = (EditText)findViewById(R.id.et_Password);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
+        tv_leftsecond = (TextView)findViewById(R.id.tv_leftsecond);
 
         btn_ResendSysCode.setEnabled(false);
         timer = new Timer();
@@ -124,7 +131,7 @@ public class SMSandPasswordActivity extends Activity {
         //获取到当前手机号
         Intent intent = getIntent();
         phone = intent.getStringExtra("phone");
-        tv_Current_Phone.setText(phone);
+        tv_Current_Phone.setText("当前手机号:"+phone);
 
         //开始60s倒计时
         secondleft = 60;
@@ -181,7 +188,8 @@ public class SMSandPasswordActivity extends Activity {
     private void RegetSysCode(){
         dialog.show();
         btn_ResendSysCode.setEnabled(false);
-        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
+//        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
+        btn_ResendSysCode.setTextColor(Color.parseColor("#8b8b8b"));
         secondleft = 60;
         timer = new Timer();
         timer.schedule(new TimerTask() {
