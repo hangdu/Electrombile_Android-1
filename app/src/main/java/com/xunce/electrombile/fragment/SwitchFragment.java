@@ -194,7 +194,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
-        (m_context).receiver.setAlarmHandler(mhandler);
+//        (m_context).receiver.setAlarmHandler(mhandler);
     }
 
     @Override

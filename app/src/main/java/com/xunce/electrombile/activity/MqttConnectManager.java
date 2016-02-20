@@ -228,13 +228,4 @@ public class MqttConnectManager {
             return false;
         }
     }
-
-//    public void stopAlarmService(){
-//        Intent intent;
-//        intent = new Intent();
-//        intent.setAction("com.xunce.electrombile.alarmservice");
-//        intent.setPackage(m_context.getPackageName());
-//        m_context.stopService(intent);
-//    }
-
 }

@@ -5,12 +5,14 @@ package com.xunce.electrombile.activity;
  */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.content.Context;
 
@@ -22,23 +24,51 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.R;
 
-public class ExpandableAdapter extends BaseExpandableListAdapter{
+public class ExpandableAdapter extends SimpleExpandableListAdapter{
+
+    private static final String DATE = "date";
+    private static final String DISTANCEPERDAY = "distancePerDay";
+    private static final String STARTPOINT = "startPoint";
+    private static final String ENDPOINT = "endPoint";
+
+
     private TestddActivity activity;
     private Context context;
     private ChildViewHold childViewHold;
     private List<Item> ItemList;
 
+    List<Map<String, String>> groupData;
+    List<List<Map<String, String>>> childData;
 
     class ChildViewHold{
         TextView textView1;
         TextView textView2;
-        TextView textView3;
-        TextView textView4;
+//        TextView textView3;
+//        TextView textView4;
     }
-    public ExpandableAdapter(TestddActivity activity,List<Item> ItemList) {
+//    public ExpandableAdapter(TestddActivity activity,List<Item> ItemList) {
+//        this.activity = activity;
+//        this.context = activity;
+//        this.ItemList = ItemList;
+//    }
+
+    public ExpandableAdapter(Context context,
+                             List<Map<String, String>> groupData, int groupLayout,
+                             String[] groupFrom, int[] groupTo,
+                             List<List<Map<String, String>>> childData,
+                             int childLayout, String[] childFrom, int[] childTo,
+                             TestddActivity activity) {
+
+        super(context, groupData, groupLayout, groupLayout, groupFrom, groupTo, childData,
+                childLayout, childLayout, childFrom, childTo);
         this.activity = activity;
         this.context = activity;
-        this.ItemList = ItemList;
+//        this.ItemList = ItemList;
+
+        this.groupData = groupData;
+        this.childData = childData;
+
+
     }
 
     public void ChangeItemList(List<Item> ItemList)
@@ -62,40 +92,45 @@ public class ExpandableAdapter extends BaseExpandableListAdapter{
         // TODO Auto-generated method stub
         if(convertView == null) {
             LayoutInflater minflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = minflater.inflate(R.layout.groupview,null);
+            convertView = minflater.inflate(R.layout.expandgroupview,null);
         }
-        TextView tv = (TextView) convertView.findViewById(R.id.grouptextview1);
-        tv.setText(ItemList.get(groupPosition).getDate());
-        tv.setTextSize(25);
-        tv.setPadding(15, 5, 0, 0);
-        return convertView;
+        TextView tv_groupDate = (TextView) convertView.findViewById(R.id.groupDate);
+        TextView tv_distance = (TextView) convertView.findViewById(R.id.distance);
 
+        tv_groupDate.setText(groupData.get(groupPosition).get(DATE));
+        tv_distance.setText(groupData.get(groupPosition).get(DISTANCEPERDAY));
+
+        return convertView;
     }
+
+
     @Override
     public View getChildView(int groupPosition, int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-            if(convertView == null) {
-            LayoutInflater minflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = minflater.inflate(R.layout.listviewchildren,null);
-            childViewHold = new ChildViewHold();
-            childViewHold.textView1 = (TextView) convertView.findViewById(R.id.textview1);
-            childViewHold.textView2 = (TextView) convertView.findViewById(R.id.textview2);
-            childViewHold.textView3 = (TextView) convertView.findViewById(R.id.textview3);
-            childViewHold.textView4 = (TextView) convertView.findViewById(R.id.textview4);
-
-
-            convertView.setTag(childViewHold);
+        if(convertView == null) {
+        LayoutInflater minflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = minflater.inflate(R.layout.expandchildview,null);
+        childViewHold = new ChildViewHold();
+        childViewHold.textView1 = (TextView) convertView.findViewById(R.id.tv_startPoint);
+        childViewHold.textView2 = (TextView) convertView.findViewById(R.id.tv_endPoint);
+//            childViewHold.textView3 = (TextView) convertView.findViewById(R.id.textview3);
+//            childViewHold.textView4 = (TextView) convertView.findViewById(R.id.textview4);
+        convertView.setTag(childViewHold);
         }else{
             childViewHold = (ChildViewHold)convertView.getTag();
         }
 
         List<Message> messageList= ItemList.get(groupPosition).getMessagelist();
 
-        childViewHold.textView1.setText(messageList.get(childPosition).getTime());
-        childViewHold.textView2.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getStartLocation());
-        childViewHold.textView3.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getEndLocation());
-        childViewHold.textView4.setText("时间行程");
+//        childViewHold.textView1.setText(messageList.get(childPosition).getTime());
+//        childViewHold.textView2.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getStartLocation());
+//        childViewHold.textView3.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getEndLocation());
+//        childViewHold.textView4.setText("时间行程");
+
+        childViewHold.textView1.setText(childData.get(groupPosition).get(childPosition).get(STARTPOINT));
+        childViewHold.textView2.setText(childData.get(groupPosition).get(childPosition).get(ENDPOINT));
+
         return convertView;
     }
     @Override

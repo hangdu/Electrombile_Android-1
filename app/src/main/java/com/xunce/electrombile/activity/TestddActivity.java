@@ -53,6 +53,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.baidu.mapapi.search.geocode.GeoCoder;
@@ -60,16 +61,20 @@ import com.xunce.electrombile.view.RefreshableView;
 
 public class TestddActivity extends Activity{
 
+    private static final String DATE = "date";
+    private static final String DISTANCEPERDAY = "distancePerDay";
+    private static final String STARTPOINT = "startPoint";
+    private static final String ENDPOINT = "endPoint";
+
     private final String TAG = "RecordActivity";
 //    ListView m_listview;
     TracksManager tracksManager;
-    List<Item> ItemList = new ArrayList<>();
+//    List<Item> ItemList = new ArrayList<>();
 
     //查询的开始和结束时间
     Date startT;
     Date endT;
-    //生成动态数组，加入数据
-    ArrayList<HashMap<String, Object>> listItem;
+
     //数据适配器
 //    SimpleAdapter listItemAdapter;
     ExpandableAdapter adapter;
@@ -113,6 +118,11 @@ public class TestddActivity extends Activity{
 
     public DBManage dbManage;
     public DBManage dbManageSecond;
+
+    List<Map<String, String>> groupData;
+    List<List<Map<String, String>>> childData;
+
+
 
 
     private Handler mhandler = new Handler(){
@@ -178,8 +188,6 @@ public class TestddActivity extends Activity{
         }
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -232,10 +240,15 @@ public class TestddActivity extends Activity{
                     }
                 }).create();
 
+        groupData = new ArrayList<Map<String, String>>();
+        childData = new ArrayList<List<Map<String, String>>>();
+
         ConstructListview(1);
 
         expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
-        adapter = new ExpandableAdapter(this,ItemList);
+        adapter = new ExpandableAdapter(this,groupData, R.layout.expandgroupview,new String[] {DATE,DISTANCEPERDAY},new int[]{R.id.groupDate,R.id.distance},
+                childData,R.layout.expandchildview,new String[] {STARTPOINT,ENDPOINT},new int[]{R.id.tv_startPoint,R.id.tv_endPoint},this);
+
         expandableListView.setAdapter(adapter);
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
@@ -260,6 +273,7 @@ public class TestddActivity extends Activity{
             }
         }, 1);
     }
+
 
     @Override
     protected void onDestroy() {
@@ -311,7 +325,18 @@ public class TestddActivity extends Activity{
                         Message message = new Message("无数据",
                                 null,null);
                         messageList.add(message);
-                        ItemList.get(GroupPosition).setMessagelist(messageList);
+//                        ItemList.get(GroupPosition).setMessagelist(messageList);
+
+                        //加了
+                        Map<String,String> map = new HashMap<>();
+                        map.put(STARTPOINT,"无数据");
+                        map.put(ENDPOINT, "无数据");
+
+                        List<Map<String, String>> listMap = new ArrayList<>();
+                        listMap.add(map);
+                        childData.add(GroupPosition, listMap);
+
+
                         adapter.notifyDataSetChanged();
                         return;
                     }
@@ -362,6 +387,10 @@ public class TestddActivity extends Activity{
         Message message;
         messageList = new ArrayList<Message>();
 
+        //加了
+        Map<String,String> map;
+        List<Map<String, String>> listMap = new ArrayList<>();
+
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {
             //如果当前路线段只有一个点 不显示
@@ -409,8 +438,15 @@ public class TestddActivity extends Activity{
 //            map.put("ItemDistance", "距离:" + distanceKM + "千米" + diatanceM + "米");
 //            listItem.add(map);
 
+            map = new HashMap<>();
+            map.put(STARTPOINT,"正在缓冲");
+            map.put(ENDPOINT,"正在缓冲");
+            listMap.add(map);
         }
-        ItemList.get(GroupPosition).setMessagelist(messageList);
+//        ItemList.get(GroupPosition).setMessagelist(messageList);
+
+        childData.add(GroupPosition, listMap);
+
         adapter.notifyDataSetChanged();
 
         tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
@@ -482,7 +518,17 @@ public class TestddActivity extends Activity{
                         Message message = new Message("无数据",
                                 null,null);
                         messageList.add(message);
-                        ItemList.get(GroupPosition).setMessagelist(messageList);
+//                        ItemList.get(GroupPosition).setMessagelist(messageList);
+
+                        //加了
+                        Map<String,String> map = new HashMap<>();
+                        map.put(STARTPOINT,"无数据");
+                        map.put(ENDPOINT, "无数据");
+
+                        List<Map<String, String>> listMap = new ArrayList<>();
+                        listMap.add(map);
+                        childData.add(groupPosition,listMap);
+
                         adapter.notifyDataSetChanged();
                         return;
 
@@ -493,9 +539,17 @@ public class TestddActivity extends Activity{
                         Message message = new Message(dbManage.dateTrackList.get(0).time,
                                 dbManage.dateTrackList.get(0).StartPoint,dbManage.dateTrackList.get(0).EndPoint);
                         messageList.add(message);
-                        ItemList.get(GroupPosition).setMessagelist(messageList);
-                        adapter.notifyDataSetChanged();
+//                        ItemList.get(GroupPosition).setMessagelist(messageList);
 
+                        //加了
+                        Map<String,String> map = new HashMap<>();
+                        map.put(STARTPOINT,dbManage.dateTrackList.get(0).StartPoint);
+                        map.put(ENDPOINT,dbManage.dateTrackList.get(0).EndPoint);
+                        List<Map<String, String>> listMap = new ArrayList<>();
+                        listMap.add(map);
+                        childData.add(groupPosition, listMap);
+
+                        adapter.notifyDataSetChanged();
                         getSecondTableData();
 
                         return;
@@ -508,11 +562,23 @@ public class TestddActivity extends Activity{
                                 dbManage.dateTrackList.get(i).StartPoint,dbManage.dateTrackList.get(i).EndPoint);
                         messageList.add(message);
                     }
-                    ItemList.get(GroupPosition).setMessagelist(messageList);
+//                    ItemList.get(GroupPosition).setMessagelist(messageList);
+
+
+                    //加了
+                    Map<String,String> map;
+                    List<Map<String, String>> listMap = new ArrayList<>();
+                    for(int i = 0;i<dbManage.dateTrackList.size();i++){
+                        map = new HashMap<>();
+                        map.put(STARTPOINT,dbManage.dateTrackList.get(i).StartPoint);
+                        map.put(ENDPOINT, dbManage.dateTrackList.get(i).EndPoint);
+                        listMap.add(map);
+                    }
+                    childData.add(groupPosition, listMap);
+
+
                     adapter.notifyDataSetChanged();
-
                     getSecondTableData();
-
                     return;
                 }
             }
@@ -542,11 +608,16 @@ public class TestddActivity extends Activity{
 
         if(0 == Start_End_TYPE)
         {
-            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setStartLocation(result);
+//            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setStartLocation(result);
+
+            childData.get(GroupPosition).get(TrackPosition).put(STARTPOINT,result);
         }
+
         else{
-            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setEndLocation(result);
+//            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setEndLocation(result);
+            childData.get(GroupPosition).get(TrackPosition).put(ENDPOINT, result);
         }
+
         adapter.notifyDataSetChanged();
 
         if(ReverseNumber == totalTrackNumber*2){
@@ -575,9 +646,26 @@ public class TestddActivity extends Activity{
             result[i] = sdf.format(c.getTime());
         }
 
+        Map<String, String> map;
         for(int i = result.length-7;i<result.length;i++)
         {
-            ItemList.add(new Item(result[i],test,true));
+            map = new HashMap<>();
+            map.put(DATE, result[i]);
+            map.put(DISTANCEPERDAY,"16km");
+            groupData.add(map);
+        }
+
+
+        List<Map<String, String>> listmap;
+        Map<String,String> childmap;
+        for(int i = result.length-7;i<result.length;i++)
+        {
+            childmap = new HashMap<>();
+            childmap.put(STARTPOINT, "正在缓冲");
+            childmap.put(ENDPOINT,"正在缓冲");
+            listmap = new ArrayList<>();
+            listmap.add(childmap);
+            childData.add(listmap);
         }
     }
 
@@ -606,6 +694,8 @@ public class TestddActivity extends Activity{
         }
 
     }
+
+
 
     //test
 //                先删除二级数据库  在删除一级数据库

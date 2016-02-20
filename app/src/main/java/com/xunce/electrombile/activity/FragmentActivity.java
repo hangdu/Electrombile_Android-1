@@ -44,6 +44,7 @@ import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
+import com.xunce.electrombile.services.MqttService;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -133,8 +134,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         //初始化界面
         initView();
         initData();
+
         //判断是否绑定设备
         queryIMEI();
+//        getMqttConnection();
 //        //注册广播
         Historys.put(this);
 
@@ -147,8 +150,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
         }
-
-
     }
 
     @Override
@@ -269,26 +270,36 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        mqttConnectManager.getMqttConnection();
-        mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
+        //这个函数是耗时的操作
+        new Thread(new Runnable() {
             @Override
-            public void MqttConnectSuccess() {
-                mac = mqttConnectManager.getMac();
-                subscribe(mac);
-                ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                setManager.setMqttStatus(true);
-                //开启报警服务
-                startAlarmService();
+            public void run() {
+                // 开始执行后台任务
+                mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
+                    @Override
+                    public void MqttConnectSuccess() {
+                        mac = mqttConnectManager.getMac();
+                        subscribe(mac);
+                        ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                        setManager.setMqttStatus(true);
+                        //开启报警服务
+                        startAlarmService();
+//                startMqttService();
 
-                GetAlarmStatusFromServer();
-                GetAutoLockStatusFromServer();
-            }
+                        GetAlarmStatusFromServer();
+                        GetAutoLockStatusFromServer();
+                    }
 
-            @Override
-            public void MqttConnectFail() {
-                ToastUtils.showShort(FragmentActivity.this,"连接服务器失败");
+                    @Override
+                    public void MqttConnectFail() {
+                        ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
+                    }
+                });
+                mqttConnectManager.getMqttConnection();
+
             }
-        });
+        }).start();
+
     }
 
     private void ReMqttConnect(){
@@ -353,7 +364,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private void startAlarmService() {
         Intent intent = new Intent();
         intent.setAction("com.xunce.electrombile.alarmservice");
-        String packageName = getPackageName();
         intent.setPackage(getPackageName());
         FragmentActivity.this.startService(intent);
     }
@@ -456,7 +466,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         IntentFilter filter = new IntentFilter();
         filter.setPriority(800);
         filter.addAction("MqttService.callbackToActivity.v0");
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        LocalBroadcastManager.getInstance(FragmentActivity.this).registerReceiver(receiver, filter);
+
     }
 
     /**
