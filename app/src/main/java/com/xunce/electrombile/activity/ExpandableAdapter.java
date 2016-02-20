@@ -35,7 +35,7 @@ public class ExpandableAdapter extends SimpleExpandableListAdapter{
     private TestddActivity activity;
     private Context context;
     private ChildViewHold childViewHold;
-    private List<Item> ItemList;
+//    private List<Item> ItemList;
 
     List<Map<String, String>> groupData;
     List<List<Map<String, String>>> childData;
@@ -71,15 +71,15 @@ public class ExpandableAdapter extends SimpleExpandableListAdapter{
 
     }
 
-    public void ChangeItemList(List<Item> ItemList)
-    {
-        this.ItemList = ItemList;
-    }
+//    public void ChangeItemList(List<Item> ItemList)
+//    {
+//        this.ItemList = ItemList;
+//    }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
         // TODO Auto-generated method stub
-        return ItemList.get(groupPosition).getDate();
+        return childData.get(groupPosition).get(childPosition);
     }
     @Override
     public long getChildId(int groupPosition, int childPosition) {
@@ -121,7 +121,7 @@ public class ExpandableAdapter extends SimpleExpandableListAdapter{
             childViewHold = (ChildViewHold)convertView.getTag();
         }
 
-        List<Message> messageList= ItemList.get(groupPosition).getMessagelist();
+//        List<Message> messageList= ItemList.get(groupPosition).getMessagelist();
 
 //        childViewHold.textView1.setText(messageList.get(childPosition).getTime());
 //        childViewHold.textView2.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getStartLocation());
@@ -136,17 +136,17 @@ public class ExpandableAdapter extends SimpleExpandableListAdapter{
     @Override
     public int getChildrenCount(int groupPosition) {
         // TODO Auto-generated method stub
-        return ItemList.get(groupPosition).getMessagelist().size();
+        return childData.get(groupPosition).size();
     }
     @Override
     public Object getGroup(int groupPosition) {
         // TODO Auto-generated method stub
-        return ItemList.get(groupPosition);
+        return groupData.get(groupPosition);
     }
     @Override
     public int getGroupCount() {
         // TODO Auto-generated method stub
-        return ItemList.size();
+        return groupData.size();
     }
     @Override
     public long getGroupId(int groupPosition) {

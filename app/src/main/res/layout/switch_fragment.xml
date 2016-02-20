@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -40,7 +39,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:text = "小安宝"
-                        android:textSize="48px"
+                        android:textSize="16sp"
                         android:textColor="#d0f9e5"/>
                     <Button
                         android:id="@+id/weather1"
@@ -130,14 +129,14 @@
                             android:layout_height="wrap_content"
                             android:textColor="#009f53"
                             android:text = "50%"
-                            android:textSize="52px"/>
+                            android:textSize="17.33sp"/>
 
                         <TextView
                             android:layout_below="@id/tv_battery"
                             android:layout_alignLeft="@id/tv_battery"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="38px"
+                            android:textSize="12.67sp"
                             android:textColor="#595959"
                             android:text="预计可行驶60公里"/>
                     </RelativeLayout>
@@ -161,9 +160,9 @@
                         android:layout_height="match_parent">
                         <ImageView
                             android:id="@+id/img_distance"
-                            android:layout_width="100px"
-                            android:layout_height="100px"
-                            android:layout_marginLeft="40px"
+                            android:layout_width="33.33dp"
+                            android:layout_height="33.33dp"
+                            android:layout_marginLeft="13.33dp"
                             android:layout_centerVertical="true"
                             android:background="@drawable/distance"/>
 
@@ -176,7 +175,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="#009f53"
                             android:text = "累计行驶"
-                            android:textSize="52px"/>
+                            android:textSize="17.33sp"/>
 
                         <TextView
                             android:id="@+id/tv_distance"
@@ -184,7 +183,7 @@
                             android:layout_alignLeft="@id/tv_total"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="38px"
+                            android:textSize="12.67sp"
                             android:textColor="#595959"
                             android:text="0.00公里"/>
 
@@ -213,7 +212,7 @@
                         android:layout_marginTop="12dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="38px"
+                        android:textSize="12.67sp"
                         android:textColor="#595959"
                         android:text="小安宝流量"/>
 
@@ -223,7 +222,7 @@
                         android:layout_alignLeft="@+id/tv1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="52px"
+                        android:textSize="17.33sp"
                         android:textColor="#009f53"
                         android:text="sim卡流量"/>
                 </RelativeLayout>
