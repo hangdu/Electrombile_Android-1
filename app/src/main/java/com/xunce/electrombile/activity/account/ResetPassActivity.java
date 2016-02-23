@@ -39,6 +39,7 @@ public class ResetPassActivity extends Activity {
     ProgressDialog dialog;
     String phone;
     TextView tv_leftsecond;
+    private TextView title;
 
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -86,6 +87,9 @@ public class ResetPassActivity extends Activity {
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
         et_NewPass = (EditText)findViewById(R.id.et_Password);
         tv_leftsecond = (TextView)findViewById(R.id.tv_leftsecond);
+
+        title = (TextView)findViewById(R.id.title);
+        title.setText("忘记密码");
 
         btn_ResendSysCode = (TextView)findViewById(R.id.btn_ResendSysCode);
         btn_ResendSysCode.setEnabled(false);

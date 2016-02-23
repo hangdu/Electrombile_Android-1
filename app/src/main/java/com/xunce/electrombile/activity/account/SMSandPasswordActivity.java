@@ -44,7 +44,8 @@ public class SMSandPasswordActivity extends Activity {
     private int secondleft;
     private String phone;
     private String password;
-//    private SettingManager settingManager;
+    private TextView title;
+
 
     ProgressDialog dialog;
 
@@ -117,6 +118,9 @@ public class SMSandPasswordActivity extends Activity {
         et_Password = (EditText)findViewById(R.id.et_Password);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
         tv_leftsecond = (TextView)findViewById(R.id.tv_leftsecond);
+        title = (TextView)findViewById(R.id.title);
+
+        title.setText("注册密码");
 
         btn_ResendSysCode.setEnabled(false);
         timer = new Timer();
