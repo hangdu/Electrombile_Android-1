@@ -1,86 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context="com.xunce.electrombile.activity.account.ResetPassActivity">
+    android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/ll_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:background="#1dcf96"
+        android:layout_height="44dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text = "找回密码"/>
-
-        <Button
-            android:id = "@+id/btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text = "回撤"/>
+            android:text = "注册密码"
+            android:textSize="16dp"
+            android:textColor="#d0f9e5"/>
     </RelativeLayout>
 
+
     <TextView
-        android:id = "@+id/tv_CurentNumber"
-        android:layout_width="match_parent"
+        android:id = "@+id/tv_Current_Phone"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16.67dp"
+        android:layout_marginLeft="60.67dp"
+        android:textColor="#717171"
+        android:textSize="15.33sp"
         android:text = "当前手机号"/>
 
-    <EditText
-        android:id="@+id/et_VerifyCode"
-        android:layout_width="274dp"
-        android:layout_height="42dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/line_et"
-        android:hint="验证码"
-        android:inputType="phone"
-        android:paddingLeft="15dp" />
-
-    <LinearLayout
+    <RelativeLayout
+        android:layout_marginTop="16.67dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/img_syscode"
+            android:layout_marginLeft="71.67dp"
+            android:layout_width="16.67dp"
+            android:layout_height="18.67dp"
+            android:src="@drawable/img_syscode"/>
+        <com.xunce.electrombile.view.EditTextWithDel
+            android:id="@+id/et_SMSCode"
+            android:layout_toRightOf="@+id/img_syscode"
+            android:layout_width="172.67dp"
+            android:layout_height="18.67dp"
+            android:layout_marginLeft="21.67dp"
+            android:background="@null"
+            android:layout_centerVertical="true"
+            android:hint="输入验证码"
+            android:singleLine="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:id="@+id/line"
+            android:layout_marginTop="13.33dp"
+            android:layout_marginLeft="66.67dp"
+            android:layout_width="233.33dp"
+            android:layout_height="1dp"
+            android:background= "#1dcf96" />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text = "60秒后点击"/>
-
-        <Button
+            android:layout_below="@+id/line"
             android:id = "@+id/btn_ResendSysCode"
+            android:layout_alignRight="@+id/line"
+            android:layout_marginTop="16.67dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="10.67sp"
+            android:clickable="true"
             android:text = "重新发送"/>
-    </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_NewPass"
-        android:layout_width="274dp"
-        android:layout_height="42dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/line_et"
-        android:hint="新密码"
-        android:inputType="phone"
-        android:paddingLeft="15dp" />
+        <TextView
+            android:id="@+id/tv_middle"
+            android:layout_below="@+id/line"
+            android:layout_marginTop="16.67dp"
+            android:layout_toLeftOf="@+id/btn_ResendSysCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#8b8b8b"
+            android:textSize="10.67sp"
+            android:text = "秒后点击"/>
 
-    <TextView
+        <TextView
+            android:id="@+id/tv_leftsecond"
+            android:layout_below="@+id/line"
+            android:layout_marginTop="16.67dp"
+            android:layout_toLeftOf="@+id/tv_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#1bd094"
+            android:textSize="10.67sp"
+            android:text = "60"/>
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_marginTop="16.67dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text = "请妥善保管你的新密码"/>
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/img_pass"
+            android:layout_marginLeft="71.67dp"
+            android:layout_width="16.67dp"
+            android:layout_height="18.67dp"
+            android:src="@drawable/img_pass"/>
+        <com.xunce.electrombile.view.EditTextWithDel
+            android:id="@+id/et_Password"
+            android:layout_toRightOf="@+id/img_pass"
+            android:layout_width="172.67dp"
+            android:layout_height="18.67dp"
+            android:layout_marginLeft="21.67dp"
+            android:background="@null"
+            android:layout_centerVertical="true"
+            android:hint="输入密码"
+            android:inputType="textPassword"
+            android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:singleLine="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:id="@+id/line1"
+            android:layout_marginTop="13.33dp"
+            android:layout_marginLeft="66.67dp"
+            android:layout_width="233.33dp"
+            android:layout_height="1dp"
+            android:background= "#1dcf96" />
+        <TextView
+            android:layout_below="@+id/line1"
+            android:layout_marginTop="10dp"
+            android:layout_alignLeft="@+id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10.67dp"
+            android:textColor="#717171"
+            android:text="请妥善保管你的密码"/>
+    </RelativeLayout>
+
 
     <Button
         android:id = "@+id/btn_NextStep"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="238.33dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16.67dp"
         android:layout_gravity="center_horizontal"
+        android:background="@drawable/nextstep_rect"
+        android:textColor="#ffffff"
+        android:textSize="17.33sp"
         android:text = "下一步"/>
 </LinearLayout>

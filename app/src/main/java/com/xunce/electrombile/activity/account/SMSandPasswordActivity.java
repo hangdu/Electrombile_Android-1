@@ -57,11 +57,9 @@ public class SMSandPasswordActivity extends Activity {
                     secondleft--;
                     if (secondleft <= 0) {
                         timer.cancel();
-                        btn_ResendSysCode.setEnabled(true);
-//                        btn_ResendSysCode.setText("重新获取");
-//                        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_1_act);
-                        //绿色
-                        btn_ResendSysCode.setTextColor(Color.parseColor("#1dcf94"));
+//                        btn_ResendSysCode.setEnabled(true);
+//                        btn_ResendSysCode.setTextColor(Color.parseColor("#1dcf94"));
+                        changeButtonState(true);
                         tv_leftsecond.setText("60");
                     } else {
                         tv_leftsecond.setText(secondleft + "");
@@ -187,9 +185,7 @@ public class SMSandPasswordActivity extends Activity {
 
     private void RegetSysCode(){
         dialog.show();
-        btn_ResendSysCode.setEnabled(false);
-//        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
-        btn_ResendSysCode.setTextColor(Color.parseColor("#8b8b8b"));
+        changeButtonState(false);
         secondleft = 60;
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -214,6 +210,17 @@ public class SMSandPasswordActivity extends Activity {
                 handler.sendMessage(msg);
             }
         });
+    }
+
+    private void  changeButtonState(Boolean canclicked){
+        if(canclicked == false){
+            btn_ResendSysCode.setEnabled(false);
+            btn_ResendSysCode.setTextColor(Color.parseColor("#8b8b8b"));
+        }
+        else{
+            btn_ResendSysCode.setEnabled(true);
+            btn_ResendSysCode.setTextColor(Color.parseColor("#1dcf94"));
+        }
     }
 
     //先完成了登录才可以修改密码

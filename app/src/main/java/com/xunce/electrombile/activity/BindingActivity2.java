@@ -181,8 +181,17 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     e.printStackTrace();
                     return;
                 }
+
+                //判断IMEI号是否是15位
+
+                if(IMEIlength(IMEI)){
+                    mHandler.sendEmptyMessage(handler_key.START_BIND.ordinal());
+                }
+                else{
+                    ToastUtils.showShort(BindingActivity2.this,"IMEI的长度不对");
+                }
 //                setManager.setIMEI(IMEI);
-                mHandler.sendEmptyMessage(handler_key.START_BIND.ordinal());
+
             }
         }
         else{
@@ -191,7 +200,18 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         }
     }
 
-    //查询正在绑定的设备是不是第一个设备
+    //判断IMEI号是否为15位
+
+    private Boolean IMEIlength(String IMEI){
+        if(IMEI.length() == 15){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+
 
 
 

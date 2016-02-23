@@ -3,6 +3,7 @@ package com.xunce.electrombile.activity.account;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +30,7 @@ import java.util.TimerTask;
 public class ResetPassActivity extends Activity {
     private TextView tv_CurentNumber;
     private EditText et_VerifyCode;
-    private Button btn_ResendSysCode;
+    private TextView btn_ResendSysCode;
     private Button btn_NextStep;
     private EditText et_NewPass;
     Timer timer;
@@ -37,6 +38,7 @@ public class ResetPassActivity extends Activity {
     private String password;
     ProgressDialog dialog;
     String phone;
+    TextView tv_leftsecond;
 
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -48,16 +50,18 @@ public class ResetPassActivity extends Activity {
                     secondleft--;
                     if (secondleft <= 0) {
                         timer.cancel();
-                        btn_ResendSysCode.setEnabled(true);
-                        btn_ResendSysCode.setText("重新获取");
-                        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_1_act);
+                        tv_leftsecond.setText(60+"");
+                        changeButtonState(true);
                     } else {
-                        btn_ResendSysCode.setText(secondleft + "秒后重新获取");
+//                        btn_ResendSysCode.setText(secondleft + "秒后重新获取");
+                        tv_leftsecond.setText(secondleft+"");
                     }
                     break;
 
                 case CHANGE_SUCCESS:
-                    finish();
+                    Intent intent = new Intent(ResetPassActivity.this,LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                     break;
 
                 case TOAST:
@@ -71,20 +75,21 @@ public class ResetPassActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_pass);
+        setContentView(R.layout.activity_sms_password);
         initView();
         initEvent();
     }
 
     private void initView(){
-        tv_CurentNumber = (TextView)findViewById(R.id.tv_CurentNumber);
-        et_VerifyCode = (EditText)findViewById(R.id.et_VerifyCode);
+        tv_CurentNumber = (TextView)findViewById(R.id.tv_Current_Phone);
+        et_VerifyCode = (EditText)findViewById(R.id.et_SMSCode);
         btn_NextStep = (Button)findViewById(R.id.btn_NextStep);
-        et_NewPass = (EditText)findViewById(R.id.et_NewPass);
+        et_NewPass = (EditText)findViewById(R.id.et_Password);
+        tv_leftsecond = (TextView)findViewById(R.id.tv_leftsecond);
 
-        btn_ResendSysCode = (Button)findViewById(R.id.btn_ResendSysCode);
+        btn_ResendSysCode = (TextView)findViewById(R.id.btn_ResendSysCode);
         btn_ResendSysCode.setEnabled(false);
-        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
+//        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
 
         timer = new Timer();
 
@@ -126,8 +131,9 @@ public class ResetPassActivity extends Activity {
 
     private void sendVerifyCode(final String phone) {
         dialog.show();
-        btn_ResendSysCode.setEnabled(false);
-        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
+//        btn_ResendSysCode.setEnabled(false);
+//        btn_ResendSysCode.setBackgroundResource(R.drawable.btn_getverifycode_2_act);
+        changeButtonState(false);
         secondleft = 60;
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -156,6 +162,17 @@ public class ResetPassActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void  changeButtonState(Boolean canclicked){
+        if(canclicked == false){
+            btn_ResendSysCode.setEnabled(false);
+            btn_ResendSysCode.setTextColor(Color.parseColor("#8b8b8b"));
+        }
+        else{
+            btn_ResendSysCode.setEnabled(true);
+            btn_ResendSysCode.setTextColor(Color.parseColor("#1dcf94"));
+        }
     }
 
     /**

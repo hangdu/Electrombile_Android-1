@@ -168,7 +168,7 @@ public class InputIMEIActivity extends Activity {
                 IMEI = et_IMEI.getText().toString();
                 if (IMEI.equals("")) {
                     ToastUtils.showShort(InputIMEIActivity.this, "设备号不能为空");
-                } else if (IMEI.length() != 16) {
+                } else if (IMEI.length() != 15) {
                     ToastUtils.showShort(InputIMEIActivity.this, "设备号的长度不对");
                 } else {
                     //开始查找IMEI
