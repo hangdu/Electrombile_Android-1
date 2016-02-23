@@ -92,6 +92,7 @@ import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -119,11 +120,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     String WeatherData;
     Button btnAlarmState1;
     private static int Count = 0;
-    private GetBindList getBindList;
     static MKOfflineMap mkOfflineMap;
     private TextView tvWeather;
     private static String localcity;
     private MqttConnectManager mqttConnectManager;
+    List<String> IMEIlist;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -213,15 +214,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
       }
 
     private void initView() {
-        getBindList = new GetBindList();
-
         btnAlarmState1 = (Button) getActivity().findViewById(R.id.btn_AlarmState1);
         btnAlarmState1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 alarmStatusChange();
-
-
             }
         });
 
@@ -251,14 +248,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 OtherCar.add(IMEI_previous);
 
                 //实际逻辑改变
-                DeviceChange(IMEI_previous,IMEI_now);
+                DeviceChange(IMEI_previous, IMEI_now);
                 //把mapfragment里的车辆名称更新
 
                 locationTVClickedListener.locationTVClicked();
             }
         });
 
-        refreshBindList();
+//        refreshBindList();
+
+        IMEIlist = new ArrayList<>();
+        getIMEIlist();
 
 
         ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
@@ -301,6 +301,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         {
             myHorizontalScrollView.toggle();
         }
+
     }
 
     //设备切换
@@ -682,41 +683,118 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    public void refreshBindList(){
-        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
-            @Override
-            public void onGetBindListSuccess(List<AVObject> list) {
-                if (list.size() > 0) {
+    public void refreshBindList1(){
+        myHorizontalScrollView.list.clear();
+        OtherCar.clear();
 
-                    //下面这句话不应该在这里执行
-                    myHorizontalScrollView.list.clear();
-                    OtherCar.clear();
-                    HashMap<String, Object> map = null;
+        BindedCarIMEI.setText(IMEIlist.get(0));
+
+        HashMap<String, Object> map = null;
+        for (int i = 1; i < IMEIlist.size(); i++) {
+            map = new HashMap<>();
+            map.put("whichcar",IMEIlist.get(i));
+            map.put("img", R.drawable.othercar);
+            myHorizontalScrollView.list.add(map);
+            OtherCar.add(IMEIlist.get(i));
+        }
+    }
+
+//    public void refreshBindList(){
+//        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
+//            @Override
+//            public void onGetBindListSuccess(List<AVObject> list) {
+//                if (list.size() > 0) {
+//
+//                    //下面这句话不应该在这里执行
+//                    myHorizontalScrollView.list.clear();
+//                    OtherCar.clear();
+//                    HashMap<String, Object> map = null;
+//                    for (int i = 0; i < list.size(); i++) {
+//                        //判断这个IMEI是不是正在被监管的车辆
+//                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
+//                        {
+//                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
+//                        }
+//                        else{
+//                            map = new HashMap<>();
+//                            map.put("whichcar",list.get(i).get("IMEI"));
+//                            map.put("img", R.drawable.othercar);
+//                            myHorizontalScrollView.list.add(map);
+//                            OtherCar.add((String)list.get(i).get("IMEI"));
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onGetBindListFail() {
+//                ToastUtils.showShort(m_context, "查询错误");
+//
+//            }
+//        });
+//
+//        getBindList.QueryBindList();
+//
+//    }
+
+    public void QueryBindListFromServer(){
+        IMEIlist.clear();
+        AVUser currentUser = AVUser.getCurrentUser();
+        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+        query.whereEqualTo("user", currentUser);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    int mainIMEIPosition = 0;
                     for (int i = 0; i < list.size(); i++) {
-                        //判断这个IMEI是不是正在被监管的车辆
-                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
-                        {
-                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
-                        }
-                        else{
-                            map = new HashMap<>();
-                            map.put("whichcar",list.get(i).get("IMEI"));
-                            map.put("img", R.drawable.othercar);
-                            myHorizontalScrollView.list.add(map);
-                            OtherCar.add((String)list.get(i).get("IMEI"));
+                        String IMEI = list.get(i).get("IMEI").toString();
+                        IMEIlist.add(IMEI);
+                        if(IMEI.equals(setManager.getIMEI())){
+                            mainIMEIPosition = i;
                         }
                     }
+                    //调整顺序
+                    if(mainIMEIPosition!=0){
+                        IMEIlist.set(mainIMEIPosition,IMEIlist.get(0));
+                        IMEIlist.set(0,setManager.getIMEI());
+                    }
+
+                    JSONArray jsonArray = new JSONArray();
+                    for(String IMEI:IMEIlist){
+                        jsonArray.put(IMEI);
+                    }
+
+                    setManager.setIMEIlist(jsonArray.toString());
+                    //刷新数据
+                    refreshBindList1();
+                } else {
+                    e.printStackTrace();
+                    ToastUtils.showShort(m_context, "IMEI绑定列表查询失败");
                 }
             }
-
-            @Override
-            public void onGetBindListFail() {
-                ToastUtils.showShort(m_context, "查询错误");
-
-            }
         });
-
-        getBindList.QueryBindList();
-
     }
+
+    public void getIMEIlist(){
+        if(setManager.getFistLogin()){
+            setManager.setFirstLogin(false);
+            QueryBindListFromServer();
+        }
+        else{
+            JSONArray jsonArray1;
+            try{
+                IMEIlist.clear();
+                jsonArray1 = new JSONArray(setManager.getIMEIlist());
+                for (int i = 0; i < jsonArray1.length(); i++) {
+                    IMEIlist.add(jsonArray1.getString(i));
+                }
+            }catch (Exception e){
+                //这里怎么处理呢?
+            }
+            refreshBindList1();
+        }
+    }
+
+    //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
 }

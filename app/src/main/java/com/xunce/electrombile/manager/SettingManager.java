@@ -22,6 +22,9 @@ import android.content.SharedPreferences;
 
 import com.xunce.electrombile.Constants.ServiceConstants;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 /**
  * SharePreference处理类.
  *
@@ -172,6 +175,26 @@ public class SettingManager {
         spf.edit().putString(PHONE_NUM, phoneNumber).commit();
     }
 
+
+    //存取IMEI列表
+    public void setIMEIlist( String IMEIlist){
+        spf.edit().putString("IMEILIST",IMEIlist).commit();
+    }
+
+    public String getIMEIlist(){
+        return spf.getString("IMEILIST", null);
+    }
+
+    //记录是否是第一次登录
+    public void setFirstLogin(Boolean flag){
+        spf.edit().putBoolean("FIRSTLOGIN",flag).commit();
+    }
+    public Boolean getFistLogin(){
+        return spf.getBoolean("FIRSTLOGIN",true);
+    }
+
+
+
     public void setNickname(String nickname) {
         spf.edit().putString(NICKNAME, nickname).commit();
     }
@@ -186,10 +209,6 @@ public class SettingManager {
     public Boolean getMqttStatus() {
         return spf.getBoolean(MQTTSTATUS,false);
     }
-
-
-
-
 
     public void setGender(String gender){
         spf.edit().putString(GENDER, gender).commit();

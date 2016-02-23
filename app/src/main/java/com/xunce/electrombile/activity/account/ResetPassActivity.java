@@ -35,7 +35,6 @@ public class ResetPassActivity extends Activity {
     private EditText et_NewPass;
     Timer timer;
     int secondleft;
-    private String password;
     ProgressDialog dialog;
     String phone;
     TextView tv_leftsecond;

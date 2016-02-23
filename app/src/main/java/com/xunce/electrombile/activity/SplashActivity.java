@@ -62,6 +62,7 @@ public class SplashActivity extends BaseActivity {
 //                        FIR.addCustomizeValue("user", currentUser.getUsername());
                         LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
                         if (currentUser.isMobilePhoneVerified()) {
+                            setManager.setFirstLogin(false);
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
                             startActivity(intent);
                         } else {
@@ -71,6 +72,7 @@ public class SplashActivity extends BaseActivity {
                         }
                         SplashActivity.this.finish();
                     } else {
+                        setManager.setFirstLogin(true);
                         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                         startActivity(intent);
                         SplashActivity.this.finish();
