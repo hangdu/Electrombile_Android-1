@@ -94,6 +94,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 if (!hasUser()) {
                     return;
                 }
+
+                setManager.setFirstLogin(true);
                 loginOut();
                 break;
             //关于

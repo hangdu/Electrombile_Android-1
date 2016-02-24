@@ -22,6 +22,7 @@ import com.xunce.electrombile.utils.system.ToastUtils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class CarManageActivity extends Activity {
 
     Button btn_AddDevice;
     int OthercarPositon;
+    List<String> IMEIlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class CarManageActivity extends Activity {
 
         Othercarlist = new ArrayList<>();
         settingManager = new SettingManager(CarManageActivity.this);
+
+        IMEIlist = new ArrayList<>();
 
         layout_CurrentCar = (RelativeLayout)findViewById(R.id.RelativeLayout_currentcar);
         layout_CurrentCar.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +106,7 @@ public class CarManageActivity extends Activity {
                 OthercarPositon = position;
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
+                intentCarEdit.putExtra("list_position", position);
 //                intentCarEdit.putExtra("NextCarIMEI");
                 startActivityForResult(intentCarEdit, 0);
 
@@ -136,53 +141,35 @@ public class CarManageActivity extends Activity {
     }
 
     void caseDeviceChange(){
+        getIMEIlist();
         HashMap<String, Object> map = new HashMap<>();
         map.put("WhichCar", tv_CurrentCar.getText());
         map.put("img",R.drawable.othercar);
 
-        String s = Othercarlist.get(OthercarPositon).get("WhichCar").toString();
-        settingManager.setIMEI(s);
+//        String s = Othercarlist.get(OthercarPositon).get("WhichCar").toString();
         //UI变化
-        tv_CurrentCar.setText(s);
+        tv_CurrentCar.setText(settingManager.getIMEI());
         Othercarlist.set(OthercarPositon, map);
         adapter.notifyDataSetChanged();
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
-//        reSubscribe();
-//        mqttConnectManager = MqttConnectManager.getInstance();
         settingManager.setFlagCarSwitched("切换");
     }
 
     void initEvents(){
-        getBindList = new GetBindList();
-        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
-            @Override
-            public void onGetBindListSuccess(List<AVObject> list) {
-                if (list.size() > 0) {
-                    Othercarlist.clear();
-                    HashMap<String, Object> map = null;
-                    for(int i = 0;i<list.size();i++){
-                        if(settingManager.getIMEI().equals(list.get(i).get("IMEI"))){
-                            tv_CurrentCar.setText(settingManager.getIMEI());
-
-                        }
-                        else{
-                            map = new HashMap<String, Object>();
-                            map.put("WhichCar",list.get(i).get("IMEI"));
-                            map.put("img",R.drawable.othercar);
-                            Othercarlist.add(map);
-                        }
-                    }
-                    adapter.notifyDataSetChanged();
-                }
-            }
-            @Override
-            public void onGetBindListFail() {
-                ToastUtils.showShort(CarManageActivity.this, "查询错误");
-
-            }
-        });
-        getBindList.QueryBindList();
+        getIMEIlist();
+        tv_CurrentCar.setText(settingManager.getIMEI());
+        String test = settingManager.getIMEI();
+        String test1 = IMEIlist.get(0);
+        HashMap<String, Object> map = null;
+        for(int i = 1;i<IMEIlist.size();i++){
+            map = new HashMap<String, Object>();
+            map.put("WhichCar",IMEIlist.get(i));
+            map.put("img",R.drawable.othercar);
+            Othercarlist.add(map);
+        }
+        adapter.notifyDataSetChanged();
     }
+
 
     //在二级界面的时候正在被管理的car被解绑了
     void CaseManagedCarUnbinded(){
@@ -206,5 +193,19 @@ public class CarManageActivity extends Activity {
     private void caseOtherCarUnbind(){
         Othercarlist.remove(OthercarPositon);
         adapter.notifyDataSetChanged();
+    }
+
+
+    public void getIMEIlist(){
+        JSONArray jsonArray1;
+        try{
+            IMEIlist.clear();
+            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
+            for (int i = 0; i < jsonArray1.length(); i++) {
+                IMEIlist.add(jsonArray1.getString(i));
+            }
+        }catch (Exception e){
+            //这里怎么处理呢?
+        }
     }
 }

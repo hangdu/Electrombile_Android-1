@@ -126,6 +126,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private MqttConnectManager mqttConnectManager;
     List<String> IMEIlist;
 
+
     public Handler timeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -234,7 +235,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //UI界面改变
                 String IMEI_previous = BindedCarIMEI.getText().toString();
+                String test1 = IMEIlist.get(0);
                 String IMEI_now = OtherCar.get(position);
+                String test = IMEIlist.get(position+1);
+
 
                 BindedCarIMEI.setText(IMEI_now);
 
@@ -247,8 +251,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 OtherCar.remove(position);
                 OtherCar.add(IMEI_previous);
 
+
+
                 //实际逻辑改变
-                DeviceChange(IMEI_previous, IMEI_now);
+                DeviceChange(IMEI_previous, IMEI_now,position);
                 //把mapfragment里的车辆名称更新
 
                 locationTVClickedListener.locationTVClicked();
@@ -305,7 +311,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     //设备切换
-    private void DeviceChange(String previous_IMEI,String current_IMEI){
+    private void DeviceChange(String previous_IMEI,String current_IMEI,int position){
         //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
         mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
@@ -319,6 +325,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         else{
             ToastUtils.showShort(m_context,"mqtt连接失败");
         }
+
+        IMEIlist.set(0,setManager.getIMEI());
+        IMEIlist.set(position+1,previous_IMEI);
+        JSONArray jsonArray = new JSONArray();
+        for(String IMEI:IMEIlist){
+            jsonArray.put(IMEI);
+        }
+        setManager.setIMEIlist(jsonArray.toString());
     }
 
     @Override
@@ -349,7 +363,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (result.error != SearchResult.ERRORNO.NO_ERROR) {
             return;
         }
-//        switch_fragment_tvLocation.setText(result.getAddress().trim());
     }
 
 
@@ -699,44 +712,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-//    public void refreshBindList(){
-//        getBindList.setonGetBindListListener(new GetBindList.OnGetBindListListener() {
-//            @Override
-//            public void onGetBindListSuccess(List<AVObject> list) {
-//                if (list.size() > 0) {
-//
-//                    //下面这句话不应该在这里执行
-//                    myHorizontalScrollView.list.clear();
-//                    OtherCar.clear();
-//                    HashMap<String, Object> map = null;
-//                    for (int i = 0; i < list.size(); i++) {
-//                        //判断这个IMEI是不是正在被监管的车辆
-//                        if(setManager.getIMEI().equals(list.get(i).get("IMEI")))
-//                        {
-//                            BindedCarIMEI.setText((String)list.get(i).get("IMEI"));
-//                        }
-//                        else{
-//                            map = new HashMap<>();
-//                            map.put("whichcar",list.get(i).get("IMEI"));
-//                            map.put("img", R.drawable.othercar);
-//                            myHorizontalScrollView.list.add(map);
-//                            OtherCar.add((String)list.get(i).get("IMEI"));
-//                        }
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onGetBindListFail() {
-//                ToastUtils.showShort(m_context, "查询错误");
-//
-//            }
-//        });
-//
-//        getBindList.QueryBindList();
-//
-//    }
-
     public void QueryBindListFromServer(){
         IMEIlist.clear();
         AVUser currentUser = AVUser.getCurrentUser();
@@ -795,6 +770,5 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             refreshBindList1();
         }
     }
-
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
 }

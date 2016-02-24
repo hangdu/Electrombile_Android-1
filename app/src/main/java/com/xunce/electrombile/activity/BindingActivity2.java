@@ -25,14 +25,15 @@ import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BindingActivity2 extends Activity implements OnDecodeCompletionListener {
     private ScannerView scannerView;
     private Button btn_InputIMEI;
-    private Button btn_BuyProduct;
     private String IMEI;
     private ProgressDialog progressDialog;
     private SettingManager settingManager;
@@ -40,6 +41,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     public String previous_IMEI;
+    private List<String> IMEIlist;
     public Handler timeHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -67,9 +69,8 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     progressDialog.cancel();
                     getAlarmStatus();
 //                    gotoAct();
-
-
                     break;
+
                 case FAILED:
 //                    times = 0;
                     progressDialog.cancel();
@@ -81,7 +82,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     getAlarmStatus_next(BindedDeviceNum);
                     break;
             }
-
         }
 
     };
@@ -127,7 +127,17 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
 
     public void gotoAct(){
         if(FromActivity.equals("CarManageActivity")){
+            getIMEIlist();
+            String IMEI_first = IMEIlist.get(0);
+            IMEIlist.add(IMEI_first);
+            IMEIlist.set(0, settingManager.getIMEI());
+            JSONArray jsonArray = new JSONArray();
+            for(String IMEI:IMEIlist){
+                jsonArray.put(IMEI);
+            }
+            settingManager.setIMEIlist(jsonArray.toString());
             Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
+            //换位置
             startActivity(intent);
         }
         else{
@@ -135,6 +145,20 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
             startActivity(intent);
         }
         finish();
+    }
+
+    public void getIMEIlist(){
+        IMEIlist = new ArrayList<>();
+        JSONArray jsonArray1;
+        try{
+            IMEIlist.clear();
+            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
+            for (int i = 0; i < jsonArray1.length(); i++) {
+                IMEIlist.add(jsonArray1.getString(i));
+            }
+        }catch (Exception e){
+            //这里怎么处理呢?
+        }
     }
 
     @Override
@@ -147,7 +171,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private void initView() {
         scannerView = (ScannerView) findViewById(R.id.scanner_view);
         btn_InputIMEI = (Button)findViewById(R.id.btn_InputIMEI);
-        btn_BuyProduct = (Button)findViewById(R.id.btn_BuyProduct);
+//        btn_BuyProduct = (Button)findViewById(R.id.btn_BuyProduct);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("连接中，请稍候...");

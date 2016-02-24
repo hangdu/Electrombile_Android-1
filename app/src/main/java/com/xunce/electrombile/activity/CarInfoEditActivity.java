@@ -35,13 +35,13 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CarInfoEditActivity extends Activity {
     TextView tv_CarIMEI;
-//    EditText et_CarName;
     RelativeLayout btn_DeleteDevice;
     String IMEI;
     SettingManager setManager;
@@ -54,6 +54,8 @@ public class CarInfoEditActivity extends Activity {
     String NextCarIMEI;
     private TextView tv_phoneNumber;
     private TextView tv_carType;
+    private List<String> IMEIlist;
+    private int othercarListPosition;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -87,6 +89,16 @@ public class CarInfoEditActivity extends Activity {
                     AVUser currentUser = AVUser.getCurrentUser();
                     currentUser.logOut();
 
+                    //IMEIlist更新
+                    IMEIlist.remove(0);
+                    JSONArray jsonArray = new JSONArray();
+                    for(String IMEI:IMEIlist){
+                        jsonArray.put(IMEI);
+                    }
+                    setManager.setIMEIlist(jsonArray.toString());
+
+                    setManager.setFirstLogin(true);
+
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
@@ -106,8 +118,6 @@ public class CarInfoEditActivity extends Activity {
         }
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +126,9 @@ public class CarInfoEditActivity extends Activity {
         Intent intent = getIntent();
         IMEI = intent.getStringExtra("string_key");
         NextCarIMEI = intent.getStringExtra("NextCarIMEI");
+        othercarListPosition = intent.getIntExtra("list_position",0);
+
+        Log.d("test", "test");
         LastCar = false;
     }
 
@@ -162,7 +175,7 @@ public class CarInfoEditActivity extends Activity {
 
         JudgeMainCarOrNot();
 
-
+        getIMEIlist();
     }
 
     //设备解绑
@@ -185,6 +198,15 @@ public class CarInfoEditActivity extends Activity {
                 ToastUtils.showShort(CarInfoEditActivity.this, "mqtt连接断开");
             }
         }
+
+        String IMEeeI = IMEIlist.get(othercarListPosition+1);
+        IMEIlist.remove(othercarListPosition+1);
+        JSONArray jsonArray = new JSONArray();
+        for(String IMEI:IMEIlist){
+            jsonArray.put(IMEI);
+        }
+        setManager.setIMEIlist(jsonArray.toString());
+
         Intent intent = new Intent(CarInfoEditActivity.this,CarManageActivity.class);
         intent.putExtra("string_key","设备解绑");
         intent.putExtra("boolean_key", Flag_Maincar);
@@ -192,6 +214,20 @@ public class CarInfoEditActivity extends Activity {
         setResult(RESULT_OK, intent);
         startActivity(intent);
         finish();
+    }
+
+    public void getIMEIlist(){
+        IMEIlist = new ArrayList<>();
+        JSONArray jsonArray1;
+        try{
+            IMEIlist.clear();
+            jsonArray1 = new JSONArray(setManager.getIMEIlist());
+            for (int i = 0; i < jsonArray1.length(); i++) {
+                IMEIlist.add(jsonArray1.getString(i));
+            }
+        }catch (Exception e){
+            //这里怎么处理呢?
+        }
     }
 
 
@@ -211,6 +247,17 @@ public class CarInfoEditActivity extends Activity {
         else{
             ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");
         }
+
+        //更新IMEIlist
+        String IMEI_now = setManager.getIMEI();
+        String IMEI_previous = IMEIlist.get(0);
+        IMEIlist.set(0,IMEI);
+        IMEIlist.set(othercarListPosition+1,IMEI_previous);
+        JSONArray jsonArray = new JSONArray();
+        for(String IMEI:IMEIlist){
+            jsonArray.put(IMEI);
+        }
+        setManager.setIMEIlist(jsonArray.toString());
 
         Intent intent = new Intent();
         intent.putExtra("string_key","设备切换");
@@ -377,4 +424,6 @@ public class CarInfoEditActivity extends Activity {
             tv_carType.setText("其他车辆");
         }
     }
+
+
 }

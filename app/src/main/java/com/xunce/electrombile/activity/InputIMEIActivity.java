@@ -21,6 +21,9 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class InputIMEIActivity extends Activity {
@@ -34,6 +37,7 @@ public class InputIMEIActivity extends Activity {
     private String previous_IMEI;
     private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
+    private List<String> IMEIlist;
     private enum handler_key{
         START_BIND,
         SUCCESS,
@@ -74,6 +78,17 @@ public class InputIMEIActivity extends Activity {
 
     public void gotoAct(){
         if(FromActivity.equals("CarManageActivity")){
+            getIMEIlist();
+            String IMEI_first = IMEIlist.get(0);
+            IMEIlist.add(IMEI_first);
+            String test = settingManager.getIMEI();
+            IMEIlist.set(0, settingManager.getIMEI());
+            JSONArray jsonArray = new JSONArray();
+            for(String IMEI:IMEIlist){
+                jsonArray.put(IMEI);
+            }
+            settingManager.setIMEIlist(jsonArray.toString());
+
             Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
             startActivity(intent);
         }
@@ -82,6 +97,20 @@ public class InputIMEIActivity extends Activity {
             startActivity(intent);
         }
         finish();
+    }
+
+    public void getIMEIlist(){
+        IMEIlist = new ArrayList<>();
+        JSONArray jsonArray1;
+        try{
+            IMEIlist.clear();
+            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
+            for (int i = 0; i < jsonArray1.length(); i++) {
+                IMEIlist.add(jsonArray1.getString(i));
+            }
+        }catch (Exception e){
+            //这里怎么处理呢?
+        }
     }
 
     private void getAlarmStatus(){
@@ -168,7 +197,7 @@ public class InputIMEIActivity extends Activity {
                 IMEI = et_IMEI.getText().toString();
                 if (IMEI.equals("")) {
                     ToastUtils.showShort(InputIMEIActivity.this, "设备号不能为空");
-                } else if (IMEI.length() != 15) {
+                } else if (IMEI.length() != 16) {
                     ToastUtils.showShort(InputIMEIActivity.this, "设备号的长度不对");
                 } else {
                     //开始查找IMEI
