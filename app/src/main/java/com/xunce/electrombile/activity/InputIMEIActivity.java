@@ -81,7 +81,7 @@ public class InputIMEIActivity extends Activity {
             getIMEIlist();
             String IMEI_first = IMEIlist.get(0);
             IMEIlist.add(IMEI_first);
-            String test = settingManager.getIMEI();
+
             IMEIlist.set(0, settingManager.getIMEI());
             JSONArray jsonArray = new JSONArray();
             for(String IMEI:IMEIlist){

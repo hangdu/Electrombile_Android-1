@@ -92,7 +92,7 @@ public class TestddActivity extends Activity{
     //等待对话框
     private ProgressDialog watiDialog;
 
-    List<Message> messageList;
+//    List<Message> messageList;
 
     Item item;
 
@@ -147,16 +147,19 @@ public class TestddActivity extends Activity{
     private void insertDatabase(){
         //前面已经加过判断数据是近期数据的逻辑了
         //获取到当天的日期
-//            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+
         long timeStamp = endT.getTime()/1000;
-
-        for(int i = 0;i<messageList.size();i++){
-            dbManage.insert(timeStamp,i,messageList.get(i).getStartLocation(),
-                    messageList.get(i).getEndLocation(),messageList.get(i).getTime());
+        for(int i = 0; i <childData.get(GroupPosition).size();i++){
+            dbManage.insert(timeStamp,i,childData.get(GroupPosition).get(i).get(STARTPOINT),
+                    childData.get(GroupPosition).get(i).get(ENDPOINT),null);
         }
-
         insertDateTrackSecond();
         return;
+    }
+
+    private void insertNullData(){
+        long timeStamp = endT.getTime()/1000;
+        dbManage.insert(timeStamp,-1,null,null,null);
     }
 
     private void insertDateTrackSecond(){
@@ -230,13 +233,11 @@ public class TestddActivity extends Activity{
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-
                             }
                         }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
-
                     }
                 }).create();
 
@@ -250,15 +251,19 @@ public class TestddActivity extends Activity{
                 childData,R.layout.expandchildview,new String[] {STARTPOINT,ENDPOINT},new int[]{R.id.tv_startPoint,R.id.tv_endPoint},this);
 
         expandableListView.setAdapter(adapter);
+
+        //跳转到下一个activity
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
 
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
 
-                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+//                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
                 closeDatabaseCollect();
-                finish();
+//                finish();
+                Intent intent = new Intent(TestddActivity.this,SpecificHistoryTrackActivity.class);
+                startActivity(intent);
                 return true;
             }
         });
@@ -320,24 +325,13 @@ public class TestddActivity extends Activity{
                             dbManage.insert(timeStamp, -1, null, null, null);
                         }
 
-                        messageList = new ArrayList<Message>();
-                        //不知道这个地方有没有问题
-                        Message message = new Message("无数据",
-                                null,null);
-                        messageList.add(message);
-//                        ItemList.get(GroupPosition).setMessagelist(messageList);
-
-                        //加了
-                        Map<String,String> map = new HashMap<>();
-                        map.put(STARTPOINT,"无数据");
-                        map.put(ENDPOINT, "无数据");
-
+                        //需要插入到数据库中  表示没有数据啊
                         List<Map<String, String>> listMap = new ArrayList<>();
-                        listMap.add(map);
-                        childData.add(GroupPosition, listMap);
-
-
+//                        listMap.add(map);
+                        childData.set(GroupPosition, listMap);
                         adapter.notifyDataSetChanged();
+                        dialog.setTitle("此时间段内没有数据");
+                        dialog.show();
                         return;
                     }
 
@@ -377,15 +371,18 @@ public class TestddActivity extends Activity{
     private void updateListView(){
         //如果没有数据，弹出对话框
         if(tracksManager.getTracks().size() == 0){
+            List<Map<String, String>> listMap = new ArrayList<>();
+            childData.set(GroupPosition, listMap);
+            adapter.notifyDataSetChanged();
+            insertNullData();
             dialog.setTitle("此时间段内没有数据");
             dialog.show();
-
             return;
         }
 
-        Date startdate = new Date();
-        Message message;
-        messageList = new ArrayList<Message>();
+        Date startdate;
+//        Message message;
+//        messageList = new ArrayList<Message>();
 
         //加了
         Map<String,String> map;
@@ -408,10 +405,10 @@ public class TestddActivity extends Activity{
             TrackPoint endP = trackList.get(trackList.size() - 1);
             geoCoder2 = new GeoCodering(this,endP.point,i,1);
 
-            message = new Message(String.valueOf(startdate.getHours())+":"+String.valueOf(startdate.getMinutes()),
-                    null,
-                    null);
-            messageList.add(message);
+//            message = new Message(String.valueOf(startdate.getHours())+":"+String.valueOf(startdate.getMinutes()),
+//                    null,
+//                    null);
+//            messageList.add(message);
 
                 //计算开始点和结束点时间间隔
             long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
@@ -438,17 +435,9 @@ public class TestddActivity extends Activity{
 //            map.put("ItemDistance", "距离:" + distanceKM + "千米" + diatanceM + "米");
 //            listItem.add(map);
 
-            map = new HashMap<>();
-            map.put(STARTPOINT,"正在缓冲");
-            map.put(ENDPOINT,"正在缓冲");
-            listMap.add(map);
         }
-//        ItemList.get(GroupPosition).setMessagelist(messageList);
-
-        childData.add(GroupPosition, listMap);
-
+        childData.set(GroupPosition, listMap);
         adapter.notifyDataSetChanged();
-
         tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
     }
 
@@ -489,11 +478,16 @@ public class TestddActivity extends Activity{
 
         }
         else{
+
             IfDatabaseExist();
             if(true == DatabaseExistFlag){
                 String TableName = "IMEI_"+sm.getIMEI()+".db";
 
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+
+//                dbManage.delete();
+//                dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),"2016年02月16日");
+//                dbManage.deleteSecondTable();
 
                 IfDatabaseExist();
                 IfSecondTableExist();
@@ -514,40 +508,23 @@ public class TestddActivity extends Activity{
                     //判断是只有一条数据还是空数据
                     if(dbManage.dateTrackList.get(0).trackNumber == -1){
                         //为空数据
-                        messageList = new ArrayList<Message>();
-                        Message message = new Message("无数据",
-                                null,null);
-                        messageList.add(message);
-//                        ItemList.get(GroupPosition).setMessagelist(messageList);
-
-                        //加了
-                        Map<String,String> map = new HashMap<>();
-                        map.put(STARTPOINT,"无数据");
-                        map.put(ENDPOINT, "无数据");
-
                         List<Map<String, String>> listMap = new ArrayList<>();
-                        listMap.add(map);
-                        childData.add(groupPosition,listMap);
-
+//                        listMap.add(map);
+                        childData.set(groupPosition,listMap);
                         adapter.notifyDataSetChanged();
-                        return;
+                        dialog.setTitle("此时间段内没有数据");
+                        dialog.show();
 
+                        return;
                     }
                     else{
                         //有一条轨迹
-                        messageList = new ArrayList<Message>();
-                        Message message = new Message(dbManage.dateTrackList.get(0).time,
-                                dbManage.dateTrackList.get(0).StartPoint,dbManage.dateTrackList.get(0).EndPoint);
-                        messageList.add(message);
-//                        ItemList.get(GroupPosition).setMessagelist(messageList);
-
-                        //加了
                         Map<String,String> map = new HashMap<>();
                         map.put(STARTPOINT,dbManage.dateTrackList.get(0).StartPoint);
                         map.put(ENDPOINT,dbManage.dateTrackList.get(0).EndPoint);
                         List<Map<String, String>> listMap = new ArrayList<>();
                         listMap.add(map);
-                        childData.add(groupPosition, listMap);
+                        childData.set(groupPosition, listMap);
 
                         adapter.notifyDataSetChanged();
                         getSecondTableData();
@@ -556,15 +533,6 @@ public class TestddActivity extends Activity{
                     }
                 }
                 else{
-                    messageList = new ArrayList<Message>();
-                    for(int i = 0;i<dbManage.dateTrackList.size();i++){
-                        Message message = new Message(dbManage.dateTrackList.get(i).time,
-                                dbManage.dateTrackList.get(i).StartPoint,dbManage.dateTrackList.get(i).EndPoint);
-                        messageList.add(message);
-                    }
-//                    ItemList.get(GroupPosition).setMessagelist(messageList);
-
-
                     //加了
                     Map<String,String> map;
                     List<Map<String, String>> listMap = new ArrayList<>();
@@ -574,9 +542,7 @@ public class TestddActivity extends Activity{
                         map.put(ENDPOINT, dbManage.dateTrackList.get(i).EndPoint);
                         listMap.add(map);
                     }
-                    childData.add(groupPosition, listMap);
-
-
+                    childData.set(groupPosition, listMap);
                     adapter.notifyDataSetChanged();
                     getSecondTableData();
                     return;
@@ -605,16 +571,12 @@ public class TestddActivity extends Activity{
     void RefreshMessageList(int TrackPosition,int Start_End_TYPE,String result)
     {
         ReverseNumber++;
-
         if(0 == Start_End_TYPE)
         {
-//            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setStartLocation(result);
-
             childData.get(GroupPosition).get(TrackPosition).put(STARTPOINT,result);
         }
 
         else{
-//            ItemList.get(GroupPosition).getMessagelist().get(TrackPosition).setEndLocation(result);
             childData.get(GroupPosition).get(TrackPosition).put(ENDPOINT, result);
         }
 
@@ -657,14 +619,9 @@ public class TestddActivity extends Activity{
 
 
         List<Map<String, String>> listmap;
-        Map<String,String> childmap;
         for(int i = result.length-7;i<result.length;i++)
         {
-            childmap = new HashMap<>();
-            childmap.put(STARTPOINT, "正在缓冲");
-            childmap.put(ENDPOINT,"正在缓冲");
             listmap = new ArrayList<>();
-            listmap.add(childmap);
             childData.add(listmap);
         }
     }
@@ -692,10 +649,7 @@ public class TestddActivity extends Activity{
             Log.d("test", "test");
             SecondTableExistFlag = false;
         }
-
     }
-
-
 
     //test
 //                先删除二级数据库  在删除一级数据库
