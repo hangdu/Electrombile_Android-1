@@ -804,7 +804,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     {
         if(mInfoWindow != null){
             mBaiduMap.hideInfoWindow();
-
         }
     }
 

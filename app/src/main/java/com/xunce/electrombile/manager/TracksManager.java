@@ -7,6 +7,7 @@ import com.avos.avoscloud.AVObject;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +19,7 @@ import java.util.TimeZone;
 /**
  * Created by heyukun on 2015/4/22.
  */
-public class TracksManager {
+public class TracksManager implements Serializable{
     private static ArrayList<ArrayList<TrackPoint>> tracks;
     private static ArrayList<ArrayList<ArrayList<TrackPoint>>> GroupTracks;
 
@@ -136,7 +137,7 @@ public class TracksManager {
         SetMapTrack(groupposition,tracks);
     }
 
-    public static class TrackPoint {
+    public static class TrackPoint implements Serializable{
         public Date time;
         public LatLng point;
 

@@ -132,8 +132,6 @@
             android:text="*1" />
 
     </LinearLayout>
-    
-
 
     <RelativeLayout
         android:id="@+id/ll_map"
@@ -158,50 +156,4 @@
             android:background="@drawable/location"/>
 
     </RelativeLayout>
-
-
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/ll_map"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_marginBottom="60dp"-->
-        <!--android:orientation="vertical"-->
-        <!--android:background="#ffffff"-->
-        <!--android:weightSum="3">-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/btn_record"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:background="@drawable/common_btn_white"-->
-            <!--android:clickable="true"-->
-            <!--android:drawableLeft="@drawable/history_trail"-->
-            <!--android:gravity="center"-->
-            <!--android:singleLine="true"-->
-            <!--android:text="历史轨迹"-->
-            <!--android:textSize="22sp"-->
-            <!--android:textColor="#8d8d8d" />-->
-
-        <!--<View-->
-            <!--android:layout_width="1dp"-->
-            <!--android:layout_height="8dp"/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/btn_location"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:background="@drawable/common_btn_white"-->
-            <!--android:clickable="true"-->
-            <!--android:drawableLeft="@drawable/ic_location"-->
-            <!--android:gravity="center"-->
-            <!--android:singleLine="true"-->
-            <!--android:text="定位"-->
-            <!--android:textSize="22sp"-->
-            <!--android:textColor="#8d8d8d" />-->
-    <!--</LinearLayout>-->
-
-
 </RelativeLayout>

@@ -46,6 +46,7 @@ import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,23 +61,17 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.xunce.electrombile.view.RefreshableView;
 
 public class TestddActivity extends Activity{
-
     private static final String DATE = "date";
     private static final String DISTANCEPERDAY = "distancePerDay";
     private static final String STARTPOINT = "startPoint";
     private static final String ENDPOINT = "endPoint";
 
     private final String TAG = "RecordActivity";
-//    ListView m_listview;
     TracksManager tracksManager;
-//    List<Item> ItemList = new ArrayList<>();
-
     //查询的开始和结束时间
     Date startT;
     Date endT;
 
-    //数据适配器
-//    SimpleAdapter listItemAdapter;
     ExpandableAdapter adapter;
     //用来获取时间
     static Calendar can;
@@ -91,11 +86,7 @@ public class TestddActivity extends Activity{
     List<AVObject> totalAVObjects;
     //等待对话框
     private ProgressDialog watiDialog;
-
-//    List<Message> messageList;
-
     Item item;
-
     GeoCodering geoCoder1;
     GeoCodering geoCoder2;
 
@@ -121,9 +112,6 @@ public class TestddActivity extends Activity{
 
     List<Map<String, String>> groupData;
     List<List<Map<String, String>>> childData;
-
-
-
 
     private Handler mhandler = new Handler(){
         @Override
@@ -159,7 +147,7 @@ public class TestddActivity extends Activity{
 
     private void insertNullData(){
         long timeStamp = endT.getTime()/1000;
-        dbManage.insert(timeStamp,-1,null,null,null);
+        dbManage.insert(timeStamp, -1, null, null, null);
     }
 
     private void insertDateTrackSecond(){
@@ -197,6 +185,8 @@ public class TestddActivity extends Activity{
         SDKInitializer.initialize(TestddActivity.this);
         setContentView(R.layout.activity_testdd);
         init();
+
+//        deleteAllSecondTable();
 
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
@@ -254,15 +244,26 @@ public class TestddActivity extends Activity{
 
         //跳转到下一个activity
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                Toast.makeText(TestddActivity.this, "你点击的是第" + (groupPosition + 1) + "的菜单下的第" + (childPosition + 1) + "选项", Toast.LENGTH_SHORT).show();
-
 //                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+
                 closeDatabaseCollect();
 //                finish();
+//                TracksManager.TrackPoint trackPoint = new TrackPoint(endT,new LatLng(3,3));
+//                List<TracksManager.TrackPoint> trackDataList = new ArrayList<TrackPoint>();
+//                trackDataList.add(trackPoint);
+                SpecificHistoryTrackActivity.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+
                 Intent intent = new Intent(TestddActivity.this,SpecificHistoryTrackActivity.class);
+                Bundle extras = new Bundle();
+//                extras.putSerializable("trackDataList", (Serializable)trackDataList);
+                extras.putString("startPoint", childData.get(groupPosition).get(childPosition).get(STARTPOINT));
+                extras.putString("endPoint", childData.get(groupPosition).get(childPosition).get(ENDPOINT));
+                intent.putExtras(extras);
+
+                //这个地方传数据总是有问题啊
+
                 startActivity(intent);
                 return true;
             }
@@ -278,7 +279,6 @@ public class TestddActivity extends Activity{
             }
         }, 1);
     }
-
 
     @Override
     protected void onDestroy() {
@@ -345,7 +345,6 @@ public class TestddActivity extends Activity{
                     if ((totalAVObjects.size() > 1000) && (avObjects.size() < 1000) ||
                             (totalSkip == 0) && (avObjects.size() < 1000)) {
                         tracksManager.setTranks(GroupPosition, totalAVObjects);
-
 //                        //更新本地数据
                         TracksBean.getInstance().setTracksData(tracksManager.getTracks());
 
@@ -380,14 +379,10 @@ public class TestddActivity extends Activity{
             return;
         }
 
-        Date startdate;
-//        Message message;
-//        messageList = new ArrayList<Message>();
-
-        //加了
-        Map<String,String> map;
         List<Map<String, String>> listMap = new ArrayList<>();
 
+
+        Map<String, String> map;
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {
             //如果当前路线段只有一个点 不显示
@@ -400,15 +395,9 @@ public class TestddActivity extends Activity{
 
             //获取当前路线段的开始和结束点
             TrackPoint startP = trackList.get(0);
-            startdate = startP.time;
             geoCoder1 = new GeoCodering(this,startP.point,i,0);
             TrackPoint endP = trackList.get(trackList.size() - 1);
             geoCoder2 = new GeoCodering(this,endP.point,i,1);
-
-//            message = new Message(String.valueOf(startdate.getHours())+":"+String.valueOf(startdate.getMinutes()),
-//                    null,
-//                    null);
-//            messageList.add(message);
 
                 //计算开始点和结束点时间间隔
             long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
@@ -435,7 +424,10 @@ public class TestddActivity extends Activity{
 //            map.put("ItemDistance", "距离:" + distanceKM + "千米" + diatanceM + "米");
 //            listItem.add(map);
 
+            map = new HashMap<>();
+            listMap.add(map);
         }
+        //指定容量  虽然里面的数据是空  但是容量是对的  这样就不会溢出
         childData.set(GroupPosition, listMap);
         adapter.notifyDataSetChanged();
         tracksManager.SetMapTrack(GroupPosition, tracksManager.getTracks());
@@ -478,15 +470,15 @@ public class TestddActivity extends Activity{
 
         }
         else{
-
             IfDatabaseExist();
             if(true == DatabaseExistFlag){
                 String TableName = "IMEI_"+sm.getIMEI()+".db";
-
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
 
 //                dbManage.delete();
-//                dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),"2016年02月16日");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                String date = sdf.format(endT);
+//                dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
 //                dbManage.deleteSecondTable();
 
                 IfDatabaseExist();
@@ -533,7 +525,6 @@ public class TestddActivity extends Activity{
                     }
                 }
                 else{
-                    //加了
                     Map<String,String> map;
                     List<Map<String, String>> listMap = new ArrayList<>();
                     for(int i = 0;i<dbManage.dateTrackList.size();i++){
@@ -601,7 +592,6 @@ public class TestddActivity extends Activity{
         //parse作用: 把String型的字符串转换成特定格式的date类型
         Calendar c = Calendar.getInstance();
         result[0] = sdf.format(c.getTime());
-        List<Message> test = new ArrayList<Message>();
 
         for(int i=1;i<result.length;i++){
             c.add(Calendar.DAY_OF_MONTH, -1);
@@ -616,7 +606,6 @@ public class TestddActivity extends Activity{
             map.put(DISTANCEPERDAY,"16km");
             groupData.add(map);
         }
-
 
         List<Map<String, String>> listmap;
         for(int i = result.length-7;i<result.length;i++)
@@ -645,21 +634,30 @@ public class TestddActivity extends Activity{
         if (dbtest.exists()) {
             Log.d("test", "test");
             SecondTableExistFlag = true;
+
+//            getApplication().deleteDatabase(path);
         } else {
             Log.d("test", "test");
             SecondTableExistFlag = false;
         }
     }
 
+//    private void deleteAllSecondTable(){
+//        if(dbManage == null){
+//            dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+//        }
+//        List<String> dateList = dbManage.getAllDateInDateTrackTable();
+//        for(int i = 0;i<dateList.size();i++){
+//            String SecondTableName = dateList.get(i)+"_IMEI_"+sm.getIMEI()+".db";
+//            Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
+//            Log.d("test","test");
+//        }
+//        String TableName = "IMEI_"+sm.getIMEI()+".db";
+//        Boolean delete = getApplication().deleteDatabase(TableName);
+//    }
+
     //test
-//                先删除二级数据库  在删除一级数据库
-//                List<String> dateList = dbManage.getAllDateInDateTrackTable();
-//                for(int i = 0;i<dateList.size();i++){
-//                    String SecondTableName = dateList.get(i)+"_IMEI_"+sm.getIMEI()+".db";
-//                    Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
-//                    Log.d("test","test");
-//                }
-//                Boolean delete = getApplication().deleteDatabase(TableName);
+
 
     //test
 

@@ -91,14 +91,14 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="158px"
         android:layout_width="match_parent"
-        android:layout_height="103px">
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/btn_play"
             android:layout_marginLeft="70px"
             android:layout_width="106px"
             android:layout_height="103px"
-            android:background="@drawable/btn_play"/>
+            android:background="@drawable/btn_play1"/>
 
         <SeekBar
             android:id="@+id/seekbar"
@@ -106,9 +106,10 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="80px"
             android:layout_width="600px"
-            android:layout_height="52px" />
+            android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/btn_speed"
             android:layout_toRightOf="@+id/seekbar"
             android:layout_marginLeft="80px"
             android:layout_width="106px"
