@@ -84,10 +84,6 @@
             android:label="RegisterActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.BindingActivity"
-            android:label="@string/title_activity_binding"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.account.ForgetPswActivity"
             android:label="@string/title_activity_forget"
             android:screenOrientation="portrait" />
@@ -145,21 +141,12 @@
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
-            android:name=".activity.BindListActivity"
-            android:label="@string/title_activity_bind_list"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.FindActivity"
             android:label="@string/title_activity_find"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.account.PersonalCenterActivity"
             android:label="@string/title_activity_personal_center"
-            android:screenOrientation="portrait"
-            android:theme="@style/App2Theme" />
-        <activity
-            android:name=".activity.DeviceActivity"
-            android:label="@string/title_activity_equipment"
             android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
 

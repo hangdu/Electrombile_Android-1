@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,15 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.SDKInitializer;
@@ -35,7 +29,6 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MapViewLayoutParams;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
@@ -52,19 +45,15 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
-import com.xunce.electrombile.activity.BindingActivity;
+import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FindActivity;
-import com.xunce.electrombile.activity.GeoCodering;
-import com.xunce.electrombile.activity.RecordActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -205,7 +194,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent;
-                        intent = new Intent(m_context, BindingActivity.class);
+                        intent = new Intent(m_context, BindingActivity2.class);
                         m_context.startActivity(intent);
                     }
                 })

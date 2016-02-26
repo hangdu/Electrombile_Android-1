@@ -42,7 +42,7 @@ import com.avos.avoscloud.RequestMobileCodeCallback;
 import com.avos.avoscloud.SignUpCallback;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
-import com.xunce.electrombile.activity.BindingActivity;
+import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -130,7 +130,7 @@ public class RegisterActivity extends BaseActivity implements OnClickListener {
                     ToastUtils.showShort(RegisterActivity.this, (String) msg.obj);
                     dialog.cancel();
                     IntentUtils.getInstance().startActivity(RegisterActivity.this,
-                            BindingActivity.class);
+                            BindingActivity2.class);
                     break;
 
                 case TOAST:
