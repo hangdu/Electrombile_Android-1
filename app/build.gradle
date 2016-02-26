@@ -132,7 +132,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:22.0.0'
     //compile 'im.fir:sdk:1.2.0+'
     compile 'im.fir:sdk:latest.integration@aar'
@@ -151,5 +151,6 @@ dependencies {
     //    compile 'com.android.support:design:22.2.0'
     compile 'com.orhanobut:logger:1.11'
     compile 'com.malinskiy:materialicons:1.0.2'
+    compile files('libs/android-logging-log4j-1.0.3.jar')
 }
 

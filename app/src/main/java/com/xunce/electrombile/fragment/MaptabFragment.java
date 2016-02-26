@@ -49,6 +49,7 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity;
@@ -66,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
 
@@ -122,6 +124,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button find_car;
 
     GeoCoder mSearch = null;
+    Logger log;
 
 //    private int locateCode;
     private Handler playHandler = new Handler() {
@@ -166,16 +169,22 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
+        log = Logger.getLogger(MaptabFragment.class);
+        log.info("onAttach-start");
+//        Logger.i("MapFragment-onAttach", "start");
         super.onAttach(activity);
+        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+//        Logger.i("MapFragment-onCreate", "start");
+        log.info("onCreate-start");
         super.onCreate(savedInstanceState);
         // Log.i(TAG, "onCreate called!");
         //在使用SDK各组件之前初始化context信息，传入ApplicationContext
         //注意该方法要再setContentView方法之前实现
-        SDKInitializer.initialize(this.m_context);
+        SDKInitializer.initialize(m_context);
 
         trackDataList = new ArrayList<>();
         currentTrack = new TrackPoint(new Date(), 0, 0);
@@ -209,33 +218,28 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
+        log.info("onCreate-finish");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Log.i(TAG, "onCreateView called!");
+        log.info("onCreateView-start");
+//        Logger.i("MapFragment-onCreateView", "start");
         if (rootView == null) {
             View view = inflater.inflate(R.layout.map_fragment, container, false);
             initView(view);
             rootView = view;
         }
+        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        //定义Maker坐标点
-        //leacloud服务器清空，暂时自定义数据代替
-
-        //在主页切换了被管理车辆之后  这个函数也是需要再执行一遍的
-//        InitCarLocation();
 
     }
 
-//    public void setLocateCode(int code){
-//        this.locateCode = code;
-//    }
 
     public void InitCarLocation(){
 //        LatLng point;
@@ -284,14 +288,18 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        log.info("onActivityCreated-start");
+//        Logger.i("MapFragment-onActivityCreated", "start");
         super.onActivityCreated(savedInstanceState);
+        log.info("onActivityCreated-finish");
     }
 
 
     @Override
     public void onResume() {
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        //   Log.i(TAG, "onResume called!");
+        log.info("onResume-start");
+//        Logger.i("MapFragment-onResume", "start");
         mMapView.setVisibility(View.VISIBLE);
         mMapView.onResume();
         super.onResume();
@@ -302,6 +310,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             enterPlayTrackMode();
             drawLine();
         }
+        log.info("onResume-finish");
     }
     /**
      * 初始化view
@@ -510,18 +519,23 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onPause() {
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
+        log.info("onPause-start");
         mMapView.onPause();
         super.onPause();
+        log.info("onPause-finish");
     }
 
     @Override
     public void onDestroyView() {
+        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
+        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
+        log.info("onDestroy-start");
         if (lineDraw != null)
             lineDraw.remove();
         //清除轨迹
@@ -534,6 +548,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         mMapView.onDestroy();
         mMapView = null;
         super.onDestroy();
+        log.info("onDestroy-finish");
     }
 
 

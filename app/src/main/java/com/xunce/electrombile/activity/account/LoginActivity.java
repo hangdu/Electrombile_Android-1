@@ -35,6 +35,7 @@ import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.AVObject;
+import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.activity.BindingActivity2;
@@ -167,6 +168,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Logger.i("LoginActivity-onCreate", "start");
 		setContentView(R.layout.activity_login);
         super.onCreate(savedInstanceState);
 	}

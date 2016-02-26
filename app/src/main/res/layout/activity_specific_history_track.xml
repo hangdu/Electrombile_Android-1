@@ -29,8 +29,8 @@
 
     <RelativeLayout
         android:layout_below="@+id/ll_button"
-        android:layout_marginTop="30px"
-        android:layout_marginLeft="35px"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="11.67dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -43,11 +43,11 @@
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"
                 android:background="#1dcf96"
-                android:textSize="42px"
+                android:textSize="14sp"
                 android:text="车辆名称:一号"/>
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="15px"/>
+                android:layout_height="5dp"/>
 
             <TextView
                 android:id="@+id/tv_startPoint"
@@ -55,12 +55,12 @@
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"
                 android:background="#1dcf96"
-                android:textSize="42px"
+                android:textSize="14sp"
                 android:text="起始位置:"/>
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="15px"/>
+                android:layout_height="5dp"/>
 
             <TextView
                 android:id="@+id/tv_endPoint"
@@ -68,12 +68,12 @@
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"
                 android:background="#1dcf96"
-                android:textSize="42px"
+                android:textSize="14sp"
                 android:text="终点位置:"/>
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="15px"/>
+                android:layout_height="5dp"/>
 
             <TextView
                 android:id="@+id/tv_routeTime"
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="#ffffff"
                 android:background="#1dcf96"
-                android:textSize="42px"
+                android:textSize="14sp"
                 android:text="历时:"/>
 
         </LinearLayout>
@@ -89,32 +89,31 @@
 
     <RelativeLayout
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="158px"
+        android:layout_marginBottom="52.67dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/btn_play"
-            android:layout_marginLeft="70px"
-            android:layout_width="106px"
-            android:layout_height="103px"
+            android:layout_marginLeft="23.33dp"
+            android:layout_width="35.33dp"
+            android:layout_height="34.33dp"
             android:background="@drawable/btn_play1"/>
 
         <SeekBar
             android:id="@+id/seekbar"
             android:layout_toRightOf="@+id/btn_play"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="80px"
-            android:layout_width="600px"
+            android:layout_marginLeft="26.67dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_speed"
             android:layout_toRightOf="@+id/seekbar"
-            android:layout_marginLeft="80px"
-            android:layout_width="106px"
-            android:layout_height="103px"
+            android:layout_marginLeft="26.67dp"
+            android:layout_width="35.33dp"
+            android:layout_height="34.33dp"
             android:background="@drawable/btn_speed"/>
     </RelativeLayout>
-
 </RelativeLayout>

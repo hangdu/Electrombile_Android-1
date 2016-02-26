@@ -28,6 +28,7 @@ import com.xunce.electrombile.activity.account.PersonalCenterActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
+import org.apache.log4j.Logger;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -40,11 +41,15 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     //缓存view
     private View rootView;
     private TextView tv_autolockstatus;
+    Logger log;
 
 
     @Override
     public void onAttach(Activity activity) {
+        log = Logger.getLogger(SettingsFragment.class);
+        log.info("onAttach-start");
         super.onAttach(activity);
+        log.info("onAttach-finish");
     }
 
     //没有重写oncreate函数
@@ -52,28 +57,36 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.settings_fragment, container, false);
         }
+        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+        log.info("onViewCreated-finish");
 
     }
 
     @Override
     public void onStart() {
+        log.info("onStart-start");
         super.onStart();
+        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
+        log.info("onResume-start");
         super.onResume();
         refreshAutolockStatus();
+        log.info("onResume-finish");
     }
 
     @Override
@@ -298,27 +311,37 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        log.info("onActivityCreated-start");
         super.onActivityCreated(savedInstanceState);
+        log.info("onActivityCreated-finish");
     }
 
     @Override
     public void onDestroy() {
+        log.info("onDestroy-start");
         super.onDestroy();
+        log.info("onDestroy-finish");
     }
 
     @Override
     public void onPause() {
+        log.info("onPause-start");
         super.onPause();
+        log.info("onPause-finish");
     }
 
     @Override
     public void onStop() {
+        log.info("onStop-start");
         super.onStop();
+        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
+        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
+        log.info("onDestroyView-finish");
     }
 }

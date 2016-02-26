@@ -64,41 +64,24 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
-
 import com.xunce.electrombile.Constants.ProtocolConstants;
-
-import com.orhanobut.logger.Logger;
-
-import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
-import com.xunce.electrombile.activity.GetBindList;
 import com.xunce.electrombile.activity.MqttConnectManager;
-import com.xunce.electrombile.activity.SwitchManagedCar;
 import com.xunce.electrombile.bean.WeatherBean;
-
-import com.xunce.electrombile.manager.CmdCenter;
-import com.xunce.electrombile.manager.SettingManager;
-import com.xunce.electrombile.mqtt.Connection;
-import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.ToastUtils;
-
 import com.xunce.electrombile.utils.system.WIFIUtil;
-
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
-
-import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import org.apache.log4j.Logger;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
     private static final int DELAYTIME = 1000;
@@ -125,6 +108,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private static String localcity;
     private MqttConnectManager mqttConnectManager;
     List<String> IMEIlist;
+    Logger log;
+
 
 
     public Handler timeHandler = new Handler() {
@@ -164,16 +149,21 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
+        log = Logger.getLogger(SwitchFragment.class);
+        log.info("onAttach-start");
+
         super.onAttach(activity);
         try {
             locationTVClickedListener = (LocationTVClickedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement OnArticleSelectedListener");
         }
+        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
+        log.info("onCreate-start");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
         mSearch = GeoCoder.newInstance();
@@ -196,22 +186,26 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
-//        (m_context).receiver.setAlarmHandler(mhandler);
+        log.info("onCreate-finish");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
         }
+        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
         initView();
+        log.info("onViewCreated-finish");
       }
 
     private void initView() {
@@ -235,10 +229,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //UI界面改变
                 String IMEI_previous = BindedCarIMEI.getText().toString();
-                String test1 = IMEIlist.get(0);
                 String IMEI_now = OtherCar.get(position);
-                String test = IMEIlist.get(position+1);
-
 
                 BindedCarIMEI.setText(IMEI_now);
 
@@ -250,22 +241,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 myHorizontalScrollView.UpdateListview();
                 OtherCar.remove(position);
                 OtherCar.add(IMEI_previous);
-
-
-
                 //实际逻辑改变
                 DeviceChange(IMEI_previous, IMEI_now,position);
                 //把mapfragment里的车辆名称更新
-
                 locationTVClickedListener.locationTVClicked();
             }
         });
 
-//        refreshBindList();
-
         IMEIlist = new ArrayList<>();
         getIMEIlist();
-
 
         ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
         ChangeAutobike.setOnClickListener(new OnClickListener() {
@@ -279,7 +263,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-
         TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
         TodayWeather.setOnClickListener(new OnClickListener() {
             @Override
@@ -290,7 +273,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 builder.show();
             }
         });
-
 
         headImage = (ImageView) getActivity().findViewById(R.id.headImage);
         headImage.setOnClickListener(new OnClickListener() {
@@ -307,7 +289,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         {
             myHorizontalScrollView.toggle();
         }
-
     }
 
     //设备切换
@@ -337,6 +318,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onResume() {
+        log.info("onResume-start");
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
@@ -344,8 +326,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
+        log.info("onResume-finish");
     }
-
 
     public void reverserGeoCedec(LatLng pCenter) {
         mSearch.reverseGeoCode(new ReverseGeoCodeOption()
@@ -363,20 +345,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (result.error != SearchResult.ERRORNO.NO_ERROR) {
             return;
         }
-    }
-
-
-    @Override
-    public void onDestroy() {
-        m_context = null;
-        mSearch = null;
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ((ViewGroup) rootView.getParent()).removeView(rootView);
     }
 
     private void httpGetWeather(String city) {
@@ -474,19 +442,19 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     private static void downloadOfflinemap() {
         if (localcity != null) {
-            Logger.d("我获取到了城市的名字%s", localcity);
+            com.orhanobut.logger.Logger.d("我获取到了城市的名字%s", localcity);
             MKOLUpdateElement element = LocalCityelement();
             if (element != null) {
-                Logger.d("以前好像下过了，我看看下完没");
+                com.orhanobut.logger.Logger.d("以前好像下过了，我看看下完没");
                 if (element.status != MKOLUpdateElement.FINISHED) {
-                    Logger.d("没下完，我接着下");
+                    com.orhanobut.logger.Logger.d("没下完，我接着下");
                     mkOfflineMap.start(element.cityID);
                 }
             } else {
-                Logger.d("以前没下过");
+                com.orhanobut.logger.Logger.d("以前没下过");
                 ArrayList<MKOLSearchRecord> records = mkOfflineMap.searchCity(localcity);
                 for (MKOLSearchRecord record : records) {
-                    Logger.d("下载:%d", record.cityID);
+                    com.orhanobut.logger.Logger.d("下载:%d", record.cityID);
                     mkOfflineMap.start(record.cityID);
                 }
             }
@@ -691,7 +659,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 com.orhanobut.logger.Logger.d("没错，就是在WIFI环境下，我要看看获取到城市名字了没");
                 downloadOfflinemap();
             } else {
-                Logger.d("没连WIFI");
+                com.orhanobut.logger.Logger.d("没连WIFI");
             }
         }
     }
@@ -752,23 +720,50 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void getIMEIlist(){
-        if(setManager.getFistLogin()){
-            setManager.setFirstLogin(false);
-            QueryBindListFromServer();
-        }
-        else{
-            JSONArray jsonArray1;
-            try{
-                IMEIlist.clear();
-                jsonArray1 = new JSONArray(setManager.getIMEIlist());
-                for (int i = 0; i < jsonArray1.length(); i++) {
-                    IMEIlist.add(jsonArray1.getString(i));
-                }
-            }catch (Exception e){
-                //这里怎么处理呢?
-            }
-            refreshBindList1();
-        }
+        setManager.setFirstLogin(false);
+        QueryBindListFromServer();
+//        if(setManager.getFistLogin()){
+//            setManager.setFirstLogin(false);
+//            QueryBindListFromServer();
+//        }
+//        else{
+//            JSONArray jsonArray1;
+//            try{
+//                IMEIlist.clear();
+//                jsonArray1 = new JSONArray(setManager.getIMEIlist());
+//                for (int i = 0; i < jsonArray1.length(); i++) {
+//                    IMEIlist.add(jsonArray1.getString(i));
+//                }
+//            }catch (Exception e){
+//                //这里怎么处理呢?
+//            }
+//            refreshBindList1();
+//        }
     }
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
+
+    @Override
+    public void onPause() {
+        log.info("onPause-start");
+        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
+        super.onPause();
+        log.info("onPause-finish");
+    }
+
+    @Override
+    public void onDestroy() {
+        log.info("onDestroy-start");
+        m_context = null;
+        mSearch = null;
+        super.onDestroy();
+        log.info("onDestroy-finish");
+    }
+
+    @Override
+    public void onDestroyView() {
+        log.info("onDestroyView-start");
+        super.onDestroyView();
+        ((ViewGroup) rootView.getParent()).removeView(rootView);
+        log.info("onDestroyView-finish");
+    }
 }
