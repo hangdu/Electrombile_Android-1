@@ -242,47 +242,14 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
     public void InitCarLocation(){
-//        LatLng point;
-//        if ((!setManager.getInitLocationLat().isEmpty()) && (!setManager.getInitLocationLongitude().isEmpty())) {
-//            LogUtil.log.i("lat:::" + Double.valueOf(setManager.getInitLocationLat()));
-//            LogUtil.log.i("longitude:::" + Double.valueOf(setManager.getInitLocationLongitude()));
-//            point = new LatLng(Double.valueOf(setManager.getInitLocationLat()),
-//                    Double.valueOf(setManager.getInitLocationLongitude()));
-//            point = mCenter.convertPoint(point);
-//        } else {
-//            LogUtil.log.i("到了初始位置？");
-//            point = new LatLng(30.5171, 114.4392);
-//        }
-//
-////        在地图上添加Marker，并显示
-//        MarkerLocationCenter(point);
-
         if (checkNetwork()) return;
         //检查是否绑定
         if (checkBind()) return;
 
         if (mBaiduMap != null) {
-//            m_context.showWaitDialog();
             m_context.timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
             updateLocation();
         }
-
-//        moveMarkerParams = new MapViewLayoutParams.Builder()
-//                .layoutMode(MapViewLayoutParams.ELayoutMode.mapMode)
-//                .height(100)
-//                .width(100)
-//                .position(markerMobile.getPosition())
-//                .build();
-//        mMapView.removeView(moveMarker);
-//        mMapView.addView(moveMarker, moveMarkerParams);
-//
-//        //将电动车位置移至中心
-//        MapStatus mMapStatus = new MapStatus.Builder()
-//                .target(point)
-//                .zoom(mBaiduMap.getMapStatus().zoom * Double.valueOf(1.5).floatValue())
-//                .build();
-//        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-//        mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
 
@@ -699,7 +666,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void updateLocation() {
         if ((m_context).mac != null )
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
-
     }
 
     /**

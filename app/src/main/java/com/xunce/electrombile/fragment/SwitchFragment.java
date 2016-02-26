@@ -7,20 +7,14 @@ import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -35,9 +29,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
@@ -92,7 +84,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private boolean alarmState = false;
     //缓存view
     private View rootView;
-    private LocationTVClickedListener locationTVClickedListener;
     private Button ChangeAutobike;
     private Button TodayWeather;
     private ImageView headImage;
@@ -104,13 +95,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     Button btnAlarmState1;
     private static int Count = 0;
     static MKOfflineMap mkOfflineMap;
-    private TextView tvWeather;
     private static String localcity;
     private MqttConnectManager mqttConnectManager;
-    List<String> IMEIlist;
-    Logger log;
-
-
+    private List<String> IMEIlist;
+    private Logger log;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -126,7 +114,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             switch (msg.what){
                 case 1://处理侧滑的message
                     myHorizontalScrollView.UpdateListview();
-
                     break;
                 case 2:
                     cancelWaitTimeOut();
@@ -151,13 +138,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onAttach(Activity activity) {
         log = Logger.getLogger(SwitchFragment.class);
         log.info("onAttach-start");
-
         super.onAttach(activity);
-        try {
-            locationTVClickedListener = (LocationTVClickedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement OnArticleSelectedListener");
-        }
         log.info("onAttach-finish");
     }
 
@@ -243,8 +224,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 OtherCar.add(IMEI_previous);
                 //实际逻辑改变
                 DeviceChange(IMEI_previous, IMEI_now,position);
-                //把mapfragment里的车辆名称更新
-                locationTVClickedListener.locationTVClicked();
             }
         });
 
@@ -285,7 +264,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         (m_context).receiver.setAlarmHandler(mhandler);
 
         //从设置切换回主页的时候  会执行这个函数  如果主页中的侧滑菜单是打开的  那么就关闭侧滑菜单
-        if(myHorizontalScrollView.getIsOpen() == true)
+        if(myHorizontalScrollView.getIsOpen())
         {
             myHorizontalScrollView.toggle();
         }
@@ -354,78 +333,74 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         Log.e(TAG, "city" + city);
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.GET,
-                "http://apistore.baidu.com/microservice/weather?cityname=" + city,
-                new RequestCallBack<String>() {
-                    @Override
-                    public void onLoading(long total, long current, boolean isUploading) {
-                        Log.e(TAG, "onLoading");
+        "http://apistore.baidu.com/microservice/weather?cityname=" + city,
+        new RequestCallBack<String>() {
+            @Override
+            public void onLoading(long total, long current, boolean isUploading) {
+                Log.e(TAG, "onLoading");
+            }
+
+            @Override
+            public void onSuccess(ResponseInfo<String> responseInfo) {
+                Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
+                String originData = StringUtils.decodeUnicode(responseInfo.result);
+                WeatherBean data = new WeatherBean();
+                parseWeatherErr(data, originData);
+            }
+
+            private void parseWeatherErr(WeatherBean data, String originData) {
+                try {
+                    data.errNum = JSONUtils.ParseJSON(originData, "errNum");
+                    data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
+                    if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
+                        data.retData = JSONUtils.ParseJSON(originData, "retData");
+                        parseRetData(data.retData, data);
+                    } else {
+                        Log.e(TAG, "fail to get Weather info");
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                    @Override
-                    public void onSuccess(ResponseInfo<String> responseInfo) {
-                        Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
-                        String originData = StringUtils.decodeUnicode(responseInfo.result);
-                        WeatherBean data = new WeatherBean();
-                        parseWeatherErr(data, originData);
-                    }
+            private void parseRetData(String originData, WeatherBean data) {
+                try {
+                    data.city = JSONUtils.ParseJSON(originData, "city");
+                    data.time = JSONUtils.ParseJSON(originData, "time");
+                    data.weather = JSONUtils.ParseJSON(originData, "weather");
+                    data.temp = JSONUtils.ParseJSON(originData, "temp");
+                    data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
+                    data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
+                    data.WD = JSONUtils.ParseJSON(originData, "WD");
+                    data.WS = JSONUtils.ParseJSON(originData, "WS");
+                    setWeather(data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtils.showShort(m_context, "天气查询失败");
+                }
+            }
 
-                    private void parseWeatherErr(WeatherBean data, String originData) {
-                        try {
-                            data.errNum = JSONUtils.ParseJSON(originData, "errNum");
-                            data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
-                            if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
-                                data.retData = JSONUtils.ParseJSON(originData, "retData");
-                                parseRetData(data.retData, data);
-                            } else {
-                                Log.e(TAG, "fail to get Weather info");
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+            private void setWeather(WeatherBean data) {
+                WeatherData = "气温：" + data.temp + "\n" +
+                        "天气状况：" + data.weather + "\n" +
+                        "城市：" + data.city + "\n" +
+                        "风速：" + data.WS + "\n" +
+                        "更新时间：" + data.time + "\n" +
+                        "最低气温：" + data.l_tmp + "\n" +
+                        "最高气温：" + data.h_tmp + "\n" +
+                        "风向：" + data.WD + "\n";
+            }
 
-                    }
+            @Override
+            public void onStart() {
+                Log.i(TAG, "start");
+            }
 
-                    private void parseRetData(String originData, WeatherBean data) {
-                        try {
-                            data.city = JSONUtils.ParseJSON(originData, "city");
-                            data.time = JSONUtils.ParseJSON(originData, "time");
-                            data.weather = JSONUtils.ParseJSON(originData, "weather");
-                            data.temp = JSONUtils.ParseJSON(originData, "temp");
-                            data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
-                            data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
-                            data.WD = JSONUtils.ParseJSON(originData, "WD");
-                            data.WS = JSONUtils.ParseJSON(originData, "WS");
-                            setWeather(data);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-//                            tvWeather.setText("查询失败");
-//                            TodayWeather.setText("查询失败");
-                            ToastUtils.showShort(m_context, "天气查询失败");
-                        }
-
-                    }
-
-                    private void setWeather(WeatherBean data) {
-                        WeatherData = "气温：" + data.temp + "\n" +
-                                "天气状况：" + data.weather + "\n" +
-                                "城市：" + data.city + "\n" +
-                                "风速：" + data.WS + "\n" +
-                                "更新时间：" + data.time + "\n" +
-                                "最低气温：" + data.l_tmp + "\n" +
-                                "最高气温：" + data.h_tmp + "\n" +
-                                "风向：" + data.WD + "\n";
-                    }
-
-                    @Override
-                    public void onStart() {
-                        Log.i(TAG, "start");
-                    }
-
-                    @Override
-                    public void onFailure(HttpException error, String msg) {
-                        Log.i(TAG, "失败");
-                    }
-                });
+            @Override
+            public void onFailure(HttpException error, String msg) {
+                Log.i(TAG, "失败");
+            }
+        });
     }
 
     /**
@@ -588,7 +563,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-
     //取消显示常驻通知栏
     public void cancelNotification() {
         NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(m_context
@@ -667,9 +641,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void refreshBindList1(){
         myHorizontalScrollView.list.clear();
         OtherCar.clear();
-
         BindedCarIMEI.setText(IMEIlist.get(0));
-
         HashMap<String, Object> map = null;
         for (int i = 1; i < IMEIlist.size(); i++) {
             map = new HashMap<>();

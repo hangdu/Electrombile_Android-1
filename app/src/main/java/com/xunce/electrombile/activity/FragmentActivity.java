@@ -30,7 +30,6 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
-import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
@@ -43,8 +42,6 @@ import com.xunce.electrombile.fragment.SwitchFragment.LocationTVClickedListener;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
-import com.xunce.electrombile.mqtt.Connection;
-import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -53,27 +50,20 @@ import com.xunce.electrombile.view.viewpager.CustomViewPager;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.mindpipe.android.logging.log4j.LogConfigurator;
-
 
 /**
  * Created by heyukun on 2015/3/24. 修改 by liyanbo
  */
 
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
-        implements SwitchFragment.GPSDataChangeListener,
-        LocationTVClickedListener {
+        implements SwitchFragment.GPSDataChangeListener{
     private static final String TAG = "FragmentActivity:";
     private static final int DELAYTIME = 500;
     public MqttAndroidClient mac;
@@ -90,16 +80,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private boolean isExit = false;
     //接收广播
     public MyReceiver receiver;
-
-    int Count = 0;
-
-    private boolean IsCarSwitched = false;
-
-    MqttConnectOptions mcp;
-
-    Connection connection;
-
-    MqttConnectManager mqttConnectManager;
+    private MqttConnectManager mqttConnectManager;
     private Logger log;
 
     /**
@@ -141,13 +122,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         //初始化界面
         initView();
         initData();
-
         //判断是否绑定设备
         queryIMEI();
-//        getMqttConnection();
-//        //注册广播
         Historys.put(this);
-
         registerBroadCast();
         log.info("onCreate-finish");
     }
@@ -178,9 +155,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onResume() {
+        //这个函数的onResume会被反复执行吗?
         log.info("onResume-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onResume", "start");
         super.onResume();
+        //下面这句话只需要执行一次
         if (mac != null && mac.isConnected()) {
             //这句话干嘛的
             mac.registerResources(this);
@@ -198,12 +177,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         switchFragment.reverserGeoCedec(desLat);
     }
 
-    @Override
-    public void locationTVClicked() {
-        maptabFragment.HideInfowindow();
-        IsCarSwitched = true;
-
-    }
+//    @Override
+//    public void locationTVClicked() {
+//
+//    }
 
     //取消显示常驻通知栏
     public void cancelNotification() {
@@ -272,7 +249,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     @Override
                     public void MqttConnectSuccess() {
                         mac = mqttConnectManager.getMac();
-                        subscribe(mac);
+                        mqttConnectManager.subscribe(setManager.getIMEI(),FragmentActivity.this);
+//                        subscribe(mac);
                         ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
                         setManager.setMqttStatus(true);
                         //开启报警服务
@@ -280,54 +258,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //                        GetAlarmStatusFromServer();
 //                        GetAutoLockStatusFromServer();
                     }
-
                     @Override
                     public void MqttConnectFail() {
                         ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
                     }
                 });
                 mqttConnectManager.getMqttConnection();
-
             }
         }).start();
-
     }
-
-    private void ReMqttConnect(){
-        try {
-            mac.connect(mcp, this, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    ToastUtils.showShort(FragmentActivity.this, "mac非空,重连服务器连接成功");
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    ToastUtils.showShort(FragmentActivity.this, "mac非空,重连服务器连接失败");
-                }
-            });
-            Connections.getInstance(FragmentActivity.this).addConnection(connection);
-        } catch (MqttException e1) {
-            e1.printStackTrace();
-        }
-    }
-
-
-    /**
-     * Mqtt重连当前mac客户端
-     */
-    public void reMqttConnection() {
-        if (mac != null) {
-            try {
-                mac.connect();
-                ToastUtils.showShort(FragmentActivity.this,"等候重连");
-//                com.orhanobut.logger.Logger.w("等候重连结束");
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     /**
      * 延时发送消息
      *
@@ -338,7 +277,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 try {
-//                    subscribe(mac);
                     mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
                 } catch (MqttException e) {
                     e.printStackTrace();
@@ -369,7 +307,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         } else if (!mac.isConnected()) {
-            ReMqttConnect();
+//            ReMqttConnect();
+            mqttConnectManager.ReMqttConnect();
             DelaySendMessage(message, IMEI);
             return;
         }
@@ -396,8 +335,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         setManager.setIMEI((String) avObjects.get(0).get("IMEI"));
                         //建立连接
                         getMqttConnection();
-                        Log.d("成功", "查询到" + avObjects.size() + " 条符合条件的数据");
-                        ToastUtils.showShort(FragmentActivity.this, "设备查询成功");
                     } else {
                         Log.d("失败", "查询错误2: ");
                         ToastUtils.showShort(FragmentActivity.this, "请先绑定设备");
@@ -409,37 +346,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
         }
-    }
-
-    /**
-     * 订阅话题
-     *
-     * @param mac mqtt的客户端
-     */
-    public void subscribe(MqttAndroidClient mac) {
-        //订阅命令字
-        String initTopic = setManager.getIMEI();
-        String topic1 = "dev2app/" + initTopic + "/cmd";
-        //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
-        //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
-        //订阅报警
-        String topic4 = "dev2app/" + initTopic + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
-        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
-                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
-        try {
-            mac.subscribe(topic, qos);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
-        } catch (MqttException e) {
-            e.printStackTrace();
-            ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
-        }
-
     }
 
     /**
@@ -485,26 +391,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     case R.id.rbMap:
                         com.orhanobut.logger.Logger.i("FragmentActivity-buttonMap-clicked", "start");
                         log.info("rbMap-clicked");
-                        Count++;
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
 
-                        //打开应用之后第一次点击mapfragment  就会进行车辆定位
-                        if (1 == Count) {
-                            maptabFragment.InitCarLocation();
-                        }
-                        if (setManager.getFlagCarSwitched().equals("切换")) {
-                            setManager.setFlagCarSwitched("没有切换");
-                            maptabFragment.InitCarLocation();
-                            maptabFragment.setCarname();
-                        }
-                        if (true == IsCarSwitched) {
-                            IsCarSwitched = false;
-                            maptabFragment.InitCarLocation();
-                            maptabFragment.setCarname();
-                        }
+                        //初始化一些东西
+                        maptabFragment.HideInfowindow();
                         maptabFragment.setCarname();
-                        //添加逻辑代码
+                        maptabFragment.InitCarLocation();
+
                         break;
                     case R.id.rbSettings:
                         mViewPager.setCurrentItem(2, false);
@@ -610,10 +504,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     }
 
     private void LogConfigure(){
-//判断有没有sd卡
-//        String status = Environment.getExternalStorageState();
-//        Boolean test = status.equals(Environment.MEDIA_MOUNTED);
-
         LogConfigurator logConfigurator = new LogConfigurator();
         String name = Environment.getExternalStorageDirectory()
                 + File.separator + "MyApp" + File.separator + "logs"
