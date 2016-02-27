@@ -99,7 +99,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private MqttConnectManager mqttConnectManager;
     private List<String> IMEIlist;
     private Logger log;
-    private Boolean first_enter_SwitchFragment;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -148,7 +147,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onCreate-start");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
-        first_enter_SwitchFragment = true;
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
 
@@ -178,7 +176,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
-            first_enter_SwitchFragment = true;
+            initView(rootView);
         }
         log.info("onCreateView-finish");
         return rootView;
@@ -188,11 +186,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
-        if(first_enter_SwitchFragment){
-            //只有在view已经渲染好了之后(表示view树已经建好了)   才可以findViewById
-            initView();
-            first_enter_SwitchFragment = false;
-        }
         initEvent();
         log.info("onViewCreated-finish");
       }
@@ -249,7 +242,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onDestroyView-finish");
     }
 
-
     @Override
     public void onDestroy() {
         log.info("onDestroy-start");
@@ -266,14 +258,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onDetach-finish");
     }
 
-    private void initView(){
-        btnAlarmState1 = (Button) getActivity().findViewById(R.id.btn_AlarmState1);
-        BindedCarIMEI = (TextView)getActivity().findViewById(R.id.menutext1);
+    private void initView(View v){
+        btnAlarmState1 = (Button) v.findViewById(R.id.btn_AlarmState1);
+        BindedCarIMEI = (TextView)v.findViewById(R.id.menutext1);
         OtherCar = new ArrayList();
-        myHorizontalScrollView = (MyHorizontalScrollView) getActivity().findViewById(R.id.myHorizontalScrollView);
-        ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
-        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
-        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
+        myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
+        ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
+        TodayWeather = (Button) v.findViewById(R.id.weather1);
+        headImage = (ImageView) v.findViewById(R.id.headImage);
 
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override

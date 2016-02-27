@@ -80,10 +80,6 @@
             android:label="@string/title_activity_login"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.account.RegisterActivity"
-            android:label="RegisterActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.account.ForgetPswActivity"
             android:label="@string/title_activity_forget"
             android:screenOrientation="portrait" />
@@ -106,10 +102,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/App2Theme" />
-        <activity
-            android:name=".activity.RecordActivity"
-            android:label="Record"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.AboutActivity"
             android:label="About"

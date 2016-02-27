@@ -1,6 +1,5 @@
 package com.xunce.electrombile.fragment;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,13 +9,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -31,11 +27,7 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.Overlay;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
@@ -48,14 +40,11 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FindActivity;
 import com.xunce.electrombile.activity.TestddActivity;
-import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
@@ -74,7 +63,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private MarkerOptions option2;
     //轨迹图层
     private TextView tvUpdateTime;
-//    private TextView tvStatus;
     private InfoWindow mInfoWindow;
     private View markerView;
 
@@ -127,8 +115,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         //定位成功的时候出现在电动车图标上面的那个...
         markerView = inflater.inflate(R.layout.view_marker, null);
         tvUpdateTime = (TextView) markerView.findViewById(R.id.tv_updateTime);
-//        tvStatus = (TextView) markerView.findViewById(R.id.tv_statuse);
-
         didDialog = new AlertDialog.Builder(m_context).setMessage(R.string.bindErrorSet)
                 .setTitle(R.string.bindSet)
                 .setPositiveButton(R.string.goBind, new DialogInterface.OnClickListener() {
@@ -284,7 +270,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 //检查网络
                 if (checkNetwork()) return;
                 //检查是否绑定
@@ -350,7 +335,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         MarkerLocationCenter(track.point);
 
         Message msg = Message.obtain();
-//        msg.what = SET_MARKER;
         msg.obj = track;
         playHandler.sendMessage(msg);
         refreshTrack(track);
@@ -404,7 +388,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_CarPosition.setText("车辆位置:");
     }
 
-    //当切换了车辆之后需要把那个infowindow隐藏掉
     public void HideInfowindow()
     {
         if(mInfoWindow != null){

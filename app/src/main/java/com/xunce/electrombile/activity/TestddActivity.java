@@ -66,7 +66,6 @@ public class TestddActivity extends Activity{
     private static final String STARTPOINT = "startPoint";
     private static final String ENDPOINT = "endPoint";
 
-    private final String TAG = "RecordActivity";
     TracksManager tracksManager;
     //查询的开始和结束时间
     Date startT;

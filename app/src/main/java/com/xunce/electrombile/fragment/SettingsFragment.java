@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +19,14 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.AboutActivity;
 import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.CarManageActivity;
-import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.HelpActivity;
 import com.xunce.electrombile.activity.MapOfflineActivity;
+import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
-
 import org.apache.log4j.Logger;
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
@@ -41,6 +37,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private View rootView;
     private TextView tv_autolockstatus;
     Logger log;
+    private MqttConnectManager mqttConnectManager;
 
     @Override
     public void onAttach(Activity activity) {
@@ -63,19 +60,17 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.settings_fragment, container, false);
+            initView(rootView);
         }
         log.info("onCreateView-finish");
         return rootView;
     }
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
         log.info("onViewCreated-finish");
-
     }
 
     @Override
@@ -260,7 +255,10 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unSubscribe(((FragmentActivity) m_context).getMac());
+                mqttConnectManager = MqttConnectManager.getInstance();
+                mqttConnectManager.unSubscribe(setManager.getIMEI(),m_context);
+
+//                unSubscribe(m_context.getMac());
                 Intent intent;
                 intent = new Intent();
                 intent.setAction("com.xunce.electrombile.alarmservice");
@@ -287,7 +285,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         dialog.show();
 
         //设置宽度
-        WindowManager m = ((FragmentActivity) m_context).getWindowManager();
+        WindowManager m = m_context.getWindowManager();
         Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
         WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
 //        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
@@ -302,37 +300,36 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
      * @param mac mqtt连接
      * @return
      */
-    private boolean unSubscribe(MqttAndroidClient mac) {
-        //订阅命令字
-        String initTopic = setManager.getIMEI();
-        String topic1 = "dev2app/" + initTopic + "/cmd";
-        //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
-        //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
-
-        String topic4 = "dev2app/" + initTopic + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
-        if (!TextUtils.isEmpty(initTopic)) {
-            try {
-                mac.unsubscribe(topic);
-                return true;
-            } catch (MqttException e) {
-                e.printStackTrace();
-                ToastUtils.showShort(m_context, "取消订阅失败!请稍后重启再试！");
-                return false;
-            }
-        } else {
-            return true;
-        }
-
-    }
+//    private boolean unSubscribe(MqttAndroidClient mac) {
+//        //订阅命令字
+//        String initTopic = setManager.getIMEI();
+//        String topic1 = "dev2app/" + initTopic + "/cmd";
+//        //订阅GPS数据
+//        String topic2 = "dev2app/" + initTopic + "/gps";
+//        //订阅上报的信号强度
+//        String topic3 = "dev2app/" + initTopic + "/433";
+//
+//        String topic4 = "dev2app/" + initTopic + "/alarm";
+//        String[] topic = {topic1, topic2, topic3, topic4};
+//        if (!TextUtils.isEmpty(initTopic)) {
+//            try {
+//                mac.unsubscribe(topic);
+//                return true;
+//            } catch (MqttException e) {
+//                e.printStackTrace();
+//                ToastUtils.showShort(m_context, "取消订阅失败!请稍后重启再试！");
+//                return false;
+//            }
+//        } else {
+//            return true;
+//        }
+//    }
 
     /**
      * 初始化布局
      */
     private void initView(View view) {
-        tv_autolockstatus = (TextView)getActivity().findViewById(R.id.tv_autolockstatus);
+        tv_autolockstatus = (TextView)view.findViewById(R.id.tv_autolockstatus);
         view.findViewById(R.id.layout_about).setOnClickListener(this);
         view.findViewById(R.id.layout_help).setOnClickListener(this);
         view.findViewById(R.id.btn_logout).setOnClickListener(this);
@@ -352,7 +349,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         }
 
         else{
-            tv_autolockstatus.setText("状态关闭");
+             tv_autolockstatus.setText("状态关闭");
         }
     }
 }

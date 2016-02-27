@@ -233,27 +233,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-    /**
-     * 得到mac
-     *
-     * @return
-     */
-    public MqttAndroidClient getMac() {
-        return mac;
-    }
 
     /**
      * 建立MQTT连接
      */
     private void getMqttConnection() {
-        //这个函数是耗时的操作
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                // 开始执行后台任务
-//
-//            }
-//        }).start();
         mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
             @Override
             public void MqttConnectSuccess() {
@@ -275,8 +259,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         });
         log.info("getMqttConnection 开始连接服务器");
         mqttConnectManager.getMqttConnection();
-
-
     }
     /**
      * 延时发送消息
@@ -498,9 +480,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     private void LogConfigure(){
         LogConfigurator logConfigurator = new LogConfigurator();
-//        String name = Environment.getExternalStorageDirectory()
-//                + File.separator + "MyApp" + File.separator + "logs"
-//                + File.separator + "log4j.txt";
         logConfigurator.setFileName(Environment.getExternalStorageDirectory()
                 + File.separator + "MyApp" + File.separator + "logs"
                 + File.separator + "log4j.txt");
