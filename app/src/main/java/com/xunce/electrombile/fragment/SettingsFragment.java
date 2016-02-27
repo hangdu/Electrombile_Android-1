@@ -34,7 +34,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
-
     private static String TAG = "SettingsFragment";
     //临时变量
     public int temp = 0;
@@ -42,7 +41,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     private View rootView;
     private TextView tv_autolockstatus;
     Logger log;
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -52,7 +50,12 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         log.info("onAttach-finish");
     }
 
-    //没有重写oncreate函数
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        log.info("onCreate-start");
+        super.onCreate(savedInstanceState);
+        log.info("onCreate-finish");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +68,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         return rootView;
     }
 
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         log.info("onViewCreated-start");
@@ -72,6 +76,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         initView(view);
         log.info("onViewCreated-finish");
 
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        log.info("onActivityCreated-start");
+        super.onActivityCreated(savedInstanceState);
+        log.info("onActivityCreated-finish");
     }
 
     @Override
@@ -87,6 +98,42 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         super.onResume();
         refreshAutolockStatus();
         log.info("onResume-finish");
+    }
+
+    @Override
+    public void onPause() {
+        log.info("onPause-start");
+        super.onPause();
+        log.info("onPause-finish");
+    }
+
+    @Override
+    public void onStop() {
+        log.info("onStop-start");
+        super.onStop();
+        log.info("onStop-finish");
+    }
+
+    @Override
+    public void onDestroyView() {
+        log.info("onDestroyView-start");
+        super.onDestroyView();
+        ((ViewGroup) rootView.getParent()).removeView(rootView);
+        log.info("onDestroyView-finish");
+    }
+
+    @Override
+    public void onDestroy() {
+        log.info("onDestroy-start");
+        super.onDestroy();
+        log.info("onDestroy-finish");
+    }
+
+    @Override
+    public void onDetach(){
+        log.info("onDetach-start");
+        super.onDetach();
+        log.info("onDetach-finish");
     }
 
     @Override
@@ -307,41 +354,5 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         else{
             tv_autolockstatus.setText("状态关闭");
         }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        log.info("onActivityCreated-start");
-        super.onActivityCreated(savedInstanceState);
-        log.info("onActivityCreated-finish");
-    }
-
-    @Override
-    public void onDestroy() {
-        log.info("onDestroy-start");
-        super.onDestroy();
-        log.info("onDestroy-finish");
-    }
-
-    @Override
-    public void onPause() {
-        log.info("onPause-start");
-        super.onPause();
-        log.info("onPause-finish");
-    }
-
-    @Override
-    public void onStop() {
-        log.info("onStop-start");
-        super.onStop();
-        log.info("onStop-finish");
-    }
-
-    @Override
-    public void onDestroyView() {
-        log.info("onDestroyView-start");
-        super.onDestroyView();
-        ((ViewGroup) rootView.getParent()).removeView(rootView);
-        log.info("onDestroyView-finish");
     }
 }

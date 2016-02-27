@@ -99,6 +99,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private MqttConnectManager mqttConnectManager;
     private List<String> IMEIlist;
     private Logger log;
+    private Boolean first_enter_SwitchFragment;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -147,6 +148,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onCreate-start");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
+        first_enter_SwitchFragment = true;
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
 
@@ -176,6 +178,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
+            first_enter_SwitchFragment = true;
         }
         log.info("onCreateView-finish");
         return rootView;
@@ -185,23 +188,110 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
-        initView();
+        if(first_enter_SwitchFragment){
+            //只有在view已经渲染好了之后(表示view树已经建好了)   才可以findViewById
+            initView();
+            first_enter_SwitchFragment = false;
+        }
+        initEvent();
         log.info("onViewCreated-finish");
       }
 
-    private void initView() {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        log.info("onActivityCreated-start");
+        super.onActivityCreated(savedInstanceState);
+        log.info("onActivityCreated-finish");
+    }
+
+    @Override
+    public void onStart(){
+        log.info("onStart-start");
+        super.onStart();
+        log.info("onStart-finish");
+    }
+
+    @Override
+    public void onResume() {
+        log.info("onResume-start");
+        super.onResume();
+        if (setManager.getAlarmFlag()) {
+            openStateAlarmBtn();
+            showNotification("安全宝防盗系统已启动");
+        } else {
+            closeStateAlarmBtn();
+        }
+        log.info("onResume-finish");
+    }
+
+
+
+    @Override
+    public void onPause() {
+        log.info("onPause-start");
+        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
+        super.onPause();
+        log.info("onPause-finish");
+    }
+
+    @Override
+    public void onStop(){
+        log.info("onStop-start");
+        super.onStop();
+        log.info("onStop-finish");
+    }
+
+    @Override
+    public void onDestroyView() {
+        log.info("onDestroyView-start");
+        super.onDestroyView();
+        ((ViewGroup) rootView.getParent()).removeView(rootView);
+        log.info("onDestroyView-finish");
+    }
+
+
+    @Override
+    public void onDestroy() {
+        log.info("onDestroy-start");
+        m_context = null;
+        mSearch = null;
+        super.onDestroy();
+        log.info("onDestroy-finish");
+    }
+
+    @Override
+    public void onDetach(){
+        log.info("onDetach-start");
+        super.onDetach();
+        log.info("onDetach-finish");
+    }
+
+    private void initView(){
         btnAlarmState1 = (Button) getActivity().findViewById(R.id.btn_AlarmState1);
+        BindedCarIMEI = (TextView)getActivity().findViewById(R.id.menutext1);
+        OtherCar = new ArrayList();
+        myHorizontalScrollView = (MyHorizontalScrollView) getActivity().findViewById(R.id.myHorizontalScrollView);
+        ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
+        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
+        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
+
+        ChangeAutobike.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //侧滑的代码
+                myHorizontalScrollView.toggle();
+                if (myHorizontalScrollView.getIsOpen()) {
+                    myHorizontalScrollView.UpdateListview();
+                }
+            }
+        });
+
         btnAlarmState1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 alarmStatusChange();
             }
         });
-
-        BindedCarIMEI = (TextView)getActivity().findViewById(R.id.menutext1);
-
-        OtherCar = new ArrayList();
-        myHorizontalScrollView = (MyHorizontalScrollView) getActivity().findViewById(R.id.myHorizontalScrollView);
 
         myHorizontalScrollView.InitView();
         myHorizontalScrollView.setHandler(mhandler);
@@ -223,26 +313,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 OtherCar.remove(position);
                 OtherCar.add(IMEI_previous);
                 //实际逻辑改变
-                DeviceChange(IMEI_previous, IMEI_now,position);
+                DeviceChange(IMEI_previous, IMEI_now, position);
             }
         });
 
-        IMEIlist = new ArrayList<>();
-        getIMEIlist();
-
-        ChangeAutobike = (Button) getActivity().findViewById(R.id.ChangeAutobike);
-        ChangeAutobike.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //侧滑的代码
-                myHorizontalScrollView.toggle();
-                if (myHorizontalScrollView.getIsOpen()) {
-                    myHorizontalScrollView.UpdateListview();
-                }
-            }
-        });
-
-        TodayWeather = (Button) getActivity().findViewById(R.id.weather1);
         TodayWeather.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -253,16 +327,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        headImage = (ImageView) getActivity().findViewById(R.id.headImage);
         headImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 //补充关于更换头像的代码
             }
         });
+    }
 
+    private void initEvent() {
+        getIMEIlist();
         (m_context).receiver.setAlarmHandler(mhandler);
-
         //从设置切换回主页的时候  会执行这个函数  如果主页中的侧滑菜单是打开的  那么就关闭侧滑菜单
         if(myHorizontalScrollView.getIsOpen())
         {
@@ -286,26 +361,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             ToastUtils.showShort(m_context,"mqtt连接失败");
         }
 
-        IMEIlist.set(0,setManager.getIMEI());
-        IMEIlist.set(position+1,previous_IMEI);
+        IMEIlist.set(0, setManager.getIMEI());
+        IMEIlist.set(position + 1, previous_IMEI);
         JSONArray jsonArray = new JSONArray();
         for(String IMEI:IMEIlist){
             jsonArray.put(IMEI);
         }
         setManager.setIMEIlist(jsonArray.toString());
-    }
-
-    @Override
-    public void onResume() {
-        log.info("onResume-start");
-        super.onResume();
-        if (setManager.getAlarmFlag()) {
-            openStateAlarmBtn();
-            showNotification("安全宝防盗系统已启动");
-        } else {
-            closeStateAlarmBtn();
-        }
-        log.info("onResume-finish");
     }
 
     public void reverserGeoCedec(LatLng pCenter) {
@@ -333,74 +395,74 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         Log.e(TAG, "city" + city);
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.GET,
-        "http://apistore.baidu.com/microservice/weather?cityname=" + city,
-        new RequestCallBack<String>() {
-            @Override
-            public void onLoading(long total, long current, boolean isUploading) {
-                Log.e(TAG, "onLoading");
-            }
-
-            @Override
-            public void onSuccess(ResponseInfo<String> responseInfo) {
-                Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
-                String originData = StringUtils.decodeUnicode(responseInfo.result);
-                WeatherBean data = new WeatherBean();
-                parseWeatherErr(data, originData);
-            }
-
-            private void parseWeatherErr(WeatherBean data, String originData) {
-                try {
-                    data.errNum = JSONUtils.ParseJSON(originData, "errNum");
-                    data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
-                    if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
-                        data.retData = JSONUtils.ParseJSON(originData, "retData");
-                        parseRetData(data.retData, data);
-                    } else {
-                        Log.e(TAG, "fail to get Weather info");
+                "http://apistore.baidu.com/microservice/weather?cityname=" + city,
+                new RequestCallBack<String>() {
+                    @Override
+                    public void onLoading(long total, long current, boolean isUploading) {
+                        Log.e(TAG, "onLoading");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            private void parseRetData(String originData, WeatherBean data) {
-                try {
-                    data.city = JSONUtils.ParseJSON(originData, "city");
-                    data.time = JSONUtils.ParseJSON(originData, "time");
-                    data.weather = JSONUtils.ParseJSON(originData, "weather");
-                    data.temp = JSONUtils.ParseJSON(originData, "temp");
-                    data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
-                    data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
-                    data.WD = JSONUtils.ParseJSON(originData, "WD");
-                    data.WS = JSONUtils.ParseJSON(originData, "WS");
-                    setWeather(data);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToastUtils.showShort(m_context, "天气查询失败");
-                }
-            }
+                    @Override
+                    public void onSuccess(ResponseInfo<String> responseInfo) {
+                        Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
+                        String originData = StringUtils.decodeUnicode(responseInfo.result);
+                        WeatherBean data = new WeatherBean();
+                        parseWeatherErr(data, originData);
+                    }
 
-            private void setWeather(WeatherBean data) {
-                WeatherData = "气温：" + data.temp + "\n" +
-                        "天气状况：" + data.weather + "\n" +
-                        "城市：" + data.city + "\n" +
-                        "风速：" + data.WS + "\n" +
-                        "更新时间：" + data.time + "\n" +
-                        "最低气温：" + data.l_tmp + "\n" +
-                        "最高气温：" + data.h_tmp + "\n" +
-                        "风向：" + data.WD + "\n";
-            }
+                    private void parseWeatherErr(WeatherBean data, String originData) {
+                        try {
+                            data.errNum = JSONUtils.ParseJSON(originData, "errNum");
+                            data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
+                            if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
+                                data.retData = JSONUtils.ParseJSON(originData, "retData");
+                                parseRetData(data.retData, data);
+                            } else {
+                                Log.e(TAG, "fail to get Weather info");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-            @Override
-            public void onStart() {
-                Log.i(TAG, "start");
-            }
+                    private void parseRetData(String originData, WeatherBean data) {
+                        try {
+                            data.city = JSONUtils.ParseJSON(originData, "city");
+                            data.time = JSONUtils.ParseJSON(originData, "time");
+                            data.weather = JSONUtils.ParseJSON(originData, "weather");
+                            data.temp = JSONUtils.ParseJSON(originData, "temp");
+                            data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
+                            data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
+                            data.WD = JSONUtils.ParseJSON(originData, "WD");
+                            data.WS = JSONUtils.ParseJSON(originData, "WS");
+                            setWeather(data);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            ToastUtils.showShort(m_context, "天气查询失败");
+                        }
+                    }
 
-            @Override
-            public void onFailure(HttpException error, String msg) {
-                Log.i(TAG, "失败");
-            }
-        });
+                    private void setWeather(WeatherBean data) {
+                        WeatherData = "气温：" + data.temp + "\n" +
+                                "天气状况：" + data.weather + "\n" +
+                                "城市：" + data.city + "\n" +
+                                "风速：" + data.WS + "\n" +
+                                "更新时间：" + data.time + "\n" +
+                                "最低气温：" + data.l_tmp + "\n" +
+                                "最高气温：" + data.h_tmp + "\n" +
+                                "风向：" + data.WD + "\n";
+                    }
+
+                    @Override
+                    public void onStart() {
+                        Log.i(TAG, "start");
+                    }
+
+                    @Override
+                    public void onFailure(HttpException error, String msg) {
+                        Log.i(TAG, "失败");
+                    }
+                });
     }
 
     /**
@@ -434,10 +496,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 }
             }
         }
-    }
-
-    public interface LocationTVClickedListener {
-        void locationTVClicked();
     }
 
     public class MyLocationListener implements BDLocationListener {
@@ -665,18 +723,18 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     for (int i = 0; i < list.size(); i++) {
                         String IMEI = list.get(i).get("IMEI").toString();
                         IMEIlist.add(IMEI);
-                        if(IMEI.equals(setManager.getIMEI())){
+                        if (IMEI.equals(setManager.getIMEI())) {
                             mainIMEIPosition = i;
                         }
                     }
                     //调整顺序
-                    if(mainIMEIPosition!=0){
-                        IMEIlist.set(mainIMEIPosition,IMEIlist.get(0));
-                        IMEIlist.set(0,setManager.getIMEI());
+                    if (mainIMEIPosition != 0) {
+                        IMEIlist.set(mainIMEIPosition, IMEIlist.get(0));
+                        IMEIlist.set(0, setManager.getIMEI());
                     }
 
                     JSONArray jsonArray = new JSONArray();
-                    for(String IMEI:IMEIlist){
+                    for (String IMEI : IMEIlist) {
                         jsonArray.put(IMEI);
                     }
 
@@ -692,6 +750,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void getIMEIlist(){
+        IMEIlist = new ArrayList<>();
         setManager.setFirstLogin(false);
         QueryBindListFromServer();
 //        if(setManager.getFistLogin()){
@@ -713,29 +772,4 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 //        }
     }
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
-
-    @Override
-    public void onPause() {
-        log.info("onPause-start");
-        //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        super.onPause();
-        log.info("onPause-finish");
-    }
-
-    @Override
-    public void onDestroy() {
-        log.info("onDestroy-start");
-        m_context = null;
-        mSearch = null;
-        super.onDestroy();
-        log.info("onDestroy-finish");
-    }
-
-    @Override
-    public void onDestroyView() {
-        log.info("onDestroyView-start");
-        super.onDestroyView();
-        ((ViewGroup) rootView.getParent()).removeView(rootView);
-        log.info("onDestroyView-finish");
-    }
 }

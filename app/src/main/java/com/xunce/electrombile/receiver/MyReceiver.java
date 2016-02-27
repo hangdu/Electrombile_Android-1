@@ -340,6 +340,7 @@ public class MyReceiver extends BroadcastReceiver {
                 return;
             case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
+                ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
                 break;
             case ProtocolConstants.ERR_INTERNAL:
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");

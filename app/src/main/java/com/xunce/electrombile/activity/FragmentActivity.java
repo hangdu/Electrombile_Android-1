@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +36,6 @@ import com.xunce.electrombile.applicatoin.Historys;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
-import com.xunce.electrombile.fragment.SwitchFragment.LocationTVClickedListener;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -115,10 +112,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "start");
         super.onCreate(savedInstanceState );
         setContentView(R.layout.activity_fragment);
-        mCenter = CmdCenter.getInstance(this);
-        setManager = new SettingManager(this);
-        mqttConnectManager = MqttConnectManager.getInstance();
-        mqttConnectManager.setContext(FragmentActivity.this);
+
         //初始化界面
         initView();
         initData();
@@ -141,19 +135,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     }
 
     @Override
-    public void onBackPressed() {
-        exit();
-    }
-
-    @Override
-    protected void onPause() {
-        log.info("onPause-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "start");
-        super.onPause();
-        log.info("onPause-finish");
-    }
-
-    @Override
     protected void onResume() {
         //这个函数的onResume会被反复执行吗?
         log.info("onResume-start");
@@ -168,6 +149,36 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     }
 
     @Override
+    protected void onPause() {
+        log.info("onPause-start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "start");
+        super.onPause();
+        log.info("onPause-finish");
+    }
+
+    @Override
+    public void onStop(){
+        log.info("onStop-start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "start");
+        super.onStop();
+        log.info("onStop-finish");
+    }
+
+    @Override
+    protected void onDestroy() {
+        log.info("onDestroy-start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onDestroy", "start");
+        cancelNotification();
+        if (mac != null) {
+            mac.unregisterResources();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        }
+        if (TracksManager.getTracks() != null) TracksManager.clearTracks();
+        super.onDestroy();
+        log.info("onDestroy-finish");
+    }
+
+    @Override
     public void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint) {
         //传递数据给地图的Fragment
         //如果正在播放轨迹，则更新位置
@@ -176,11 +187,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             maptabFragment.locateMobile(trackPoint);
         switchFragment.reverserGeoCedec(desLat);
     }
-
-//    @Override
-//    public void locationTVClicked() {
-//
-//    }
 
     //取消显示常驻通知栏
     public void cancelNotification() {
@@ -241,31 +247,36 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      */
     private void getMqttConnection() {
         //这个函数是耗时的操作
-        new Thread(new Runnable() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                // 开始执行后台任务
+//
+//            }
+//        }).start();
+        mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
             @Override
-            public void run() {
-                // 开始执行后台任务
-                mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
-                    @Override
-                    public void MqttConnectSuccess() {
-                        mac = mqttConnectManager.getMac();
-                        mqttConnectManager.subscribe(setManager.getIMEI(),FragmentActivity.this);
-//                        subscribe(mac);
-                        ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                        setManager.setMqttStatus(true);
-                        //开启报警服务
-                        startAlarmService();
-//                        GetAlarmStatusFromServer();
-//                        GetAutoLockStatusFromServer();
-                    }
-                    @Override
-                    public void MqttConnectFail() {
-                        ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
-                    }
-                });
-                mqttConnectManager.getMqttConnection();
+            public void MqttConnectSuccess() {
+                mac = mqttConnectManager.getMac();
+                mqttConnectManager.subscribe(setManager.getIMEI(), FragmentActivity.this);
+                ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                log.info("getMqttConnection  服务器连接成功");
+                setManager.setMqttStatus(true);
+                //开启报警服务
+                startAlarmService();
+//                GetAlarmStatusFromServer();
+//                GetAutoLockStatusFromServer();
             }
-        }).start();
+
+            @Override
+            public void MqttConnectFail() {
+                ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
+            }
+        });
+        log.info("getMqttConnection 开始连接服务器");
+        mqttConnectManager.getMqttConnection();
+
+
     }
     /**
      * 延时发送消息
@@ -307,7 +318,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         } else if (!mac.isConnected()) {
-//            ReMqttConnect();
             mqttConnectManager.ReMqttConnect();
             DelaySendMessage(message, IMEI);
             return;
@@ -345,6 +355,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         } else {
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
+            log.info("登录成功");
         }
     }
 
@@ -374,6 +385,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 数据初始化
      */
     private void initData() {
+        mCenter = CmdCenter.getInstance(this);
+        setManager = new SettingManager(this);
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mqttConnectManager.setContext(FragmentActivity.this);
+        mqttConnectManager.initMqtt();
+
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
         list.add(maptabFragment);
@@ -434,29 +451,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-    @Override
-    public void onStop(){
-        log.info("onStop-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "start");
-        super.onStop();
-        log.info("onStop-finish");
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        log.info("onDestroy-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onDestroy", "start");
-        cancelNotification();
-        if (mac != null) {
-            mac.unregisterResources();
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        }
-        if (TracksManager.getTracks() != null) TracksManager.clearTracks();
-        super.onDestroy();
-        log.info("onDestroy-finish");
-    }
-
     /**
      * 重复按下返回键退出app方法
      */
@@ -481,7 +475,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     }
 
     private void GetAlarmStatusFromServer(){
-        //mqtt连接是耗时的操作
         if (mac != null && mac.isConnected())
         {
             sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
@@ -505,9 +498,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     private void LogConfigure(){
         LogConfigurator logConfigurator = new LogConfigurator();
-        String name = Environment.getExternalStorageDirectory()
-                + File.separator + "MyApp" + File.separator + "logs"
-                + File.separator + "log4j.txt";
+//        String name = Environment.getExternalStorageDirectory()
+//                + File.separator + "MyApp" + File.separator + "logs"
+//                + File.separator + "log4j.txt";
         logConfigurator.setFileName(Environment.getExternalStorageDirectory()
                 + File.separator + "MyApp" + File.separator + "logs"
                 + File.separator + "log4j.txt");
@@ -519,5 +512,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         logConfigurator.configure();
         log = Logger.getLogger(FragmentActivity.class);
         log.info("My Application Created");
+    }
+
+    @Override
+    public void onBackPressed() {
+        exit();
     }
 }

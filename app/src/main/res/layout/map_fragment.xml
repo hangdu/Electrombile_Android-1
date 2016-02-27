@@ -77,61 +77,42 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/history_container"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="120dp"
-        android:orientation="horizontal">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/history_container"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="120dp"-->
+        <!--android:orientation="horizontal">-->
 
-        <Button
-            android:id="@+id/btn_play"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/selector_btn_play" />
+        <!--<Button-->
+            <!--android:id="@+id/btn_play"-->
+            <!--android:layout_width="60dp"-->
+            <!--android:layout_height="60dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_marginBottom="80dp"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:background="@drawable/selector_btn_play" />-->
 
-        <Button
-            android:id="@+id/btn_pause"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
-            android:background="@drawable/selector_btn_pause" />
+        <!--<Button-->
+            <!--android:id="@+id/btn_pause"-->
+            <!--android:layout_width="60dp"-->
+            <!--android:layout_height="60dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_marginBottom="80dp"-->
+            <!--android:background="@drawable/selector_btn_pause" />-->
 
-        <Button
-            android:id="@+id/btn_cancel_track"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignTop="@+id/btn_play_or_pause"
-            android:layout_marginBottom="80dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/selector_btn_cancel" />
-    </LinearLayout>
+        <!--<Button-->
+            <!--android:id="@+id/btn_cancel_track"-->
+            <!--android:layout_width="60dp"-->
+            <!--android:layout_height="60dp"-->
+            <!--android:layout_alignTop="@+id/btn_play_or_pause"-->
+            <!--android:layout_marginBottom="80dp"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:background="@drawable/selector_btn_cancel" />-->
+    <!--</LinearLayout>-->
 
-    <LinearLayout
-        android:id="@+id/SeekBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp">
-        <SeekBar
-            android:id="@+id/seekbar"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/SpeedAdjust"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="*1" />
-
-    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/ll_map"

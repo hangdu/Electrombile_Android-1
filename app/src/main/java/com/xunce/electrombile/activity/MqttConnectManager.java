@@ -1,14 +1,8 @@
 package com.xunce.electrombile.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
-import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -22,8 +16,6 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.util.List;
-
 //使用单例模式
 /**
  * Created by lybvinci on 16/1/21.
@@ -31,10 +23,10 @@ import java.util.List;
 public class MqttConnectManager {
     Context mcontext;
     public MqttAndroidClient mac;
-    SettingManager settingManager;
     MqttConnectOptions mcp;
     Connection connection;
     OnMqttConnectListener onMqttConnectListener;
+
 
     private MqttConnectManager(){
 
@@ -46,14 +38,12 @@ public class MqttConnectManager {
         return INSTANCE;
     }
 
-    //获取到对象之后首先执行这个函数
+//    获取到对象之后首先执行这个函数
     public void setContext(Context context){
         mcontext = context;
     }
 
-
-    //mqtt的初始连接
-    public void getMqttConnection() {
+    public void initMqtt(){
         connection = Connection.createConnection(ServiceConstants.clientId,
                 ServiceConstants.MQTT_HOST,
                 ServiceConstants.PORT,
@@ -74,12 +64,10 @@ public class MqttConnectManager {
         mac.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
-//                settingManager.setMqttStatus(false);
                 ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
                 //设置重连
-//                com.orhanobut.logger.Logger.w("这是回调方法中尝试重连");
                 if (mac != null) {
-                    MqttConnect();
+                    getMqttConnection();
                 }
                 else{
                     ToastUtils.showShort(mcontext, "mac为空");
@@ -96,22 +84,23 @@ public class MqttConnectManager {
                 //publish后会执行到这里
             }
         });
-        MqttConnect();
     }
 
+    //mqtt的初始连接
+//    public void getMqttConnection() {
+//        MqttConnect();
+//    }
 
-    private void MqttConnect(){
+    public void getMqttConnection(){
         try {
             mac.connect(mcp, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-//                    ToastUtils.showShort(mcontext, "mac非空,服务器连接成功");
                     onMqttConnectListener.MqttConnectSuccess();
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    ToastUtils.showShort(mcontext, "mac非空,服务器连接失败");
                     onMqttConnectListener.MqttConnectFail();
                 }
             });
@@ -183,7 +172,6 @@ public class MqttConnectManager {
 
     public void subscribe(String IMEI,Context context){
         //订阅命令字
-//        String initTopic = setManager.getIMEI();
         String initTopic = IMEI;
         String topic1 = "dev2app/" + initTopic + "/cmd";
         //订阅GPS数据
