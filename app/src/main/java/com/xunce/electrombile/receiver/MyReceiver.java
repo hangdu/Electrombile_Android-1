@@ -361,12 +361,13 @@ public class MyReceiver extends BroadcastReceiver {
         LogUtil.log.i("保存数据1");
         ((FragmentActivity) mContext).setManager.setInitLocation(Flat + "", Flong + "");
         if (trackPoint != null) {
-            if (!((FragmentActivity) mContext).maptabFragment.isPlaying) {
-                timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
-                ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
-            }
-            ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);
-
+//            if (!((FragmentActivity) mContext).maptabFragment.isPlaying) {
+////                timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+////                ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+//            }
+//            ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);
+            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+            ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
         }
     }
 

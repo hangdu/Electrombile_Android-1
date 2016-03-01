@@ -32,7 +32,7 @@ public class AlarmService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        setManager = new SettingManager(this);
+        setManager = SettingManager.getInstance();
         startMqttClient();
         registerBroadCast();
     }

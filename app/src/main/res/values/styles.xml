@@ -54,11 +54,33 @@
         <item name="android:background">@drawable/layout_selector</item>
         <item name="android:clickable">true</item>
     </style>
+
+    <style name="clickableLayout_settingFragment1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">66.67dp</item>
+        <item name="android:background">@drawable/layout_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="clickableLayout_settingFragment2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/layout_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+
     <style name="clickableLayoutTextview">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
+    <style name="clickableLayoutTextview1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">20dp</item>
     </style>
 

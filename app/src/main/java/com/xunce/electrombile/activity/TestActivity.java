@@ -20,7 +20,7 @@ public class TestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        settingManager = new SettingManager(this);
+        settingManager = SettingManager.getInstance();
 
         etServer = (EditText) findViewById(R.id.et_server);
         etServer.setText(ServiceConstants.MQTT_HOST);

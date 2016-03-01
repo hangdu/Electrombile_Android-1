@@ -43,48 +43,44 @@ public class CmdCenter {
     /**
      * The m center.
      */
-    private static CmdCenter mCenter;
+//    private static CmdCenter mCenter;
 
-    /**
-     * The m setting manager.
-     */
-    private SettingManager mSettingManager;
 
     //报警用的标志位
 
 
-    /**
-     * Instantiates a new cmd center.
-     *
-     * @param c the c
-     */
-    private CmdCenter(Context c) {
-        if (mCenter == null) {
-            init(c);
-        }
+
+//
+//    /**
+//     * Gets the single instance of CmdCenter.
+//     *
+//     * @param c the c
+//     * @return single instance of CmdCenter
+//     */
+//    public static CmdCenter getInstance() {
+//        if (mCenter == null) {
+//            mCenter = new CmdCenter();
+//        }
+//        return mCenter;
+//    }
+
+    private CmdCenter(){
+
     }
 
-    /**
-     * Gets the single instance of CmdCenter.
-     *
-     * @param c the c
-     * @return single instance of CmdCenter
-     */
-    public static CmdCenter getInstance(Context c) {
-        if (mCenter == null) {
-            mCenter = new CmdCenter(c);
-        }
-        return mCenter;
+    private final static CmdCenter INSTANCE = new CmdCenter();
+
+    public static CmdCenter getInstance() {
+        return INSTANCE;
     }
 
     /**
      * Inits the.
-     *
-     * @param c the c
+
      */
-    private void init(Context c) {
-        mSettingManager = new SettingManager(c);
-    }
+//    private void init() {
+//        mSettingManager = SettingManager.getInstance();
+//    }
 
     //由GPS坐标转换成百度经纬度坐标
     public LatLng convertPoint(LatLng sourcePoint) {

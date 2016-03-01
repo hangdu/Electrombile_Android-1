@@ -32,13 +32,7 @@ public class PersonalCenterActivity extends BaseActivity{
     private EditText tv_UserName;
     private TextView tv_Gender;
     private TextView tv_BirthDate;
-
-    LinearLayout layout_gender;
-    LinearLayout layout_BirthDate;
-    LinearLayout layout_ChangePassword;
-
     private SettingManager settingManager;
-    Button btn_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +42,23 @@ public class PersonalCenterActivity extends BaseActivity{
 
     @Override
     public void initViews() {
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("个人中心");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PersonalCenterActivity.this.finish();
+            }
+        });
+
         tv_UserName = (EditText)findViewById(R.id.tv_UserName);
         tv_Gender = (TextView)findViewById(R.id.tv_Gender);
         tv_BirthDate = (TextView)findViewById(R.id.tv_BirthDate);
-        layout_gender = (LinearLayout)findViewById(R.id.layout_Gender);
-        layout_BirthDate = (LinearLayout)findViewById(R.id.layout_BirthDate);
-        layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
+        LinearLayout layout_gender = (LinearLayout)findViewById(R.id.layout_Gender);
+        LinearLayout layout_BirthDate = (LinearLayout)findViewById(R.id.layout_BirthDate);
+        LinearLayout layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
         btn_back = (Button)findViewById(R.id.btn_back);
 
         layout_gender.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +77,7 @@ public class PersonalCenterActivity extends BaseActivity{
                                 int choiceWhich = choiceListener.getWhich();
                                 String GenderStr = getResources().getStringArray(R.array.gender)[choiceWhich];
                                 tv_Gender.setText(GenderStr);
-                                settingManager.setGender(GenderStr);
+//                                settingManager.setGender(GenderStr);
                             }
                         };
                 builder.setPositiveButton("确定", btnListener);
@@ -183,11 +188,9 @@ public class PersonalCenterActivity extends BaseActivity{
 //        dialog.getWindow().setAttributes(p);
     }
 
-
-
     @Override
     public void initEvents() {
-        settingManager = new SettingManager(PersonalCenterActivity.this);
+        settingManager = SettingManager.getInstance();
         //获取setting中的昵称 出生年代 性别
         tv_UserName.setText(settingManager.getNickname());
         tv_Gender.setText(settingManager.getGender());
@@ -217,52 +220,4 @@ public class PersonalCenterActivity extends BaseActivity{
         super.onBackPressed();
 
     }
-
-//    void createDialog(){
-//        AlertDialog.Builder builder = new AlertDialog.Builder(PersonalCenterActivity.this);
-//        builder.setTitle("修改密码");
-//        builder.setView(passDialog);
-//
-//        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                //判断旧密码是不是对的
-//                String name = settingManager.getPhoneNumber();
-//                String old_password = oldPass.getText().toString().trim();
-//                String new_password = newPass.getText().toString().trim();
-//                if(new_password.isEmpty() == false)
-//                {
-//                    AVUser currentUser = AVUser.getCurrentUser();
-//                    currentUser.updatePasswordInBackground(old_password, new_password, new UpdatePasswordCallback() {
-//                        @Override
-//                        public void done(AVException e) {
-//                            Log.d("TAG", "something wrong");
-//                            if (e == null) {
-//                                //修改密码成功
-//                                Toast.makeText(PersonalCenterActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
-//                                oldPass.setText("");
-//                                newPass.setText("");
-//                            } else {
-//                                //原密码错误
-//                                Toast.makeText(PersonalCenterActivity.this, "原密码错误,修改密码失败", Toast.LENGTH_SHORT).show();
-//                                oldPass.setText("");
-//                                newPass.setText("");
-//                            }
-//                        }
-//                    });
-//                }
-//                //新密码为空
-//                else{
-//                    Toast.makeText(PersonalCenterActivity.this, "新密码为空,修改密码失败", Toast.LENGTH_SHORT).show();
-//                    oldPass.setText("");
-//                    newPass.setText("");
-//                }
-//            }
-//        });
-//        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User cancelled the dialog
-//            }
-//        });
-//        dialog=builder.create();
-//    }
 }

@@ -85,9 +85,8 @@ public class TestddActivity extends Activity{
     List<AVObject> totalAVObjects;
     //等待对话框
     private ProgressDialog watiDialog;
-    Item item;
-    GeoCodering geoCoder1;
-    GeoCodering geoCoder2;
+    private GeoCodering geoCoder1;
+    private GeoCodering geoCoder2;
 
     static int j = 0;
 
@@ -189,7 +188,7 @@ public class TestddActivity extends Activity{
 
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
-        sm = new SettingManager(this);
+        sm = SettingManager.getInstance();
         sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
         sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -10,18 +10,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.LogUtil;
-import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.SettingManager;
-import com.xunce.electrombile.mqtt.Connection;
-import com.xunce.electrombile.mqtt.Connections;
-import com.xunce.electrombile.utils.system.ToastUtils;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -30,17 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 public class CarManageActivity extends Activity {
-    GetBindList getBindList;
-    TextView tv_CurrentCar;
-    ListView listview;
-    List<Map<String, Object>> Othercarlist;
-    SettingManager settingManager;
-    SimpleAdapter adapter;
-    RelativeLayout layout_CurrentCar;
-
-    Button btn_AddDevice;
-    int OthercarPositon;
-    List<String> IMEIlist;
+    private TextView tv_CurrentCar;
+    private List<Map<String, Object>> Othercarlist;
+    private SettingManager settingManager;
+    private SimpleAdapter adapter;
+    private int OthercarPositon;
+    private List<String> IMEIlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +42,26 @@ public class CarManageActivity extends Activity {
     }
 
     void initView(){
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("车辆管理");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CarManageActivity.this.finish();
+            }
+        });
+
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
-        listview = (ListView)findViewById(R.id.OtherCarListview);
+        ListView listview = (ListView)findViewById(R.id.OtherCarListview);
 
         Othercarlist = new ArrayList<>();
-        settingManager = new SettingManager(CarManageActivity.this);
+        settingManager = SettingManager.getInstance();
 
         IMEIlist = new ArrayList<>();
 
-        layout_CurrentCar = (RelativeLayout)findViewById(R.id.RelativeLayout_currentcar);
+        RelativeLayout layout_CurrentCar = (RelativeLayout)findViewById(R.id.RelativeLayout_currentcar);
         layout_CurrentCar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +81,7 @@ public class CarManageActivity extends Activity {
             }
         });
 
-        btn_AddDevice = (Button)findViewById(R.id.btn_AddDevice);
+        Button btn_AddDevice = (Button)findViewById(R.id.btn_AddDevice);
         btn_AddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,7 +104,6 @@ public class CarManageActivity extends Activity {
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
                 intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
                 intentCarEdit.putExtra("list_position", position);
-//                intentCarEdit.putExtra("NextCarIMEI");
                 startActivityForResult(intentCarEdit, 0);
 
             }
@@ -124,7 +120,7 @@ public class CarManageActivity extends Activity {
                     String s = data.getStringExtra("string_key");
                     if(s.equals("设备解绑")){
                         Boolean Flag_Maincar = data.getBooleanExtra("boolean_key",false);
-                        if(true == Flag_Maincar){
+                        if(Flag_Maincar){
                             CaseManagedCarUnbinded();
                         }
                         else{
@@ -145,8 +141,6 @@ public class CarManageActivity extends Activity {
         HashMap<String, Object> map = new HashMap<>();
         map.put("WhichCar", tv_CurrentCar.getText());
         map.put("img",R.drawable.othercar);
-
-//        String s = Othercarlist.get(OthercarPositon).get("WhichCar").toString();
         //UI变化
         tv_CurrentCar.setText(settingManager.getIMEI());
         Othercarlist.set(OthercarPositon, map);
@@ -158,8 +152,9 @@ public class CarManageActivity extends Activity {
     void initEvents(){
         getIMEIlist();
         tv_CurrentCar.setText(settingManager.getIMEI());
-        String test = settingManager.getIMEI();
-        String test1 = IMEIlist.get(0);
+        //这个地方的IMEIlist的值不对啊
+//        String test = settingManager.getIMEI();
+//        String test1 = IMEIlist.get(0);
         HashMap<String, Object> map = null;
         for(int i = 1;i<IMEIlist.size();i++){
             map = new HashMap<String, Object>();
@@ -178,15 +173,10 @@ public class CarManageActivity extends Activity {
             //被绑定的只有一辆车 根本就不会到这个分支来 之前就处理了
         }
         else{
-            //把现在的IMEI号设置为Othercarlist里的第一辆车
-//            settingManager.setIMEI((String) Othercarlist.get(0).get("WhichCar"));
             //UI上的改变
             tv_CurrentCar.setText((String)Othercarlist.get(0).get("WhichCar"));
             Othercarlist.remove(0);
-            //数据更新
             adapter.notifyDataSetChanged();
-            //逻辑上的改变 需要重新订阅一次
-//            reSubscribe();
         }
     }
 
@@ -197,15 +187,6 @@ public class CarManageActivity extends Activity {
 
 
     public void getIMEIlist(){
-        JSONArray jsonArray1;
-        try{
-            IMEIlist.clear();
-            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
-            for (int i = 0; i < jsonArray1.length(); i++) {
-                IMEIlist.add(jsonArray1.getString(i));
-            }
-        }catch (Exception e){
-            //这里怎么处理呢?
-        }
+        IMEIlist = settingManager.getIMEIlist();
     }
 }

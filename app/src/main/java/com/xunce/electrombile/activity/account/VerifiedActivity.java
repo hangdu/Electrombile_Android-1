@@ -80,7 +80,7 @@ public class VerifiedActivity extends Activity {
         btnSure = (Button) findViewById(R.id.btnReGetCode);
         dialog = new ProgressDialog(this);
         dialog.setMessage("处理中，请稍候...");
-        settingManager = new SettingManager(this);
+        settingManager = SettingManager.getInstance();
     }
 
     public void getVerifiedCode(View view) {
@@ -157,6 +157,5 @@ public class VerifiedActivity extends Activity {
         REG_SUCCESS,
         //Toast弹出通知
         TOAST,
-
     }
 }

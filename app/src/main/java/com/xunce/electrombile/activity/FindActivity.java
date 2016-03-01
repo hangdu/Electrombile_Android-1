@@ -42,15 +42,7 @@ public class FindActivity extends BaseActivity {
     private static final String TAG = "FindActivity";
     private final int TIME_OUT = 0;
     private boolean isFinding = false;
-    // private RatingBar ratingBar;
-//    Handler refreshRatingBar = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            float next = (float) msg.obj;
-//            Log.e("", "next:" + next);
-//           // ratingBar.setRating(next);
-//        }
-//    };
+
     private String IMEI;
     private ImageView scanner;
     private ProgressDialog progressDialog;
@@ -92,7 +84,7 @@ public class FindActivity extends BaseActivity {
         //ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         findBtn = (Button) findViewById(R.id.find_button);
         progressDialog = new ProgressDialog(this);
-        mCenter = CmdCenter.getInstance(this);
+        mCenter = CmdCenter.getInstance();
 
         ll_draw = (LinearLayout) findViewById(R.id.ll_draw);
     }

@@ -5,31 +5,12 @@
     android:background="#f3f3f3"
     android:orientation = "vertical">
 
-    <RelativeLayout
-        android:id="@+id/ll"
-        android:layout_width="match_parent"
-        android:background="#1dcf96"
-        android:layout_height="44dp">
-        <Button
-            android:id = "@+id/btn_back"
-            android:layout_width="60dp"
-            android:layout_height="48dp"
-            android:layout_alignParentLeft = "true"
-            android:layout_marginLeft="13dp"
-            android:layout_centerVertical="true"
-            android:text="回撤"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text = "车辆管理"
-            android:textSize="16sp"
-            android:textColor="#d0f9e5"/>
-    </RelativeLayout>
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
 
     <TextView
-        android:layout_below="@+id/ll"
+        android:layout_below="@+id/ll_button"
         android:id="@+id/tv_curentCar"
         android:layout_marginLeft="34dp"
         android:layout_marginTop="10dp"
@@ -106,9 +87,9 @@
         <Button
             android:id = "@+id/btn_AddDevice"
             android:layout_centerInParent="true"
-            android:layout_width="137dp"
-            android:layout_height="31dp"
-            android:background="@drawable/addcar"
+            android:layout_width="137.33dp"
+            android:layout_height="30.67dp"
+            android:background="@drawable/btn_rectangular"
             android:textSize="14sp"
             android:textColor="#ffffff"
             android:text = "添加车辆"/>

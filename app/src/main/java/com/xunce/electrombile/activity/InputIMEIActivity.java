@@ -83,16 +83,16 @@ public class InputIMEIActivity extends Activity {
             IMEIlist.add(IMEI_first);
 
             IMEIlist.set(0, settingManager.getIMEI());
-            JSONArray jsonArray = new JSONArray();
-            for(String IMEI:IMEIlist){
-                jsonArray.put(IMEI);
-            }
-            settingManager.setIMEIlist(jsonArray.toString());
+            settingManager.setIMEIlist(IMEIlist);
 
             Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
             startActivity(intent);
         }
         else{
+            IMEIlist = new ArrayList<>();
+            IMEIlist.add(settingManager.getIMEI());
+            settingManager.setIMEIlist(IMEIlist);
+
             Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
             startActivity(intent);
         }
@@ -100,21 +100,21 @@ public class InputIMEIActivity extends Activity {
     }
 
     public void getIMEIlist(){
-        IMEIlist = new ArrayList<>();
-        JSONArray jsonArray1;
-        try{
-            IMEIlist.clear();
-            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
-            for (int i = 0; i < jsonArray1.length(); i++) {
-                IMEIlist.add(jsonArray1.getString(i));
-            }
-        }catch (Exception e){
-            //这里怎么处理呢?
-        }
+        IMEIlist = settingManager.getIMEIlist();
+//        JSONArray jsonArray1;
+//        try{
+//            IMEIlist.clear();
+//            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
+//            for (int i = 0; i < jsonArray1.length(); i++) {
+//                IMEIlist.add(jsonArray1.getString(i));
+//            }
+//        }catch (Exception e){
+//            //这里怎么处理呢?
+//        }
     }
 
     private void getAlarmStatus(){
-        mCenter = CmdCenter.getInstance(this);
+        mCenter = CmdCenter.getInstance();
         mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.getMac() == null){
             //说明是fragmentActivity还没有进去  可以在fragmentActivity中再去查询开关状态
@@ -155,16 +155,16 @@ public class InputIMEIActivity extends Activity {
     private void getAlarmStatus_next(int BindedDeviceNum){
         if(1 == BindedDeviceNum){
             //刚刚绑定的就是第一个设备:订阅;查询
-            mqttConnectManager.subscribe(settingManager.getIMEI(),InputIMEIActivity.this);
-            mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+            mqttConnectManager.subscribe(settingManager.getIMEI());
+            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
 
         }
         else if(BindedDeviceNum > 1){
             //
-            if(mqttConnectManager.unSubscribe(previous_IMEI,InputIMEIActivity.this)){
+            if(mqttConnectManager.unSubscribe(previous_IMEI)){
                 //解订阅成功
-                mqttConnectManager.subscribe(settingManager.getIMEI(),InputIMEIActivity.this);
-                mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+                mqttConnectManager.subscribe(settingManager.getIMEI());
+                mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
             }
         }
         gotoAct();
@@ -187,7 +187,7 @@ public class InputIMEIActivity extends Activity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("连接中，请稍候...");
 
-        settingManager = new SettingManager(InputIMEIActivity.this);
+        settingManager = SettingManager.getInstance();
     }
 
     private void initEvent(){

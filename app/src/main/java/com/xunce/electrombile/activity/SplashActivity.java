@@ -62,6 +62,13 @@ public class SplashActivity extends BaseActivity {
 //                        FIR.addCustomizeValue("user", currentUser.getUsername());
                         LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
                         if (currentUser.isMobilePhoneVerified()) {
+                            if(setManager.getIMEIlist().size() == 0){
+                                //虽然上次退出的时候是登录状态  但是没有把设备绑定好
+                                intent = new Intent(SplashActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                SplashActivity.this.finish();
+                                return;
+                            }
                             setManager.setFirstLogin(false);
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
                             startActivity(intent);

@@ -23,7 +23,7 @@ public class SwitchManagedCar {
     public SwitchManagedCar(Context context,Context ApplicationContext,String IMEI_now,String IMEI_previous){
         mcontext = context;
         mApplicationContext = ApplicationContext;
-        setManager = new SettingManager(mApplicationContext);
+        setManager = SettingManager.getInstance();
         mIMEI_now = IMEI_now;
         mIMEI_previous = IMEI_previous;
 

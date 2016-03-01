@@ -77,7 +77,7 @@ public class CarInfoEditActivity extends Activity {
         if(LastCar == true){
             //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈???
             if(mqttConnectManager.returnMqttStatus()){
-                if(mqttConnectManager.unSubscribe(IMEI,CarInfoEditActivity.this)){
+                if(mqttConnectManager.unSubscribe(IMEI)){
 
                     //关闭小安宝报警的服务
                     Intent intent;
@@ -91,12 +91,7 @@ public class CarInfoEditActivity extends Activity {
 
                     //IMEIlist更新
                     IMEIlist.remove(0);
-                    JSONArray jsonArray = new JSONArray();
-                    for(String IMEI:IMEIlist){
-                        jsonArray.put(IMEI);
-                    }
-                    setManager.setIMEIlist(jsonArray.toString());
-
+                    setManager.setIMEIlist(IMEIlist);
                     setManager.setFirstLogin(true);
 
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
@@ -143,7 +138,7 @@ public class CarInfoEditActivity extends Activity {
         tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
         tv_CarIMEI.setText("设备号:"+IMEI);
 
-        setManager = new SettingManager(CarInfoEditActivity.this);
+        setManager = SettingManager.getInstance();
         tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
         String s = "手机号:"+setManager.getPhoneNumber();
         tv_phoneNumber.setText(s);
@@ -181,38 +176,35 @@ public class CarInfoEditActivity extends Activity {
     //设备解绑
     private void DeviceUnbinded(){
       //解绑的不是最后一辆车
-        if(true == Flag_Maincar){
+        if(Flag_Maincar){
             if(mqttConnectManager.returnMqttStatus()){
-                mqttConnectManager.unSubscribe(IMEI,CarInfoEditActivity.this);
+                mqttConnectManager.unSubscribe(IMEI);
                 if(!NextCarIMEI.equals("空")){
                     setManager.setIMEI(NextCarIMEI);
-                    mqttConnectManager.subscribe(NextCarIMEI, CarInfoEditActivity.this);
-                    mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), NextCarIMEI);
+                    mqttConnectManager.subscribe(NextCarIMEI);
+                    mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), NextCarIMEI);
+
+                    IMEIlist.remove(0);
+                    setManager.setIMEIlist(IMEIlist);
                 }
                 else{
                     Log.d("test","test");
                 }
-
             }
             else{
                 ToastUtils.showShort(CarInfoEditActivity.this, "mqtt连接断开");
             }
         }
 
-        String IMEeeI = IMEIlist.get(othercarListPosition+1);
-        IMEIlist.remove(othercarListPosition+1);
-        JSONArray jsonArray = new JSONArray();
-        for(String IMEI:IMEIlist){
-            jsonArray.put(IMEI);
+        else{
+            IMEIlist.remove(othercarListPosition+1);
+            setManager.setIMEIlist(IMEIlist);
         }
-        setManager.setIMEIlist(jsonArray.toString());
 
-        Intent intent = new Intent(CarInfoEditActivity.this,CarManageActivity.class);
+        Intent intent = new Intent();
         intent.putExtra("string_key","设备解绑");
         intent.putExtra("boolean_key", Flag_Maincar);
-
         setResult(RESULT_OK, intent);
-        startActivity(intent);
         finish();
     }
 
@@ -235,13 +227,13 @@ public class CarInfoEditActivity extends Activity {
     private void DeviceChange(){
         //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
         mqttConnectManager = MqttConnectManager.getInstance();
-        mCenter = CmdCenter.getInstance(this);
+        mCenter = CmdCenter.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
-            mqttConnectManager.unSubscribe(setManager.getIMEI(),CarInfoEditActivity.this);
+            mqttConnectManager.unSubscribe(setManager.getIMEI());
             setManager.setIMEI(IMEI);
-            mqttConnectManager.subscribe(IMEI, CarInfoEditActivity.this);
-            mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), IMEI);
+            mqttConnectManager.subscribe(IMEI);
+            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), IMEI);
             ToastUtils.showShort(CarInfoEditActivity.this,"切换成功");
         }
         else{
@@ -253,11 +245,7 @@ public class CarInfoEditActivity extends Activity {
         String IMEI_previous = IMEIlist.get(0);
         IMEIlist.set(0,IMEI);
         IMEIlist.set(othercarListPosition+1,IMEI_previous);
-        JSONArray jsonArray = new JSONArray();
-        for(String IMEI:IMEIlist){
-            jsonArray.put(IMEI);
-        }
-        setManager.setIMEIlist(jsonArray.toString());
+        setManager.setIMEIlist(IMEIlist);
 
         Intent intent = new Intent();
         intent.putExtra("string_key","设备切换");
@@ -299,21 +287,19 @@ public class CarInfoEditActivity extends Activity {
                         ToastUtils.showShort(CarInfoEditActivity.this, "list的size一定是1  哪里出错了?");
                     }
                 }
-
             }
         });
     }
 
     //设备解绑
     private void releaseBinding() {
-
         if (!NetworkUtils.isNetworkConnected(this)) {
             ToastUtils.showShort(this, "网络连接失败");
             progressDialog.dismiss();
             return;
         }
         mqttConnectManager = MqttConnectManager.getInstance();
-        mCenter = CmdCenter.getInstance(this);
+        mCenter = CmdCenter.getInstance();
         //删除本地的数据库文件  待测试
         deleteDatabaseFile();
         QueryBindList();
@@ -343,73 +329,53 @@ public class CarInfoEditActivity extends Activity {
     }
 
     public void QueryBindList(){
-        AVUser currentUser = AVUser.getCurrentUser();
-        AVQuery<AVObject> query = new AVQuery<>("Bindings");
-        query.whereEqualTo("user", currentUser);
+        List<String> IMEIlist = setManager.getIMEIlist();
 
-        query.findInBackground(new FindCallback<AVObject>() {
-            @Override
-            public void done(List<AVObject> list, AVException e) {
-                progressDialog.dismiss();
-                if (e == null) {
-                    if(0 == list.size()){
-                        //不可能出现这种情况
-                    }
-                    else if(1 == list.size()){
-                        //解绑之前只剩下最后一辆车了
-                        AlertDialog.Builder builder = new AlertDialog.Builder(CarInfoEditActivity.this);
-                        builder.setMessage("因没有绑定设备,将弹出登录界面");
-                        builder.setTitle("提示");
-                        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                LastCar = true;
-                                dialog.dismiss();
+        if(IMEIlist.size() == 1){
+            AlertDialog.Builder builder = new AlertDialog.Builder(CarInfoEditActivity.this);
+            builder.setMessage("因没有绑定设备,将弹出登录界面");
+            builder.setTitle("提示");
+            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    LastCar = true;
+                    dialog.dismiss();
 
-                                android.os.Message msg = Message.obtain();
-                                msg.what = handler_key.DELETE_RECORD.ordinal();
-                                mHandler.sendMessage(msg);
+                    android.os.Message msg = Message.obtain();
+                    msg.what = handler_key.DELETE_RECORD.ordinal();
+                    mHandler.sendMessage(msg);
 
-                            }
-                        });
-                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                return;
-
-                            }
-                        });
-
-                        Dialog dialog = builder.create();
-                        dialog.show();
-                    }
-
-                    else{
-                        //解绑之前还剩下至少两辆车
-                        //两种情况:1.解绑主设备  2.解绑从设备
-                        if(setManager.getIMEI().equals(IMEI)){
-                            //1.解绑主设备
-                            Flag_Maincar = true;
-
-                        }
-                        else{
-                            //2.解绑从设备
-                            Flag_Maincar = false;
-                        }
-
-                        android.os.Message msg = Message.obtain();
-                        //已经成功解绑
-                        msg.what = handler_key.DELETE_RECORD.ordinal();
-                        mHandler.sendMessage(msg);
-                    }
                 }
-                else {
-                    e.printStackTrace();
-                    ToastUtils.showShort(CarInfoEditActivity.this,e.toString());
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    return;
                 }
+            });
+            Dialog dialog = builder.create();
+            dialog.show();
+        }
+
+        else if(IMEIlist.size() == 0){
+           ToastUtils.showShort(CarInfoEditActivity.this,"这种情况不应该出现的");
+        }
+
+        else{
+            if(setManager.getIMEI().equals(IMEI)){
+                //1.解绑主设备
+                Flag_Maincar = true;
             }
-        });
+            else{
+                //2.解绑从设备
+                Flag_Maincar = false;
+            }
+            android.os.Message msg = Message.obtain();
+            //已经成功解绑
+            msg.what = handler_key.DELETE_RECORD.ordinal();
+            mHandler.sendMessage(msg);
+        }
     }
 
     //判断正在查看的设备是否是主设备
@@ -424,6 +390,4 @@ public class CarInfoEditActivity extends Activity {
             tv_carType.setText("其他车辆");
         }
     }
-
-
 }

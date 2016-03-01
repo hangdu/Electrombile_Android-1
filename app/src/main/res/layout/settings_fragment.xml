@@ -1,162 +1,140 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#eeeeee"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    android:orientation="vertical">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:id="@+id/ll_button"
-                android:layout_width="match_parent"
-                android:background="#1dcf96"
-                android:layout_height="44dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:text = "我"
-                    android:textSize="16dp"
-                    android:textColor="#d0f9e5"/>
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/rl_1"
-                style="@style/clickableLayout"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/iv_login_act"/>
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="车辆管理"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
 
 
-            <LinearLayout
-                android:id="@+id/layout_person_center"
-                style="@style/clickableLayout"
-                android:layout_below="@+id/rl_1"
-                android:layout_marginTop="2dp"
-                android:elevation="1dip">
+    <LinearLayout
+        android:id="@+id/rl_1"
+        style="@style/clickableLayout_settingFragment1"
+        android:layout_marginTop="6.67dp">
 
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/person"/>
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/iv_login_act"/>
 
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="车主信息"
-                    android:textColor="@color/black"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_map_offline"
-                style="@style/clickableLayout"
-                android:layout_below="@id/rl_1"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/mapdownload"/>
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="地图下载"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_autolock"
-                style="@style/clickableLayout"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/autolock" />
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="自动落锁"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:id="@+id/tv_autolockstatus"
-                    android:layout_marginLeft="72dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text = "五分钟状态开启"
-                    android:background="#787777"
-                    android:textSize="12sp"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_help"
-                style="@style/clickableLayout"
-                android:layout_below="@+id/layout_bind"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/help"/>
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="使用帮助"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_about"
-                style="@style/clickableLayout"
-                android:layout_marginTop="2dp"
-                android:elevation="2dip">
-
-                <ImageView
-                    style="@style/settings_fragment_iv"
-                    android:src="@drawable/setting_tel"/>
-
-                <TextView
-                    style="@style/clickableLayoutTextview"
-                    android:text="联系我们"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="车辆管理"
+            android:textColor="@color/black"/>
+    </LinearLayout>
 
 
 
-            <RelativeLayout
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:layout_marginTop="24dp"
-                android:elevation="2dip">
+    <LinearLayout
+        android:id="@+id/layout_person_center"
+        style="@style/clickableLayout_settingFragment2"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/person"/>
+
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="车主信息"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
 
 
-                <Button
-                    android:id="@+id/btn_logout"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_marginBottom="137dp"
-                    android:layout_centerHorizontal="true"
-                    android:text="退出登录"
-                    android:textColor="@color/black" />
-            </RelativeLayout>
-        </LinearLayout>
-    </ScrollView>
+    <LinearLayout
+        android:id="@+id/layout_map_offline"
+        style="@style/clickableLayout_settingFragment2"
+        android:layout_marginTop="6.67dp">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/mapdownload"/>
+
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="地图下载"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_autolock"
+        style="@style/clickableLayout_settingFragment2"
+        android:layout_marginTop="6.67dp">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/autolock" />
+
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="自动落锁"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_autolockstatus"
+            android:layout_marginLeft="72dp"
+            android:layout_width="290px"
+            android:layout_height="60px"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/autolockstatus_rect"
+            android:text = "五分钟状态开启"
+            android:textColor="#7f7f7f"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_help"
+        style="@style/clickableLayout_settingFragment2"
+        android:layout_marginTop="6.67dp">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/help"/>
+
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="使用帮助"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_about"
+        style="@style/clickableLayout_settingFragment2"
+        android:layout_marginTop="6.67dp">
+
+        <ImageView
+            style="@style/settings_fragment_iv"
+            android:src="@drawable/setting_tel"/>
+
+        <TextView
+            style="@style/clickableLayoutTextview1"
+            android:layout_gravity="center_vertical"
+            android:text="联系我们"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_marginTop="67dp"
+        android:layout_height="33.33dp"
+        android:layout_width="136.67dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_logout_rect"
+        android:text="退出登录"
+        android:textColor="@color/black" />
+
 </LinearLayout>
+
+
+

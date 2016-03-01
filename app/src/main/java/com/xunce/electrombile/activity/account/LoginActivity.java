@@ -36,6 +36,7 @@ import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.AVObject;
 import com.orhanobut.logger.Logger;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.activity.BindingActivity2;
@@ -56,7 +57,6 @@ import java.util.List;
  * @author Lien
  */
 public class LoginActivity extends BaseActivity implements OnClickListener {
-
 	/**
 	 * The et name.
 	 */
@@ -87,7 +87,10 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 */
 	private ProgressDialog dialog;
 
-	private Boolean HaveDevice;
+	private LeancloudManager leancloudManager;
+	private LeancloudManager.OnGetBindListListener onGetBindListListener;
+
+//	private Boolean HaveDevice;
 	/**
 	 * The handler.
 	 */
@@ -96,18 +99,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			super.handleMessage(msg);
 			handler_key key = handler_key.values()[msg.what];
 			switch (key) {
-				case FIND_DEVICE_FAIL:
-					Intent intent = new Intent(LoginActivity.this, BindingActivity2.class);
-					intent.putExtra("From","LoginActivity");
-					startActivity(intent);
-					finish();
-					break;
-
-				case FIND_DEVICE_SUCCESS:
-					IntentUtils.getInstance().startActivity(LoginActivity.this, FragmentActivity.class);
-					finish();
-					break;
-
 				case TOAST:
 					ToastUtils.showShort(LoginActivity.this,msg.obj.toString());
 
@@ -119,7 +110,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					dialog.cancel();
 
 					//成功登陆之后需要判断该用户有没有绑定设备:如果没有绑定的话,需要跳转到设备绑定的页面;如果已经绑定过的话,就跳转到主页面
-					QueryBindList();
+//					QueryBindList();
+					findLeancloud();
 					break;
 
 			// 登陆失败
@@ -140,30 +132,36 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		}
 	};
 
-	public void QueryBindList(){
-		AVUser currentUser = AVUser.getCurrentUser();
-		AVQuery<AVObject> query = new AVQuery<>("Bindings");
-		query.whereEqualTo("user", currentUser);
-		query.findInBackground(new FindCallback<AVObject>() {
+
+	private void findLeancloud(){
+		//我需要在这里判断设备列表是否为空啊
+		leancloudManager = LeancloudManager.getInstance();
+		onGetBindListListener = new LeancloudManager.OnGetBindListListener() {
 			@Override
-			public void done(List<AVObject> list, AVException e) {
-				Message msg = Message.obtain();
-				if (e == null) {
-					if(list.isEmpty()){
-						//列表为空  没有绑定任何设备
-						msg.what = handler_key.FIND_DEVICE_FAIL.ordinal();
-					}
-					else{
-						msg.what = handler_key.FIND_DEVICE_SUCCESS.ordinal();
-					}
-				} else {
-					e.printStackTrace();
-					msg.what = handler_key.TOAST.ordinal();
-					msg.obj = e.toString();
+			public void onGetBindListSuccess(List<AVObject> list) {
+				if(list.size() == 0){
+					//进入绑定设备的activity
+					Intent intent = new Intent(LoginActivity.this, BindingActivity2.class);
+					intent.putExtra("From","LoginActivity");
+					startActivity(intent);
+					finish();
 				}
-				handler.sendMessage(msg);
+				else{
+					//直接进入主界面
+					IntentUtils.getInstance().startActivity(LoginActivity.this, FragmentActivity.class);
+					finish();
+				}
 			}
-		});
+
+			@Override
+			public void onGetBindListFail() {
+
+			}
+		};
+		leancloudManager.setonGetBindListListener(onGetBindListListener);
+		leancloudManager.getUserIMEIlistFromServer();
+
+		leancloudManager.getUserInfoFromServer();
 	}
 
 	@Override
@@ -178,11 +176,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 */
     @Override
 	 public void initEvents() {
-
 		tvForgot.setOnClickListener(this);
 		btnLogin.setOnClickListener(this);
 		btnRegister.setOnClickListener(this);
-
 	}
 
 	/**
@@ -201,7 +197,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		if (setManager.getPhoneNumber() != null) {
 			etName.setText(setManager.getPhoneNumber());
 		}
-
 	}
 
 	@Override
@@ -209,7 +204,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.tvForgot:
 			// 打开忘记密码Activity
-//			IntentUtils.getInstance().startActivity(this, ForgetPswActivity.class);
 			IntentUtils.getInstance().startActivity(this, ForgetPassActivity2.class);
 			break;
 		case R.id.btnLogin:
@@ -261,8 +255,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 							Toast.makeText(LoginActivity.this, "请验证", Toast.LENGTH_SHORT)
 									.show();
 							dialog.cancel();
-							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
-							startActivity(intent);
+//							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
+//							startActivity(intent);
 						}
 					} else {
 						handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
@@ -299,7 +293,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * @author Lien
 	 */
 	private enum handler_key {
-
 		/**
 		 * 登陆成功.
 		 */
@@ -315,9 +308,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		 */
 		LOGIN_TIMEOUT,
 
-		FIND_DEVICE_SUCCESS,
-
-		FIND_DEVICE_FAIL,
 
 		TOAST,
 	}

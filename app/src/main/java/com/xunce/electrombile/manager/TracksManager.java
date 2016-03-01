@@ -35,7 +35,7 @@ public class TracksManager implements Serializable{
 
     public TracksManager(Context context){
         tracks = new ArrayList<ArrayList<TrackPoint>>();
-        mCenter = CmdCenter.getInstance(context);
+        mCenter = CmdCenter.getInstance();
         map = new HashMap<>();
     }
 

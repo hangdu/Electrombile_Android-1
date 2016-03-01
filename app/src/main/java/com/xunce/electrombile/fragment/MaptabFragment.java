@@ -54,13 +54,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public static MapView mMapView;
     private static String TAG = "MaptabFragment:";
     public TrackPoint currentTrack;
-    //正在播放轨迹标志
-    public boolean isPlaying = false;
-    private Button btnLocation;
-    private Button btnRecord;
+
+//    public Boolean isPlaying;
+
     //电动车标志
     private Marker markerMobile;
-    private MarkerOptions option2;
+//    private MarkerOptions option2;
     //轨迹图层
     private TextView tvUpdateTime;
     private InfoWindow mInfoWindow;
@@ -74,9 +73,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private View rootView;
     private TextView tv_CarName;
     private TextView tv_CarPosition;
-    private Button find_car;
-    GeoCoder mSearch = null;
-    Logger log;
+    private GeoCoder mSearch = null;
+    private Logger log;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -238,6 +236,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      * @param v view
      */
     private void initView(View v) {
+        View titleView = v.findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("地图");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setVisibility(View.INVISIBLE);
+
         mMapView = (MapView) v.findViewById(R.id.bmapView);
         mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
@@ -248,7 +252,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         //定位电动车按钮
-        btnLocation = (Button) v.findViewById(R.id.btn_location);
+        Button btnLocation = (Button) v.findViewById(R.id.btn_location);
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -266,7 +270,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         //历史记录按钮
-        btnRecord = (Button) v.findViewById(R.id.btn_record);
+        Button btnRecord = (Button) v.findViewById(R.id.btn_record);
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -284,7 +288,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_CarPosition = (TextView) v.findViewById(R.id.tv_CarPosition);
 
         //精确找车
-        find_car = (Button) v.findViewById(R.id.find_car);
+        Button find_car = (Button) v.findViewById(R.id.find_car);
         find_car.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -302,7 +306,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 .fromResource(R.drawable.icon_marka);
         //构建MarkerOption，用于在地图上添加Marker
         LatLng point = new LatLng(30.5171, 114.4392);
-        option2 = new MarkerOptions()
+        MarkerOptions option2 = new MarkerOptions()
                 .position(point)
                 .icon(bitmap);
         //在地图上添加Marker，并显示
@@ -326,10 +330,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      */
     public void locateMobile(TrackPoint track) {
         if (mBaiduMap == null) return;
-        if (isPlaying) {
-            refreshTrack(track);
-            return;
-        }
+//        if (isPlaying) {
+//            refreshTrack(track);
+//            return;
+//        }
         mBaiduMap.hideInfoWindow();
         markerMobile.setPosition(track.point);
         MarkerLocationCenter(track.point);

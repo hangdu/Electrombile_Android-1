@@ -29,8 +29,8 @@ public class BaseFragment extends Fragment{
     @Override
     public void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
-        setManager = new SettingManager(getActivity().getApplicationContext());
-        mCenter = CmdCenter.getInstance(getActivity().getApplicationContext());
+        setManager = SettingManager.getInstance();
+        mCenter = CmdCenter.getInstance();
     }
 
     @Override

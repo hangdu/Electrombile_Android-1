@@ -180,12 +180,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     public void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint) {
+        maptabFragment.locateMobile(trackPoint);
         //传递数据给地图的Fragment
         //如果正在播放轨迹，则更新位置
         //    Log.i("gpsCallBack","called");
-        if (!maptabFragment.isPlaying)
-            maptabFragment.locateMobile(trackPoint);
-        switchFragment.reverserGeoCedec(desLat);
+//        if (!maptabFragment.isPlaying)
+//        switchFragment.reverserGeoCedec(desLat);
     }
 
     //取消显示常驻通知栏
@@ -242,7 +242,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             @Override
             public void MqttConnectSuccess() {
                 mac = mqttConnectManager.getMac();
-                mqttConnectManager.subscribe(setManager.getIMEI(), FragmentActivity.this);
+                mqttConnectManager.subscribe(setManager.getIMEI());
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
                 log.info("getMqttConnection  服务器连接成功");
                 setManager.setMqttStatus(true);
@@ -266,17 +266,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * @param message 发送的内容
      * @param IMEI    设备IMEI号
      */
-    public void DelaySendMessage(final byte[] message, final String IMEI) {
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                try {
-                    mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, DELAYTIME);
-    }
+//    public void DelaySendMessage(final byte[] message, final String IMEI) {
+//        new Handler().postDelayed(new Runnable() {
+//            public void run() {
+//                try {
+//                    mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
+//                } catch (MqttException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, DELAYTIME);
+//    }
 
     /**
      * 开启报警服务
@@ -296,12 +296,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * @param IMEI    要发送的设备号
      */
     public void sendMessage(Context context, final byte[] message, final String IMEI) {
-        if (mac == null) {
+        if (mac == null||!mac.isConnected()) {
+//            if(!mac.isConnected()){
+//                log.info("正在发命令  但是mqtt还没有连接好  可能会造成之前的问题(不停的连接服务器)");
+//            }
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
-            return;
-        } else if (!mac.isConnected()) {
-            mqttConnectManager.ReMqttConnect();
-            DelaySendMessage(message, IMEI);
             return;
         }
         try {
@@ -334,7 +333,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 }
             });
 
-        } else {
+        }
+        else {
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
             log.info("登录成功");
@@ -367,8 +367,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 数据初始化
      */
     private void initData() {
-        mCenter = CmdCenter.getInstance(this);
-        setManager = new SettingManager(this);
+        mCenter = CmdCenter.getInstance();
+        setManager = SettingManager.getInstance();
         mqttConnectManager = MqttConnectManager.getInstance();
         mqttConnectManager.setContext(FragmentActivity.this);
         mqttConnectManager.initMqtt();
@@ -388,7 +388,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         checkId = 0;
                         break;
                     case R.id.rbMap:
-                        com.orhanobut.logger.Logger.i("FragmentActivity-buttonMap-clicked", "start");
                         log.info("rbMap-clicked");
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;

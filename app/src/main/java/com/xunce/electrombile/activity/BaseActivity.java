@@ -40,8 +40,8 @@ public class BaseActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setManager = new SettingManager(getApplicationContext());
-		mCenter = CmdCenter.getInstance(getApplicationContext());
+		setManager = SettingManager.getInstance();
+		mCenter = CmdCenter.getInstance();
 		// 把activity推入历史栈，退出app后清除历史栈，避免造成内存溢出
 		Historys.put(this);
         initViews();

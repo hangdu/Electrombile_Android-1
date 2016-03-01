@@ -68,7 +68,6 @@ import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
-import org.json.JSONArray;
 import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,23 +79,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
-    GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
+    private GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
     private boolean alarmState = false;
     //缓存view
     private View rootView;
-    private Button ChangeAutobike;
-    private Button TodayWeather;
-    private ImageView headImage;
     private MyHorizontalScrollView myHorizontalScrollView;
     private TextView BindedCarIMEI;
-    private ArrayList<String> OtherCar;
+    private List<String> OtherCar;
     private Dialog waitDialog;
-    String WeatherData;
-    Button btnAlarmState1;
+    private String WeatherData;
+    private Button btnAlarmState1;
     private static int Count = 0;
     static MKOfflineMap mkOfflineMap;
     private static String localcity;
-    private MqttConnectManager mqttConnectManager;
+//    private MqttConnectManager mqttConnectManager;
     private List<String> IMEIlist;
     private Logger log;
 
@@ -217,8 +213,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         log.info("onResume-finish");
     }
 
-
-
     @Override
     public void onPause() {
         log.info("onPause-start");
@@ -263,9 +257,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         BindedCarIMEI = (TextView)v.findViewById(R.id.menutext1);
         OtherCar = new ArrayList();
         myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
-        ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
-        TodayWeather = (Button) v.findViewById(R.id.weather1);
-        headImage = (ImageView) v.findViewById(R.id.headImage);
+        Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
+        Button TodayWeather = (Button) v.findViewById(R.id.weather1);
+        ImageView headImage = (ImageView) v.findViewById(R.id.headImage);
 
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
@@ -328,7 +322,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void initEvent() {
-        getIMEIlist();
+        IMEIlist = setManager.getIMEIlist();
+        refreshBindList1();
         (m_context).receiver.setAlarmHandler(mhandler);
         //从设置切换回主页的时候  会执行这个函数  如果主页中的侧滑菜单是打开的  那么就关闭侧滑菜单
         if(myHorizontalScrollView.getIsOpen())
@@ -340,13 +335,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     //设备切换
     private void DeviceChange(String previous_IMEI,String current_IMEI,int position){
         //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
-        mqttConnectManager = MqttConnectManager.getInstance();
+        MqttConnectManager mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
-            mqttConnectManager.unSubscribe(previous_IMEI,m_context);
+            mqttConnectManager.unSubscribe(previous_IMEI);
             setManager.setIMEI(current_IMEI);
-            mqttConnectManager.subscribe(current_IMEI,m_context);
-            mqttConnectManager.sendMessage(m_context, (m_context).mCenter.cmdFenceGet(), current_IMEI);
+            mqttConnectManager.subscribe(current_IMEI);
+            mqttConnectManager.sendMessage((m_context).mCenter.cmdFenceGet(), current_IMEI);
             ToastUtils.showShort(m_context,"切换成功");
         }
         else{
@@ -354,12 +349,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
 
         IMEIlist.set(0, setManager.getIMEI());
-        IMEIlist.set(position + 1, previous_IMEI);
-        JSONArray jsonArray = new JSONArray();
-        for(String IMEI:IMEIlist){
-            jsonArray.put(IMEI);
-        }
-        setManager.setIMEIlist(jsonArray.toString());
+        setManager.setIMEIlist(IMEIlist);
     }
 
     public void reverserGeoCedec(LatLng pCenter) {
@@ -724,13 +714,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                         IMEIlist.set(mainIMEIPosition, IMEIlist.get(0));
                         IMEIlist.set(0, setManager.getIMEI());
                     }
-
-                    JSONArray jsonArray = new JSONArray();
-                    for (String IMEI : IMEIlist) {
-                        jsonArray.put(IMEI);
-                    }
-
-                    setManager.setIMEIlist(jsonArray.toString());
+                    setManager.setIMEIlist(IMEIlist);
                     //刷新数据
                     refreshBindList1();
                 } else {
@@ -741,27 +725,5 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
     }
 
-    public void getIMEIlist(){
-        IMEIlist = new ArrayList<>();
-        setManager.setFirstLogin(false);
-        QueryBindListFromServer();
-//        if(setManager.getFistLogin()){
-//            setManager.setFirstLogin(false);
-//            QueryBindListFromServer();
-//        }
-//        else{
-//            JSONArray jsonArray1;
-//            try{
-//                IMEIlist.clear();
-//                jsonArray1 = new JSONArray(setManager.getIMEIlist());
-//                for (int i = 0; i < jsonArray1.length(); i++) {
-//                    IMEIlist.add(jsonArray1.getString(i));
-//                }
-//            }catch (Exception e){
-//                //这里怎么处理呢?
-//            }
-//            refreshBindList1();
-//        }
-    }
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
 }

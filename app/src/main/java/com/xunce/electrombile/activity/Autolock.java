@@ -3,9 +3,11 @@ package com.xunce.electrombile.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xunce.electrombile.R;
@@ -21,8 +23,6 @@ import java.util.regex.Pattern;
  * Created by lybvinci on 16/1/12.
  */
 public class Autolock extends BaseActivity{
-    private RadioGroup radioGroup_switch;
-    private RadioGroup radioGroup_locktime;
     private RadioButton rb_switchstatus;
     private RadioButton rb_autolockTime;
     private SettingManager settingManager;
@@ -33,8 +33,8 @@ public class Autolock extends BaseActivity{
     private RadioButton rb_Open10min;
     private RadioButton rb_Open15min;
 
-    RelativeLayout relative_locktime;
-    MqttConnectManager mqttConnectManager;
+    private RelativeLayout relative_locktime;
+    private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     static public int period;
 
@@ -46,9 +46,20 @@ public class Autolock extends BaseActivity{
 
     @Override
     public void initViews(){
-        settingManager = new SettingManager(Autolock.this);
-        radioGroup_switch = (RadioGroup)findViewById(R.id.RadioGroup_switch);
-        radioGroup_locktime = (RadioGroup)findViewById(R.id.RadioGroup_locktime);
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("自动落锁设置");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Autolock.this.finish();
+            }
+        });
+
+        settingManager = SettingManager.getInstance();
+        RadioGroup radioGroup_switch = (RadioGroup)findViewById(R.id.RadioGroup_switch);
+        RadioGroup radioGroup_locktime = (RadioGroup)findViewById(R.id.RadioGroup_locktime);
         rb_switchOpen = (RadioButton)findViewById(R.id.rb_openautolock);
         rb_switchClose = (RadioButton)findViewById(R.id.rb_closeautolock);
         rb_Open5min = (RadioButton)findViewById(R.id.rb_5min);
@@ -59,13 +70,13 @@ public class Autolock extends BaseActivity{
         initRadioButton();
 
         mqttConnectManager = MqttConnectManager.getInstance();
-        mCenter = CmdCenter.getInstance(Autolock.this);
+        mCenter = CmdCenter.getInstance();
 
         radioGroup_switch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 rb_switchstatus = (RadioButton) findViewById(checkedId);
-                Toast.makeText(Autolock.this, rb_switchstatus.getText(), Toast.LENGTH_SHORT);
+                Toast.makeText(Autolock.this, rb_switchstatus.getText(), Toast.LENGTH_SHORT).show();
                 String s = (String) rb_switchstatus.getText();
 
                 if (s.equals("开启")) {
@@ -74,14 +85,14 @@ public class Autolock extends BaseActivity{
                     period = 5;
                     //向服务器发消息
                     if(mqttConnectManager.returnMqttStatus()){
-                        mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockOn(),settingManager.getIMEI());
+                        mqttConnectManager.sendMessage(mCenter.cmdAutolockOn(),settingManager.getIMEI());
                     }
                     else{
                         ToastUtils.showShort(Autolock.this,"mqtt连接失败");
                     }
                 }
                 else if(s.equals("关闭")){
-                    mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockOff(),settingManager.getIMEI());
+                    mqttConnectManager.sendMessage(mCenter.cmdAutolockOff(),settingManager.getIMEI());
                     relative_locktime.setVisibility(View.INVISIBLE);
                 }
             }
@@ -94,7 +105,7 @@ public class Autolock extends BaseActivity{
                 int Autolockperiod = findLockTime();
                 if(mqttConnectManager.returnMqttStatus()){
                     period = Autolockperiod;
-                    mqttConnectManager.sendMessage(Autolock.this,mCenter.cmdAutolockTimeSet(Autolockperiod),settingManager.getIMEI());
+                    mqttConnectManager.sendMessage(mCenter.cmdAutolockTimeSet(Autolockperiod),settingManager.getIMEI());
                 }
                 else{
                     ToastUtils.showShort(Autolock.this,"mqtt连接失败");
@@ -128,7 +139,7 @@ public class Autolock extends BaseActivity{
     //初始化落锁状态
     private void initRadioButton(){
         Boolean AutoLockStatus = settingManager.getAutoLockStatus();
-        if(AutoLockStatus == false){
+        if(!AutoLockStatus){
             rb_switchClose.setChecked(true);
             //自动落锁关闭的情况下   落锁时间的设置就隐藏掉
             relative_locktime.setVisibility(View.INVISIBLE);

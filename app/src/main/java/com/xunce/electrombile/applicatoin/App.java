@@ -14,11 +14,18 @@ import com.baidu.mapapi.SDKInitializer;
 public class App extends Application {
     private static final String TAG = "App";
 
+    private static App instance;
+
+    public static App getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         //initial BugHD
         //FIR.init(this);
+        instance = this;
 
         //initial the Baidu map SDK
         initBaiduSDK();

@@ -90,23 +90,23 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private void getAlarmStatus_next(int BindedDeviceNum){
         if(1 == BindedDeviceNum){
             //刚刚绑定的就是第一个设备:订阅;查询
-            mqttConnectManager.subscribe(settingManager.getIMEI(),BindingActivity2.this);
-            mqttConnectManager.sendMessage(getApplicationContext(),mCenter.cmdFenceGet(),settingManager.getIMEI());
+            mqttConnectManager.subscribe(settingManager.getIMEI());
+            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(),settingManager.getIMEI());
 
         }
         else if(BindedDeviceNum > 1){
             //
-            if(mqttConnectManager.unSubscribe(previous_IMEI,BindingActivity2.this)){
+            if(mqttConnectManager.unSubscribe(previous_IMEI)){
                 //解订阅成功
-                mqttConnectManager.subscribe(settingManager.getIMEI(),BindingActivity2.this);
-                mqttConnectManager.sendMessage(getApplicationContext(), mCenter.cmdFenceGet(), settingManager.getIMEI());
+                mqttConnectManager.subscribe(settingManager.getIMEI());
+                mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
             }
         }
         gotoAct();
     }
 
     private void getAlarmStatus(){
-        mCenter = CmdCenter.getInstance(this);
+        mCenter = CmdCenter.getInstance();
         mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.getMac() == null){
             //说明是fragmentActivity还没有进去  可以在fragmentActivity中再去查询开关状态
@@ -124,7 +124,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         }
     }
 
-
     public void gotoAct(){
         if(FromActivity.equals("CarManageActivity")){
             getIMEIlist();
@@ -135,12 +134,16 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
             for(String IMEI:IMEIlist){
                 jsonArray.put(IMEI);
             }
-            settingManager.setIMEIlist(jsonArray.toString());
+//            settingManager.setIMEIlist(jsonArray.toString());
             Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
             //换位置
             startActivity(intent);
         }
         else{
+            //之前还没有绑定过设备
+            IMEIlist.clear();
+            IMEIlist.add(settingManager.getIMEI());
+            settingManager.setIMEIlist(IMEIlist);
             Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
             startActivity(intent);
         }
@@ -148,17 +151,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
 
     public void getIMEIlist(){
-        IMEIlist = new ArrayList<>();
-        JSONArray jsonArray1;
-        try{
-            IMEIlist.clear();
-            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
-            for (int i = 0; i < jsonArray1.length(); i++) {
-                IMEIlist.add(jsonArray1.getString(i));
-            }
-        }catch (Exception e){
-            //这里怎么处理呢?
-        }
+        IMEIlist = settingManager.getIMEIlist();
     }
 
     @Override
@@ -171,11 +164,10 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private void initView() {
         scannerView = (ScannerView) findViewById(R.id.scanner_view);
         btn_InputIMEI = (Button)findViewById(R.id.btn_InputIMEI);
-//        btn_BuyProduct = (Button)findViewById(R.id.btn_BuyProduct);
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("连接中，请稍候...");
-        settingManager = new SettingManager(BindingActivity2.this);
+        settingManager = SettingManager.getInstance();
     }
 
     private void initEvent(){
@@ -205,17 +197,13 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     e.printStackTrace();
                     return;
                 }
-
                 //判断IMEI号是否是15位
-
                 if(IMEIlength(IMEI)){
                     mHandler.sendEmptyMessage(handler_key.START_BIND.ordinal());
                 }
                 else{
                     ToastUtils.showShort(BindingActivity2.this,"IMEI的长度不对");
                 }
-//                setManager.setIMEI(IMEI);
-
             }
         }
         else{
@@ -225,19 +213,14 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
 
     //判断IMEI号是否为15位
-
     private Boolean IMEIlength(String IMEI){
-        if(IMEI.length() == 15){
+        if(IMEI.length() == 15||IMEI.length() == 16){
             return true;
         }
         else{
             return false;
         }
-
     }
-
-
-
 
     @Override
     protected void onResume() {
@@ -285,8 +268,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     msg.what = handler_key.BIND_DEVICE_NUMBER.ordinal();
                     msg.obj = list.size();
                     mHandler.sendMessage(msg);
-
-
                 } else {
                     e.printStackTrace();
                     ToastUtils.showShort(BindingActivity2.this,"查询绑定设备数目出错");
@@ -295,8 +276,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
             }
         });
     }
-
-
 
     private void startBind(final String IMEI){
         timeHandler.sendEmptyMessageDelayed(1, 10000);
@@ -337,10 +316,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
 
                                 //增加查询小安宝开关状态的逻辑代码
 
-//                                android.os.Message message = new android.os.Message();
-//                                message.what = handler_key.BIND_MAINCAR_SUCCESS.ordinal();
-//
-//                                mHandler.sendMessage(message);
                                 timeHandler.removeMessages(1);
                             }
                             bindDevice.put("IMEI", IMEI);

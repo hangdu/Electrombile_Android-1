@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,7 +37,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     //缓存view
     private View rootView;
     private TextView tv_autolockstatus;
-    Logger log;
+    private Logger log;
     private MqttConnectManager mqttConnectManager;
 
     @Override
@@ -256,7 +257,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
             @Override
             public void onClick(View v) {
                 mqttConnectManager = MqttConnectManager.getInstance();
-                mqttConnectManager.unSubscribe(setManager.getIMEI(),m_context);
+                mqttConnectManager.unSubscribe(setManager.getIMEI());
 
 //                unSubscribe(m_context.getMac());
                 Intent intent;
@@ -295,37 +296,6 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     }
 
     /**
-     * 取消订阅
-     *
-     * @param mac mqtt连接
-     * @return
-     */
-//    private boolean unSubscribe(MqttAndroidClient mac) {
-//        //订阅命令字
-//        String initTopic = setManager.getIMEI();
-//        String topic1 = "dev2app/" + initTopic + "/cmd";
-//        //订阅GPS数据
-//        String topic2 = "dev2app/" + initTopic + "/gps";
-//        //订阅上报的信号强度
-//        String topic3 = "dev2app/" + initTopic + "/433";
-//
-//        String topic4 = "dev2app/" + initTopic + "/alarm";
-//        String[] topic = {topic1, topic2, topic3, topic4};
-//        if (!TextUtils.isEmpty(initTopic)) {
-//            try {
-//                mac.unsubscribe(topic);
-//                return true;
-//            } catch (MqttException e) {
-//                e.printStackTrace();
-//                ToastUtils.showShort(m_context, "取消订阅失败!请稍后重启再试！");
-//                return false;
-//            }
-//        } else {
-//            return true;
-//        }
-//    }
-
-    /**
      * 初始化布局
      */
     private void initView(View view) {
@@ -337,6 +307,13 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         view.findViewById(R.id.rl_1).setOnClickListener(this);
         view.findViewById(R.id.layout_autolock).setOnClickListener(this);
         view.findViewById(R.id.layout_map_offline).setOnClickListener(this);
+
+        View titleView = view.findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("我");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setVisibility(View.INVISIBLE);
+
         refreshAutolockStatus();
     }
 

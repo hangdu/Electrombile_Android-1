@@ -9,31 +9,20 @@
         android:layout_below="@id/viewpager"
         android:clickable="true" />
 
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
     <RelativeLayout
         android:id="@+id/findcar_container"
         android:background="#1dcf96"
+        android:layout_marginTop="44dp"
         android:layout_width="match_parent"
-        android:layout_height="102dp"
+        android:layout_height="58dp"
         android:layout_alignParentTop="true">
-
-        <TextView
-            android:id="@+id/tv_map"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:layout_centerHorizontal="true"
-            android:text = "地图"
-            android:textSize="17.33sp"
-            android:textColor="#d0f9e5"/>
-        
-        <ImageView
-            android:layout_marginTop="44dp"
-            android:layout_marginLeft="25dp"
-            android:layout_width="38.33dp"
-            android:layout_height="38.33dp" />
 
         <Button
             android:id="@+id/find_car"
-            android:layout_marginTop="44dp"
             android:layout_marginLeft="25dp"
             android:layout_width="38.33dp"
             android:layout_height="38.33dp"
@@ -50,7 +39,7 @@
 
         <TextView
             android:id="@+id/tv_CarName"
-            android:layout_marginTop="52.33dp"
+            android:layout_marginTop="11.67dp"
             android:layout_marginLeft="106.67dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,12 +57,6 @@
             android:textSize="16sp"
             android:text = "车辆位置:"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_toRightOf="@+id/find_car"
-            android:orientation="vertical">
-        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout

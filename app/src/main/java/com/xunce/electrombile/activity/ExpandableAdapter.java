@@ -114,19 +114,11 @@ public class ExpandableAdapter extends SimpleExpandableListAdapter{
         childViewHold = new ChildViewHold();
         childViewHold.textView1 = (TextView) convertView.findViewById(R.id.tv_startPoint);
         childViewHold.textView2 = (TextView) convertView.findViewById(R.id.tv_endPoint);
-//            childViewHold.textView3 = (TextView) convertView.findViewById(R.id.textview3);
-//            childViewHold.textView4 = (TextView) convertView.findViewById(R.id.textview4);
         convertView.setTag(childViewHold);
-        }else{
+        }
+        else{
             childViewHold = (ChildViewHold)convertView.getTag();
         }
-
-//        List<Message> messageList= ItemList.get(groupPosition).getMessagelist();
-
-//        childViewHold.textView1.setText(messageList.get(childPosition).getTime());
-//        childViewHold.textView2.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getStartLocation());
-//        childViewHold.textView3.setText(ItemList.get(groupPosition).getMessagelist().get(childPosition).getEndLocation());
-//        childViewHold.textView4.setText("时间行程");
 
         childViewHold.textView1.setText(childData.get(groupPosition).get(childPosition).get(STARTPOINT));
         childViewHold.textView2.setText(childData.get(groupPosition).get(childPosition).get(ENDPOINT));

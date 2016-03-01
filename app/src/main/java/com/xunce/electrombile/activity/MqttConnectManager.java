@@ -3,6 +3,7 @@ package com.xunce.electrombile.activity;
 import android.content.Context;
 import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
+import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -86,11 +87,6 @@ public class MqttConnectManager {
         });
     }
 
-    //mqtt的初始连接
-//    public void getMqttConnection() {
-//        MqttConnect();
-//    }
-
     public void getMqttConnection(){
         try {
             mac.connect(mcp, this, new IMqttActionListener() {
@@ -110,26 +106,26 @@ public class MqttConnectManager {
         }
     }
 
-    public void ReMqttConnect(){
-        try {
-            mac.connect(mcp, this, new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接成功");
-//                    onMqttConnectListener.MqttConnectSuccess();
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接失败");
-//                    onMqttConnectListener.MqttConnectFail();
-                }
-            });
-            Connections.getInstance(mcontext).addConnection(connection);
-        } catch (MqttException e1) {
-            e1.printStackTrace();
-        }
-    }
+//    public void ReMqttConnect(){
+//        try {
+//            mac.connect(mcp, this, new IMqttActionListener() {
+//                @Override
+//                public void onSuccess(IMqttToken asyncActionToken) {
+//                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接成功");
+////                    onMqttConnectListener.MqttConnectSuccess();
+//                }
+//
+//                @Override
+//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+//                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接失败");
+////                    onMqttConnectListener.MqttConnectFail();
+//                }
+//            });
+//            Connections.getInstance(mcontext).addConnection(connection);
+//        } catch (MqttException e1) {
+//            e1.printStackTrace();
+//        }
+//    }
 
     public interface OnMqttConnectListener {
         void MqttConnectSuccess();
@@ -154,13 +150,10 @@ public class MqttConnectManager {
     }
 
 
-    public void sendMessage(Context context, final byte[] message, final String IMEI) {
-        if (mac == null) {
-            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
+    public void sendMessage(final byte[] message, final String IMEI) {
+        if (mac == null||!mac.isConnected()) {
+            ToastUtils.showShort(App.getInstance(), "请先连接设备，或等待连接。");
             return;
-        }
-        else if (!mac.isConnected()) {
-
         }
         try {
             //向服务器发送命令
@@ -170,7 +163,7 @@ public class MqttConnectManager {
         }
     }
 
-    public void subscribe(String IMEI,Context context){
+    public void subscribe(String IMEI){
         //订阅命令字
         String initTopic = IMEI;
         String topic1 = "dev2app/" + initTopic + "/cmd";
@@ -191,28 +184,27 @@ public class MqttConnectManager {
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
         } catch (MqttException e) {
             e.printStackTrace();
-            ToastUtils.showShort(context, "订阅失败!请稍后重启再试！");
+            ToastUtils.showShort(App.getInstance(), "订阅失败!请稍后重启再试！");
         }
 
     }
 
-    public boolean unSubscribe(String IMEI,Context context) {
+    public boolean unSubscribe(String IMEI) {
         //订阅命令字
-        String initTopic = IMEI;
-        String topic1 = "dev2app/" + initTopic + "/cmd";
+        String topic1 = "dev2app/" + IMEI + "/cmd";
         //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
+        String topic2 = "dev2app/" + IMEI + "/gps";
         //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
+        String topic3 = "dev2app/" + IMEI + "/433";
 
-        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String topic4 = "dev2app/" + IMEI + "/alarm";
         String[] topic = {topic1, topic2, topic3, topic4};
         try {
             mac.unsubscribe(topic);
             return true;
         } catch (MqttException e) {
             e.printStackTrace();
-            ToastUtils.showShort(context, "取消订阅失败!请稍后重启再试！");
+            ToastUtils.showShort(App.getInstance(), "取消订阅失败!请稍后重启再试！");
             return false;
         }
     }
