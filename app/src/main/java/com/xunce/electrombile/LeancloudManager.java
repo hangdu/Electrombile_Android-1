@@ -1,11 +1,14 @@
 package com.xunce.electrombile;
 
+import android.content.Context;
+
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
@@ -21,6 +24,11 @@ import java.util.Locale;
  * Created by lybvinci on 16/2/29.
  */
 public class LeancloudManager {
+    public final static String ChangeNickname = "changenickname";
+    public final static String ChangeGender = "changegender";
+    public final static String ChangeBirth = "changebirth";
+
+    private Context context;
     public List<String> IMEIlist;
     private List<Date> CreateDate;
     public OnGetBindListListener onGetBindListListener = null;
@@ -30,6 +38,11 @@ public class LeancloudManager {
     public static LeancloudManager getInstance() {
         return INSTANCE;
     }
+
+    private LeancloudManager(){
+        context = App.getInstance();
+    }
+
 
 
     //获取用户的基本信息:姓名 性别 出生日期
@@ -82,7 +95,59 @@ public class LeancloudManager {
         settingManager.setGender(sex);
     }
 
-    //获取用户的基本信息:姓名 性别 出生日期
+    //用户基本信息  上传服务器  用了重载
+    public void uploadUserInfo(final String Nickname){
+        AVUser currentUser = AVUser.getCurrentUser();
+        currentUser.put("name",Nickname);
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    ToastUtils.showShort(context,"用户昵称已经上传到服务器");
+                    //存到本地
+                    settingManager.setNickname(Nickname);
+                } else {
+                    ToastUtils.showShort(context,"用户昵称已经上传服务器失败");
+                }
+            }
+        });
+    }
+
+
+    public void uploadUserInfo(final Boolean gender){
+        AVUser currentUser = AVUser.getCurrentUser();
+        currentUser.put("isMale",gender);
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    ToastUtils.showShort(context,"性别已经上传到服务器");
+                    //保存到本地
+                    settingManager.setGender(gender);
+                } else {
+                    ToastUtils.showShort(context,"性别已经上传服务器失败");
+                }
+            }
+        });
+    }
+
+    public void uploadUserInfo(final Date birthdate){
+        AVUser currentUser = AVUser.getCurrentUser();
+        currentUser.put("birth",birthdate);
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(AVException e) {
+                if (e == null) {
+                    ToastUtils.showShort(context,"出生日期已经上传到服务器");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    settingManager.setBirthDate(sdf.format(birthdate));
+                } else {
+                    ToastUtils.showShort(context,"出生日期已经上传服务器失败");
+                }
+            }
+        });
+    }
+
     public void getUserIMEIlistFromServer(){
         IMEIlist = new ArrayList<>();
         CreateDate = new ArrayList<>();
@@ -113,7 +178,6 @@ public class LeancloudManager {
                 }
             }
         });
-
     }
 
     //根据IMEIlist把每一个的  object:车辆绑定时间和key:createdAt(Date)从服务器上面拉取上来

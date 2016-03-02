@@ -94,7 +94,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private static String localcity;
 //    private MqttConnectManager mqttConnectManager;
     private List<String> IMEIlist;
-    private Logger log;
+//    private Logger log;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -132,15 +132,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
-        log = Logger.getLogger(SwitchFragment.class);
-        log.info("onAttach-start");
+//        log = Logger.getLogger(SwitchFragment.class);
+//        log.info("onAttach-start");
         super.onAttach(activity);
-        log.info("onAttach-finish");
+//        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
-        log.info("onCreate-start");
+//        log.info("onCreate-start");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
         mSearch = GeoCoder.newInstance();
@@ -163,46 +163,46 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
-        log.info("onCreate-finish");
+//        log.info("onCreate-finish");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        log.info("onCreateView-start");
+//        log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
             initView(rootView);
         }
-        log.info("onCreateView-finish");
+//        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        log.info("onViewCreated-start");
+//        log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
         initEvent();
-        log.info("onViewCreated-finish");
+//        log.info("onViewCreated-finish");
       }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        log.info("onActivityCreated-start");
+//        log.info("onActivityCreated-start");
         super.onActivityCreated(savedInstanceState);
-        log.info("onActivityCreated-finish");
+//        log.info("onActivityCreated-finish");
     }
 
     @Override
     public void onStart(){
-        log.info("onStart-start");
+//        log.info("onStart-start");
         super.onStart();
-        log.info("onStart-finish");
+//        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
-        log.info("onResume-start");
+//        log.info("onResume-start");
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
@@ -210,46 +210,46 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
-        log.info("onResume-finish");
+//        log.info("onResume-finish");
     }
 
     @Override
     public void onPause() {
-        log.info("onPause-start");
+//        log.info("onPause-start");
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
         super.onPause();
-        log.info("onPause-finish");
+//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
-        log.info("onStop-start");
+//        log.info("onStop-start");
         super.onStop();
-        log.info("onStop-finish");
+//        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
-        log.info("onDestroyView-start");
+//        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-        log.info("onDestroyView-finish");
+//        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
-        log.info("onDestroy-start");
+//        log.info("onDestroy-start");
         m_context = null;
         mSearch = null;
         super.onDestroy();
-        log.info("onDestroy-finish");
+//        log.info("onDestroy-finish");
     }
 
     @Override
     public void onDetach(){
-        log.info("onDetach-start");
+//        log.info("onDetach-start");
         super.onDetach();
-        log.info("onDetach-finish");
+//        log.info("onDetach-finish");
     }
 
     private void initView(View v){

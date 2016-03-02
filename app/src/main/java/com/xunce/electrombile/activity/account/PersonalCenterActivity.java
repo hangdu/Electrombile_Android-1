@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,17 +25,23 @@ import android.widget.Toast;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.UpdatePasswordCallback;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class PersonalCenterActivity extends BaseActivity{
     private TextView tv_UserName;
     private TextView tv_Gender;
     private TextView tv_BirthDate;
     private SettingManager settingManager;
+    private LeancloudManager leancloudManager;
+    private Boolean gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,33 +66,23 @@ public class PersonalCenterActivity extends BaseActivity{
         tv_Gender = (TextView)findViewById(R.id.tv_Gender);
         tv_BirthDate = (TextView)findViewById(R.id.tv_BirthDate);
 
+        RelativeLayout layout_nickname = (RelativeLayout)findViewById(R.id.layout_UserName);
         RelativeLayout layout_gender = (RelativeLayout)findViewById(R.id.layout_Gender);
         RelativeLayout layout_BirthDate = (RelativeLayout)findViewById(R.id.layout_BirthDate);
         LinearLayout layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
         btn_back = (Button)findViewById(R.id.btn_back);
 
+        layout_nickname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeNickName();
+            }
+        });
+
         layout_gender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(PersonalCenterActivity.this);
-                builder.setTitle("选择性别");
-                final ChoiceOnClickListener choiceListener = new ChoiceOnClickListener();
-
-                builder.setSingleChoiceItems(R.array.gender, 0, choiceListener);
-
-                DialogInterface.OnClickListener btnListener =
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int which) {
-                                int choiceWhich = choiceListener.getWhich();
-                                String GenderStr = getResources().getStringArray(R.array.gender)[choiceWhich];
-                                tv_Gender.setText(GenderStr);
-//                                settingManager.setGender(GenderStr);
-                            }
-                        };
-                builder.setPositiveButton("确定", btnListener);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                changeGender();
             }
         });
 
@@ -95,13 +93,13 @@ public class PersonalCenterActivity extends BaseActivity{
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         tv_BirthDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
-                        settingManager.setBirthDate(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                        GregorianCalendar gregorianCalendar = new GregorianCalendar (year,monthOfYear,dayOfMonth);
+                        leancloudManager.uploadUserInfo(gregorianCalendar.getTime());
                     }
                 }, 2013, 7, 20);
                 datePicker.show();
             }
         });
-
 
         layout_ChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,13 +131,95 @@ public class PersonalCenterActivity extends BaseActivity{
             public void onClick(View v) {
                 String nickname = et_nickname.getText().toString();
                 if(nickname.equals("")){
-                    
+                    dialog.dismiss();
+                }
+                else{
+                    tv_UserName.setText(nickname);
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(nickname);
                 }
 
             }
         });
 
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                858, 490));
+        dialog.show();
+    }
+
+    private void changeGender(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_changegender, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
+
+        Button btn_suretochangeGender = (Button)view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+        RadioGroup radioGroup_chooseGender = (RadioGroup)view.findViewById(R.id.radioGroup_chooseGender);
+        RadioButton rb_male = (RadioButton)view.findViewById(R.id.rb_male);
+        RadioButton rb_female = (RadioButton)view.findViewById(R.id.rb_female);
+        //初始化
+        if(settingManager.getGender()){
+            rb_male.setChecked(true);
+        }
+        else{
+            rb_female.setChecked(true);
+        }
+
+        radioGroup_chooseGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rb_male) {
+                    //some code
+                    gender = true;
+                } else if (checkedId == R.id.rb_female) {
+                    //some code
+                    gender = false;
+                }
+            }
+        });
+
+        btn_suretochangeGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //用户什么也没有点击
+                if(gender == null){
+                    dialog.dismiss();
+                }
+                else if(gender){
+                    tv_Gender.setText("男");
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(gender);
+                }
+                else{
+                    tv_Gender.setText("女");
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(gender);
+                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                858, 490));
+        dialog.show();
     }
 
     private void changePass() {
@@ -160,7 +240,7 @@ public class PersonalCenterActivity extends BaseActivity{
             public void onClick(View v) {
                 String old_password = oldPass.getText().toString().trim();
                 String new_password = newPass.getText().toString().trim();
-                if(new_password.isEmpty() == false)
+                if(!new_password.isEmpty())
                 {
                     AVUser currentUser = AVUser.getCurrentUser();
                     currentUser.updatePasswordInBackground(old_password, new_password, new UpdatePasswordCallback() {
@@ -188,7 +268,6 @@ public class PersonalCenterActivity extends BaseActivity{
                     oldPass.setText("");
                     newPass.setText("");
                 }
-
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +279,7 @@ public class PersonalCenterActivity extends BaseActivity{
 
         //设置布局
         dialog.addContentView(view, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                858, 715));
         dialog.show();
         //设置宽度
 //        WindowManager m = this.getWindowManager();
@@ -225,6 +304,8 @@ public class PersonalCenterActivity extends BaseActivity{
             tv_Gender.setText("女");
         }
         tv_BirthDate.setText(settingManager.getBirthdate());
+
+        leancloudManager = LeancloudManager.getInstance();
     }
 
     @Override
@@ -242,12 +323,5 @@ public class PersonalCenterActivity extends BaseActivity{
         public int getWhich() {
             return which;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        settingManager.setNickname(tv_UserName.getText().toString().trim());
-        super.onBackPressed();
-
     }
 }

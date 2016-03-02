@@ -74,7 +74,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_CarName;
     private TextView tv_CarPosition;
     private GeoCoder mSearch = null;
-    private Logger log;
+//    private Logger log;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -94,15 +94,15 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
-        log = Logger.getLogger(MaptabFragment.class);
-        log.info("onAttach-start");
+//        log = Logger.getLogger(MaptabFragment.class);
+//        log.info("onAttach-start");
         super.onAttach(activity);
-        log.info("onAttach-finish");
+//        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        log.info("onCreate-start");
+//        log.info("onCreate-start");
         super.onCreate(savedInstanceState);
         //注意该方法要再setContentView方法之前实现
         SDKInitializer.initialize(m_context);
@@ -132,25 +132,25 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
-        log.info("onCreate-finish");
+//        log.info("onCreate-finish");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        log.info("onCreateView-start");
+//        log.info("onCreateView-start");
         if (rootView == null) {
             View view = inflater.inflate(R.layout.map_fragment, container, false);
             initView(view);
             rootView = view;
         }
-        log.info("onCreateView-finish");
+//        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        log.info("onViewCreated");
+//        log.info("onViewCreated");
     }
 
 
@@ -167,67 +167,67 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        log.info("onActivityCreated-start");
+//        log.info("onActivityCreated-start");
         super.onActivityCreated(savedInstanceState);
-        log.info("onActivityCreated-finish");
+//        log.info("onActivityCreated-finish");
     }
 
     @Override
     public void onStart(){
-        log.info("onStart-start");
+//        log.info("onStart-start");
         super.onStart();
-        log.info("onStart-finish");
+//        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-        log.info("onResume-start");
+//        log.info("onResume-start");
         mMapView.setVisibility(View.VISIBLE);
         mMapView.onResume();
         super.onResume();
-        log.info("onResume-finish");
+//        log.info("onResume-finish");
     }
 
     @Override
     public void onPause() {
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-        log.info("onPause-start");
+//        log.info("onPause-start");
         mMapView.onPause();
         super.onPause();
-        log.info("onPause-finish");
+//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
-        log.info("onStop-start");
+//        log.info("onStop-start");
         super.onStop();
-        log.info("onStop-finish");
+//        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
-        log.info("onDestroyView-start");
+//        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-        log.info("onDestroyView-finish");
+//        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
-        log.info("onDestroy-start");
+//        log.info("onDestroy-start");
         mBaiduMap.clear();
         mMapView.onDestroy();
         mMapView = null;
         super.onDestroy();
-        log.info("onDestroy-finish");
+//        log.info("onDestroy-finish");
     }
 
     @Override
     public void onDetach(){
-        log.info("onDetach-start");
+//        log.info("onDetach-start");
         super.onDetach();
-        log.info("onDetach-finish");
+//        log.info("onDetach-finish");
     }
 
     /**

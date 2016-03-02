@@ -78,7 +78,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     //接收广播
     public MyReceiver receiver;
     private MqttConnectManager mqttConnectManager;
-    private Logger log;
+//    private Logger log;
 
     /**
      * The handler. to process exit()
@@ -107,8 +107,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        LogConfigure();
-        log.info("onCreate-start");
+//        LogConfigure();
+//        log.info("onCreate-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "start");
         super.onCreate(savedInstanceState );
         setContentView(R.layout.activity_fragment);
@@ -120,24 +120,24 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         queryIMEI();
         Historys.put(this);
         registerBroadCast();
-        log.info("onCreate-finish");
+//        log.info("onCreate-finish");
     }
 
     @Override
     protected void onStart() {
-        log.info("onStart-start");
+//        log.info("onStart-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onStart", "start");
         super.onStart();
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
         }
-        log.info("onStart-finish");
+//        log.info("onStart-finish");
     }
 
     @Override
     protected void onResume() {
         //这个函数的onResume会被反复执行吗?
-        log.info("onResume-start");
+//        log.info("onResume-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onResume", "start");
         super.onResume();
         //下面这句话只需要执行一次
@@ -145,28 +145,28 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             //这句话干嘛的
             mac.registerResources(this);
         }
-        log.info("onResume-finish");
+//        log.info("onResume-finish");
     }
 
     @Override
     protected void onPause() {
-        log.info("onPause-start");
+//        log.info("onPause-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "start");
         super.onPause();
-        log.info("onPause-finish");
+//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
-        log.info("onStop-start");
+//        log.info("onStop-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "start");
         super.onStop();
-        log.info("onStop-finish");
+//        log.info("onStop-finish");
     }
 
     @Override
     protected void onDestroy() {
-        log.info("onDestroy-start");
+//        log.info("onDestroy-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onDestroy", "start");
         cancelNotification();
         if (mac != null) {
@@ -175,7 +175,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
-        log.info("onDestroy-finish");
+//        log.info("onDestroy-finish");
     }
 
     @Override
@@ -244,7 +244,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 mac = mqttConnectManager.getMac();
                 mqttConnectManager.subscribe(setManager.getIMEI());
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-                log.info("getMqttConnection  服务器连接成功");
+//                log.info("getMqttConnection  服务器连接成功");
                 setManager.setMqttStatus(true);
                 //开启报警服务
                 startAlarmService();
@@ -257,26 +257,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
             }
         });
-        log.info("getMqttConnection 开始连接服务器");
+//        log.info("getMqttConnection 开始连接服务器");
         mqttConnectManager.getMqttConnection();
     }
-    /**
-     * 延时发送消息
-     *
-     * @param message 发送的内容
-     * @param IMEI    设备IMEI号
-     */
-//    public void DelaySendMessage(final byte[] message, final String IMEI) {
-//        new Handler().postDelayed(new Runnable() {
-//            public void run() {
-//                try {
-//                    mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
-//                } catch (MqttException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }, DELAYTIME);
-//    }
 
     /**
      * 开启报警服务
@@ -297,9 +280,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      */
     public void sendMessage(Context context, final byte[] message, final String IMEI) {
         if (mac == null||!mac.isConnected()) {
-//            if(!mac.isConnected()){
-//                log.info("正在发命令  但是mqtt还没有连接好  可能会造成之前的问题(不停的连接服务器)");
-//            }
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         }
@@ -337,7 +317,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         else {
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
-            log.info("登录成功");
+//            log.info("登录成功");
         }
     }
 
@@ -388,7 +368,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         checkId = 0;
                         break;
                     case R.id.rbMap:
-                        log.info("rbMap-clicked");
+//                        log.info("rbMap-clicked");
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
 
@@ -477,20 +457,20 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-    private void LogConfigure(){
-        LogConfigurator logConfigurator = new LogConfigurator();
-        logConfigurator.setFileName(Environment.getExternalStorageDirectory()
-                + File.separator + "MyApp" + File.separator + "logs"
-                + File.separator + "log4j.txt");
-        logConfigurator.setRootLevel(Level.DEBUG);
-        logConfigurator.setLevel("org.apache", Level.ERROR);
-        logConfigurator.setFilePattern("%d %-5p [%c{2}]-[%L] %m%n");
-        logConfigurator.setMaxFileSize(1024 * 1024 * 5);
-        logConfigurator.setImmediateFlush(true);
-        logConfigurator.configure();
-        log = Logger.getLogger(FragmentActivity.class);
-        log.info("My Application Created");
-    }
+//    private void LogConfigure(){
+//        LogConfigurator logConfigurator = new LogConfigurator();
+//        logConfigurator.setFileName(Environment.getExternalStorageDirectory()
+//                + File.separator + "MyApp" + File.separator + "logs"
+//                + File.separator + "log4j.txt");
+//        logConfigurator.setRootLevel(Level.DEBUG);
+//        logConfigurator.setLevel("org.apache", Level.ERROR);
+//        logConfigurator.setFilePattern("%d %-5p [%c{2}]-[%L] %m%n");
+//        logConfigurator.setMaxFileSize(1024 * 1024 * 5);
+//        logConfigurator.setImmediateFlush(true);
+//        logConfigurator.configure();
+//        log = Logger.getLogger(FragmentActivity.class);
+//        log.info("My Application Created");
+//    }
 
     @Override
     public void onBackPressed() {
