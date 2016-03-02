@@ -345,8 +345,8 @@ public class SettingManager {
         spf.edit().putBoolean(GENDER, gender).apply();
     }
 
-    public String getGender(){
-        return spf.getString(GENDER, "女");
+    public Boolean getGender(){
+        return spf.getBoolean(GENDER, true);
     }
 
 

@@ -10,33 +10,31 @@
         android:id="@+id/ll_button"
         layout="@layout/my_layout_title" />
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_UserName"
         style="@style/clickableLayout"
-        android:layout_marginTop="8dp"
-        android:focusableInTouchMode="true"
-        android:elevation="2dip">
+        android:focusableInTouchMode="true">
 
         <TextView
             style="@style/clickableLayoutTextview"
             android:text="用户昵称"
             android:textColor="@color/black" />
 
-
-        <EditText
+        <TextView
             android:id="@+id/tv_UserName"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/white"
-            android:padding="5dp" />
-    </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="24dp"
+            android:layout_centerVertical="true"
+            android:text="空"
+            android:background="@color/white" />
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_Gender"
         style="@style/clickableLayout"
-        android:layout_marginTop="2dp"
-        android:elevation="2dip">
+        android:layout_marginTop="2dp">
         <TextView
             style="@style/clickableLayoutTextview"
             android:text="性       别"
@@ -44,15 +42,19 @@
 
         <TextView
             android:id="@+id/tv_Gender"
-            style="@style/clickableLayoutTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="24dp"
+            android:layout_centerVertical="true"
+            android:text="男"
             android:textColor="@color/black" />
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_BirthDate"
         style="@style/clickableLayout"
-        android:layout_marginTop="2dp"
-        android:elevation="2dip">
+        android:layout_marginTop="2dp">
 
         <TextView
             style="@style/clickableLayoutTextview"
@@ -61,22 +63,23 @@
 
         <TextView
             android:id="@+id/tv_BirthDate"
-            style="@style/clickableLayoutTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="24dp"
+            android:layout_centerVertical="true"
+            android:text="1994年2月22日"
             android:textColor="@color/black" />
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_ChangePassword"
         style="@style/clickableLayout"
-        android:layout_marginTop="60dp"
-        android:elevation="2dip">
-
+        android:layout_marginTop="60dp">
 
         <TextView
             style="@style/clickableLayoutTextview"
             android:text="修改密码"
             android:textColor="@color/black" />
-
-
     </LinearLayout>
 </LinearLayout>

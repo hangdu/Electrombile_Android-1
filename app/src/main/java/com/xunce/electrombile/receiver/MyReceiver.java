@@ -16,6 +16,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.fragment.SwitchFragment;
+import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.protocol.CmdFactory;
 import com.xunce.electrombile.protocol.GPSFactory;
@@ -373,6 +374,11 @@ public class MyReceiver extends BroadcastReceiver {
 
     private void cmdGPSgetresult(Protocol protocol){
         TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+        Date date = trackPoint.time;
+
+        CmdCenter mCenter = CmdCenter.getInstance();
+        LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
+        trackPoint = new TracksManager.TrackPoint(date,bdPoint);
         ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
     }
 

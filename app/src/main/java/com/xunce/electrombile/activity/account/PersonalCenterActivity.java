@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,7 @@ import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 public class PersonalCenterActivity extends BaseActivity{
-    private EditText tv_UserName;
+    private TextView tv_UserName;
     private TextView tv_Gender;
     private TextView tv_BirthDate;
     private SettingManager settingManager;
@@ -53,11 +54,12 @@ public class PersonalCenterActivity extends BaseActivity{
             }
         });
 
-        tv_UserName = (EditText)findViewById(R.id.tv_UserName);
+        tv_UserName = (TextView)findViewById(R.id.tv_UserName);
         tv_Gender = (TextView)findViewById(R.id.tv_Gender);
         tv_BirthDate = (TextView)findViewById(R.id.tv_BirthDate);
-        LinearLayout layout_gender = (LinearLayout)findViewById(R.id.layout_Gender);
-        LinearLayout layout_BirthDate = (LinearLayout)findViewById(R.id.layout_BirthDate);
+
+        RelativeLayout layout_gender = (RelativeLayout)findViewById(R.id.layout_Gender);
+        RelativeLayout layout_BirthDate = (RelativeLayout)findViewById(R.id.layout_BirthDate);
         LinearLayout layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
         btn_back = (Button)findViewById(R.id.btn_back);
 
@@ -115,6 +117,29 @@ public class PersonalCenterActivity extends BaseActivity{
 
             }
         });
+    }
+
+    private void changeNickName(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_changenickname, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
+
+        Button btn_suretochangeName = (Button)view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+        final EditText et_nickname = (EditText)view.findViewById(R.id.et_nickname);
+
+        btn_suretochangeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nickname = et_nickname.getText().toString();
+                if(nickname.equals("")){
+                    
+                }
+
+            }
+        });
+
+
     }
 
     private void changePass() {
@@ -193,7 +218,12 @@ public class PersonalCenterActivity extends BaseActivity{
         settingManager = SettingManager.getInstance();
         //获取setting中的昵称 出生年代 性别
         tv_UserName.setText(settingManager.getNickname());
-        tv_Gender.setText(settingManager.getGender());
+        if(settingManager.getGender()){
+            tv_Gender.setText("男");
+        }
+        else{
+            tv_Gender.setText("女");
+        }
         tv_BirthDate.setText(settingManager.getBirthdate());
     }
 
