@@ -1,297 +1,294 @@
-
-<RelativeLayout
+<com.xunce.electrombile.view.MyHorizontalScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id = "@+id/myHorizontalScrollView"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
-
-    <com.xunce.electrombile.view.MyHorizontalScrollView
-        android:id = "@+id/myHorizontalScrollView"
+    android:layout_width="match_parent"
+    android:scrollbars="none">
+    <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:scrollbars="none">
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:orientation="horizontal">
+        android:orientation="horizontal">
 
-            <include layout="@layout/left_menu"/>
+        <include layout="@layout/left_menu"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/ll_button"
+                android:layout_width="match_parent"
+                android:background="#1dcf96"
+                android:layout_height="44dp">
+                <Button
+                    android:id = "@+id/ChangeAutobike"
+                    android:layout_width="20dp"
+                    android:layout_height="16dp"
+                    android:layout_alignParentLeft = "true"
+                    android:layout_marginLeft="13dp"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/leftscroll" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text = "小安宝"
+                    android:textSize="17.33sp"
+                    android:textColor="#d0f9e5"/>
+                <!--<Button-->
+                    <!--android:id="@+id/weather1"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentRight = "true"-->
+                    <!--android:layout_marginRight="13dp"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:text = "天气" />-->
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/ll_temp"
+                android:layout_width="match_parent"
+                android:layout_height="247dp"
+                android:background="#33000000">
+
+                <ImageView
+                    android:id="@+id/img_test"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/temp1" />
+
+                <ImageView
+                    android:id="@+id/img_headImage"
+                    android:layout_centerInParent = "true"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/person" />
+
+                <ImageView
+                    android:id="@+id/img_weather"
+                    android:layout_alignParentRight = "true"
+                    android:layout_marginRight="7dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/sunny"/>
+                <TextView
+                    android:id="@+id/tv_temperature"
+                    android:layout_alignRight="@+id/img_weather"
+                    android:layout_below="@+id/img_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text = "温度"/>
+                <TextView
+                    android:id="@+id/tv_weatherCondition"
+                    android:layout_alignRight="@+id/img_weather"
+                    android:layout_below="@+id/tv_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="天气状况"/>
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_below="@+id/tv_weatherCondition"
+                    android:layout_alignRight="@+id/img_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="地区"/>
+
+                <RelativeLayout
+                    android:layout_marginLeft="23.33dp"
+                    android:layout_marginTop="181.33dp"
+                    android:layout_width="120.67dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/img_protectdays">
+
+                    <TextView
+                        android:id="@+id/tv_safeDaysUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:text="小安宝安全天数"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:textColor="#094b00"
+                        android:textSize="12sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_Safeday"
+                        android:layout_below="@id/tv_safeDaysUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#d8ecd8"
+                        android:textSize="12sp"
+                        android:text="0天安全护航"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="120.67dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="181.33dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="23.33dp"
+                    android:background = "@drawable/img_angle">
+                    <TextView
+                        android:id="@+id/tv_angelUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:text="环保天使"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:textColor="#094b00"
+                        android:textSize="12sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_angleRank"
+                        android:layout_below="@id/tv_angelUp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#d8ecd8"
+                        android:textSize="12sp"
+                        android:text="初级环保"/>
+                </RelativeLayout>
+            </RelativeLayout>
 
             <LinearLayout
+                android:id="@+id/ll_PowerandDistance"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="83dp"
+                android:orientation="horizontal">
                 <RelativeLayout
-                    android:id="@+id/ll_button"
-                    android:layout_width="match_parent"
-                    android:background="#1dcf96"
-                    android:layout_height="44dp">
-                    <Button
-                        android:id = "@+id/ChangeAutobike"
-                        android:layout_width="20dp"
-                        android:layout_height="16dp"
-                        android:layout_alignParentLeft = "true"
-                        android:layout_marginLeft="13dp"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/leftscroll" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:text = "小安宝"
-                        android:textSize="17.33sp"
-                        android:textColor="#d0f9e5"/>
-                    <!--<Button-->
-                        <!--android:id="@+id/weather1"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_alignParentRight = "true"-->
-                        <!--android:layout_marginRight="13dp"-->
-                        <!--android:layout_centerVertical="true"-->
-                        <!--android:text = "天气" />-->
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ll_temp"
-                    android:layout_width="match_parent"
-                    android:layout_height="247dp"
-                    android:background="#33000000">
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
 
                     <ImageView
-                        android:id="@+id/img_test"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/temp1" />
-
-                    <ImageView
-                        android:id="@+id/img_headImage"
-                        android:layout_centerInParent = "true"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:src="@drawable/person" />
-
-                    <ImageView
-                        android:id="@+id/img_weather"
-                        android:layout_alignParentRight = "true"
-                        android:layout_marginRight="7dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="72dp"
-                        android:layout_height="72dp"
-                        android:src="@drawable/sunny"/>
-                    <TextView
-                        android:id="@+id/tv_temperature"
-                        android:layout_alignRight="@+id/img_weather"
-                        android:layout_below="@+id/img_weather"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text = "温度"/>
-                    <TextView
-                        android:id="@+id/tv_weatherCondition"
-                        android:layout_alignRight="@+id/img_weather"
-                        android:layout_below="@+id/tv_temperature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="天气状况"/>
-                    <TextView
-                        android:id="@+id/tv_location"
-                        android:layout_below="@+id/tv_weatherCondition"
-                        android:layout_alignRight="@+id/img_weather"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="地区"/>
-
-                    <RelativeLayout
-                        android:layout_marginLeft="23.33dp"
-                        android:layout_marginTop="181.33dp"
-                        android:layout_width="120.67dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/img_protectdays">
-
-                        <TextView
-                            android:id="@+id/tv_safeDaysUp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="25dp"
-                            android:text="小安宝安全天数"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            android:textColor="#094b00"
-                            android:textSize="12sp"/>
-
-                        <TextView
-                            android:layout_below="@id/tv_safeDaysUp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="25dp"
-                            android:layout_centerHorizontal="true"
-                            android:textColor="#d8ecd8"
-                            android:textSize="12sp"
-                            android:text="0天安全护航"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="120.67dp"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="181.33dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginRight="23.33dp"
-                        android:background = "@drawable/img_angle">
-                        <TextView
-                            android:id="@+id/tv_angelUp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="25dp"
-                            android:text="环保天使"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            android:textColor="#094b00"
-                            android:textSize="12sp"/>
-
-                        <TextView
-                            android:layout_below="@id/tv_angelUp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="25dp"
-                            android:layout_centerHorizontal="true"
-                            android:textColor="#d8ecd8"
-                            android:textSize="12sp"
-                            android:text="初级环保"/>
-                    </RelativeLayout>
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_PowerandDistance"
-                    android:layout_width="match_parent"
-                    android:layout_height="83dp"
-                    android:orientation="horizontal">
-                    <RelativeLayout
-                        android:layout_weight="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:id="@+id/img_battery"
-                            android:layout_width="33dp"
-                            android:layout_height="33dp"
-                            android:layout_marginLeft="13dp"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/baterry"/>
-
-                        <TextView
-                            android:id="@+id/tv_battery"
-                            android:layout_marginTop="23dp"
-                            android:layout_toRightOf="@id/img_battery"
-                            android:layout_marginLeft="10dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#009f53"
-                            android:text = "50%"
-                            android:textSize="17.33sp"/>
-
-                        <TextView
-                            android:layout_below="@id/tv_battery"
-                            android:layout_alignLeft="@id/tv_battery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12.67sp"
-                            android:textColor="#595959"
-                            android:text="预计可行驶60公里"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:layout_width="0.3dp"
-                            android:layout_height="73dp"
-                            android:background="#d8d8d8"
-                            android:layout_centerInParent="true"/>
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_weight="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
-                        <ImageView
-                            android:id="@+id/img_distance"
-                            android:layout_width="33.33dp"
-                            android:layout_height="33.33dp"
-                            android:layout_marginLeft="13.33dp"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/distance"/>
-
-                        <TextView
-                            android:id="@+id/tv_total"
-                            android:layout_marginTop="33dp"
-                            android:layout_toRightOf="@id/img_distance"
-                            android:layout_marginLeft="33dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#009f53"
-                            android:text = "累计行驶"
-                            android:textSize="17.33sp"/>
-
-                        <TextView
-                            android:id="@+id/tv_distance"
-                            android:layout_below="@id/tv_total"
-                            android:layout_alignLeft="@id/tv_total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12.67sp"
-                            android:textColor="#595959"
-                            android:text="0.00公里"/>
-
-                    </RelativeLayout>
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_marginTop="13dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="67dp"
-                    android:background="#e5e5e5">
-
-                    <ImageView
-                        android:id="@+id/img_sim"
+                        android:id="@+id/img_battery"
                         android:layout_width="33dp"
                         android:layout_height="33dp"
-                        android:layout_centerVertical="true"
                         android:layout_marginLeft="13dp"
-                        android:background="@drawable/sim"/>
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/baterry"/>
 
                     <TextView
-                        android:id="@+id/tv1"
-                        android:layout_toRightOf="@+id/img_sim"
-                        android:layout_marginLeft="40dp"
-                        android:layout_marginTop="12dp"
+                        android:id="@+id/tv_battery"
+                        android:layout_marginTop="23dp"
+                        android:layout_toRightOf="@id/img_battery"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009f53"
+                        android:text = "50%"
+                        android:textSize="17.33sp"/>
+
+                    <TextView
+                        android:layout_below="@id/tv_battery"
+                        android:layout_alignLeft="@id/tv_battery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="12.67sp"
                         android:textColor="#595959"
-                        android:text="小安宝流量"/>
-
-                    <TextView
-                        android:layout_below="@+id/tv1"
-                        android:layout_marginTop="6dp"
-                        android:layout_alignLeft="@+id/tv1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="17.33sp"
-                        android:textColor="#009f53"
-                        android:text="sim卡流量"/>
+                        android:text="预计可行驶60公里"/>
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <Button
-                        android:id="@+id/btn_AlarmState1"
-                        android:layout_width="264.67dp"
-                        android:layout_height="99dp"
-                        android:layout_centerInParent="true"
-                        android:gravity="center"
-                        android:padding="0dp"
-                        android:textSize="16sp" />
+                    <ImageView
+                        android:layout_width="0.3dp"
+                        android:layout_height="73dp"
+                        android:background="#d8d8d8"
+                        android:layout_centerInParent="true"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/img_distance"
+                        android:layout_width="33.33dp"
+                        android:layout_height="33.33dp"
+                        android:layout_marginLeft="13.33dp"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/distance"/>
+
+                    <TextView
+                        android:id="@+id/tv_total"
+                        android:layout_marginTop="33dp"
+                        android:layout_toRightOf="@id/img_distance"
+                        android:layout_marginLeft="33dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#009f53"
+                        android:text = "累计行驶"
+                        android:textSize="17.33sp"/>
+
+                    <TextView
+                        android:id="@+id/tv_distance"
+                        android:layout_below="@id/tv_total"
+                        android:layout_alignLeft="@id/tv_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12.67sp"
+                        android:textColor="#595959"
+                        android:text="0.00公里"/>
+
                 </RelativeLayout>
             </LinearLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="13dp"
+                android:layout_width="match_parent"
+                android:layout_height="67dp"
+                android:background="#e5e5e5">
+
+                <ImageView
+                    android:id="@+id/img_sim"
+                    android:layout_width="33dp"
+                    android:layout_height="33dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="13dp"
+                    android:background="@drawable/sim"/>
+
+                <TextView
+                    android:id="@+id/tv1"
+                    android:layout_toRightOf="@+id/img_sim"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12.67sp"
+                    android:textColor="#595959"
+                    android:text="小安宝流量"/>
+
+                <TextView
+                    android:layout_below="@+id/tv1"
+                    android:layout_marginTop="6dp"
+                    android:layout_alignLeft="@+id/tv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="17.33sp"
+                    android:textColor="#009f53"
+                    android:text="sim卡流量"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btn_AlarmState1"
+                    android:layout_width="264.67dp"
+                    android:layout_height="99dp"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:padding="0dp"
+                    android:textSize="16sp" />
+            </RelativeLayout>
         </LinearLayout>
-    </com.xunce.electrombile.view.MyHorizontalScrollView>
-</RelativeLayout>
+    </LinearLayout>
+</com.xunce.electrombile.view.MyHorizontalScrollView>
+
 
 
 
