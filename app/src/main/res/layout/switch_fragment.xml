@@ -27,20 +27,12 @@
                     android:layout_height="44dp">
                     <Button
                         android:id = "@+id/ChangeAutobike"
-                        android:layout_width="60dp"
-                        android:layout_height="48dp"
+                        android:layout_width="20dp"
+                        android:layout_height="16dp"
                         android:layout_alignParentLeft = "true"
                         android:layout_marginLeft="13dp"
                         android:layout_centerVertical="true"
-                        android:text="切换"/>
-
-                    <Button
-                        android:id="@+id/btn_changeHeadImage"
-                        android:layout_toRightOf="@+id/ChangeAutobike"
-                        android:layout_marginLeft="2dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="切换头像"/>
+                        android:background="@drawable/leftscroll" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -76,8 +68,7 @@
                         android:layout_centerInParent = "true"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:src="@drawable/person"
-                        android:text="点我"/>
+                        android:src="@drawable/person" />
 
                     <ImageView
                         android:id="@+id/img_weather"
@@ -86,27 +77,28 @@
                         android:layout_marginTop="10dp"
                         android:layout_width="72dp"
                         android:layout_height="72dp"
-                        android:background="@drawable/rain"/>
+                        android:src="@drawable/sunny"/>
                     <TextView
                         android:id="@+id/tv_temperature"
                         android:layout_alignRight="@+id/img_weather"
                         android:layout_below="@+id/img_weather"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text = "温度:"/>
+                        android:text = "温度"/>
                     <TextView
                         android:id="@+id/tv_weatherCondition"
                         android:layout_alignRight="@+id/img_weather"
                         android:layout_below="@+id/tv_temperature"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="天气状况:"/>
+                        android:text="天气状况"/>
                     <TextView
+                        android:id="@+id/tv_location"
                         android:layout_below="@+id/tv_weatherCondition"
                         android:layout_alignRight="@+id/img_weather"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="地区:武汉市洪山区"/>
+                        android:text="地区"/>
                 </RelativeLayout>
 
                 <LinearLayout

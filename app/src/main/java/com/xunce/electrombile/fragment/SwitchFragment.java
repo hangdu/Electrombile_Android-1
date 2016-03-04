@@ -102,6 +102,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private List<String> IMEIlist;
     private Bitmap bitmap;
     private ImageView headImage;
+    private TextView tv_temperature;
+    private TextView tv_weatherCondition;
+    private TextView tv_location;
+    private ImageView img_weather;
+
+
 
 //    private Logger log;
 
@@ -267,17 +273,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         OtherCar = new ArrayList();
         myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
         Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
-        Button TodayWeather = (Button) v.findViewById(R.id.weather1);
-        //为什么在这个layout里面定义的控件就是不能相应事件呢???
+//        Button TodayWeather = (Button) v.findViewById(R.id.weather1);
 
         headImage = (ImageView) v.findViewById(R.id.img_headImage);
-        headImage.setOnClickListener(new View.OnClickListener() {
+        headImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //跳转到另外一个activity
-                Log.d("test","test");
+                //补充关于更换头像的代码
                 Intent intent = new Intent(m_context, HeadImageActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent,0);
             }
         });
 
@@ -286,23 +290,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             headImage.setImageBitmap(bitmap);
         }
 
-        ImageView img_weather = (ImageView)v.findViewById(R.id.img_weather);
-        img_weather.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("test","test");
-            }
-        });
-
-        Button btn_changeHeadImage = (Button)v.findViewById(R.id.btn_changeHeadImage);
-        btn_changeHeadImage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(m_context, HeadImageActivity.class);
-                startActivityForResult(intent,0);
-//                startActivity(intent);
-            }
-        });
+        img_weather = (ImageView)v.findViewById(R.id.img_weather);
 
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
@@ -346,22 +334,19 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        TodayWeather.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
-                builder.setMessage(WeatherData.trim());
-                builder.create();
-                builder.show();
-            }
-        });
+//        TodayWeather.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
+//                builder.setMessage(WeatherData.trim());
+//                builder.create();
+//                builder.show();
+//            }
+//        });
 
-        headImage.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //补充关于更换头像的代码
-            }
-        });
+        tv_temperature = (TextView)v.findViewById(R.id.tv_temperature);
+        tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
+        tv_location = (TextView)v.findViewById(R.id.tv_location);
     }
 
     private void initEvent() {
@@ -429,6 +414,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void httpGetWeather(String city) {
+        String ss = city;
         city = city.replace("市", "");
         Log.e(TAG, "city：" + city);
         city = StringUtils.encode(city);
@@ -437,6 +423,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         http.send(HttpRequest.HttpMethod.GET,
                 "http://apistore.baidu.com/microservice/weather?cityname=" + city,
                 new RequestCallBack<String>() {
+                    //更新任务进度
                     @Override
                     public void onLoading(long total, long current, boolean isUploading) {
                         Log.e(TAG, "onLoading");
@@ -444,6 +431,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
                     @Override
                     public void onSuccess(ResponseInfo<String> responseInfo) {
+                        String test = responseInfo.result;
                         Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
                         String originData = StringUtils.decodeUnicode(responseInfo.result);
                         WeatherBean data = new WeatherBean();
@@ -483,14 +471,27 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-                        WeatherData = "气温：" + data.temp + "\n" +
-                                "天气状况：" + data.weather + "\n" +
-                                "城市：" + data.city + "\n" +
-                                "风速：" + data.WS + "\n" +
-                                "更新时间：" + data.time + "\n" +
-                                "最低气温：" + data.l_tmp + "\n" +
-                                "最高气温：" + data.h_tmp + "\n" +
-                                "风向：" + data.WD + "\n";
+                        tv_temperature.setText(data.temp+"摄氏度");
+                        tv_weatherCondition.setText(data.weather);
+                        tv_location.setText(data.city);
+
+                        if(data.weather.contains("雨")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
+                        }
+                        else if(data.weather.equals("多云")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                        }
+                        else{
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                        }
+//                        WeatherData = "气温：" + data.temp + "\n" +
+//                                "天气状况：" + data.weather + "\n" +
+//                                "城市：" + data.city + "\n" +
+//                                "风速：" + data.WS + "\n" +
+//                                "更新时间：" + data.time + "\n" +
+//                                "最低气温：" + data.l_tmp + "\n" +
+//                                "最高气温：" + data.h_tmp + "\n" +
+//                                "风向：" + data.WD + "\n";
                     }
 
                     @Override
@@ -538,8 +539,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
+    //内部类
     public class MyLocationListener implements BDLocationListener {
-
         @Override
         public void onReceiveLocation(BDLocation location) {
             if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
