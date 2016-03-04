@@ -672,15 +672,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     //点击打开报警按钮时按钮样式的响应操作
     public void openStateAlarmBtn() {
         alarmState = true;
-        btnAlarmState1.setText("防盗关闭");
-        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_2);
+//        btnAlarmState1.setText("防盗关闭");
+        btnAlarmState1.setBackgroundResource(R.drawable.img_open);
     }
 
     //点击关闭报警按钮时按钮样式的响应操作
     public void closeStateAlarmBtn() {
         alarmState = false;
-        btnAlarmState1.setText("防盗开启");
-        btnAlarmState1.setBackgroundResource(R.drawable.btn_switch_selector_1);
+//        btnAlarmState1.setText("防盗开启");
+        btnAlarmState1.setBackgroundResource(R.drawable.img_close);
     }
 
     public void msgSuccessArrived() {
