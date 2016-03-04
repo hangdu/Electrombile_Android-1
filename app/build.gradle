@@ -52,6 +52,7 @@ android {
 
     defaultConfig {
         applicationId "com.xunce.electrombile"
+        multiDexEnabled true
         minSdkVersion 10
        // targetSdkVersion 3
     }
@@ -135,7 +136,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:22.0.0'
     //compile 'im.fir:sdk:1.2.0+'
-    compile 'im.fir:sdk:latest.integration@aar'
+    compile 'im.fir:fir-sdk:latest.integration@aar'
     compile 'cn.leancloud.android:avoscloud-sdk:v3.3+'
     compile 'cn.leancloud.android:avoscloud-push:v3.3+@aar'
     compile 'cn.leancloud.android:Java-WebSocket:1.2.0-leancloud'
@@ -152,5 +153,6 @@ dependencies {
     compile 'com.orhanobut:logger:1.11'
     compile 'com.malinskiy:materialicons:1.0.2'
     compile files('libs/android-logging-log4j-1.0.3.jar')
+    compile files('libs/Bughd_android_sdk_v1.3.7.jar')
 }
 

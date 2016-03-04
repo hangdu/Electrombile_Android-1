@@ -105,7 +105,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					dialog.cancel();
 
 					//成功登陆之后需要判断该用户有没有绑定设备:如果没有绑定的话,需要跳转到设备绑定的页面;如果已经绑定过的话,就跳转到主页面
-//					QueryBindList();
 					findLeancloud();
 					break;
 
@@ -157,6 +156,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		leancloudManager.getUserIMEIlistFromServer();
 
 		leancloudManager.getUserInfoFromServer();
+
 	}
 
 	@Override

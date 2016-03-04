@@ -1,6 +1,8 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
 
     <com.xunce.electrombile.view.MyHorizontalScrollView
         android:id = "@+id/myHorizontalScrollView"
@@ -32,6 +34,14 @@
                         android:layout_centerVertical="true"
                         android:text="切换"/>
 
+                    <Button
+                        android:id="@+id/btn_changeHeadImage"
+                        android:layout_toRightOf="@+id/ChangeAutobike"
+                        android:layout_marginLeft="2dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="切换头像"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -47,29 +57,28 @@
                         android:layout_marginRight="13dp"
                         android:layout_centerVertical="true"
                         android:text = "天气" />
-
                 </RelativeLayout>
-
 
                 <RelativeLayout
                     android:id="@+id/ll_temp"
                     android:layout_width="match_parent"
                     android:layout_height="247dp"
-                    android:layout_below="@+id/ll_button"
                     android:background="#33000000">
 
                     <ImageView
+                        android:id="@+id/img_test"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/temp1" />
+                        android:src="@drawable/temp1" />
 
                     <ImageView
-                        android:id="@+id/headImage"
+                        android:id="@+id/img_headImage"
                         android:layout_centerInParent = "true"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:background="@drawable/iv_person_head" />
-                    
+                        android:src="@drawable/person"
+                        android:text="点我"/>
+
                     <ImageView
                         android:id="@+id/img_weather"
                         android:layout_alignParentRight = "true"
@@ -99,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:text="地区:武汉市洪山区"/>
                 </RelativeLayout>
-                
+
                 <LinearLayout
                     android:id="@+id/ll_PowerandDistance"
                     android:layout_width="match_parent"
@@ -109,7 +118,7 @@
                         android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent">
-                        
+
                         <ImageView
                             android:id="@+id/img_battery"
                             android:layout_width="33dp"
@@ -184,13 +193,13 @@
 
                     </RelativeLayout>
                 </LinearLayout>
-                
+
                 <RelativeLayout
                     android:layout_marginTop="13dp"
                     android:layout_width="match_parent"
                     android:layout_height="67dp"
                     android:background="#e5e5e5">
-                    
+
                     <ImageView
                         android:id="@+id/img_sim"
                         android:layout_width="33dp"
@@ -236,12 +245,11 @@
                         android:text="防盗开启"
                         android:textSize="16sp" />
                 </RelativeLayout>
-
             </LinearLayout>
-
         </LinearLayout>
     </com.xunce.electrombile.view.MyHorizontalScrollView>
 </RelativeLayout>
+
 
 
 

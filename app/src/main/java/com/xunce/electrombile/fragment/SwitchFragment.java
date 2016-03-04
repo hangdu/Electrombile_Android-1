@@ -9,7 +9,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.content.BroadcastReceiver;
@@ -19,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -27,6 +31,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -60,8 +65,10 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.MqttConnectManager;
+import com.xunce.electrombile.activity.account.HeadImageActivity;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.device.VibratorUtil;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.JSONUtils;
@@ -92,8 +99,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private static int Count = 0;
     static MKOfflineMap mkOfflineMap;
     private static String localcity;
-//    private MqttConnectManager mqttConnectManager;
     private List<String> IMEIlist;
+    private Bitmap bitmap;
+    private ImageView headImage;
+
 //    private Logger log;
 
     public Handler timeHandler = new Handler() {
@@ -259,7 +268,41 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
         Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
         Button TodayWeather = (Button) v.findViewById(R.id.weather1);
-        ImageView headImage = (ImageView) v.findViewById(R.id.headImage);
+        //为什么在这个layout里面定义的控件就是不能相应事件呢???
+
+        headImage = (ImageView) v.findViewById(R.id.img_headImage);
+        headImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到另外一个activity
+                Log.d("test","test");
+                Intent intent = new Intent(m_context, HeadImageActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        bitmap = BitmapUtils.compressImageFromFile();
+        if(bitmap!=null){
+            headImage.setImageBitmap(bitmap);
+        }
+
+        ImageView img_weather = (ImageView)v.findViewById(R.id.img_weather);
+        img_weather.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("test","test");
+            }
+        });
+
+        Button btn_changeHeadImage = (Button)v.findViewById(R.id.btn_changeHeadImage);
+        btn_changeHeadImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(m_context, HeadImageActivity.class);
+                startActivityForResult(intent,0);
+//                startActivity(intent);
+            }
+        });
 
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
@@ -329,6 +372,21 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         if(myHorizontalScrollView.getIsOpen())
         {
             myHorizontalScrollView.toggle();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
+            case Activity.RESULT_OK:
+                bitmap = BitmapUtils.compressImageFromFile();
+                if(bitmap!=null){
+                    headImage.setImageBitmap(bitmap);
+                }
+
+                break;
+            default:
+                break;
         }
     }
 
@@ -691,39 +749,5 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             OtherCar.add(IMEIlist.get(i));
         }
     }
-
-    public void QueryBindListFromServer(){
-        IMEIlist.clear();
-        AVUser currentUser = AVUser.getCurrentUser();
-        AVQuery<AVObject> query = new AVQuery<>("Bindings");
-        query.whereEqualTo("user", currentUser);
-        query.findInBackground(new FindCallback<AVObject>() {
-            @Override
-            public void done(List<AVObject> list, AVException e) {
-                if (e == null) {
-                    int mainIMEIPosition = 0;
-                    for (int i = 0; i < list.size(); i++) {
-                        String IMEI = list.get(i).get("IMEI").toString();
-                        IMEIlist.add(IMEI);
-                        if (IMEI.equals(setManager.getIMEI())) {
-                            mainIMEIPosition = i;
-                        }
-                    }
-                    //调整顺序
-                    if (mainIMEIPosition != 0) {
-                        IMEIlist.set(mainIMEIPosition, IMEIlist.get(0));
-                        IMEIlist.set(0, setManager.getIMEI());
-                    }
-                    setManager.setIMEIlist(IMEIlist);
-                    //刷新数据
-                    refreshBindList1();
-                } else {
-                    e.printStackTrace();
-                    ToastUtils.showShort(m_context, "IMEI绑定列表查询失败");
-                }
-            }
-        });
-    }
-
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
 }

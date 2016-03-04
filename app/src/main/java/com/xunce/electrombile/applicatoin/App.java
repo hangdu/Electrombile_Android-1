@@ -5,6 +5,8 @@ import android.app.Application;
 import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.AVOSCloud;
 import com.baidu.mapapi.SDKInitializer;
+
+import im.fir.sdk.FIR;
 //import io.yunba.android.manager.YunBaManager;
 
 
@@ -24,7 +26,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         //initial BugHD
-        //FIR.init(this);
+        FIR.init(this);
         instance = this;
 
         //initial the Baidu map SDK

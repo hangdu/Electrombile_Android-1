@@ -62,7 +62,7 @@
         <!-- BugHD -->
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"
-            android:value="c3eabcfe28504e5428596427cfdd2311" />
+            android:value="653b6b146dd19b4ce30dea9bbfa4a1e2" />
 
         <activity
             android:name=".activity.SplashActivity"
@@ -179,7 +179,9 @@
         <activity android:name=".activity.InputIMEIActivity" />
         <activity android:name=".activity.account.ForgetPassActivity2" />
         <activity android:name=".activity.account.ResetPassActivity" />
-        <activity android:name=".activity.SpecificHistoryTrackActivity"></activity>
+        <activity android:name=".activity.SpecificHistoryTrackActivity" />
+        <activity android:name=".activity.account.HeadImageActivity" />
+        <activity android:name=".activity.CropActivity"></activity>
     </application>
 
 </manifest>

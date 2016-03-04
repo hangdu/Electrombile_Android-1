@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xunce.electrombile.activity.account.HeadImageActivity">
+
+    <ImageView
+        android:id="@+id/iv_CameraImg"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src = "@drawable/person"/>
+
+    <Button
+        android:layout_below="@+id/iv_CameraImg"
+        android:id="@+id/btn_StartCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "系统相机拍摄"/>
+
+    <Button
+        android:layout_below="@+id/btn_StartCamera"
+        android:id="@+id/choose_from_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="从相册中选取"/>
+
+</RelativeLayout>
