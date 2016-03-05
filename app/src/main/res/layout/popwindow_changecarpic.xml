@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/transparent_bg">
+    <LinearLayout
+        android:id="@+id/ll_popup_carpic"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_pop_changeCarPic"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:background="#f4f4f4"
+            android:textColor="#464646"
+            android:textSize="18.67sp"
+            android:text = "更换头像"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b4b4b4"/>
+
+        <TextView
+            android:id="@+id/tv_pop_ViewPic"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:background="#f4f4f4"
+            android:textColor="#464646"
+            android:textSize="18.67sp"
+            android:text = "查看大图"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6.67dp"
+            android:background="#413f40"/>
+
+        <TextView
+            android:id="@+id/tv_pop_cancel"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:background="#f4f4f4"
+            android:textColor="#7c7c7c"
+            android:textSize="18.67sp"
+            android:text="取消"/>
+
+    </LinearLayout>
+</RelativeLayout>

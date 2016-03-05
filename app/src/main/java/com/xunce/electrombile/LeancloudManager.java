@@ -233,6 +233,7 @@ public class LeancloudManager {
                 if (e == null) {
                     if (!list.isEmpty()) {
                         AVObject avObject = list.get(0);
+
                         if (avObject.get("ICON") == null) {
                             //服务器上的头像数据为空  所以需要上传数据到数据库啊
                             Log.d("test", "test");
@@ -252,7 +253,8 @@ public class LeancloudManager {
                                     }
                                 }
                             });
-                        } else {
+                        }
+                        else {
                             //从服务器拉头像  下来存文件
                             ByteArrayOutputStream bos = new ByteArrayOutputStream();
                             ObjectOutput out = null;
@@ -287,7 +289,7 @@ public class LeancloudManager {
                             }
                         }
                     } else {
-                        settingManager.setIMEIlist(null);
+                        //不可能出现这种情况啊
                     }
                 } else {
                     e.printStackTrace();

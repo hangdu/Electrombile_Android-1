@@ -386,6 +386,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             mqttConnectManager.subscribe(current_IMEI);
             mqttConnectManager.sendMessage((m_context).mCenter.cmdFenceGet(), current_IMEI);
             ToastUtils.showShort(m_context,"切换成功");
+            myHorizontalScrollView.toggle();
         }
         else{
             ToastUtils.showShort(m_context,"mqtt连接失败");
@@ -593,7 +594,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     (m_context).sendMessage(m_context, mCenter.cmdFenceOff(), setManager.getIMEI());
                     showWaitDialog();
                     timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
-
                 } else {
                     ToastUtils.showShort(m_context, "网络连接失败");
                 }
@@ -617,7 +617,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     else{
                         ToastUtils.showShort(m_context,"mqtt连接失败");
                     }
-
                 } else {
                     ToastUtils.showShort(m_context, "请先绑定设备");
                 }

@@ -6,12 +6,18 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.*;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,7 +46,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarInfoEditActivity extends Activity {
+public class CarInfoEditActivity extends Activity implements View.OnClickListener{
+    private PopupWindow mpopupWindow;
     TextView tv_CarIMEI;
     RelativeLayout btn_DeleteDevice;
     String IMEI;
@@ -52,10 +59,13 @@ public class CarInfoEditActivity extends Activity {
     MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     String NextCarIMEI;
-    private TextView tv_phoneNumber;
+//    private TextView tv_phoneNumber;
     private TextView tv_carType;
     private List<String> IMEIlist;
     private int othercarListPosition;
+    private RelativeLayout RelativeLayout_changeCarPic;
+
+
 
     private Handler mHandler = new Handler(){
         @Override
@@ -114,6 +124,27 @@ public class CarInfoEditActivity extends Activity {
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_pop_changeCarPic:
+
+                mpopupWindow.dismiss();
+                break;
+            case R.id.tv_pop_ViewPic:
+
+                mpopupWindow.dismiss();
+                break;
+            case R.id.tv_pop_cancel:
+
+                mpopupWindow.dismiss();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_info_edit);
@@ -139,7 +170,7 @@ public class CarInfoEditActivity extends Activity {
         tv_CarIMEI.setText("设备号:"+IMEI);
 
         setManager = SettingManager.getInstance();
-        tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
+        TextView tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
         String s = "手机号:"+setManager.getPhoneNumber();
         tv_phoneNumber.setText(s);
 
@@ -168,8 +199,17 @@ public class CarInfoEditActivity extends Activity {
             }
         });
 
-        JudgeMainCarOrNot();
+        RelativeLayout RelativeLayout_changeCarName = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarName);
 
+        RelativeLayout_changeCarPic = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarPic);
+        RelativeLayout_changeCarPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopMenu();
+            }
+        });
+
+        JudgeMainCarOrNot();
         getIMEIlist();
     }
 
@@ -389,5 +429,41 @@ public class CarInfoEditActivity extends Activity {
             Flag_Maincar = false;
             tv_carType.setText("其他车辆");
         }
+    }
+
+
+    private void showPopMenu() {
+        View view = View.inflate(getApplicationContext(), R.layout.popwindow_changecarpic, null);
+        TextView tv_pop_changeCarPic = (TextView) view.findViewById(R.id.tv_pop_changeCarPic);
+        TextView tv_pop_ViewPic = (TextView) view.findViewById(R.id.tv_pop_ViewPic);
+        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
+        tv_pop_changeCarPic.setOnClickListener(CarInfoEditActivity.this);
+        tv_pop_ViewPic.setOnClickListener(CarInfoEditActivity.this);
+        tv_pop_cancel.setOnClickListener(this);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mpopupWindow.dismiss();
+            }
+        });
+
+        view.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
+        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
+        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_bottom_in));
+
+        if(mpopupWindow==null){
+            mpopupWindow = new PopupWindow(this);
+            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+            mpopupWindow.setFocusable(true);
+            mpopupWindow.setOutsideTouchable(true);
+        }
+
+        mpopupWindow.setContentView(view);
+        mpopupWindow.showAtLocation(RelativeLayout_changeCarPic, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        mpopupWindow.update();
     }
 }

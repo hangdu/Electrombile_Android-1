@@ -13,12 +13,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.GetDataCallback;
+import com.avos.avoscloud.SaveCallback;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.CropActivity;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.BitmapUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.util.List;
 
 public class HeadImageActivity extends Activity {
     private ImageView iv_CameraImg;
@@ -26,6 +39,7 @@ public class HeadImageActivity extends Activity {
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
     public static final int CHOOSE_PHOTO=3;
+    private SettingManager settingManager;
 
 
     @Override
@@ -36,6 +50,8 @@ public class HeadImageActivity extends Activity {
         Button btn_StartCamera = (Button)findViewById(R.id.btn_StartCamera);
         Button btn_choose = (Button)findViewById(R.id.choose_from_album);
         iv_CameraImg = (ImageView) findViewById(R.id.iv_CameraImg);
+
+        settingManager = SettingManager.getInstance();
 
         btn_choose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,10 +94,12 @@ public class HeadImageActivity extends Activity {
 
         //加载图片
 
-        Bitmap bitmap = BitmapUtils.compressImageFromFile();
-        if(bitmap!=null){
-            iv_CameraImg.setImageBitmap(bitmap);
-        }
+//        Bitmap bitmap = BitmapUtils.compressImageFromFile();
+//        if(bitmap!=null){
+//            iv_CameraImg.setImageBitmap(bitmap);
+//        }
+
+        getHeadImageFromServer();
     }
 
     @Override
@@ -151,5 +169,57 @@ public class HeadImageActivity extends Activity {
         setResult(RESULT_OK,intent);
         finish();
         super.onBackPressed();
+    }
+
+    public void getHeadImageFromServer(){
+        AVQuery<AVObject> query = new AVQuery<>("DID");
+        query.whereEqualTo("IMEI", settingManager.getIMEI());
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (!list.isEmpty()) {
+                        AVObject avObject = list.get(0);
+
+                        if (avObject.get("Image") == null) {
+                            //服务器上的头像数据为空  所以需要上传数据到数据库啊
+                            Log.d("test", "test");
+
+                            try {
+                                AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.png",
+                                        Environment.getExternalStorageDirectory() + "/crop_result.png");
+
+                                avfile.saveInBackground();
+                                avObject.put("Image", avfile);
+                                avObject.saveInBackground();
+
+                            }catch (Exception ee){
+
+                            }
+
+                            Bitmap bitmap = BitmapFactory.decodeResource(HeadImageActivity.this.getResources(),
+                                    R.drawable.person);
+                            iv_CameraImg.setImageBitmap(bitmap);
+
+                        } else {
+                            //从服务器拉头像  下来存文件
+                            AVFile avFile = avObject.getAVFile("Image");
+                            avFile.getDataInBackground(new GetDataCallback(){
+                                public void done(byte[] data, AVException e){
+                                    //process data or exception.
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                    iv_CameraImg.setImageBitmap(bitmap);
+                                }
+                            });
+                        }
+                    } else {
+                        //不可能出现这种情况啊
+                    }
+                } else {
+                    e.printStackTrace();
+
+                }
+            }
+        });
     }
 }
