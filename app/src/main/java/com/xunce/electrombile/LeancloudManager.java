@@ -1,19 +1,25 @@
 package com.xunce.electrombile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVFile;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.GetDataCallback;
 import com.avos.avoscloud.SaveCallback;
 import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 import org.json.JSONArray;
@@ -123,16 +129,16 @@ public class LeancloudManager {
 
     public void uploadUserInfo(final Boolean gender){
         AVUser currentUser = AVUser.getCurrentUser();
-        currentUser.put("isMale",gender);
+        currentUser.put("isMale", gender);
         currentUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(AVException e) {
                 if (e == null) {
-                    ToastUtils.showShort(context,"性别已经上传到服务器");
+                    ToastUtils.showShort(context, "性别已经上传到服务器");
                     //保存到本地
                     settingManager.setGender(gender);
                 } else {
-                    ToastUtils.showShort(context,"性别已经上传服务器失败");
+                    ToastUtils.showShort(context, "性别已经上传服务器失败");
                 }
             }
         });
@@ -166,19 +172,24 @@ public class LeancloudManager {
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
                     LeancloudManager.this.onGetBindListListener.onGetBindListSuccess(list);
-                    if(list.size()>0){
+                    if (list.size() > 0) {
                         for (int i = 0; i < list.size(); i++) {
                             String IMEI = list.get(i).get("IMEI").toString();
                             IMEIlist.add(IMEI);
-                            Date createdDate = (Date)list.get(i).get("createdAt");
+                            Date createdDate = (Date) list.get(i).get("createdAt");
                             CreateDate.add(createdDate);
                             //写到settingManager中去
 
                         }
                         settingManager.setIMEIlist(IMEIlist);
-//                        getHeadImageFromServer();
-                    }
-                    else{
+                        settingManager.setIMEI(IMEIlist.get(0));
+
+                        //获取IMEIlist中每一个设备对应的头像
+                        for (String IMEI : IMEIlist) {
+                            getHeadImageFromServer(IMEI);
+                        }
+
+                    } else {
                         settingManager.setIMEIlist(null);
                     }
                 } else {
@@ -195,105 +206,104 @@ public class LeancloudManager {
 
     }
 
-    //从drawable里上传到leancloud  第一次的时候会这样
-    public void uploadHeadImagetoServer(String objectid){
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.person);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] bitmapdata = stream.toByteArray();
-
-        AVObject post = new AVObject("DID");
+    public void uploadImageToServer(final String IMEI,Bitmap bitmap){
         AVQuery<AVObject> query = new AVQuery<>("DID");
-        try{
-            post = query.get(objectid);
-        }catch (Exception e){
-
-        }
-
-        post.put("ICON", bitmapdata);
-        post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    Log.i("LeanCloud", "Save successfully.");
-                } else {
-                    Log.e("LeanCloud", "Save failed.");
-                }
-            }
-        });
-    }
-
-    //从服务器获取用户的头像
-    public void getHeadImageFromServer(){
-        AVQuery<AVObject> query = new AVQuery<>("DID");
-        query.whereEqualTo("IMEI", IMEIlist.get(0));
+        query.whereEqualTo("IMEI", IMEI);
         query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
                     if (!list.isEmpty()) {
+                        if (list.size() != 1) {
+                            ToastUtils.showShort(context, "DID表中  该IMEI对应多条记录");
+                            return;
+                        }
                         AVObject avObject = list.get(0);
+                        try {
+                            AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.png",
+                                    Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png");
 
-                        if (avObject.get("ICON") == null) {
-                            //服务器上的头像数据为空  所以需要上传数据到数据库啊
-                            Log.d("test", "test");
-                            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.person);
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] bitmapdata = stream.toByteArray();
-
-                            avObject.put("ICON", bitmapdata);
+                            avfile.saveInBackground();
+                            avObject.put("Image", avfile);
                             avObject.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(AVException e) {
                                     if (e == null) {
-                                        Log.i("LeanCloud", "Save successfully.");
+                                        ToastUtils.showShort(context, "车辆头像已经上传到服务器");
+                                        //保存到本地
                                     } else {
-                                        Log.e("LeanCloud", "Save failed.");
+                                        ToastUtils.showShort(context, "车辆头像上传服务器失败");
+                                    }
+                                }
+                            });
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+                } else {
+                    ToastUtils.showShort(context, "在DID表中查询该IMEI 查询失败");
+                }
+            }
+        });
+    }
+
+
+    //从服务器获取车辆头像(如果头像为空  则从本地上传到服务器)
+    public void getHeadImageFromServer(final String IMEI){
+        AVQuery<AVObject> query = new AVQuery<>("DID");
+        query.whereEqualTo("IMEI", IMEI);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (!list.isEmpty()) {
+                        if (list.size() != 1) {
+                            ToastUtils.showShort(context, "DID表中  该IMEI对应多条记录");
+                            return;
+                        }
+                        AVObject avObject = list.get(0);
+                        if (avObject.get("Image") == null) {
+                            //服务器上的头像数据为空  所以需要上传数据到数据库啊
+                            Log.d("test", "test");
+                            String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+                            File f = new File(fileName);
+                            if(f.exists()){
+                                f.delete();
+                            }
+                            if (settingManager.getIMEI().equals(IMEI)) {
+                                Intent intent = new Intent("com.app.bc.test");
+                                context.sendBroadcast(intent);//发送广播事件
+                            }
+
+                        } else {
+                            //从服务器拉头像  如果是在inputIMEIactivity中调用的  就需要在本地存文件;
+//                             如果是在更改头像里调用的   就不需要存文件  (因为已经存了)
+                            AVFile avFile = avObject.getAVFile("Image");
+                            avFile.getDataInBackground(new GetDataCallback() {
+                                public void done(byte[] data, AVException e) {
+                                    //process data or exception.
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                    String fileName = Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png";
+                                    try {
+                                        BitmapUtils.saveBitmapToFile(bitmap, fileName);
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+
+                                    if (settingManager.getIMEI().equals(IMEI)) {
+                                        Intent intent = new Intent("com.app.bc.test");
+                                        context.sendBroadcast(intent);//发送广播事件
                                     }
                                 }
                             });
                         }
-                        else {
-                            //从服务器拉头像  下来存文件
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            ObjectOutput out = null;
-                            FileOutputStream fos = null;
-                            try {
-                                out = new ObjectOutputStream(bos);
-                                out.writeObject(avObject.get("ICON"));
-                                byte[] yourBytes = bos.toByteArray();
-
-                                File f = new File(Environment.getExternalStorageDirectory(),"crop_result.png");
-                                fos=new FileOutputStream(f);
-                                fos.write(yourBytes);
-
-                            } catch (Exception ee) {
-
-                            } finally {
-                                try {
-                                    if (out != null) {
-                                        out.close();
-                                    }
-                                    if(fos!=null){
-                                        fos.close();
-                                    }
-                                } catch (IOException ex) {
-                                    // ignore close exception
-                                }
-                                try {
-                                    bos.close();
-                                } catch (IOException ex) {
-                                    // ignore close exception
-                                }
-                            }
-                        }
-                    } else {
+                    }
+                    else {
                         //不可能出现这种情况啊
+                        ToastUtils.showShort(context, "DID表中  IMEI对应0条记录");
                     }
                 } else {
                     e.printStackTrace();
-
                 }
             }
         });

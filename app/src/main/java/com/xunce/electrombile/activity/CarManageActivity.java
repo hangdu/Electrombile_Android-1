@@ -2,19 +2,25 @@ package com.xunce.electrombile.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 
 import org.json.JSONArray;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +33,7 @@ public class CarManageActivity extends Activity {
     private SimpleAdapter adapter;
     private int OthercarPositon;
     private List<String> IMEIlist;
+    private ImageView img_car;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +48,7 @@ public class CarManageActivity extends Activity {
         initEvents();
     }
 
-    void initView(){
+    private void initView(){
         View titleView = findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
         titleTextView.setText("车辆管理");
@@ -52,6 +59,15 @@ public class CarManageActivity extends Activity {
                 CarManageActivity.this.finish();
             }
         });
+
+        img_car = (ImageView)findViewById(R.id.menuimage1);
+
+        settingManager = SettingManager.getInstance();
+        String IMEI = settingManager.getIMEI();
+        Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
+        if(bitmap!=null){
+            img_car.setImageBitmap(bitmap);
+        }
 
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
         ListView listview = (ListView)findViewById(R.id.OtherCarListview);
@@ -122,6 +138,10 @@ public class CarManageActivity extends Activity {
                         Boolean Flag_Maincar = data.getBooleanExtra("boolean_key",false);
                         if(Flag_Maincar){
                             CaseManagedCarUnbinded();
+
+                            //发送广播提醒switchFragment  发生了切换车辆的行为
+                            Intent intent = new Intent("com.app.bc.test");
+                            sendBroadcast(intent);//发送广播事件
                         }
                         else{
                             caseOtherCarUnbind();
@@ -136,7 +156,7 @@ public class CarManageActivity extends Activity {
         }
     }
 
-    void caseDeviceChange(){
+    private void caseDeviceChange(){
         getIMEIlist();
         HashMap<String, Object> map = new HashMap<>();
         map.put("WhichCar", tv_CurrentCar.getText());
@@ -147,9 +167,37 @@ public class CarManageActivity extends Activity {
         adapter.notifyDataSetChanged();
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
         settingManager.setFlagCarSwitched("切换");
+
+        //改变车辆的照片
+        DeviceChangeHeadImage();
+
+        //发送广播提醒switchFragment  发生了切换车辆的行为
+        Intent intent = new Intent("com.app.bc.test");
+        sendBroadcast(intent);//发送广播事件
     }
 
-    void initEvents(){
+    private void DeviceChangeHeadImage(){
+        String fileName = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
+        File f = new File(fileName);
+        if(f.exists()){
+            Bitmap bitmap = BitmapUtils.compressImageFromFile(settingManager.getIMEI());
+            if(bitmap!=null){
+                img_car.setImageBitmap(bitmap);
+                return;
+            }
+            else{
+                //默认图像
+                bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.person);
+                img_car.setImageBitmap(bitmap);
+            }
+        }
+        else{
+            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.person);
+            img_car.setImageBitmap(bitmap);
+        }
+    }
+
+    private void initEvents(){
         getIMEIlist();
         tv_CurrentCar.setText(settingManager.getIMEI());
         //这个地方的IMEIlist的值不对啊
@@ -167,7 +215,7 @@ public class CarManageActivity extends Activity {
 
 
     //在二级界面的时候正在被管理的car被解绑了
-    void CaseManagedCarUnbinded(){
+    private void CaseManagedCarUnbinded(){
         //如果没有其他的车被绑定了  还没有处理相关的情况
         if(Othercarlist == null){
             //被绑定的只有一辆车 根本就不会到这个分支来 之前就处理了

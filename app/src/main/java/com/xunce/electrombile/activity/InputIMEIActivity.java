@@ -16,9 +16,11 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.SaveCallback;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
 import org.json.JSONArray;
@@ -38,6 +40,7 @@ public class InputIMEIActivity extends Activity {
     private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     private List<String> IMEIlist;
+    private LeancloudManager leancloudManager;
     private enum handler_key{
         START_BIND,
         SUCCESS,
@@ -78,14 +81,19 @@ public class InputIMEIActivity extends Activity {
 
     public void gotoAct(){
         if(FromActivity.equals("CarManageActivity")){
-            getIMEIlist();
+            IMEIlist = settingManager.getIMEIlist();
             String IMEI_first = IMEIlist.get(0);
             IMEIlist.add(IMEI_first);
 
             IMEIlist.set(0, settingManager.getIMEI());
             settingManager.setIMEIlist(IMEIlist);
 
+            //添加设备的话  需要从服务器上获取车辆的头像啊  他们的执行顺序不是你想的那个样子
+            leancloudManager.getHeadImageFromServer(settingManager.getIMEI());
+
+
             Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
         else{
@@ -93,25 +101,15 @@ public class InputIMEIActivity extends Activity {
             IMEIlist.add(settingManager.getIMEI());
             settingManager.setIMEIlist(IMEIlist);
 
+            leancloudManager.getHeadImageFromServer(settingManager.getIMEI());
             Intent intent = new Intent(InputIMEIActivity.this,WelcomeActivity.class);
             startActivity(intent);
         }
         finish();
     }
 
-    public void getIMEIlist(){
-        IMEIlist = settingManager.getIMEIlist();
-//        JSONArray jsonArray1;
-//        try{
-//            IMEIlist.clear();
-//            jsonArray1 = new JSONArray(settingManager.getIMEIlist());
-//            for (int i = 0; i < jsonArray1.length(); i++) {
-//                IMEIlist.add(jsonArray1.getString(i));
-//            }
-//        }catch (Exception e){
-//            //这里怎么处理呢?
-//        }
-    }
+
+
 
     private void getAlarmStatus(){
         mCenter = CmdCenter.getInstance();
@@ -191,6 +189,8 @@ public class InputIMEIActivity extends Activity {
     }
 
     private void initEvent(){
+        leancloudManager = LeancloudManager.getInstance();
+
         btn_Sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,11 +232,15 @@ public class InputIMEIActivity extends Activity {
 
 
     private void startBind(final String IMEI){
+        final AVQuery<AVObject> queryBinding = new AVQuery<>("Bindings");
+
+
         final AVObject bindDevice = new AVObject("Bindings");
         final AVUser currentUser = AVUser.getCurrentUser();
         bindDevice.put("user", currentUser);
+
+        //查询该IMEI号码是否存在
         AVQuery<AVObject> query = new AVQuery<>("DID");
-        final AVQuery<AVObject> queryBinding = new AVQuery<>("Bindings");
         query.whereEqualTo("IMEI", this.IMEI);
         query.findInBackground(new FindCallback<AVObject>() {
             @Override

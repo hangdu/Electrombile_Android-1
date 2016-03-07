@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -76,6 +77,8 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 import com.xunce.electrombile.view.MyHorizontalScrollView;
 import org.json.JSONException;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +109,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_weatherCondition;
     private TextView tv_location;
     private ImageView img_weather;
+    private ImageView leftmenu_CarImage;
+    private BroadcastReceiver MyBroadcastReceiver;
 
 
 
@@ -179,6 +184,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         }, DELAYTIME);
 //        log.info("onCreate-finish");
+
+        MyBroadcastReceiver = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.app.bc.test");
+        m_context.registerReceiver(MyBroadcastReceiver,filter);
+
     }
 
     @Override
@@ -254,8 +265,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onDestroy() {
 //        log.info("onDestroy-start");
+        m_context.unregisterReceiver(MyBroadcastReceiver);
         m_context = null;
         mSearch = null;
+
         super.onDestroy();
 //        log.info("onDestroy-finish");
     }
@@ -268,6 +281,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void initView(View v){
+        View leftmenu = v.findViewById(R.id.ll_leftmenu) ;
+        leftmenu_CarImage = (ImageView)leftmenu.findViewById(R.id.img_car);
+
         btnAlarmState1 = (Button) v.findViewById(R.id.btn_AlarmState1);
         BindedCarIMEI = (TextView)v.findViewById(R.id.menutext1);
         OtherCar = new ArrayList();
@@ -285,9 +301,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        bitmap = BitmapUtils.compressImageFromFile();
+        bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
         if(bitmap!=null){
             headImage.setImageBitmap(bitmap);
+            leftmenu_CarImage.setImageBitmap(bitmap);
         }
 
         img_weather = (ImageView)v.findViewById(R.id.img_weather);
@@ -347,6 +364,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_temperature = (TextView)v.findViewById(R.id.tv_temperature);
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
+
+
     }
 
     private void initEvent() {
@@ -364,9 +383,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
             case Activity.RESULT_OK:
-                bitmap = BitmapUtils.compressImageFromFile();
+                bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
                 if(bitmap!=null){
                     headImage.setImageBitmap(bitmap);
+                    leftmenu_CarImage.setImageBitmap(bitmap);
+
                 }
 
                 break;
@@ -393,7 +414,36 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
 
         IMEIlist.set(0, setManager.getIMEI());
+        IMEIlist.set(position+1,previous_IMEI);
         setManager.setIMEIlist(IMEIlist);
+
+        //切换头像
+        DeviceChangeHeadImage();
+
+    }
+
+    private void DeviceChangeHeadImage(){
+        String fileName = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.png";
+        File f = new File(fileName);
+        if(f.exists()){
+            bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
+            if(bitmap!=null){
+                headImage.setImageBitmap(bitmap);
+                leftmenu_CarImage.setImageBitmap(bitmap);
+                return;
+            }
+            else{
+                //默认图像
+                Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
+                headImage.setImageBitmap(bitmap);
+                leftmenu_CarImage.setImageBitmap(bitmap);
+            }
+        }
+        else{
+            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
+            headImage.setImageBitmap(bitmap);
+            leftmenu_CarImage.setImageBitmap(bitmap);
+        }
     }
 
     public void reverserGeoCedec(LatLng pCenter) {
@@ -750,4 +800,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
     //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
+
+    class MyBroadcastReceiver extends BroadcastReceiver {
+        //接收到广播会被自动调用
+        @Override
+        public void onReceive (Context context, Intent intent) {
+            //从Intent中获取action
+            DeviceChangeHeadImage();
+        }
+    }
 }

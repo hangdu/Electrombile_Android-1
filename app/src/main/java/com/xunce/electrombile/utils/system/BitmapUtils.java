@@ -136,8 +136,9 @@ public class BitmapUtils {
 		}
 	}
 
-	public static Bitmap compressImageFromFile() {
-		String srcPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/crop_result.png";
+	public static Bitmap compressImageFromFile(String IMEI) {
+//		String srcPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/crop_result.png";
+		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
 		BitmapFactory.Options newOpts = new BitmapFactory.Options();
 		newOpts.inJustDecodeBounds = true;//只读边,不读内容
 		BitmapFactory.decodeFile(srcPath, newOpts);

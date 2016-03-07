@@ -19,7 +19,10 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.view.ClipView;
 
 public class CropActivity extends Activity implements View.OnTouchListener,View.OnClickListener{
@@ -49,6 +52,8 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
 
     private Bitmap bitmap;
     private Uri imageUri;
+    private SettingManager settingManager;
+    private LeancloudManager leancloudManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +80,9 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
 
         sure = (View)findViewById(R.id.sure);
         sure.setOnClickListener(this);
+
+        settingManager = SettingManager.getInstance();
+        leancloudManager = LeancloudManager.getInstance();
     }
 
     private void initClipView(int top){
@@ -231,8 +239,11 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     //bitmap写文件
     public void saveMyBitmaptoFile(Bitmap mBitmap){
         //如果用户没有内存卡这句话会不会出错
-        File f = new File(Environment.getExternalStorageDirectory(),"crop_result.png");
-        filePath = f.getAbsolutePath();
+//        File f = new File(Environment.getExternalStorageDirectory(),"crop_result.png");
+//        filePath = f.getAbsolutePath();
+
+        filePath = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
+        File f = new File(filePath);
 
         FileOutputStream fOut = null;
         try {
@@ -248,5 +259,7 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        leancloudManager.uploadImageToServer(settingManager.getIMEI(),mBitmap);
     }
 }

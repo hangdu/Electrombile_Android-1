@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.*;
 import android.os.Message;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -36,6 +38,7 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
@@ -43,6 +46,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.json.JSONArray;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +108,10 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     setManager.setIMEIlist(IMEIlist);
                     setManager.setFirstLogin(true);
 
+                    deleteCarImage();
+
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     finish();
                 }
@@ -122,6 +129,16 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             DeviceUnbinded();
         }
     }
+
+    //解绑之后删除相关车辆的头像
+    private void deleteCarImage(){
+        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+        File f = new File(fileName);
+        if(f.exists()){
+            f.delete();
+        }
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -166,6 +183,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     }
 
     void initView(){
+        ImageView img_car = (ImageView)findViewById(R.id.img_car);
+        Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
+        if(bitmap!=null){
+            img_car.setImageBitmap(bitmap);
+        }
+
         tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
         tv_CarIMEI.setText("设备号:"+IMEI);
 
@@ -241,6 +264,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             setManager.setIMEIlist(IMEIlist);
         }
 
+        //删除头像文件
+        deleteCarImage();
+
         Intent intent = new Intent();
         intent.putExtra("string_key","设备解绑");
         intent.putExtra("boolean_key", Flag_Maincar);
@@ -249,17 +275,17 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     }
 
     public void getIMEIlist(){
-        IMEIlist = new ArrayList<>();
-        JSONArray jsonArray1;
-        try{
-            IMEIlist.clear();
-            jsonArray1 = new JSONArray(setManager.getIMEIlist());
-            for (int i = 0; i < jsonArray1.length(); i++) {
-                IMEIlist.add(jsonArray1.getString(i));
-            }
-        }catch (Exception e){
-            //这里怎么处理呢?
-        }
+        IMEIlist = setManager.getIMEIlist();
+//        JSONArray jsonArray1;
+//        try{
+//            IMEIlist.clear();
+//            jsonArray1 = new JSONArray(setManager.getIMEIlist());
+//            for (int i = 0; i < jsonArray1.length(); i++) {
+//                IMEIlist.add(jsonArray1.getString(i));
+//            }
+//        }catch (Exception e){
+//            //这里怎么处理呢?
+//        }
     }
 
 

@@ -35,7 +35,7 @@
             android:layout_marginBottom="2.67dp"
             android:layout_width="102dp"
             android:layout_height="101.33dp"
-            android:src="@drawable/car_pic"/>
+            android:src="@drawable/person"/>
 
         <TextView
             android:id="@+id/menutext1"
