@@ -223,6 +223,7 @@ public class LeancloudManager {
                             AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.png",
                                     Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png");
 
+
                             avfile.saveInBackground();
                             avObject.put("Image", avfile);
                             avObject.saveInBackground(new SaveCallback() {

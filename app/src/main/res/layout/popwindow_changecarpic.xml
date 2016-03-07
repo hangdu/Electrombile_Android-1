@@ -11,14 +11,14 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_pop_changeCarPic"
+            android:id="@+id/tv_pop_FromGallery"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
             android:background="#f4f4f4"
             android:textColor="#464646"
             android:textSize="18.67sp"
-            android:text = "更换头像"/>
+            android:text = "从相册中选取"/>
 
         <View
             android:layout_width="match_parent"
@@ -26,14 +26,14 @@
             android:background="#b4b4b4"/>
 
         <TextView
-            android:id="@+id/tv_pop_ViewPic"
+            android:id="@+id/tv_pop_camera"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
             android:background="#f4f4f4"
             android:textColor="#464646"
             android:textSize="18.67sp"
-            android:text = "查看大图"/>
+            android:text = "拍照"/>
 
         <View
             android:layout_width="match_parent"

@@ -88,7 +88,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     };
 
     public void AfterDeleteSuccess(){
-        if(LastCar == true){
+        if(LastCar){
             //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈???
             if(mqttConnectManager.returnMqttStatus()){
                 if(mqttConnectManager.unSubscribe(IMEI)){
@@ -143,18 +143,18 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_pop_changeCarPic:
-
-                mpopupWindow.dismiss();
-                break;
-            case R.id.tv_pop_ViewPic:
-
-                mpopupWindow.dismiss();
-                break;
-            case R.id.tv_pop_cancel:
-
-                mpopupWindow.dismiss();
-                break;
+//            case R.id.tv_pop_changeCarPic:
+//
+//                mpopupWindow.dismiss();
+//                break;
+//            case R.id.tv_pop_ViewPic:
+//
+//                mpopupWindow.dismiss();
+//                break;
+//            case R.id.tv_pop_cancel:
+//
+//                mpopupWindow.dismiss();
+//                break;
 
             default:
                 break;
@@ -417,7 +417,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    return;
+                    progressDialog.dismiss();
                 }
             });
             Dialog dialog = builder.create();
@@ -459,37 +459,37 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
 
     private void showPopMenu() {
-        View view = View.inflate(getApplicationContext(), R.layout.popwindow_changecarpic, null);
-        TextView tv_pop_changeCarPic = (TextView) view.findViewById(R.id.tv_pop_changeCarPic);
-        TextView tv_pop_ViewPic = (TextView) view.findViewById(R.id.tv_pop_ViewPic);
-        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
-        tv_pop_changeCarPic.setOnClickListener(CarInfoEditActivity.this);
-        tv_pop_ViewPic.setOnClickListener(CarInfoEditActivity.this);
-        tv_pop_cancel.setOnClickListener(this);
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mpopupWindow.dismiss();
-            }
-        });
-
-        view.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
-        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
-        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_bottom_in));
-
-        if(mpopupWindow==null){
-            mpopupWindow = new PopupWindow(this);
-            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
-
-            mpopupWindow.setFocusable(true);
-            mpopupWindow.setOutsideTouchable(true);
-        }
-
-        mpopupWindow.setContentView(view);
-        mpopupWindow.showAtLocation(RelativeLayout_changeCarPic, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
-        mpopupWindow.update();
+//        View view = View.inflate(getApplicationContext(), R.layout.popwindow_changecarpic, null);
+//        TextView tv_pop_changeCarPic = (TextView) view.findViewById(R.id.tv_pop_changeCarPic);
+//        TextView tv_pop_ViewPic = (TextView) view.findViewById(R.id.tv_pop_ViewPic);
+//        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
+//        tv_pop_changeCarPic.setOnClickListener(CarInfoEditActivity.this);
+//        tv_pop_ViewPic.setOnClickListener(CarInfoEditActivity.this);
+//        tv_pop_cancel.setOnClickListener(this);
+//
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mpopupWindow.dismiss();
+//            }
+//        });
+//
+//        view.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
+//        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
+//        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_bottom_in));
+//
+//        if(mpopupWindow==null){
+//            mpopupWindow = new PopupWindow(this);
+//            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+//            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+//            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+//
+//            mpopupWindow.setFocusable(true);
+//            mpopupWindow.setOutsideTouchable(true);
+//        }
+//
+//        mpopupWindow.setContentView(view);
+//        mpopupWindow.showAtLocation(RelativeLayout_changeCarPic, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+//        mpopupWindow.update();
     }
 }

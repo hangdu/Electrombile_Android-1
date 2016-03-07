@@ -3,6 +3,7 @@ package com.xunce.electrombile.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -10,13 +11,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -200,9 +204,8 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
 
     public void onClick(View v) {
         Bitmap clipBitmap = getBitmap();
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        clipBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//        byte[] bitmapByte = baos.toByteArray();
+        clipBitmap = scaleBitmap(clipBitmap);
+        clipBitmap = lowQuality(clipBitmap);
         saveMyBitmaptoFile(clipBitmap);
         Intent intent = new Intent();
         intent.putExtra("filePath",filePath);
@@ -241,7 +244,6 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         //如果用户没有内存卡这句话会不会出错
 //        File f = new File(Environment.getExternalStorageDirectory(),"crop_result.png");
 //        filePath = f.getAbsolutePath();
-
         filePath = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
         File f = new File(filePath);
 
@@ -260,6 +262,55 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
             e.printStackTrace();
         }
 
-        leancloudManager.uploadImageToServer(settingManager.getIMEI(),mBitmap);
+        FileInputStream fis;
+        try{
+            fis = new FileInputStream(f);
+            int fileLen = fis.available(); //这就是文件大小
+            Log.d("test", "test");
+        }catch (Exception eee){
+
+        }
+
+
+
+        leancloudManager.uploadImageToServer(settingManager.getIMEI(), mBitmap);
+    }
+
+    //对bitmap进行缩放
+    private Bitmap scaleBitmap(Bitmap bm){
+        // 获得图片的宽高
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        // 设置想要的大小
+        int newWidth = 200;
+        int newHeight = 200;
+        // 计算缩放比例
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // 取得想要缩放的matrix参数
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        // 得到新的图片
+        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix,
+                true);
+    }
+
+    //通过降低图片质量来缩小bitmap
+    private Bitmap lowQuality(Bitmap bm){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int quality = 10;
+        bm.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+        Bitmap compressedBitmap = BitmapFactory.decodeByteArray(
+                baos.toByteArray(), 0, baos.toByteArray().length);
+        recycleBitmap(bitmap);
+        return compressedBitmap;
+    }
+
+    public static void recycleBitmap(Bitmap bitmap) {
+        if (bitmap != null && !bitmap.isRecycled()) {
+            bitmap.recycle();
+            System.gc();
+            bitmap = null;
+        }
     }
 }

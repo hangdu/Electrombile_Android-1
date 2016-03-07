@@ -146,8 +146,8 @@ public class BitmapUtils {
 		int w = newOpts.outWidth;
 		int h = newOpts.outHeight;
 		//这个地方怎么适配呢   我现在用的直接是px为单位的
-		float hh = 426f;
-		float ww = 445f;
+		float hh = 100f;
+		float ww = 100f;
 		int be = 1;
 		if (w > h && w > ww) {
 			be = (int) (newOpts.outWidth / ww);

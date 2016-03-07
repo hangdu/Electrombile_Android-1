@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -19,9 +21,11 @@ import android.os.Message;
 import android.content.BroadcastReceiver;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +39,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
@@ -64,6 +69,7 @@ import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.activity.CropActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.account.HeadImageActivity;
@@ -79,12 +85,13 @@ import com.xunce.electrombile.view.MyHorizontalScrollView;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener {
+public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener,OnClickListener {
     private static final int DELAYTIME = 1000;
     private static String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
@@ -111,6 +118,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private ImageView img_weather;
     private ImageView leftmenu_CarImage;
     private BroadcastReceiver MyBroadcastReceiver;
+    private PopupWindow mpopupWindow;
+    private Uri imageUri;
+    public static final int TAKE_PHOTE=1;
+    public static final int CROP_PHOTO=2;
+    public static final int CHOOSE_PHOTO=3;
 
 
 
@@ -149,6 +161,53 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             return;
         }
     };
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_pop_FromGallery:
+                File outputImage = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage.exists()){
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent = new Intent("android.intent.action.PICK");
+                intent.setType("image/*");
+                startActivityForResult(intent,CHOOSE_PHOTO);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_camera:
+                File outputImage1 = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage1.exists()){
+                        outputImage1.delete();
+                    }
+                    outputImage1.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage1);
+                Intent intent1 = new Intent("android.media.action.IMAGE_CAPTURE");
+                intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent1,TAKE_PHOTE);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_cancel:
+                mpopupWindow.dismiss();
+                break;
+
+            default:
+                break;
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -289,15 +348,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         OtherCar = new ArrayList();
         myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
         Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
-//        Button TodayWeather = (Button) v.findViewById(R.id.weather1);
-
         headImage = (ImageView) v.findViewById(R.id.img_headImage);
         headImage.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //补充关于更换头像的代码
-                Intent intent = new Intent(m_context, HeadImageActivity.class);
-                startActivityForResult(intent,0);
+                showPopMenu();
             }
         });
 
@@ -351,21 +406,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-//        TodayWeather.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(m_context);
-//                builder.setMessage(WeatherData.trim());
-//                builder.create();
-//                builder.show();
-//            }
-//        });
-
         tv_temperature = (TextView)v.findViewById(R.id.tv_temperature);
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
-
-
     }
 
     private void initEvent() {
@@ -381,15 +424,34 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) { //resultCode为回传的标记，我在B中回传的是RESULT_OK
-            case Activity.RESULT_OK:
-                bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
-                if(bitmap!=null){
-                    headImage.setImageBitmap(bitmap);
-                    leftmenu_CarImage.setImageBitmap(bitmap);
-
+        switch (requestCode){
+            case TAKE_PHOTE:
+                if(resultCode == Activity.RESULT_OK) {
+                    Intent intent = new Intent(m_context,CropActivity.class);
+                    intent.setData(imageUri);
+                    startActivityForResult(intent, CROP_PHOTO);
                 }
+                break;
 
+            case CHOOSE_PHOTO:
+                if(resultCode == Activity.RESULT_OK) {
+                    imageUri = data.getData();
+                    Intent intent = new Intent(m_context,CropActivity.class);
+                    intent.setData(imageUri);
+                    startActivityForResult(intent, CROP_PHOTO);
+                }
+                break;
+
+            case CROP_PHOTO:
+                if(resultCode == Activity.RESULT_OK) {
+                    //上传到服务器
+                    bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
+                    if (bitmap != null) {
+                        headImage.setImageBitmap(bitmap);
+                        leftmenu_CarImage.setImageBitmap(bitmap);
+
+                    }
+                }
                 break;
             default:
                 break;
@@ -535,14 +597,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                         else{
                             img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
                         }
-//                        WeatherData = "气温：" + data.temp + "\n" +
-//                                "天气状况：" + data.weather + "\n" +
-//                                "城市：" + data.city + "\n" +
-//                                "风速：" + data.WS + "\n" +
-//                                "更新时间：" + data.time + "\n" +
-//                                "最低气温：" + data.l_tmp + "\n" +
-//                                "最高气温：" + data.h_tmp + "\n" +
-//                                "风向：" + data.WD + "\n";
                     }
 
                     @Override
@@ -808,5 +862,40 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             //从Intent中获取action
             DeviceChangeHeadImage();
         }
+    }
+
+    private void showPopMenu() {
+        View view = View.inflate(m_context, R.layout.popwindow_changecarpic, null);
+        TextView tv_pop_FromGallery = (TextView) view.findViewById(R.id.tv_pop_FromGallery);
+        TextView tv_pop_camera = (TextView) view.findViewById(R.id.tv_pop_camera);
+        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
+        tv_pop_FromGallery.setOnClickListener(this);
+        tv_pop_camera.setOnClickListener(this);
+        tv_pop_cancel.setOnClickListener(this);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mpopupWindow.dismiss();
+            }
+        });
+
+        view.startAnimation(AnimationUtils.loadAnimation(m_context, R.anim.fade_in));
+        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
+        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(m_context, R.anim.push_bottom_in));
+
+        if(mpopupWindow==null){
+            mpopupWindow = new PopupWindow(m_context);
+            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+            mpopupWindow.setFocusable(true);
+            mpopupWindow.setOutsideTouchable(true);
+        }
+
+        mpopupWindow.setContentView(view);
+        mpopupWindow.showAtLocation(headImage, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        mpopupWindow.update();
     }
 }
