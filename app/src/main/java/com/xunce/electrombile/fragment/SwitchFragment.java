@@ -388,19 +388,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //UI界面改变
-                String IMEI_previous = BindedCarIMEI.getText().toString();
+                String IMEI_previous = setManager.getIMEI();
                 String IMEI_now = OtherCar.get(position);
 
                 BindedCarIMEI.setText(IMEI_now);
 
-                myHorizontalScrollView.list.remove(position);
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("whichcar", IMEI_previous);
                 map.put("img", R.drawable.othercar);
-                myHorizontalScrollView.list.add(map);
+                myHorizontalScrollView.list.set(position,map);
                 myHorizontalScrollView.UpdateListview();
-                OtherCar.remove(position);
-                OtherCar.add(IMEI_previous);
+                OtherCar.set(position,IMEI_previous);
                 //实际逻辑改变
                 DeviceChange(IMEI_previous, IMEI_now, position);
             }

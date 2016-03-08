@@ -43,8 +43,6 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
         screenWidth = outMetrics.widthPixels;// 屏幕宽度
         myMenuPaddingRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, context.getResources()
                 .getDisplayMetrics());
-
-//        InitView();
     }
 
     public void setHandler(Handler mhandler){
@@ -135,14 +133,7 @@ public class MyHorizontalScrollView extends HorizontalScrollView {
 
 
     private void getData() {
-        // 初始化
-//        HashMap<String, Object> map = null;
-//        for (int i = 1; i <= 5; i++) {
-//            map = new HashMap<String, Object>();
-//            map.put("whichcar",String.valueOf(i+1));
-//            map.put("img", R.drawable.img_1);
-//            list.add(map);
-//        }
+
     }
 
     public boolean getIsOpen(){

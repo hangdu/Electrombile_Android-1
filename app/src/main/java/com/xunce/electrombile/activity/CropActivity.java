@@ -270,9 +270,6 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         }catch (Exception eee){
 
         }
-
-
-
         leancloudManager.uploadImageToServer(settingManager.getIMEI(), mBitmap);
     }
 
