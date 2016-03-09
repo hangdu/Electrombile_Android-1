@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 public class RegisterActivity_Part1 extends BaseActivity {
     private EditText et_PhoneNumber;
-//    private Button btn_Back;
     private Button btn_NextStep;
     ProgressDialog dialog;
     public AlertDialog.Builder builder;

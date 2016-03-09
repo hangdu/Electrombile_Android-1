@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InputIMEIActivity extends Activity {
-
     private EditText et_IMEI;
     private Button btn_Sure;
     private String IMEI;
@@ -176,6 +176,17 @@ public class InputIMEIActivity extends Activity {
     }
 
     private void initView(){
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("输入设备序列号");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputIMEIActivity.this.finish();
+            }
+        });
+
         et_IMEI = (EditText)findViewById(R.id.et_IMEI);
         btn_Sure = (Button)findViewById(R.id.btn_Sure);
 

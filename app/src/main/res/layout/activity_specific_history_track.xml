@@ -12,21 +12,6 @@
         android:layout_below="@id/viewpager"
         android:clickable="true" />
 
-    <!--<RelativeLayout-->
-        <!--android:id="@+id/ll_button"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:background="#1dcf96"-->
-        <!--android:layout_height="44dp">-->
-
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:text = "历史轨迹"-->
-            <!--android:textSize="16dp"-->
-            <!--android:textColor="#d0f9e5"/>-->
-    <!--</RelativeLayout>-->
-
     <include
         android:id="@+id/ll_button"
         layout="@layout/my_layout_title" />
@@ -45,10 +30,10 @@
                 android:id="@+id/tv_CarName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="#1dcf96"
+                android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="车辆名称:一号"/>
+                android:background="#1dcf96"
+                android:text="车辆名称:"/>
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="5dp"/>
@@ -57,9 +42,9 @@
                 android:id="@+id/tv_startPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="#1dcf96"
+                android:textColor="#000000"
                 android:textSize="14sp"
+                android:background="#1dcf96"
                 android:text="起始位置:"/>
 
             <View
@@ -70,9 +55,9 @@
                 android:id="@+id/tv_endPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="#1dcf96"
+                android:textColor="#000000"
                 android:textSize="14sp"
+                android:background="#1dcf96"
                 android:text="终点位置:"/>
 
             <View
@@ -83,11 +68,10 @@
                 android:id="@+id/tv_routeTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"
-                android:background="#1dcf96"
+                android:textColor="#000000"
                 android:textSize="14sp"
+                android:background="#1dcf96"
                 android:text="历时:"/>
-
         </LinearLayout>
     </RelativeLayout>
 
@@ -110,7 +94,8 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="26.67dp"
             android:layout_width="200dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:progressDrawable="@drawable/widget_slider_style" />
 
         <Button
             android:id="@+id/btn_speed"

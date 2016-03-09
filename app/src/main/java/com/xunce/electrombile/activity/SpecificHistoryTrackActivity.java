@@ -1,10 +1,12 @@
 package com.xunce.electrombile.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.*;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -15,6 +17,7 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -39,8 +42,10 @@ public class SpecificHistoryTrackActivity extends Activity {
     private static String START = "start";
     private static String PLAYING = "playing";
     private static String PAUSE = "pause";
-    public static List<TracksManager.TrackPoint> trackDataList;
     private String status;
+
+    public static List<TracksManager.TrackPoint> trackDataList;
+
     private String startPoint;
     private String endPoint;
 
@@ -59,8 +64,10 @@ public class SpecificHistoryTrackActivity extends Activity {
     public static MapView mMapView;
     private SeekBar seekBar;
     private int Progress;
-    private boolean btnPlayClicked;
     private SettingManager settingManager;
+    private InfoWindow mInfoWindow;
+    private View markerView;
+    private TextView tv_pointTime;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -71,6 +78,13 @@ public class SpecificHistoryTrackActivity extends Activity {
                     try {
 //                        Log.i(TAG, "playOrder:" + playOrder);
                         if ((int) msg.obj < trackDataList.size()) {
+//                            mInfoWindow = new InfoWindow(markerView, trackDataList.get((int) msg.obj).point, -100);
+//                            SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                            String time = sdfWithSecond.format(trackDataList.get((int) msg.obj).time);
+//                            String[] strs = time.split(" ");
+//                            tv_pointTime.setText(strs[1]);
+//                            mBaiduMap.showInfoWindow(mInfoWindow);
+
                             markerMobile.setPosition(trackDataList.get((int) msg.obj).point);
                             SetSeekbar((int)msg.obj);
                             playLocateMobile((int) msg.obj);
@@ -94,26 +108,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         SET_MARKER
     }
 
-    /**
-     * marker从一个点跳转到另外一个点
-     */
-    private void playLocateMobile(int track) {
-        if (mBaiduMap == null) return;
-        LatLng p2;
-        if (track == 0) {
-            p2 = trackDataList.get(track + 1).point;
-            markerMobile.setPosition(p2);
-        } else if ((track + 1) == (trackDataList.size())) {
-            //不运动
-            playOrder = 0;
-            return;
-        } else {
-            p2 = trackDataList.get(track + 1).point;
-            markerMobile.setPosition(p2);
-        }
-        playOrder += 1;
-        sendPlayMessage(DELAY);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -147,7 +141,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         });
 
         mMapView = (MapView)findViewById(R.id.bmapView);
-//        mMapView.showZoomControls(false);
+        mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
         TextView tv_CarName = (TextView)findViewById(R.id.tv_CarName);
         TextView tv_startPoint = (TextView)findViewById(R.id.tv_startPoint);
@@ -161,7 +155,8 @@ public class SpecificHistoryTrackActivity extends Activity {
             public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
                 Progress = progressValue;
                 if (progressValue == (trackDataList.size() - 1)) {
-                    btnPlayClicked = false;
+                    status = START;
+                    btn_play.setBackgroundResource(R.drawable.btn_play1);
                 }
             }
 
@@ -175,8 +170,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 playOrder = Progress;
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
-
-                if (btnPlayClicked) {
+                if(status.equals(PLAYING)){
                     android.os.Message msg = android.os.Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
                     msg.obj = playOrder;
@@ -191,12 +185,10 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         long time1 = trackDataList.get(0).time.getTime();
         long time2 = trackDataList.get(trackDataList.size()-1).time.getTime();
-
         // Calculate difference in milliseconds
         long diff = time2 - time1;
         // Difference in seconds
         long diffSec = diff / 1000;
-
         if(diffSec/3600 == 0){
             //小于1h
             int min = (int)diffSec/60;
@@ -212,20 +204,47 @@ public class SpecificHistoryTrackActivity extends Activity {
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btnPlayClicked = true;
-                if (Progress == (trackDataList.size() - 1)) {
+                if(status.equals(START)){
+                    status = PLAYING;
+                    btn_play.setBackgroundResource(R.drawable.img_pause);
                     Progress = 0;
+                    playOrder = 0;
+                    Message msg = Message.obtain();
+                    msg.what = handleKey.CHANGE_POINT.ordinal();
+                    msg.obj = playOrder;
+                    playHandler.sendMessage(msg);
                 }
-
-                playOrder = Progress;
-                Message msg = Message.obtain();
-                msg.what = handleKey.CHANGE_POINT.ordinal();
-                msg.obj = playOrder;
-                playHandler.sendMessage(msg);
+                else if(status.equals(PLAYING)){
+                    status = PAUSE;
+                    btn_play.setBackgroundResource(R.drawable.btn_play1);
+                    //怎么可以暂停呢????
+                    Message msg = Message.obtain();
+                    msg.what = handleKey.CHANGE_POINT.ordinal();
+                    playHandler.removeMessages(msg.what);
+                }
+                else if(status.equals(PAUSE)){
+                    status = PLAYING;
+                    btn_play.setBackgroundResource(R.drawable.img_pause);
+                    Message msg = Message.obtain();
+                    msg.what = handleKey.CHANGE_POINT.ordinal();
+                    msg.obj = playOrder;
+                    playHandler.sendMessage(msg);
+                }
             }
         });
         status = START;
+
+
+        LayoutInflater inflater = (LayoutInflater) this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        markerView = inflater.inflate(R.layout.view_marker, null);
+        tv_pointTime = (TextView)markerView.findViewById(R.id.tv_updateTime);
+        TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
+        tv_speedname.setText("速度:");
+        TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
+
         seekBar.setMax(trackDataList.size()-1);
+
     }
 
     private void initEvents(){
@@ -242,8 +261,12 @@ public class SpecificHistoryTrackActivity extends Activity {
         //让轨迹在中间
         findMinMaxLatlan(trackDataList);
         LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(bounds);
-        mBaiduMap.setMapStatus(u);
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+
+//        MapStatus mMapStatus = new MapStatus.Builder().zoom(18).build();
+//        mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+//        mBaiduMap.setMapStatus(mMapStatusUpdate);
 
         drawLine();
     }
@@ -252,7 +275,6 @@ public class SpecificHistoryTrackActivity extends Activity {
      * 划线
      */
     private void drawLine() {
-//        mBaiduMap.clear();
         ArrayList<LatLng> points = new ArrayList<>();
         for (TracksManager.TrackPoint tp : trackDataList) {
             points.add(tp.point);
@@ -260,7 +282,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         //构建用户绘制多边形的Option对象
         OverlayOptions polylineOption = new PolylineOptions()
                 .points(points)
-                .width(5)
+                .width(10)
                 .color(0xAA00FF00);
         //在地图上添加多边形Option，用于显示
         tracksOverlay = mBaiduMap.addOverlay(polylineOption);
@@ -313,4 +335,35 @@ public class SpecificHistoryTrackActivity extends Activity {
         seekBar.setProgress(progress + 1);
     }
 
+    /**
+     * marker从一个点跳转到另外一个点
+     */
+    private void playLocateMobile(int track) {
+        if (mBaiduMap == null) return;
+        LatLng p2;
+
+        if((track + 1) == (trackDataList.size())){
+            //不运动
+            playOrder = 0;
+            return;
+        }
+
+        else if(track == 0){
+            p2 = trackDataList.get(track + 1).point;
+            markerMobile.setPosition(p2);
+        }
+        else{
+            p2 = trackDataList.get(track + 1).point;
+            markerMobile.setPosition(p2);
+        }
+
+        mInfoWindow = new InfoWindow(markerView,p2, -100);
+        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
+        String[] strs = time.split(" ");
+        tv_pointTime.setText(strs[1]);
+        mBaiduMap.showInfoWindow(mInfoWindow);
+        playOrder += 1;
+        sendPlayMessage(DELAY);
+    }
 }

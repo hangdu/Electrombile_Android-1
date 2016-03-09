@@ -61,6 +61,7 @@ import java.util.TimeZone;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.xunce.electrombile.view.RefreshableView;
 
+//这个函数太大了
 public class TestddActivity extends Activity{
     private static final String DATE = "date";
     private static final String DISTANCEPERDAY = "distancePerDay";
@@ -86,14 +87,8 @@ public class TestddActivity extends Activity{
     List<AVObject> totalAVObjects;
     //等待对话框
     private ProgressDialog watiDialog;
-    private GeoCodering geoCoder1;
-    private GeoCodering geoCoder2;
-
-    static int j = 0;
 
     static int GroupPosition = 0;
-    ArrayList<ArrayList<TrackPoint>> tracks;
-
     ExpandableListView expandableListView;
 
     RefreshableView refreshableView;
@@ -227,22 +222,19 @@ public class TestddActivity extends Activity{
         });
 
         watiDialog = new ProgressDialog(this);
+
         dialog = new AlertDialog.Builder(this)
-                .setPositiveButton("继续查询",
+                .setPositiveButton("稍后再查",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
+                                watiDialog.dismiss();
                             }
-                        }).setNegativeButton("返回地图", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }).create();
+                        }).create();
 
-        groupData = new ArrayList<Map<String, String>>();
-        childData = new ArrayList<List<Map<String, String>>>();
+        groupData = new ArrayList<>();
+        childData = new ArrayList<>();
 
         ConstructListview(1);
 
@@ -297,7 +289,7 @@ public class TestddActivity extends Activity{
 
     private void findCloud(final Date st, final Date et, int skip) {
         //创建数据库
-        if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+        if(!startT.equals(todayDate)&&(FlagRecentDate)){
             if(dbManage == null){
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
             }
@@ -337,7 +329,14 @@ public class TestddActivity extends Activity{
 
                         //需要插入到数据库中  表示没有数据啊
                         List<Map<String, String>> listMap = new ArrayList<>();
-//                        listMap.add(map);
+                        childData.set(GroupPosition, listMap);
+                        adapter.notifyDataSetChanged();
+                        dialog.setTitle("此时间段内没有数据");
+                        dialog.show();
+                        return;
+                    }
+                    else if(startT.equals(todayDate)&&avObjects.size() == 1){
+                        List<Map<String, String>> listMap = new ArrayList<>();
                         childData.set(GroupPosition, listMap);
                         adapter.notifyDataSetChanged();
                         dialog.setTitle("此时间段内没有数据");
@@ -405,9 +404,11 @@ public class TestddActivity extends Activity{
 
             //获取当前路线段的开始和结束点
             TrackPoint startP = trackList.get(0);
-            geoCoder1 = new GeoCodering(this,startP.point,i,0);
+            GeoCodering geoCoder1 = new GeoCodering(this,startP.point,i,0);
+            geoCoder1.init();
             TrackPoint endP = trackList.get(trackList.size() - 1);
-            geoCoder2 = new GeoCodering(this,endP.point,i,1);
+            GeoCodering geoCoder2 = new GeoCodering(this,endP.point,i,1);
+            geoCoder2.init();
 
                 //计算开始点和结束点时间间隔
             long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;

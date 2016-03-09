@@ -55,11 +55,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private static String TAG = "MaptabFragment:";
     public TrackPoint currentTrack;
 
-//    public Boolean isPlaying;
-
     //电动车标志
     private Marker markerMobile;
-//    private MarkerOptions option2;
     //轨迹图层
     private TextView tvUpdateTime;
     private InfoWindow mInfoWindow;
@@ -402,6 +399,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             return;
         }
         String reverseGeoCodeResult = result.getAddress();
+        //对这个字符串做一定的处理  去掉省和市
+        if(reverseGeoCodeResult.contains("市")){
+            String[] strings = reverseGeoCodeResult.split("市");
+            reverseGeoCodeResult = strings[1];
+        }
+
         tv_CarPosition.setText("车辆位置:"+reverseGeoCodeResult);
     }
 

@@ -30,7 +30,7 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
         this.point = point;
         this.TrackPosition = TrackPosition;
         this.Start_End_Type = Start_End_Type;
-        init();
+//        init();
     }
 
     void init() {
@@ -63,6 +63,10 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
             return;
         }
         ReverseGeoCodeResult = result.getAddress();
+        if(ReverseGeoCodeResult.contains("市")){
+            String[] strings = ReverseGeoCodeResult.split("市");
+            ReverseGeoCodeResult = strings[1];
+        }
 
         //是由testddactivity调用的
         activity.RefreshMessageList(TrackPosition, Start_End_Type, result.getAddress());

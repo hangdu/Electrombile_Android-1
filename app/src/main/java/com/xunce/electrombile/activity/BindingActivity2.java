@@ -9,6 +9,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
@@ -162,6 +163,18 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         initEvent();
     }
     private void initView() {
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("扫描设备号二维码");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BindingActivity2.this.finish();
+            }
+        });
+
+
         scannerView = (ScannerView) findViewById(R.id.scanner_view);
         btn_InputIMEI = (Button)findViewById(R.id.btn_InputIMEI);
         progressDialog = new ProgressDialog(this);
