@@ -66,12 +66,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     String NextCarIMEI;
-    private TextView tv_carType;
     private List<String> IMEIlist;
     private int othercarListPosition;
     private RelativeLayout RelativeLayout_changeCarPic;
     private TextView tv_CarName;
     private LeancloudManager leancloudManager;
+    private TextView titleTextView;
 
 
 
@@ -189,6 +189,16 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     }
 
     void initView(){
+        View titleView = findViewById(R.id.ll_button) ;
+        titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CarInfoEditActivity.this.finish();
+            }
+        });
+
         setManager = SettingManager.getInstance();
         leancloudManager = LeancloudManager.getInstance();
 
@@ -213,8 +223,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在设置,请稍后");
-
-        tv_carType = (TextView)findViewById(R.id.tv_carType);
 
         btn_DeleteDevice = (RelativeLayout)findViewById(R.id.relativelayout_DeviceUnbind);
         btn_DeleteDevice.setOnClickListener(new View.OnClickListener() {
@@ -255,8 +263,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         JudgeMainCarOrNot();
         getIMEIlist();
     }
-
-
+    
     private void changeCarNickName(){
         final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_changenickname, null);
@@ -498,12 +505,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     void JudgeMainCarOrNot(){
         if(setManager.getIMEI().equals(IMEI)){
             Flag_Maincar = true;
-            tv_carType.setText("主车辆");
+            titleTextView.setText("主车辆");
             btn_DeviceChange.setVisibility(View.INVISIBLE);
         }
         else{
             Flag_Maincar = false;
-            tv_carType.setText("其他车辆");
+            titleTextView.setText("其他车辆");
         }
     }
 

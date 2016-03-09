@@ -72,7 +72,8 @@ public class SplashActivity extends BaseActivity {
                             setManager.setFirstLogin(false);
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
                             startActivity(intent);
-                        } else {
+                        }
+                        else {
                             setManager.setPhoneNumber(currentUser.getUsername());
                             intent = new Intent(SplashActivity.this, VerifiedActivity.class);
                             startActivity(intent);
@@ -80,8 +81,18 @@ public class SplashActivity extends BaseActivity {
                         SplashActivity.this.finish();
                     } else {
                         setManager.setFirstLogin(true);
-                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                        startActivity(intent);
+                        //判断是否进入导航页面
+                        if(setManager.getNeedGuide()){
+                            setManager.setNeedGuide(false);
+                            Intent intent = new Intent(SplashActivity.this, GuideActivity.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            //之后需要把这句话注释掉
+//                            setManager.setNeedGuide(true);
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
                         SplashActivity.this.finish();
                     }
                     break;

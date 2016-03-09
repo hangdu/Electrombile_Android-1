@@ -380,7 +380,17 @@ public class SettingManager {
 
     public void removeKey(String IMEI){
         spf.edit().remove(IMEI+"carname");
-        spf.edit().remove(IMEI+"createtime");
+        spf.edit().remove(IMEI + "createtime");
+    }
+
+
+    //控制是否需要导航
+    public void setNeedGuide(Boolean needGuide){
+        spf.edit().putBoolean("NEEDGUIDE", needGuide).apply();
+    }
+
+    public Boolean getNeedGuide(){
+        return spf.getBoolean("NEEDGUIDE",true);
     }
 
 

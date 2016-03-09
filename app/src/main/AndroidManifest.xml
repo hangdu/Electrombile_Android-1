@@ -181,7 +181,8 @@
         <activity android:name=".activity.account.ResetPassActivity" />
         <activity android:name=".activity.SpecificHistoryTrackActivity" />
         <activity android:name=".activity.account.HeadImageActivity" />
-        <activity android:name=".activity.CropActivity"></activity>
+        <activity android:name=".activity.CropActivity" />
+        <activity android:name=".activity.GuideActivity"></activity>
     </application>
 
 </manifest>
