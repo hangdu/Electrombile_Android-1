@@ -356,8 +356,33 @@ public class SettingManager {
     }
 
     public String getBirthdate(){
-        return spf.getString(BIRTHDATE,"1994-01-01");
+        return spf.getString(BIRTHDATE, "1994-01-01");
     }
 
     /********************************以上为个人中心相关****************************************/
+
+    //每个IMEI都会对应一个json数据 里面包含设备的昵称和设备的绑定日期
+    public void setCarName(String IMEI,String carName){
+        spf.edit().putString(IMEI+"carname", carName).apply();
+    }
+
+    public String getCarName(String IMEI){
+        return spf.getString(IMEI+"carname",null);
+    }
+
+    public void setCreateTime(String IMEI,String CreateTime){
+        spf.edit().putString(IMEI+"createtime", CreateTime).apply();
+    }
+
+    public String getCreateTime(String IMEI){
+        return spf.getString(IMEI+"createtime",null);
+    }
+
+    public void removeKey(String IMEI){
+        spf.edit().remove(IMEI+"carname");
+        spf.edit().remove(IMEI+"createtime");
+    }
+
+
+
 }

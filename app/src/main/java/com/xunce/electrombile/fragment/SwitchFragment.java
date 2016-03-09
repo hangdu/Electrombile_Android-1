@@ -391,10 +391,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 String IMEI_previous = setManager.getIMEI();
                 String IMEI_now = OtherCar.get(position);
 
-                BindedCarIMEI.setText(IMEI_now);
+                BindedCarIMEI.setText(setManager.getCarName(IMEI_now));
 
                 HashMap<String, Object> map = new HashMap<String, Object>();
-                map.put("whichcar", IMEI_previous);
+                map.put("whichcar", setManager.getCarName(IMEI_previous));
                 map.put("img", R.drawable.othercar);
                 myHorizontalScrollView.list.set(position,map);
                 myHorizontalScrollView.UpdateListview();
@@ -841,11 +841,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void refreshBindList1(){
         myHorizontalScrollView.list.clear();
         OtherCar.clear();
-        BindedCarIMEI.setText(IMEIlist.get(0));
+
+        BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
         HashMap<String, Object> map = null;
         for (int i = 1; i < IMEIlist.size(); i++) {
             map = new HashMap<>();
-            map.put("whichcar",IMEIlist.get(i));
+            map.put("whichcar",setManager.getCarName(IMEIlist.get(i)));
             map.put("img", R.drawable.othercar);
             myHorizontalScrollView.list.add(map);
             OtherCar.add(IMEIlist.get(i));

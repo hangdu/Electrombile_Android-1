@@ -133,7 +133,7 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private void initViews(){
         mMapView = (MapView)findViewById(R.id.bmapView);
-        mMapView.showZoomControls(false);
+//        mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
         tv_CarName = (TextView)findViewById(R.id.tv_CarName);
         tv_startPoint = (TextView)findViewById(R.id.tv_startPoint);
@@ -162,7 +162,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
 
-                if (true == btnPlayClicked) {
+                if (btnPlayClicked) {
                     android.os.Message msg = android.os.Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
                     msg.obj = playOrder;
@@ -206,8 +206,7 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         //让轨迹在中间
         findMinMaxLatlan(trackDataList);
-        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast)
-                .include(southwest).build();
+        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
         MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(bounds);
         mBaiduMap.setMapStatus(u);
 
@@ -236,7 +235,7 @@ public class SpecificHistoryTrackActivity extends Activity {
      * 进入历史轨迹播放模式
      */
 
-    void findMinMaxLatlan(List<TracksManager.TrackPoint> IN_trackDataList){
+    private void findMinMaxLatlan(List<TracksManager.TrackPoint> IN_trackDataList){
         double latitude_min = IN_trackDataList.get(0).point.latitude;
         double latitude_max = latitude_min;
         double longitude_min = IN_trackDataList.get(0).point.longitude;
@@ -274,7 +273,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         playHandler.sendMessageDelayed(msg, delay);
     }
 
-    void SetSeekbar(int progress)
+    private void SetSeekbar(int progress)
     {
         seekBar.setProgress(progress + 1);
     }

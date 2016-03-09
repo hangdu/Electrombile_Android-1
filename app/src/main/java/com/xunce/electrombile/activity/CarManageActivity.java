@@ -70,6 +70,9 @@ public class CarManageActivity extends Activity {
         }
 
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
+        String carname = settingManager.getCarName(settingManager.getIMEI());
+        tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
+
         ListView listview = (ListView)findViewById(R.id.OtherCarListview);
 
         Othercarlist = new ArrayList<>();
@@ -82,11 +85,11 @@ public class CarManageActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
-                intentCarEdit.putExtra("string_key", tv_CurrentCar.getText());
+                intentCarEdit.putExtra("string_key", settingManager.getIMEI());
 
                 String NextCarIMEI;
                 if(Othercarlist.size()>=1){
-                    NextCarIMEI = Othercarlist.get(0).get("WhichCar").toString();
+                    NextCarIMEI = settingManager.getIMEIlist().get(1);
                 }
                 else{
                     NextCarIMEI = "空";
@@ -118,7 +121,10 @@ public class CarManageActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 OthercarPositon = position;
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
-                intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
+//                intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
+                String imei = settingManager.getIMEIlist().get(position+1);
+                intentCarEdit.putExtra("string_key", settingManager.getIMEIlist().get(position+1));
+
                 intentCarEdit.putExtra("list_position", position);
                 startActivityForResult(intentCarEdit, 0);
 
@@ -162,7 +168,8 @@ public class CarManageActivity extends Activity {
         map.put("WhichCar", tv_CurrentCar.getText());
         map.put("img",R.drawable.othercar);
         //UI变化
-        tv_CurrentCar.setText(settingManager.getIMEI());
+        tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
+
         Othercarlist.set(OthercarPositon, map);
         adapter.notifyDataSetChanged();
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
@@ -199,14 +206,11 @@ public class CarManageActivity extends Activity {
 
     private void initEvents(){
         getIMEIlist();
-        tv_CurrentCar.setText(settingManager.getIMEI());
-        //这个地方的IMEIlist的值不对啊
-//        String test = settingManager.getIMEI();
-//        String test1 = IMEIlist.get(0);
         HashMap<String, Object> map = null;
         for(int i = 1;i<IMEIlist.size();i++){
             map = new HashMap<String, Object>();
-            map.put("WhichCar",IMEIlist.get(i));
+
+            map.put("WhichCar",settingManager.getCarName(IMEIlist.get(i)));
             map.put("img",R.drawable.othercar);
             Othercarlist.add(map);
         }

@@ -90,6 +90,7 @@ public class InputIMEIActivity extends Activity {
 
             //添加设备的话  需要从服务器上获取车辆的头像啊  他们的执行顺序不是你想的那个样子
             leancloudManager.getHeadImageFromServer(settingManager.getIMEI());
+            leancloudManager.getCarcreatedAt(settingManager.getIMEI());
 
 
             Intent intent = new Intent(InputIMEIActivity.this,FragmentActivity.class);
@@ -107,9 +108,6 @@ public class InputIMEIActivity extends Activity {
         }
         finish();
     }
-
-
-
 
     private void getAlarmStatus(){
         mCenter = CmdCenter.getInstance();
@@ -130,7 +128,7 @@ public class InputIMEIActivity extends Activity {
         }
     }
 
-    public void QueryBindList(){
+    private void QueryBindList(){
         AVUser currentUser = AVUser.getCurrentUser();
         AVQuery<AVObject> query = new AVQuery<>("Bindings");
         query.whereEqualTo("user", currentUser);

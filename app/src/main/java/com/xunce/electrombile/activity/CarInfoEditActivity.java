@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.os.*;
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -30,6 +32,7 @@ import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
 import com.xunce.electrombile.Constants.ServiceConstants;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.applicatoin.Historys;
@@ -63,11 +66,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     String NextCarIMEI;
-//    private TextView tv_phoneNumber;
     private TextView tv_carType;
     private List<String> IMEIlist;
     private int othercarListPosition;
     private RelativeLayout RelativeLayout_changeCarPic;
+    private TextView tv_CarName;
+    private LeancloudManager leancloudManager;
 
 
 
@@ -108,7 +112,8 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     setManager.setIMEIlist(IMEIlist);
                     setManager.setFirstLogin(true);
 
-                    deleteCarImage();
+                    //删除设备头像    sharepreference中的部分信息:IMEI号码对应的绑定日期和车昵称
+                    deleteCarInfo();
 
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -130,15 +135,16 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         }
     }
 
-    //解绑之后删除相关车辆的头像
-    private void deleteCarImage(){
+
+
+    private void deleteCarInfo(){
         String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
         File f = new File(fileName);
         if(f.exists()){
             f.delete();
         }
+        setManager.removeKey(IMEI);
     }
-
 
     @Override
     public void onClick(View v) {
@@ -183,6 +189,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     }
 
     void initView(){
+        setManager = SettingManager.getInstance();
+        leancloudManager = LeancloudManager.getInstance();
+
         ImageView img_car = (ImageView)findViewById(R.id.img_car);
         Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
         if(bitmap!=null){
@@ -192,7 +201,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
         tv_CarIMEI.setText("设备号:"+IMEI);
 
-        setManager = SettingManager.getInstance();
+        tv_CarName = (TextView)findViewById(R.id.tv_CarName);
+        tv_CarName.setText("车辆名称:"+setManager.getCarName(IMEI));
+
+        TextView tv_createTime = (TextView)findViewById(R.id.tv_createTime);
+        tv_createTime.setText("绑定日期:"+setManager.getCreateTime(IMEI));
+
         TextView tv_phoneNumber = (TextView)findViewById(R.id.tv_phoneNumber);
         String s = "手机号:"+setManager.getPhoneNumber();
         tv_phoneNumber.setText(s);
@@ -202,7 +216,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         tv_carType = (TextView)findViewById(R.id.tv_carType);
 
-//        et_CarName = (EditText)findViewById(R.id.et_CarName);
         btn_DeleteDevice = (RelativeLayout)findViewById(R.id.relativelayout_DeviceUnbind);
         btn_DeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,7 +235,14 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             }
         });
 
+        //修改车的昵称
         RelativeLayout RelativeLayout_changeCarName = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarName);
+        RelativeLayout_changeCarName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCarNickName();
+            }
+        });
 
         RelativeLayout_changeCarPic = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarPic);
         RelativeLayout_changeCarPic.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +254,46 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         JudgeMainCarOrNot();
         getIMEIlist();
+    }
+
+
+    private void changeCarNickName(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_changenickname, null);
+        final Dialog dialog = new Dialog(CarInfoEditActivity.this, R.style.Translucent_NoTitle_white);
+
+        Button btn_suretochangeName = (Button)view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+        final EditText et_nickname = (EditText)view.findViewById(R.id.et_nickname);
+        TextView tv_title = (TextView)view.findViewById(R.id.title);
+        tv_title.setText("修改车辆名称");
+
+        btn_suretochangeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nickname = et_nickname.getText().toString();
+                if(nickname.equals("")){
+                    dialog.dismiss();
+                }
+                else{
+                    tv_CarName.setText("车辆名称:"+nickname);
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadCarName(IMEI,nickname);
+                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(858, 490));
+        dialog.show();
     }
 
     //设备解绑
@@ -265,7 +325,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         }
 
         //删除头像文件
-        deleteCarImage();
+        deleteCarInfo();
 
         Intent intent = new Intent();
         intent.putExtra("string_key","设备解绑");
@@ -276,16 +336,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
     public void getIMEIlist(){
         IMEIlist = setManager.getIMEIlist();
-//        JSONArray jsonArray1;
-//        try{
-//            IMEIlist.clear();
-//            jsonArray1 = new JSONArray(setManager.getIMEIlist());
-//            for (int i = 0; i < jsonArray1.length(); i++) {
-//                IMEIlist.add(jsonArray1.getString(i));
-//            }
-//        }catch (Exception e){
-//            //这里怎么处理呢?
-//        }
     }
 
 

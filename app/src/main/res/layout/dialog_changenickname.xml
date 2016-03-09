@@ -20,6 +20,7 @@
             android:background="@drawable/img_cancel"/>
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -35,8 +36,7 @@
         android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:background="#026c4a"
-        android:hint = "用户昵称" />
+        android:background="#026c4a" />
 
     <Button
         android:id="@+id/btn_sure"

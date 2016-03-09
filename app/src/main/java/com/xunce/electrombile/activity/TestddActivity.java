@@ -315,7 +315,7 @@ public class TestddActivity extends Activity{
                     if (avObjects.size() == 0) {
                         watiDialog.dismiss();
                         //如果查的不是今天的数据 ,且确实是30天之内的数据   才会把无数据插入数据库
-                        if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+                        if(!startT.equals(todayDate)&&FlagRecentDate){
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
                             String date = formatter.format(endT);
                             long timeStamp = endT.getTime()/1000;

@@ -319,7 +319,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(point)
-                .zoom(mBaiduMap.getMapStatus().zoom * Double.valueOf(1.5).floatValue())
+                .zoom(20)
                 .build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
@@ -330,10 +330,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      */
     public void locateMobile(TrackPoint track) {
         if (mBaiduMap == null) return;
-//        if (isPlaying) {
-//            refreshTrack(track);
-//            return;
-//        }
         mBaiduMap.hideInfoWindow();
         markerMobile.setPosition(track.point);
         MarkerLocationCenter(track.point);

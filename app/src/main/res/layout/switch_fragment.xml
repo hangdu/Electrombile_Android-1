@@ -38,14 +38,6 @@
                     android:text = "小安宝"
                     android:textSize="17.33sp"
                     android:textColor="#d0f9e5"/>
-                <!--<Button-->
-                    <!--android:id="@+id/weather1"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignParentRight = "true"-->
-                    <!--android:layout_marginRight="13dp"-->
-                    <!--android:layout_centerVertical="true"-->
-                    <!--android:text = "天气" />-->
             </RelativeLayout>
 
             <RelativeLayout

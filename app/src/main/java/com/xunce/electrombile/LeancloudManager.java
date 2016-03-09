@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.os.Message;
 import android.util.Log;
 
 import com.avos.avoscloud.AVException;
@@ -46,7 +47,6 @@ import java.util.Locale;
 public class LeancloudManager {
     private Context context;
     public List<String> IMEIlist;
-    private List<Date> CreateDate;
     public OnGetBindListListener onGetBindListListener = null;
     //单例模式
     private final static LeancloudManager INSTANCE = new LeancloudManager();
@@ -163,7 +163,6 @@ public class LeancloudManager {
 
     public void getUserIMEIlistFromServer(){
         IMEIlist = new ArrayList<>();
-        CreateDate = new ArrayList<>();
         AVUser currentUser = AVUser.getCurrentUser();
         AVQuery<AVObject> query = new AVQuery<>("Bindings");
         query.whereEqualTo("user", currentUser);
@@ -176,10 +175,6 @@ public class LeancloudManager {
                         for (int i = 0; i < list.size(); i++) {
                             String IMEI = list.get(i).get("IMEI").toString();
                             IMEIlist.add(IMEI);
-                            Date createdDate = (Date) list.get(i).get("createdAt");
-                            CreateDate.add(createdDate);
-                            //写到settingManager中去
-
                         }
                         settingManager.setIMEIlist(IMEIlist);
                         settingManager.setIMEI(IMEIlist.get(0));
@@ -187,6 +182,7 @@ public class LeancloudManager {
                         //获取IMEIlist中每一个设备对应的头像
                         for (String IMEI : IMEIlist) {
                             getHeadImageFromServer(IMEI);
+                            getCarcreatedAt(IMEI);
                         }
 
                     } else {
@@ -219,11 +215,10 @@ public class LeancloudManager {
                             return;
                         }
                         AVObject avObject = list.get(0);
+
                         try {
                             AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.png",
                                     Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png");
-
-
                             avfile.saveInBackground();
                             avObject.put("Image", avfile);
                             avObject.saveInBackground(new SaveCallback() {
@@ -248,8 +243,7 @@ public class LeancloudManager {
         });
     }
 
-
-    //从服务器获取车辆头像(如果头像为空  则从本地上传到服务器)
+    //从服务器获取车辆头像(如果头像为空  就不管)   获取车辆昵称
     public void getHeadImageFromServer(final String IMEI){
         AVQuery<AVObject> query = new AVQuery<>("DID");
         query.whereEqualTo("IMEI", IMEI);
@@ -263,6 +257,16 @@ public class LeancloudManager {
                             return;
                         }
                         AVObject avObject = list.get(0);
+
+                        //获取设备昵称
+                        if(avObject.get("name") == null){
+                            settingManager.setCarName(IMEI,IMEI);
+                        }
+                        else{
+                            settingManager.setCarName(IMEI,avObject.get("name").toString());
+                        }
+
+                        //设备头像
                         if (avObject.get("Image") == null) {
                             //服务器上的头像数据为空  所以需要上传数据到数据库啊
                             Log.d("test", "test");
@@ -308,6 +312,65 @@ public class LeancloudManager {
                 }
             }
         });
+    }
+
+    public void getCarcreatedAt(final String IMEI){
+        AVUser currentUser = AVUser.getCurrentUser();
+        AVQuery<AVObject> query = new AVQuery<>("Bindings");
+        query.whereEqualTo("user", currentUser);
+        query.whereEqualTo("IMEI", IMEI);
+
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                   if(!list.isEmpty()){
+                       AVObject avObject = list.get(0);
+                       Date createdDate = avObject.getCreatedAt();
+                       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                       String createTime = sdf.format(createdDate);
+                       //写到settingManager中去
+                       settingManager.setCreateTime(IMEI, createTime);
+                   }
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    //上传设备的名称
+    public void uploadCarName(final String IMEI,final String carname){
+        AVQuery<AVObject> query = new AVQuery<>("DID");
+        query.whereEqualTo("IMEI", IMEI);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if(e == null){
+                    if(!list.isEmpty()){
+                        AVObject avObject = list.get(0);
+                        avObject.put("name",carname);
+                        avObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(AVException e) {
+                                if (e == null) {
+                                    ToastUtils.showShort(context,"车的昵称上传成功");
+                                    settingManager.setCarName(IMEI,carname);
+                                }
+                                else {
+                                    ToastUtils.showShort(context,"车的昵称上传失败");
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                }
+                else{
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     public interface OnGetBindListListener {

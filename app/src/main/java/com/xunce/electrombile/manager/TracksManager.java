@@ -119,7 +119,7 @@ public class TracksManager implements Serializable{
 
             TrackPoint p = new TrackPoint(thisObject.getCreatedAt(), bdPoint);
             //不确定这样处理会不会有什么错误   现在关于日期处理的这个部分还没有搞得很清楚
-            p.time.setHours(p.time.getHours()+16);
+            p.time.setHours(p.time.getHours());
             if(isOutOfHubei(bdPoint)){
                 Log.i(TAG, "out range");
                 continue;
