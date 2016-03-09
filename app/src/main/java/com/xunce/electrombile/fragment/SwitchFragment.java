@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -475,7 +476,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             setManager.setIMEI(current_IMEI);
             mqttConnectManager.subscribe(current_IMEI);
             mqttConnectManager.sendMessage((m_context).mCenter.cmdFenceGet(), current_IMEI);
-            ToastUtils.showShort(m_context,"切换成功");
+            ToastUtils.showShort(m_context, "切换成功");
             myHorizontalScrollView.toggle();
 
             setSafedays();
@@ -903,6 +904,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
             mpopupWindow.setFocusable(true);
             mpopupWindow.setOutsideTouchable(true);
+
+            //背景设置为半透明
+            ColorDrawable dw = new ColorDrawable(0xb0000000);
+            mpopupWindow.setBackgroundDrawable(dw);
         }
 
         mpopupWindow.setContentView(view);
