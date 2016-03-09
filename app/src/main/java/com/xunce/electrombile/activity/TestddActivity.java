@@ -19,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -214,6 +215,17 @@ public class TestddActivity extends Activity{
     }
 
     private void init(){
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("历史报告");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TestddActivity.this.finish();
+            }
+        });
+
         watiDialog = new ProgressDialog(this);
         dialog = new AlertDialog.Builder(this)
                 .setPositiveButton("继续查询",

@@ -27,6 +27,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 
 import java.text.SimpleDateFormat;
@@ -63,6 +64,8 @@ public class SpecificHistoryTrackActivity extends Activity {
     private SeekBar seekBar;
     private int Progress;
     private boolean btnPlayClicked;
+    private SettingManager settingManager;
+
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -131,7 +134,22 @@ public class SpecificHistoryTrackActivity extends Activity {
         initEvents();
     }
 
+
+
     private void initViews(){
+        settingManager = SettingManager.getInstance();
+
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("历史轨迹");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpecificHistoryTrackActivity.this.finish();
+            }
+        });
+
         mMapView = (MapView)findViewById(R.id.bmapView);
 //        mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
@@ -171,8 +189,29 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         });
 
+        tv_CarName.setText("车辆名称:"+settingManager.getCarName(settingManager.getIMEI()));
         tv_startPoint.setText("起始位置:" + startPoint);
-        tv_endPoint.setText("终点位置:"+endPoint);
+        tv_endPoint.setText("终点位置:" + endPoint);
+
+        long time1 = trackDataList.get(0).time.getTime();
+        long time2 = trackDataList.get(trackDataList.size()-1).time.getTime();
+
+        // Calculate difference in milliseconds
+        long diff = time2 - time1;
+        // Difference in seconds
+        long diffSec = diff / 1000;
+
+        if(diffSec/3600 == 0){
+            //小于1h
+            int min = (int)diffSec/60;
+            tv_routeTime.setText("历时:"+min+"分钟");
+        }
+        else{
+            int hour = (int)diffSec/3600;
+            int min = (int)(diffSec-hour*3600)/60;
+            tv_routeTime.setText("历时:"+hour+"小时"+min+"分钟");
+        }
+
 
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
