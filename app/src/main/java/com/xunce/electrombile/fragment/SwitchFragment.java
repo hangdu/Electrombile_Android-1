@@ -72,7 +72,6 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.CropActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.activity.MqttConnectManager;
-import com.xunce.electrombile.activity.account.HeadImageActivity;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.BitmapUtils;
@@ -86,7 +85,10 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -120,6 +122,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private BroadcastReceiver MyBroadcastReceiver;
     private PopupWindow mpopupWindow;
     private Uri imageUri;
+    private TextView tv_Safeday;
+
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
     public static final int CHOOSE_PHOTO=3;
@@ -343,6 +347,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         View leftmenu = v.findViewById(R.id.ll_leftmenu) ;
         leftmenu_CarImage = (ImageView)leftmenu.findViewById(R.id.img_car);
 
+        tv_Safeday = (TextView)v.findViewById(R.id.tv_Safeday);
+        setSafedays();
+
         btnAlarmState1 = (Button) v.findViewById(R.id.btn_AlarmState1);
         BindedCarIMEI = (TextView)v.findViewById(R.id.menutext1);
         OtherCar = new ArrayList();
@@ -396,9 +403,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 HashMap<String, Object> map = new HashMap<String, Object>();
                 map.put("whichcar", setManager.getCarName(IMEI_previous));
                 map.put("img", R.drawable.othercar);
-                myHorizontalScrollView.list.set(position,map);
+                myHorizontalScrollView.list.set(position, map);
                 myHorizontalScrollView.UpdateListview();
                 OtherCar.set(position,IMEI_previous);
+
                 //实际逻辑改变
                 DeviceChange(IMEI_previous, IMEI_now, position);
             }
@@ -408,6 +416,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
     }
+
 
     private void initEvent() {
         IMEIlist = setManager.getIMEIlist();
@@ -468,6 +477,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             mqttConnectManager.sendMessage((m_context).mCenter.cmdFenceGet(), current_IMEI);
             ToastUtils.showShort(m_context,"切换成功");
             myHorizontalScrollView.toggle();
+
+            setSafedays();
         }
         else{
             ToastUtils.showShort(m_context,"mqtt连接失败");
@@ -860,6 +871,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         public void onReceive (Context context, Intent intent) {
             //从Intent中获取action
             DeviceChangeHeadImage();
+            setSafedays();
         }
     }
 
@@ -896,5 +908,21 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mpopupWindow.setContentView(view);
         mpopupWindow.showAtLocation(headImage, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
         mpopupWindow.update();
+    }
+
+    private void setSafedays(){
+        String createTime = setManager.getCreateTime(setManager.getIMEI());
+        DateFormat fmt =new SimpleDateFormat("yyyy-MM-dd");
+        try{
+            Date createdate = fmt.parse(createTime);
+            long starttime = createdate.getTime();
+            long currenttime=System.currentTimeMillis();
+            long second = (currenttime-starttime)/1000;
+            int days = (int)second/(3600*24);
+            tv_Safeday.setText(days+"天安全护航");
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

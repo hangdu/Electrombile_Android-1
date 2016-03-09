@@ -384,7 +384,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void setCarname()
     {
-        tv_CarName.setText("车辆名称:"+setManager.getIMEI());
+        tv_CarName.setText("车辆名称:"+setManager.getCarName(setManager.getIMEI()));
         tv_CarPosition.setText("车辆位置:");
     }
 

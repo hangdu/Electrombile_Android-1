@@ -145,7 +145,7 @@ public class CarManageActivity extends Activity {
                         if(Flag_Maincar){
                             CaseManagedCarUnbinded();
 
-                            //发送广播提醒switchFragment  发生了切换车辆的行为
+                            //发送广播提醒switchFragment  发生了切解绑主车辆的行为(只有主车辆被解绑了  才需要去发送广播)
                             Intent intent = new Intent("com.app.bc.test");
                             sendBroadcast(intent);//发送广播事件
                         }

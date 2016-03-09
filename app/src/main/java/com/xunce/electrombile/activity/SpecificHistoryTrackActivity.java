@@ -44,10 +44,6 @@ public class SpecificHistoryTrackActivity extends Activity {
     private String startPoint;
     private String endPoint;
 
-    private TextView tv_CarName;
-    private TextView tv_startPoint;
-    private TextView tv_endPoint;
-    private TextView tv_routeTime;
     private Button btn_play;
     private Button btn_speed;
 
@@ -153,10 +149,10 @@ public class SpecificHistoryTrackActivity extends Activity {
         mMapView = (MapView)findViewById(R.id.bmapView);
 //        mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
-        tv_CarName = (TextView)findViewById(R.id.tv_CarName);
-        tv_startPoint = (TextView)findViewById(R.id.tv_startPoint);
-        tv_endPoint = (TextView)findViewById(R.id.tv_endPoint);
-        tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
+        TextView tv_CarName = (TextView)findViewById(R.id.tv_CarName);
+        TextView tv_startPoint = (TextView)findViewById(R.id.tv_startPoint);
+        TextView tv_endPoint = (TextView)findViewById(R.id.tv_endPoint);
+        TextView tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
         btn_play = (Button)findViewById(R.id.btn_play);
         btn_speed = (Button)findViewById(R.id.btn_speed);
         seekBar = (SeekBar)findViewById(R.id.seekbar);
@@ -189,7 +185,7 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         });
 
-        tv_CarName.setText("车辆名称:"+settingManager.getCarName(settingManager.getIMEI()));
+        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI()));
         tv_startPoint.setText("起始位置:" + startPoint);
         tv_endPoint.setText("终点位置:" + endPoint);
 
