@@ -44,6 +44,7 @@ import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
+import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.io.File;
@@ -248,14 +249,13 @@ public class TestddActivity extends Activity{
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-//                MaptabFragment.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
-
                 closeDatabaseCollect();
-//                finish();
-//                TracksManager.TrackPoint trackPoint = new TrackPoint(endT,new LatLng(3,3));
-//                List<TracksManager.TrackPoint> trackDataList = new ArrayList<TrackPoint>();
-//                trackDataList.add(trackPoint);
                 SpecificHistoryTrackActivity.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+
+                if(SpecificHistoryTrackActivity.trackDataList.size() == 0){
+                    ToastUtils.showShort(TestddActivity.this,"trackDataList的size为0,无法完成跳转");
+                    return true;
+                }
 
                 Intent intent = new Intent(TestddActivity.this,SpecificHistoryTrackActivity.class);
                 Bundle extras = new Bundle();
@@ -265,7 +265,6 @@ public class TestddActivity extends Activity{
                 intent.putExtras(extras);
 
                 //这个地方传数据总是有问题啊
-
                 startActivity(intent);
                 return true;
             }
@@ -389,8 +388,6 @@ public class TestddActivity extends Activity{
         }
 
         List<Map<String, String>> listMap = new ArrayList<>();
-
-
         Map<String, String> map;
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {

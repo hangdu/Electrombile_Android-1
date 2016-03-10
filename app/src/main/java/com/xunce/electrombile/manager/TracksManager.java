@@ -59,27 +59,24 @@ public class TracksManager implements Serializable{
             return !((point.longitude > 108) && (point.longitude < 116) && (point.latitude > 29) && (point.latitude < 33));
     }
 
+    //这个函数看的不是很懂啊
     public void setTranks(int groupposition,List<AVObject> objects){
         tracks = new ArrayList<>();
         Log.i("Track managet-----", "setTranks" + objects.size());
-        if(objects == null) return;
         AVObject lastSavedObject = null;
         LatLng lastSavedPoint = null;
-        int counts = 0;
         ArrayList<TrackPoint> dataList = null;
 
         for(AVObject thisObject: objects){
             if(dataList == null){
-                dataList = new ArrayList<TrackPoint>();
+                dataList = new ArrayList<>();
                 tracks.add(dataList);
-
             }
             double lat = thisObject.getDouble(KET_LAT);
             double lon = thisObject.getDouble(KET_LONG);
 
             //百度地图的LatLng类对输入有限制，如果longitude过大，则会导致结果不正确
             //lybvinci 修改 @date 9.28
-//            LatLng oldPoint = new LatLng(mCenter.parseGPSData((float)lat), mCenter.parseGPSData((float)lon));
             LatLng oldPoint = new LatLng(lat, lon);
             LatLng bdPoint = mCenter.convertPoint(oldPoint);
 
@@ -100,23 +97,12 @@ public class TracksManager implements Serializable{
 //                }
                 if(tracks.get(tracks.size() - 1).size() <= 1)
                     tracks.remove(tracks.size() - 1);
-                    dataList = new ArrayList<TrackPoint>();
+                    dataList = new ArrayList<>();
                     tracks.add(dataList);
                 }
 
             //打印当前点信息
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
-//            Log.i("ddd", "objid:" + thisObject.getObjectId() +
-//                    "lat:" + thisObject.getDouble(KET_LAT) +
-//                    "lon" + thisObject.getDouble(KET_LONG) +
-//                    "time" + sdf.format(thisObject.getCreatedAt().getTime()));
-//            Date s = thisObject.getCreatedAt();
-//            GregorianCalendar gc = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
-//            gc.set(s.getYear(),s.getMonth(),s.getDay(),s.getHours(),s.getMinutes(),s.getSeconds());
-//            TrackPoint p = new TrackPoint(gc.getTime(), bdPoint);
-
-
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             TrackPoint p = new TrackPoint(thisObject.getCreatedAt(), bdPoint);
             //不确定这样处理会不会有什么错误   现在关于日期处理的这个部分还没有搞得很清楚
             p.time.setHours(p.time.getHours());

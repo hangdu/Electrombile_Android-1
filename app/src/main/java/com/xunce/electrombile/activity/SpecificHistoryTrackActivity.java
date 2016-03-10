@@ -78,19 +78,10 @@ public class SpecificHistoryTrackActivity extends Activity {
                     try {
 //                        Log.i(TAG, "playOrder:" + playOrder);
                         if ((int) msg.obj < trackDataList.size()) {
-//                            mInfoWindow = new InfoWindow(markerView, trackDataList.get((int) msg.obj).point, -100);
-//                            SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                            String time = sdfWithSecond.format(trackDataList.get((int) msg.obj).time);
-//                            String[] strs = time.split(" ");
-//                            tv_pointTime.setText(strs[1]);
-//                            mBaiduMap.showInfoWindow(mInfoWindow);
-
                             markerMobile.setPosition(trackDataList.get((int) msg.obj).point);
                             SetSeekbar((int)msg.obj);
                             playLocateMobile((int) msg.obj);
                             if((int) msg.obj == (trackDataList.size()-1)){
-//                                btnPause.setVisibility(View.INVISIBLE);
-//                                btnPlay.setVisibility(View.VISIBLE);
                             }
                         }
                     } catch (Exception e) {
@@ -100,7 +91,6 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         }
     };
-
 
     //播放线程消息类型
     enum handleKey {
@@ -123,8 +113,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         initViews();
         initEvents();
     }
-
-
 
     private void initViews(){
         settingManager = SettingManager.getInstance();
@@ -200,7 +188,6 @@ public class SpecificHistoryTrackActivity extends Activity {
             tv_routeTime.setText("历时:"+hour+"小时"+min+"分钟");
         }
 
-
         btn_play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -234,7 +221,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         });
         status = START;
 
-
         LayoutInflater inflater = (LayoutInflater) this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         markerView = inflater.inflate(R.layout.view_marker, null);
@@ -244,7 +230,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
 
         seekBar.setMax(trackDataList.size()-1);
-
     }
 
     private void initEvents(){
@@ -267,7 +252,6 @@ public class SpecificHistoryTrackActivity extends Activity {
 //        MapStatus mMapStatus = new MapStatus.Builder().zoom(18).build();
 //        mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
 //        mBaiduMap.setMapStatus(mMapStatusUpdate);
-
         drawLine();
     }
 

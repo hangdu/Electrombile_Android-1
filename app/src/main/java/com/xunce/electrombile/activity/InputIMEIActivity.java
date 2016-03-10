@@ -62,10 +62,8 @@ public class InputIMEIActivity extends Activity {
                     getAlarmStatus();
                     break;
                 case FAILED:
-//                    times = 0;
                     progressDialog.cancel();
                     ToastUtils.showShort(InputIMEIActivity.this, msg.obj.toString());
-//                    onResume();
                     break;
 
                 case BIND_DEVICE_NUMBER:
@@ -73,7 +71,6 @@ public class InputIMEIActivity extends Activity {
                     getAlarmStatus_next(BindedDeviceNum);
                     break;
             }
-
         }
 
     };

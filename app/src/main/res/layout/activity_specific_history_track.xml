@@ -95,6 +95,8 @@
             android:layout_marginLeft="26.67dp"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:thumb="@drawable/thumb"
+            android:thumbOffset="8dp"
             android:progressDrawable="@drawable/widget_slider_style" />
 
         <Button

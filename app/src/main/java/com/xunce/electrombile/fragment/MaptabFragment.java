@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -279,6 +281,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 startActivity(intent);
             }
         });
+
         //按钮容器
         tv_CarName = (TextView) v.findViewById(R.id.tv_CarName);
         tv_CarName.setText("车辆名称:"+setManager.getIMEI());
@@ -293,9 +296,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 if (checkNetwork()) return;
                 //检查是否绑定
                 if (checkBind()) return;
-                Intent intent = new Intent(m_context, FindActivity.class);
-                startActivity(intent);
-
+                //出现找车导航页面1
+                findCarGuide1();
             }
         });
 
@@ -308,6 +310,64 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 .icon(bitmap);
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
+    }
+
+    //
+    private void findCarGuide1(){
+        final LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_findcar_guide1, null);
+        final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
+
+        Button btn_startFindcar = (Button)view.findViewById(R.id.btn_startFindcar);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+
+        btn_startFindcar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                findCarGuide2();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(858, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+    }
+
+    private void findCarGuide2(){
+        final LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_findcar_guide2, null);
+        final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
+
+        Button btn_nextstep = (Button)view.findViewById(R.id.btn_nextstep);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+
+        btn_nextstep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(m_context, FindActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(858, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
     }
 
     //把电动车的位置放在地图中间

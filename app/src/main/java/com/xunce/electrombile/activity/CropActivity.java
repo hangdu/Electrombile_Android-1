@@ -68,8 +68,6 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         Intent intent =  getIntent();
         imageUri = intent.getData();
 
-
-
         srcPic = (ImageView)findViewById(R.id.src_pic);
         srcPic.setOnTouchListener(this);
 
@@ -90,15 +88,11 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     }
 
     private void initClipView(int top){
-        //bitmap从哪里来? 下面这句要改
-//        bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.pic);
-
         try{
             bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
         }catch (Exception e){
             return;
         }
-
 
         clipView = new ClipView(this);
         clipView.setCustomTopBarHeight(top);
@@ -242,8 +236,6 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     //bitmap写文件
     public void saveMyBitmaptoFile(Bitmap mBitmap){
         //如果用户没有内存卡这句话会不会出错
-//        File f = new File(Environment.getExternalStorageDirectory(),"crop_result.png");
-//        filePath = f.getAbsolutePath();
         filePath = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
         File f = new File(filePath);
 
