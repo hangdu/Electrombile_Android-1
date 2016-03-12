@@ -159,7 +159,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
                 if(status.equals(PLAYING)){
-                    android.os.Message msg = android.os.Message.obtain();
+                    Message msg = Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
                     msg.obj = playOrder;
                     playHandler.sendMessage(msg);
@@ -235,6 +235,8 @@ public class SpecificHistoryTrackActivity extends Activity {
     private void initEvents(){
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_marka);
+
+
         //构建MarkerOption，用于在地图上添加Marker
         MarkerOptions option = new MarkerOptions()
                 .position(trackDataList.get(0).point)
@@ -243,16 +245,32 @@ public class SpecificHistoryTrackActivity extends Activity {
         markerMobile = (Marker) mBaiduMap.addOverlay(option);
         markerMobile.setPosition(trackDataList.get(0).point);
 
+//        BitmapDescriptor bitmap_startpoint = BitmapDescriptorFactory
+//                .fromResource(R.drawable.icon_startpoint);
+//
+//        BitmapDescriptor bitmap_endpoint = BitmapDescriptorFactory
+//                .fromResource(R.drawable.icon_endpoint);
+
+//        option = new MarkerOptions()
+//                .position(trackDataList.get(0).point)
+//                .icon(bitmap_startpoint);
+//        mBaiduMap.addOverlay(option);
+
+//        option = new MarkerOptions()
+//                .position(trackDataList.get(trackDataList.size()-1).point)
+//                .icon(bitmap_endpoint);
+//        mBaiduMap.addOverlay(option);
+
+
         //让轨迹在中间
-        findMinMaxLatlan(trackDataList);
+        findMinMaxLatlan();
         LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-
-//        MapStatus mMapStatus = new MapStatus.Builder().zoom(18).build();
-//        mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-//        mBaiduMap.setMapStatus(mMapStatusUpdate);
         drawLine();
+
+        mInfoWindow = new InfoWindow(markerView,trackDataList.get(0).point, -100);
+        mBaiduMap.showInfoWindow(mInfoWindow);
     }
 
     /**
@@ -275,16 +293,15 @@ public class SpecificHistoryTrackActivity extends Activity {
     /**
      * 进入历史轨迹播放模式
      */
-
-    private void findMinMaxLatlan(List<TracksManager.TrackPoint> IN_trackDataList){
-        double latitude_min = IN_trackDataList.get(0).point.latitude;
+    private void findMinMaxLatlan(){
+        double latitude_min = trackDataList.get(0).point.latitude;
         double latitude_max = latitude_min;
-        double longitude_min = IN_trackDataList.get(0).point.longitude;
+        double longitude_min = trackDataList.get(0).point.longitude;
         double longitude_max = longitude_min;
         double latitude;
         double longitude;
-        for(int i=0;i<IN_trackDataList.size();i++){
-            latitude = IN_trackDataList.get(i).point.latitude;
+        for(int i=0;i<trackDataList.size();i++){
+            latitude = trackDataList.get(i).point.latitude;
             if(latitude_min>latitude){
                 latitude_min = latitude;
             }
@@ -292,7 +309,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 latitude_max = latitude;
             }
 
-            longitude = IN_trackDataList.get(i).point.longitude;
+            longitude = trackDataList.get(i).point.longitude;
             if(longitude_min>longitude){
                 longitude_min=longitude;
             }

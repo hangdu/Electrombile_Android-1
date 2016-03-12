@@ -199,7 +199,7 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     public void onClick(View v) {
         Bitmap clipBitmap = getBitmap();
         clipBitmap = scaleBitmap(clipBitmap);
-        clipBitmap = lowQuality(clipBitmap);
+//        clipBitmap = lowQuality(clipBitmap);
         saveMyBitmaptoFile(clipBitmap);
         Intent intent = new Intent();
         intent.putExtra("filePath",filePath);
@@ -280,8 +280,9 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
         // 得到新的图片
-        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix,
-                true);
+        Bitmap bitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
+        recycleBitmap(bm);
+        return bitmap;
     }
 
     //通过降低图片质量来缩小bitmap

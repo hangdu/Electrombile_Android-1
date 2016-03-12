@@ -149,7 +149,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 			@Override
 			public void onGetBindListFail() {
-
+				ToastUtils.showShort(LoginActivity.this,"获取绑定列表失败");
 			}
 		};
 		leancloudManager.setonGetBindListListener(onGetBindListListener);

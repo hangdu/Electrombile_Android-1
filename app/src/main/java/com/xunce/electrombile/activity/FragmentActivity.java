@@ -109,18 +109,18 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
 //        LogConfigure();
 //        log.info("onCreate-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "start");
-        super.onCreate(savedInstanceState );
+        com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
-
+//        log.info("onCreate-finish");
         //初始化界面
+        com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onStart");
         initView();
         initData();
         //判断是否绑定设备
         queryIMEI();
         Historys.put(this);
         registerBroadCast();
-//        log.info("onCreate-finish");
     }
 
     @Override
@@ -138,7 +138,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     protected void onResume() {
         //这个函数的onResume会被反复执行吗?
 //        log.info("onResume-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onResume", "start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onResume", "onResume");
         super.onResume();
         //下面这句话只需要执行一次
         if (mac != null && mac.isConnected()) {
@@ -151,7 +151,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     protected void onPause() {
 //        log.info("onPause-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "onPause");
         super.onPause();
 //        log.info("onPause-finish");
     }
@@ -159,7 +159,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     public void onStop(){
 //        log.info("onStop-start");
-        com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "start");
+        com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "onStop");
         super.onStop();
 //        log.info("onStop-finish");
     }
@@ -183,9 +183,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         maptabFragment.locateMobile(trackPoint);
         //传递数据给地图的Fragment
         //如果正在播放轨迹，则更新位置
-        //    Log.i("gpsCallBack","called");
-//        if (!maptabFragment.isPlaying)
-//        switchFragment.reverserGeoCedec(desLat);
+
     }
 
     //取消显示常驻通知栏
@@ -241,6 +239,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
             @Override
             public void MqttConnectSuccess() {
+                //这些是在呈现了页面之后执行的
                 mac = mqttConnectManager.getMac();
                 mqttConnectManager.subscribe(setManager.getIMEI());
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
@@ -248,8 +247,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 setManager.setMqttStatus(true);
                 //开启报警服务
                 startAlarmService();
-//                GetAlarmStatusFromServer();
-//                GetAutoLockStatusFromServer();
+
             }
 
             @Override
@@ -435,27 +433,27 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-    private void GetAlarmStatusFromServer(){
-        if (mac != null && mac.isConnected())
-        {
-            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
-        }
-        else{
-            //绝对不会到这个分支来
-            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
-        }
-    }
-
-    private void GetAutoLockStatusFromServer(){
-        if (mac != null && mac.isConnected())
-        {
-            sendMessage(FragmentActivity.this, mCenter.APP_CMD_AUTOLOCK_GET(), setManager.getIMEI());
-        }
-        else{
-            //绝对不会到这个分支来
-            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
-        }
-    }
+//    private void GetAlarmStatusFromServer(){
+//        if (mac != null && mac.isConnected())
+//        {
+//            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
+//        }
+//        else{
+//            //绝对不会到这个分支来
+//            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
+//        }
+//    }
+//
+//    private void GetAutoLockStatusFromServer(){
+//        if (mac != null && mac.isConnected())
+//        {
+//            sendMessage(FragmentActivity.this, mCenter.APP_CMD_AUTOLOCK_GET(), setManager.getIMEI());
+//        }
+//        else{
+//            //绝对不会到这个分支来
+//            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
+//        }
+//    }
 
 //    private void LogConfigure(){
 //        LogConfigurator logConfigurator = new LogConfigurator();

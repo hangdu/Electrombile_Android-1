@@ -21,12 +21,7 @@ import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
-import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
-
-import org.json.JSONArray;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class InputIMEIActivity extends Activity {
@@ -39,7 +34,6 @@ public class InputIMEIActivity extends Activity {
     private String previous_IMEI;
     private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
-    private List<String> IMEIlist;
     private LeancloudManager leancloudManager;
     private enum handler_key{
         START_BIND,
@@ -50,7 +44,7 @@ public class InputIMEIActivity extends Activity {
 
     private Handler mHandler = new Handler(){
         @Override
-        public void handleMessage(android.os.Message msg){
+        public void handleMessage(Message msg){
             handler_key key = handler_key.values()[msg.what];
             switch(key){
                 case SUCCESS:
@@ -77,8 +71,9 @@ public class InputIMEIActivity extends Activity {
 
 
     public void gotoAct(){
+        List<String> IMEIlist = settingManager.getIMEIlist();
         if(FromActivity.equals("CarManageActivity")){
-            IMEIlist = settingManager.getIMEIlist();
+
             String IMEI_first = IMEIlist.get(0);
             IMEIlist.add(IMEI_first);
 
@@ -95,7 +90,7 @@ public class InputIMEIActivity extends Activity {
             startActivity(intent);
         }
         else{
-            IMEIlist = new ArrayList<>();
+            IMEIlist.clear();
             IMEIlist.add(settingManager.getIMEI());
             settingManager.setIMEIlist(IMEIlist);
 
@@ -133,7 +128,7 @@ public class InputIMEIActivity extends Activity {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
-                    android.os.Message msg = Message.obtain();
+                    Message msg = Message.obtain();
                     msg.what = handler_key.BIND_DEVICE_NUMBER.ordinal();
                     msg.obj = list.size();
                     mHandler.sendMessage(msg);
@@ -227,8 +222,13 @@ public class InputIMEIActivity extends Activity {
             public void run() {
                 try {
                     sleep(10000);
-                    if(progressDialog.isShowing())
-                        mHandler.sendEmptyMessage(handler_key.FAILED.ordinal());
+                    if(progressDialog.isShowing()){
+                        Message msg = Message.obtain();
+                        msg.what = handler_key.FAILED.ordinal();
+                        msg.obj = "查询超时";
+                        mHandler.sendMessage(msg);
+                    }
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -261,7 +261,7 @@ public class InputIMEIActivity extends Activity {
                             Log.d("成功", "IMEI查询到" + list.size() + " 条符合条件的数据");
                             //一个设备可以绑定多个用户,但是这个类是唯一的，确保不重复生成相同的对象。
                             if (list.size() > 0) {
-                                android.os.Message message = new android.os.Message();
+                                Message message = Message.obtain();
                                 message.what = handler_key.FAILED.ordinal();
                                 message.obj = "设备已经被绑定！";
                                 mHandler.sendMessage(message);
@@ -284,7 +284,7 @@ public class InputIMEIActivity extends Activity {
                                         mHandler.sendEmptyMessage(handler_key.SUCCESS.ordinal());
                                     } else {
                                         Log.d("失败", "绑定错误: " + e.getMessage());
-                                        android.os.Message message = new android.os.Message();
+                                        Message message = Message.obtain();
                                         message.what = handler_key.FAILED.ordinal();
                                         message.obj = e.getMessage();
                                         mHandler.sendMessage(message);
@@ -297,7 +297,7 @@ public class InputIMEIActivity extends Activity {
 
 
                 } else {
-                    android.os.Message message = new android.os.Message();
+                    Message message = Message.obtain();
                     message.what = handler_key.FAILED.ordinal();
                     if (e != null) {
                         Log.d("失败", "查询错误: " + e.getMessage());

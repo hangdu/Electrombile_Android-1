@@ -179,13 +179,12 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         Log.d("test", "test");
         LastCar = false;
+        initView();
     }
 
     @Override
     protected void onStart(){
         super.onStart();
-        initView();
-
     }
 
     void initView(){

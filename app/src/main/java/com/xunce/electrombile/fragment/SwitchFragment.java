@@ -96,7 +96,7 @@ import org.apache.log4j.Logger;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener,OnClickListener {
     private static final int DELAYTIME = 1000;
-    private static String TAG = "SwitchFragment";
+    private static final String TAG = "SwitchFragment";
     public LocationClient mLocationClient = null;
     public BDLocationListener myListener = new MyLocationListener();
     private GeoCoder mSearch = null; // 搜索模块，也可去掉地图模块独立使用
@@ -107,7 +107,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView BindedCarIMEI;
     private List<String> OtherCar;
     private Dialog waitDialog;
-    private String WeatherData;
     private Button btnAlarmState1;
     private static int Count = 0;
     static MKOfflineMap mkOfflineMap;
@@ -168,51 +167,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     };
 
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.tv_pop_FromGallery:
-                File outputImage = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
-                try{
-                    if(outputImage.exists()){
-                        outputImage.delete();
-                    }
-                    outputImage.createNewFile();
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-                imageUri = Uri.fromFile(outputImage);
-                Intent intent = new Intent("android.intent.action.PICK");
-                intent.setType("image/*");
-                startActivityForResult(intent,CHOOSE_PHOTO);
-                mpopupWindow.dismiss();
-                break;
 
-            case R.id.tv_pop_camera:
-                File outputImage1 = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
-                try{
-                    if(outputImage1.exists()){
-                        outputImage1.delete();
-                    }
-                    outputImage1.createNewFile();
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-                imageUri = Uri.fromFile(outputImage1);
-                Intent intent1 = new Intent("android.media.action.IMAGE_CAPTURE");
-                intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent1,TAKE_PHOTE);
-                mpopupWindow.dismiss();
-                break;
-
-            case R.id.tv_pop_cancel:
-                mpopupWindow.dismiss();
-                break;
-
-            default:
-                break;
-        }
-    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -225,6 +180,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onCreate(Bundle saveInstanceState) {
 //        log.info("onCreate-start");
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onCreate");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
         mSearch = GeoCoder.newInstance();
@@ -260,6 +216,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 //        log.info("onCreateView-start");
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onCreateView");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
             initView(rootView);
@@ -271,6 +228,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 //        log.info("onViewCreated-start");
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         initEvent();
 //        log.info("onViewCreated-finish");
@@ -279,6 +237,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 //        log.info("onActivityCreated-start");
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 //        log.info("onActivityCreated-finish");
     }
@@ -286,6 +245,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onStart(){
 //        log.info("onStart-start");
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onStart");
         super.onStart();
 //        log.info("onStart-finish");
     }
@@ -293,6 +253,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onResume() {
 //        log.info("onResume-start");
+
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
@@ -457,6 +418,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     if (bitmap != null) {
                         headImage.setImageBitmap(bitmap);
                         leftmenu_CarImage.setImageBitmap(bitmap);
+                        if(myHorizontalScrollView.getIsOpen())
+                        {
+                            myHorizontalScrollView.toggle();
+                        }
 
                     }
                 }
@@ -554,7 +519,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
                     @Override
                     public void onSuccess(ResponseInfo<String> responseInfo) {
-                        String test = responseInfo.result;
                         Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
                         String originData = StringUtils.decodeUnicode(responseInfo.result);
                         WeatherBean data = new WeatherBean();
@@ -928,6 +892,52 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.tv_pop_FromGallery:
+                File outputImage = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage.exists()){
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent = new Intent("android.intent.action.PICK");
+                intent.setType("image/*");
+                startActivityForResult(intent,CHOOSE_PHOTO);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_camera:
+                File outputImage1 = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage1.exists()){
+                        outputImage1.delete();
+                    }
+                    outputImage1.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage1);
+                Intent intent1 = new Intent("android.media.action.IMAGE_CAPTURE");
+                intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent1,TAKE_PHOTE);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_cancel:
+                mpopupWindow.dismiss();
+                break;
+
+            default:
+                break;
         }
     }
 }

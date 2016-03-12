@@ -223,7 +223,6 @@ public class TestddActivity extends Activity{
         });
 
         watiDialog = new ProgressDialog(this);
-
         dialog = new AlertDialog.Builder(this)
                 .setPositiveButton("稍后再查",
                         new DialogInterface.OnClickListener() {
@@ -236,7 +235,6 @@ public class TestddActivity extends Activity{
 
         groupData = new ArrayList<>();
         childData = new ArrayList<>();
-
         ConstructListview(1);
 
         expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
@@ -361,18 +359,13 @@ public class TestddActivity extends Activity{
                     }
 
                 } else {
-                    clearListViewWhenFail();
+//                    clearListViewWhenFail();
                     dialog.setTitle("查询失败");
                     dialog.show();
                     watiDialog.dismiss();
                 }
             }
         });
-    }
-
-    private void clearListViewWhenFail() {
-        tracksManager.clearTracks();
-        updateListView();
     }
 
     private void updateListView(){

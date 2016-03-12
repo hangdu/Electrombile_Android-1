@@ -61,6 +61,7 @@ public class LeancloudManager {
 
     //获取用户的基本信息:姓名 性别 出生日期
     public void getUserInfoFromServer(){
+        com.orhanobut.logger.Logger.i("getUserInfoFromServer", "start");
         AVUser currentUser = AVUser.getCurrentUser();
         String UserName = (String)currentUser.get("name");
         Boolean sex = (Boolean)currentUser.get("isMale");
@@ -180,6 +181,7 @@ public class LeancloudManager {
                         settingManager.setIMEI(IMEIlist.get(0));
 
                         //获取IMEIlist中每一个设备对应的头像
+
                         for (String IMEI : IMEIlist) {
                             getHeadImageFromServer(IMEI);
                             getCarcreatedAt(IMEI);
@@ -245,12 +247,14 @@ public class LeancloudManager {
 
     //从服务器获取车辆头像(如果头像为空  就不管)   获取车辆昵称
     public void getHeadImageFromServer(final String IMEI){
+        com.orhanobut.logger.Logger.i("getHeadImageFromServer", "start");
         AVQuery<AVObject> query = new AVQuery<>("DID");
         query.whereEqualTo("IMEI", IMEI);
         query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> list, AVException e) {
                 if (e == null) {
+                    com.orhanobut.logger.Logger.i("getHeadImageFromServer", "get result");
                     if (!list.isEmpty()) {
                         if (list.size() != 1) {
                             ToastUtils.showShort(context, "DID表中  该IMEI对应多条记录");
