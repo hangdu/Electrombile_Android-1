@@ -376,7 +376,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         MapStatus mMapStatus = new MapStatus.Builder()
                 .target(point)
-                .zoom(20)
+                .zoom(18)
                 .build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
