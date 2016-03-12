@@ -59,4 +59,8 @@
         android:background="@drawable/yellow_rect"
         android:textColor="#fff2d6"
         android:text="确认"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"/>
 </LinearLayout>

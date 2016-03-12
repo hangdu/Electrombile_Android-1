@@ -46,4 +46,8 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/yellow_rect"
         android:text="提交"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"/>
 </LinearLayout>

@@ -12,10 +12,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.*;
 import android.os.Message;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -297,8 +299,13 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             }
         });
 
-        //设置布局  有个问题啊  没有做适配
-        dialog.addContentView(view, new LinearLayout.LayoutParams(858, 490));
+        WindowManager m = CarInfoEditActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         dialog.show();
     }
 

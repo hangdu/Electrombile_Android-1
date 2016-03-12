@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -321,11 +323,16 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         Button btn_startFindcar = (Button)view.findViewById(R.id.btn_startFindcar);
         Button cancel = (Button) view.findViewById(R.id.btn_cancel);
 
+        //获取屏幕的宽度
+        WindowManager m = m_context.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
         btn_startFindcar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                findCarGuide2();
+                findCarGuide2(dialog_width);
             }
         });
 
@@ -336,12 +343,14 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
+
+
         //设置布局  有个问题啊  没有做适配
-        dialog.addContentView(view, new LinearLayout.LayoutParams(858, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
 
-    private void findCarGuide2(){
+    private void findCarGuide2(int dialog_width){
         final LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_findcar_guide2, null);
         final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);

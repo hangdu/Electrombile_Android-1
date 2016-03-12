@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -150,9 +151,13 @@ public class PersonalCenterActivity extends BaseActivity{
             }
         });
 
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
         //设置布局  有个问题啊  没有做适配
         dialog.addContentView(view, new LinearLayout.LayoutParams(
-                858, 490));
+                dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
 
@@ -216,9 +221,13 @@ public class PersonalCenterActivity extends BaseActivity{
             }
         });
 
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
         //设置布局  有个问题啊  没有做适配
         dialog.addContentView(view, new LinearLayout.LayoutParams(
-                858, 490));
+                dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
 
@@ -277,19 +286,13 @@ public class PersonalCenterActivity extends BaseActivity{
             }
         });
 
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
         //设置布局
-        dialog.addContentView(view, new LinearLayout.LayoutParams(
-                858, 715));
+        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
-        //设置宽度
-//        WindowManager m = this.getWindowManager();
-//        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-//        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
-////        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
-//        //虽然过时,为了兼容性,还是用老方法. API 13以上才能使用新方法
-//        p.width = (int) (d.getWidth() * 0.794); // 宽度设置为屏幕的0.65
-////        p.height = (int) (d.getHeight()*0.372);
-//        dialog.getWindow().setAttributes(p);
     }
 
     @Override

@@ -235,8 +235,6 @@ public class SpecificHistoryTrackActivity extends Activity {
     private void initEvents(){
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_marka);
-
-
         //构建MarkerOption，用于在地图上添加Marker
         MarkerOptions option = new MarkerOptions()
                 .position(trackDataList.get(0).point)
@@ -245,21 +243,20 @@ public class SpecificHistoryTrackActivity extends Activity {
         markerMobile = (Marker) mBaiduMap.addOverlay(option);
         markerMobile.setPosition(trackDataList.get(0).point);
 
-//        BitmapDescriptor bitmap_startpoint = BitmapDescriptorFactory
-//                .fromResource(R.drawable.icon_startpoint);
-//
-//        BitmapDescriptor bitmap_endpoint = BitmapDescriptorFactory
-//                .fromResource(R.drawable.icon_endpoint);
+        BitmapDescriptor bitmap_startpoint = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_startpoint);
+        option = new MarkerOptions()
+                .position(trackDataList.get(0).point)
+                .icon(bitmap_startpoint);
+        mBaiduMap.addOverlay(option);
 
-//        option = new MarkerOptions()
-//                .position(trackDataList.get(0).point)
-//                .icon(bitmap_startpoint);
-//        mBaiduMap.addOverlay(option);
 
-//        option = new MarkerOptions()
-//                .position(trackDataList.get(trackDataList.size()-1).point)
-//                .icon(bitmap_endpoint);
-//        mBaiduMap.addOverlay(option);
+        BitmapDescriptor bitmap_endpoint = BitmapDescriptorFactory
+                .fromResource(R.drawable.icon_endpoint);
+        option = new MarkerOptions()
+                .position(trackDataList.get(trackDataList.size()-1).point)
+                .icon(bitmap_endpoint);
+        mBaiduMap.addOverlay(option);
 
 
         //让轨迹在中间

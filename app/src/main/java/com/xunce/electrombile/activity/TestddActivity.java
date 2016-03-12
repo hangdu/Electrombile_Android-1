@@ -318,7 +318,7 @@ public class TestddActivity extends Activity{
                         //如果查的不是今天的数据 ,且确实是30天之内的数据   才会把无数据插入数据库
                         if(!startT.equals(todayDate)&&FlagRecentDate){
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-                            String date = formatter.format(endT);
+//                            String date = formatter.format(endT);
                             long timeStamp = endT.getTime()/1000;
                             //存到数据库
                             dbManage.insert(timeStamp, -1, null, null, null);
@@ -360,7 +360,7 @@ public class TestddActivity extends Activity{
 
                 } else {
 //                    clearListViewWhenFail();
-                    dialog.setTitle("查询失败");
+                    dialog.setTitle("查询失败"+e.getMessage());
                     dialog.show();
                     watiDialog.dismiss();
                 }
