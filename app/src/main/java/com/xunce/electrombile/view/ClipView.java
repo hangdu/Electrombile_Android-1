@@ -19,7 +19,7 @@ public class ClipView extends View {
     private int clipHeight = -1;
     private int clipLeftMargin = 0;
     private int clipTopMargin = 0;
-    private int clipBorderWidth = 1;
+    private int clipBorderWidth = 3;
     private boolean isSetMargin = false;
     private OnDrawListenerComplete listenerComplete;
 
@@ -35,7 +35,7 @@ public class ClipView extends View {
         super(context, attrs, defStyle);
 
         //设置透明度的
-        paint.setAlpha(200);
+        paint.setAlpha(100);
 
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.WHITE);
@@ -74,6 +74,11 @@ public class ClipView extends View {
         // 画边框
         canvas.drawRect(clipLeftMargin, clipTopMargin, clipLeftMargin
                 + clipWidth, clipTopMargin + clipHeight, borderPaint);
+
+//        canvas.drawRect(0,0,width,height,paint);
+//
+//        float r = width / 2f;
+//        canvas.drawCircle(width/2,height/2, r, borderPaint);
 
         if (listenerComplete != null) {
             listenerComplete.onDrawCompelete();
