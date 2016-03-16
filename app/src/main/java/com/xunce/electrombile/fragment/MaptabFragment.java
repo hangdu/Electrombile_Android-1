@@ -375,7 +375,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         //设置布局  有个问题啊  没有做适配
-        dialog.addContentView(view, new LinearLayout.LayoutParams(858, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
 

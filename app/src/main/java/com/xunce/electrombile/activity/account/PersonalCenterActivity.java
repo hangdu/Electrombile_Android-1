@@ -1,11 +1,9 @@
 package com.xunce.electrombile.activity.account;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -29,11 +27,8 @@ import com.avos.avoscloud.UpdatePasswordCallback;
 import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
-import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.manager.SettingManager;
-import com.xunce.electrombile.utils.system.ToastUtils;
 
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class PersonalCenterActivity extends BaseActivity{
