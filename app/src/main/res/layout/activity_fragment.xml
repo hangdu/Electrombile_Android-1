@@ -1,48 +1,70 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".FragmentActivity">
+<android.support.v4.widget.DrawerLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/drawer_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-    <com.xunce.electrombile.view.viewpager.CustomViewPager
-        android:id="@+id/viewpager"
+    <!-- As the main content view, the view below consumes the entire
+         space available using match_parent in both dimensions. -->
+    <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5" />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <RadioGroup
-        android:id="@+id/main_radio"
-        android:layout_width="match_parent"
-        android:layout_height="48.67dp"
-        android:layout_gravity="bottom"
-        android:background="#0e000000"
-        android:orientation="horizontal"
-        android:weightSum="3">
+            <com.xunce.electrombile.view.viewpager.CustomViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="5" />
 
-        <RadioButton
-            android:id="@+id/rbSwitch"
-            style="@style/main_tab_bottom"
-            android:background="@drawable/rb_fragment_act"
-            android:checked="true"
-            android:drawableTop="@drawable/switch_icon"
-            android:text="主页" />
+            <RadioGroup
+                android:id="@+id/main_radio"
+                android:layout_width="match_parent"
+                android:layout_height="48.67dp"
+                android:layout_gravity="bottom"
+                android:background="#0e000000"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-        <RadioButton
-            android:id="@+id/rbMap"
-            style="@style/main_tab_bottom"
-            android:background="@drawable/rb_fragment_act"
-            android:checked="false"
-            android:drawableTop="@drawable/map_icon"
-            android:text="地图" />
+                <RadioButton
+                    android:id="@+id/rbSwitch"
+                    style="@style/main_tab_bottom"
+                    android:background="@drawable/rb_fragment_act"
+                    android:checked="true"
+                    android:drawableTop="@drawable/switch_icon"
+                    android:text="主页" />
 
-        <RadioButton
-            android:id="@+id/rbSettings"
-            style="@style/main_tab_bottom"
-            android:background="@drawable/rb_fragment_act"
-            android:checked="false"
-            android:drawableTop="@drawable/setting_icon"
-            android:text="设置" />
+                <RadioButton
+                    android:id="@+id/rbMap"
+                    style="@style/main_tab_bottom"
+                    android:background="@drawable/rb_fragment_act"
+                    android:checked="false"
+                    android:drawableTop="@drawable/map_icon"
+                    android:text="地图" />
 
-    </RadioGroup>
-</LinearLayout>
+                <RadioButton
+                    android:id="@+id/rbSettings"
+                    style="@style/main_tab_bottom"
+                    android:background="@drawable/rb_fragment_act"
+                    android:checked="false"
+                    android:drawableTop="@drawable/setting_icon"
+                    android:text="设置" />
+
+            </RadioGroup>
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+    <include
+        layout="@layout/menu_navigation"
+        android:id="@+id/left_menu"
+        android:layout_width="265dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start" />
+
+</android.support.v4.widget.DrawerLayout>
