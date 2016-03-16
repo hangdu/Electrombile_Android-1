@@ -399,12 +399,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 //                        log.info("rbMap-clicked");
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
-
-                        //初始化一些东西
-//                        maptabFragment.HideInfowindow();
-//                        maptabFragment.setCarname();
-//                        maptabFragment.InitCarLocation();
-
                         break;
                     case R.id.rbSettings:
                         mViewPager.setCurrentItem(2, false);

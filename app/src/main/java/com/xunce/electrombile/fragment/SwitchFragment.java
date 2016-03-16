@@ -1,7 +1,6 @@
 package com.xunce.electrombile.fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 
 import android.app.Dialog;
 import android.app.Notification;
@@ -24,31 +23,22 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVQuery;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.FindCallback;
+
 import com.avos.avoscloud.LogUtil;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -74,7 +64,6 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.CropActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
-import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.BitmapUtils;
@@ -83,7 +72,7 @@ import com.xunce.electrombile.utils.system.WIFIUtil;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
-import com.xunce.electrombile.view.MyHorizontalScrollView;
+
 import org.json.JSONException;
 
 import java.io.File;
@@ -92,9 +81,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import org.apache.log4j.Logger;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener,OnClickListener {
     private static final int DELAYTIME = 1000;
@@ -482,19 +468,19 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-//                        tv_temperature.setText(data.temp+"摄氏度");
-//                        tv_weatherCondition.setText(data.weather);
-//                        tv_location.setText(data.city);
-//
-//                        if(data.weather.contains("雨")){
-//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
-//                        }
-//                        else if(data.weather.equals("多云")){
-//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
-//                        }
-//                        else{
-//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
-//                        }
+                        tv_temperature.setText(data.temp+"摄氏度");
+                        tv_weatherCondition.setText(data.weather);
+                        tv_location.setText(data.city);
+
+                        if(data.weather.contains("雨")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
+                        }
+                        else if(data.weather.equals("多云")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                        }
+                        else{
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                        }
                     }
 
                     @Override
