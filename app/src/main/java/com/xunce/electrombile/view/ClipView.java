@@ -62,23 +62,23 @@ public class ClipView extends View {
 
         //画阴影
 
-        canvas.drawRect(0,customTopBarHeight,width,clipTopMargin,paint);
-        canvas.drawRect(0, clipTopMargin, clipLeftMargin, clipTopMargin
-                + clipHeight, paint);
-        // right
-        canvas.drawRect(clipLeftMargin + clipWidth, clipTopMargin, width,
-                clipTopMargin + clipHeight, paint);
-        // bottom
-        canvas.drawRect(0, clipTopMargin + clipHeight, width, height, paint);
-
-        // 画边框
-        canvas.drawRect(clipLeftMargin, clipTopMargin, clipLeftMargin
-                + clipWidth, clipTopMargin + clipHeight, borderPaint);
-
-//        canvas.drawRect(0,0,width,height,paint);
+//        canvas.drawRect(0,customTopBarHeight,width,clipTopMargin,paint);
+//        canvas.drawRect(0, clipTopMargin, clipLeftMargin, clipTopMargin
+//                + clipHeight, paint);
+//        // right
+//        canvas.drawRect(clipLeftMargin + clipWidth, clipTopMargin, width,
+//                clipTopMargin + clipHeight, paint);
+//        // bottom
+//        canvas.drawRect(0, clipTopMargin + clipHeight, width, height, paint);
 //
-//        float r = width / 2f;
-//        canvas.drawCircle(width/2,height/2, r, borderPaint);
+//        // 画边框
+//        canvas.drawRect(clipLeftMargin, clipTopMargin, clipLeftMargin
+//                + clipWidth, clipTopMargin + clipHeight, borderPaint);
+
+        canvas.drawRect(0,0,width,height,paint);
+
+        float r = width / 2f;
+        canvas.drawCircle(width/2,height/2, r, borderPaint);
 
         if (listenerComplete != null) {
             listenerComplete.onDrawCompelete();

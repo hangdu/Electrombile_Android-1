@@ -230,12 +230,12 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
         int statusBarHeight = frame.top;
 
-//        Bitmap finalBitmap = circleShape(view.getDrawingCache(),statusBarHeight);
+        Bitmap finalBitmap = circleShape(view.getDrawingCache(),statusBarHeight);
 
-        Bitmap finalBitmap = Bitmap.createBitmap(view.getDrawingCache(),
-                clipView.getClipLeftMargin(), clipView.getClipTopMargin()
-                        + statusBarHeight, clipView.getClipWidth(),
-                clipView.getClipHeight());
+//        Bitmap finalBitmap = Bitmap.createBitmap(view.getDrawingCache(),
+//                clipView.getClipLeftMargin(), clipView.getClipTopMargin()
+//                        + statusBarHeight, clipView.getClipWidth(),
+//                clipView.getClipHeight());
 
         // 释放资源
         view.destroyDrawingCache();
@@ -243,7 +243,7 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     }
 
     //为什么这个函数行得通啊???
-    public static Bitmap circleShape(Bitmap source,int offset) {
+    public Bitmap circleShape(Bitmap source,int offset) {
         int size = Math.min(source.getWidth(), source.getHeight());
 
         int x = (source.getWidth() - size) / 2;
@@ -264,14 +264,11 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
         paint.setAntiAlias(true);
 
         float r = size / 2f;
-        canvas.drawCircle(r, r+offset, r, paint);
+        canvas.drawCircle(r, r+offset, r-clipView.getClipLeftMargin(), paint);
 
         squaredBitmap.recycle();
         return bitmap;
     }
-
-
-
 
     //bitmap写文件
     public void saveMyBitmaptoFile(Bitmap mBitmap){
