@@ -24,7 +24,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -103,22 +105,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private boolean alarmState = false;
     //缓存view
     private View rootView;
-    private MyHorizontalScrollView myHorizontalScrollView;
-    private TextView BindedCarIMEI;
-    private List<String> OtherCar;
     private Dialog waitDialog;
     private Button btnAlarmState1;
     private static int Count = 0;
     static MKOfflineMap mkOfflineMap;
     private static String localcity;
-    private List<String> IMEIlist;
     private Bitmap bitmap;
     private ImageView headImage;
     private TextView tv_temperature;
     private TextView tv_weatherCondition;
     private TextView tv_location;
     private ImageView img_weather;
-    private ImageView leftmenu_CarImage;
     private BroadcastReceiver MyBroadcastReceiver;
     private PopupWindow mpopupWindow;
     private Uri imageUri;
@@ -127,6 +124,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
     public static final int CHOOSE_PHOTO=3;
+
+//    private DrawerLayout mDrawerLayout;
 
 
 
@@ -145,7 +144,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         public void handleMessage(Message msg){
             switch (msg.what){
                 case 1://处理侧滑的message
-                    myHorizontalScrollView.UpdateListview();
+//                    myHorizontalScrollView.UpdateListview();
                     break;
                 case 2:
                     cancelWaitTimeOut();
@@ -165,9 +164,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             return;
         }
     };
-
-
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -208,7 +204,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         MyBroadcastReceiver = new MyBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
-        m_context.registerReceiver(MyBroadcastReceiver,filter);
+        m_context.registerReceiver(MyBroadcastReceiver, filter);
+
+
 
     }
 
@@ -253,7 +251,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onResume() {
 //        log.info("onResume-start");
-
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
@@ -306,16 +303,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void initView(View v){
-        View leftmenu = v.findViewById(R.id.ll_leftmenu) ;
-        leftmenu_CarImage = (ImageView)leftmenu.findViewById(R.id.img_car);
-
         tv_Safeday = (TextView)v.findViewById(R.id.tv_Safeday);
         setSafedays();
 
         btnAlarmState1 = (Button) v.findViewById(R.id.btn_AlarmState1);
-        BindedCarIMEI = (TextView)v.findViewById(R.id.menutext1);
-        OtherCar = new ArrayList();
-        myHorizontalScrollView = (MyHorizontalScrollView) v.findViewById(R.id.myHorizontalScrollView);
         Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
         headImage = (ImageView) v.findViewById(R.id.img_headImage);
         headImage.setOnClickListener(new OnClickListener() {
@@ -328,7 +319,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
         if(bitmap!=null){
             headImage.setImageBitmap(bitmap);
-            leftmenu_CarImage.setImageBitmap(bitmap);
+            m_context.setLeftMenuCarImage(bitmap);
         }
 
         img_weather = (ImageView)v.findViewById(R.id.img_weather);
@@ -336,11 +327,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ChangeAutobike.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //侧滑的代码
-                myHorizontalScrollView.toggle();
-                if (myHorizontalScrollView.getIsOpen()) {
-                    myHorizontalScrollView.UpdateListview();
-                }
+                m_context.openDrawable();
             }
         });
 
@@ -350,45 +337,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 alarmStatusChange();
             }
         });
-
-        myHorizontalScrollView.InitView();
-        myHorizontalScrollView.setHandler(mhandler);
-        myHorizontalScrollView.otherCarlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //UI界面改变
-                String IMEI_previous = setManager.getIMEI();
-                String IMEI_now = OtherCar.get(position);
-
-                BindedCarIMEI.setText(setManager.getCarName(IMEI_now));
-
-                HashMap<String, Object> map = new HashMap<String, Object>();
-                map.put("whichcar", setManager.getCarName(IMEI_previous));
-                map.put("img", R.drawable.othercar);
-                myHorizontalScrollView.list.set(position, map);
-                myHorizontalScrollView.UpdateListview();
-                OtherCar.set(position,IMEI_previous);
-
-                //实际逻辑改变
-                DeviceChange(IMEI_previous, IMEI_now, position);
-            }
-        });
-
         tv_temperature = (TextView)v.findViewById(R.id.tv_temperature);
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
     }
 
-
     private void initEvent() {
-        IMEIlist = setManager.getIMEIlist();
-        refreshBindList1();
         (m_context).receiver.setAlarmHandler(mhandler);
         //从设置切换回主页的时候  会执行这个函数  如果主页中的侧滑菜单是打开的  那么就关闭侧滑菜单
-        if(myHorizontalScrollView.getIsOpen())
-        {
-            myHorizontalScrollView.toggle();
-        }
     }
 
     @Override
@@ -417,46 +373,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
                     if (bitmap != null) {
                         headImage.setImageBitmap(bitmap);
-                        leftmenu_CarImage.setImageBitmap(bitmap);
-                        if(myHorizontalScrollView.getIsOpen())
-                        {
-                            myHorizontalScrollView.toggle();
-                        }
-
+//                        leftmenu_CarImage.setImageBitmap(bitmap);
+                        m_context.setLeftMenuCarImage(bitmap);
                     }
                 }
                 break;
             default:
                 break;
         }
-    }
-
-    //设备切换
-    private void DeviceChange(String previous_IMEI,String current_IMEI,int position){
-        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
-        MqttConnectManager mqttConnectManager = MqttConnectManager.getInstance();
-        if(mqttConnectManager.returnMqttStatus()){
-            //mqtt连接良好
-            mqttConnectManager.unSubscribe(previous_IMEI);
-            setManager.setIMEI(current_IMEI);
-            mqttConnectManager.subscribe(current_IMEI);
-            mqttConnectManager.sendMessage((m_context).mCenter.cmdFenceGet(), current_IMEI);
-            ToastUtils.showShort(m_context, "切换成功");
-            myHorizontalScrollView.toggle();
-
-            setSafedays();
-        }
-        else{
-            ToastUtils.showShort(m_context,"mqtt连接失败");
-        }
-
-        IMEIlist.set(0, setManager.getIMEI());
-        IMEIlist.set(position+1,previous_IMEI);
-        setManager.setIMEIlist(IMEIlist);
-
-        //切换头像
-        DeviceChangeHeadImage();
-
     }
 
     private void DeviceChangeHeadImage(){
@@ -466,20 +390,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
             if(bitmap!=null){
                 headImage.setImageBitmap(bitmap);
-                leftmenu_CarImage.setImageBitmap(bitmap);
+                m_context.setLeftMenuCarImage(bitmap);
                 return;
             }
             else{
                 //默认图像
                 Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
                 headImage.setImageBitmap(bitmap);
-                leftmenu_CarImage.setImageBitmap(bitmap);
+                m_context.setLeftMenuCarImage(bitmap);
             }
         }
         else{
             Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
             headImage.setImageBitmap(bitmap);
-            leftmenu_CarImage.setImageBitmap(bitmap);
+            m_context.setLeftMenuCarImage(bitmap);
         }
     }
 
@@ -558,19 +482,19 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-                        tv_temperature.setText(data.temp+"摄氏度");
-                        tv_weatherCondition.setText(data.weather);
-                        tv_location.setText(data.city);
-
-                        if(data.weather.contains("雨")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
-                        }
-                        else if(data.weather.equals("多云")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
-                        }
-                        else{
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
-                        }
+//                        tv_temperature.setText(data.temp+"摄氏度");
+//                        tv_weatherCondition.setText(data.weather);
+//                        tv_location.setText(data.city);
+//
+//                        if(data.weather.contains("雨")){
+//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
+//                        }
+//                        else if(data.weather.equals("多云")){
+//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+//                        }
+//                        else{
+//                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+//                        }
                     }
 
                     @Override
@@ -814,22 +738,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    public void refreshBindList1(){
-        myHorizontalScrollView.list.clear();
-        OtherCar.clear();
-
-        BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
-        HashMap<String, Object> map = null;
-        for (int i = 1; i < IMEIlist.size(); i++) {
-            map = new HashMap<>();
-            map.put("whichcar",setManager.getCarName(IMEIlist.get(i)));
-            map.put("img", R.drawable.othercar);
-            myHorizontalScrollView.list.add(map);
-            OtherCar.add(IMEIlist.get(i));
-        }
-    }
-    //调整好位置  把正在绑定的IMEI号放在IMEIlist的第一个
-
     class MyBroadcastReceiver extends BroadcastReceiver {
         //接收到广播会被自动调用
         @Override
@@ -837,6 +745,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             //从Intent中获取action
             DeviceChangeHeadImage();
             setSafedays();
+            m_context.refreshBindList1();
         }
     }
 

@@ -3,9 +3,11 @@ package com.xunce.electrombile.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -75,6 +77,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_CarName;
     private TextView tv_CarPosition;
     private GeoCoder mSearch = null;
+    private BroadcastReceiver MyBroadcastReceiver;
 //    private Logger log;
 
     private Handler playHandler = new Handler() {
@@ -133,6 +136,11 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
+
+        MyBroadcastReceiver = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.app.bc.test");
+        m_context.registerReceiver(MyBroadcastReceiver, filter);
 //        log.info("onCreate-finish");
     }
 
@@ -220,6 +228,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         mBaiduMap.clear();
         mMapView.onDestroy();
         mMapView = null;
+
+        m_context.unregisterReceiver(MyBroadcastReceiver);
+        m_context = null;
+        mSearch = null;
         super.onDestroy();
 //        log.info("onDestroy-finish");
     }
@@ -312,6 +324,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 .icon(bitmap);
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
+
+        HideInfowindow();
+        setCarname();
+        InitCarLocation();
     }
 
     //
@@ -480,6 +496,16 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
 
+    }
+
+    class MyBroadcastReceiver extends BroadcastReceiver {
+        //接收到广播会被自动调用
+        @Override
+        public void onReceive (Context context, Intent intent) {
+            HideInfowindow();
+            setCarname();
+            InitCarLocation();
+        }
     }
 }
 

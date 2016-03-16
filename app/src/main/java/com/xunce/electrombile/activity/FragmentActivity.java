@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -13,14 +15,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
@@ -40,6 +49,7 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.receiver.MyReceiver;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
@@ -51,6 +61,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import de.mindpipe.android.logging.log4j.LogConfigurator;
@@ -78,7 +89,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     //接收广播
     public MyReceiver receiver;
     private MqttConnectManager mqttConnectManager;
+    private DrawerLayout mDrawerLayout;
 //    private Logger log;
+    //获取到include中的ui(左滑出来的)
+    private TextView BindedCarIMEI;
+    private ImageView img_car;
+    private ListView OtherCarListview;
+    public ArrayList<HashMap<String, Object>> list;
+    List<String> IMEIlist;
+    public SimpleAdapter simpleAdapter;
+    View left_menu;
+
 
     /**
      * The handler. to process exit()
@@ -334,12 +355,21 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * 界面初始化
      */
     private void initView() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         main_radio = (RadioGroup) findViewById(R.id.main_radio);
         mViewPager = (CustomViewPager) findViewById(R.id.viewpager);
         switchFragment = new SwitchFragment();
         maptabFragment = new MaptabFragment();
         settingsFragment = new SettingsFragment();
+
+        //左滑菜单
+        left_menu = findViewById(R.id.left_menu);
+        BindedCarIMEI = (TextView)left_menu.findViewById(R.id.menutext1);
+        img_car = (ImageView)left_menu.findViewById(R.id.img_car);
+        OtherCarListview = (ListView)left_menu.findViewById(R.id.OtherCarListview);
     }
+
+
 
     /**
      * 数据初始化
@@ -371,9 +401,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         checkId = 1;
 
                         //初始化一些东西
-                        maptabFragment.HideInfowindow();
-                        maptabFragment.setCarname();
-                        maptabFragment.InitCarLocation();
+//                        maptabFragment.HideInfowindow();
+//                        maptabFragment.setCarname();
+//                        maptabFragment.InitCarLocation();
 
                         break;
                     case R.id.rbSettings:
@@ -386,6 +416,21 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             }
         });
         main_radio.check(checkId);
+
+        this.list = new ArrayList<>();
+        String[] strings = {"img","whichcar"};
+        int[] ids = {R.id.img,R.id.WhichCar};
+        simpleAdapter = new SimpleAdapter(FragmentActivity.this, this.list, R.layout.item_othercarlistview_green, strings, ids);
+        OtherCarListview.setAdapter(simpleAdapter);
+
+        OtherCarListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DeviceChange(position);
+            }
+        });
+
+        refreshBindList1();
     }
 
     /**
@@ -473,5 +518,65 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     public void onBackPressed() {
         exit();
+    }
+
+    public void refreshBindList1(){
+        IMEIlist = setManager.getIMEIlist();
+        BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
+        HashMap<String, Object> map = null;
+        list.clear();
+        for (int i = 1; i < IMEIlist.size(); i++) {
+            map = new HashMap<>();
+            map.put("whichcar",setManager.getCarName(IMEIlist.get(i)));
+            map.put("img", R.drawable.othercar);
+            list.add(map);
+        }
+        simpleAdapter.notifyDataSetChanged();
+    }
+
+    private void DeviceChange(int position){
+        String previous_IMEI = setManager.getIMEI();
+        String current_IMEI = IMEIlist.get(position+1);
+        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
+        if(mqttConnectManager.returnMqttStatus()){
+            //mqtt连接良好
+            mqttConnectManager.unSubscribe(previous_IMEI);
+            setManager.setIMEI(current_IMEI);
+            mqttConnectManager.subscribe(current_IMEI);
+            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), current_IMEI);
+            ToastUtils.showShort(this, "切换成功");
+        }
+        else{
+            ToastUtils.showShort(this,"mqtt连接失败");
+        }
+
+        IMEIlist.set(0, setManager.getIMEI());
+        IMEIlist.set(position + 1, previous_IMEI);
+        setManager.setIMEIlist(IMEIlist);
+
+        //list改变
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("whichcar", previous_IMEI);
+        map.put("img", R.drawable.othercar);
+        list.set(position, map);
+        simpleAdapter.notifyDataSetChanged();
+
+        //发广播
+        Intent intent = new Intent("com.app.bc.test");
+        sendBroadcast(intent);//发送广播事件
+
+        closeDrawable();
+    }
+
+    public void openDrawable(){
+        mDrawerLayout.openDrawer(Gravity.LEFT);
+    }
+
+    public void closeDrawable(){
+        mDrawerLayout.closeDrawer(left_menu);
+    }
+
+    public void setLeftMenuCarImage(Bitmap bm){
+        img_car.setImageBitmap(bm);
     }
 }
