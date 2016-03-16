@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -77,6 +78,7 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -299,11 +301,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
-        if(bitmap!=null){
-            headImage.setImageBitmap(bitmap);
-            m_context.setLeftMenuCarImage(bitmap);
-        }
+        loadBitmap();
+
+//        bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
+//        if(bitmap!=null){
+//            headImage.setImageBitmap(bitmap);
+//            m_context.setLeftMenuCarImage(bitmap);
+//        }
 
         img_weather = (ImageView)v.findViewById(R.id.img_weather);
 
@@ -356,7 +360,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
                     if (bitmap != null) {
                         headImage.setImageBitmap(bitmap);
-//                        leftmenu_CarImage.setImageBitmap(bitmap);
                         m_context.setLeftMenuCarImage(bitmap);
                     }
                 }
@@ -364,6 +367,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             default:
                 break;
         }
+    }
+
+
+
+    public void loadBitmap() {
+        BitmapWorkerTask task = new BitmapWorkerTask();
+        task.execute();
     }
 
     private void DeviceChangeHeadImage(){
@@ -829,6 +839,27 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
             default:
                 break;
+        }
+    }
+
+    class BitmapWorkerTask extends AsyncTask<Void, Void, Bitmap> {
+        public BitmapWorkerTask() {
+
+        }
+
+        // Decode image in background.
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            return BitmapUtils.compressImageFromFile(setManager.getIMEI());
+        }
+
+        // Once complete, see if ImageView is still around and set bitmap.
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null) {
+                headImage.setImageBitmap(bitmap);
+                m_context.setLeftMenuCarImage(bitmap);
+            }
         }
     }
 }

@@ -323,15 +323,15 @@ public class CropActivity extends Activity implements View.OnTouchListener,View.
     }
 
     //通过降低图片质量来缩小bitmap
-    private Bitmap lowQuality(Bitmap bm){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int quality = 10;
-        bm.compress(Bitmap.CompressFormat.JPEG, quality, baos);
-        Bitmap compressedBitmap = BitmapFactory.decodeByteArray(
-                baos.toByteArray(), 0, baos.toByteArray().length);
-        recycleBitmap(bitmap);
-        return compressedBitmap;
-    }
+//    private Bitmap lowQuality(Bitmap bm){
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        int quality = 10;
+//        bm.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+//        Bitmap compressedBitmap = BitmapFactory.decodeByteArray(
+//                baos.toByteArray(), 0, baos.toByteArray().length);
+//        recycleBitmap(bitmap);
+//        return compressedBitmap;
+//    }
 
     public static void recycleBitmap(Bitmap bitmap) {
         if (bitmap != null && !bitmap.isRecycled()) {

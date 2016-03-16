@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -78,6 +79,13 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_CarPosition;
     private GeoCoder mSearch = null;
     private BroadcastReceiver MyBroadcastReceiver;
+    private Boolean state;
+    View titleView;
+    TextView titleTextView;
+    Button btn_back;
+    LinearLayout layout_FindMode_up;
+    Button btn_arriveNearby;
+    RelativeLayout ll_historyAndlocate;
 //    private Logger log;
 
     private Handler playHandler = new Handler() {
@@ -141,6 +149,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
+
+        state = false;
 //        log.info("onCreate-finish");
     }
 
@@ -249,10 +259,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      * @param v view
      */
     private void initView(View v) {
-        View titleView = v.findViewById(R.id.ll_button) ;
-        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
-        titleTextView.setText("地图");
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        titleView = v.findViewById(R.id.ll_button) ;
+        titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+//        titleTextView.setText("地图");
+        btn_back = (Button)titleView.findViewById(R.id.btn_back);
         btn_back.setVisibility(View.INVISIBLE);
 
         mMapView = (MapView) v.findViewById(R.id.bmapView);
@@ -263,6 +273,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 return true;
             }
         });
+
+        layout_FindMode_up = (LinearLayout)v.findViewById(R.id.layout_FindMode_up);
+        btn_arriveNearby = (Button)v.findViewById(R.id.btn_arriveNearby);
+        ll_historyAndlocate = (RelativeLayout)v.findViewById(R.id.ll_historyAndlocate);
 
         //定位电动车按钮
         Button btnLocation = (Button) v.findViewById(R.id.btn_location);
@@ -325,9 +339,32 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
 
+        ToMapFragmentUI();
+
         HideInfowindow();
         setCarname();
-        InitCarLocation();
+//        InitCarLocation();
+    }
+
+    //找车模式的UI
+    private void ToFindCarModeUI(){
+        titleTextView.setText("车辆位置");
+
+        layout_FindMode_up.setVisibility(View.VISIBLE);
+        btn_arriveNearby.setVisibility(View.VISIBLE);
+
+        btn_back.setVisibility(View.VISIBLE);
+        ll_historyAndlocate.setVisibility(View.INVISIBLE);
+    }
+
+    private void ToMapFragmentUI(){
+        titleTextView.setText("地图");
+
+        layout_FindMode_up.setVisibility(View.INVISIBLE);
+        btn_arriveNearby.setVisibility(View.INVISIBLE);
+
+        btn_back.setVisibility(View.INVISIBLE);
+        ll_historyAndlocate.setVisibility(View.VISIBLE);
     }
 
     //
@@ -378,8 +415,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                Intent intent = new Intent(m_context, FindActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(m_context, FindActivity.class);
+//                startActivity(intent);
+                state = true;
+                ToFindCarModeUI();
             }
         });
 
@@ -466,7 +505,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void setCarname()
     {
-        tv_CarName.setText("车辆名称:"+setManager.getCarName(setManager.getIMEI()));
+        tv_CarName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
         tv_CarPosition.setText("车辆位置:");
     }
 
@@ -490,7 +529,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             reverseGeoCodeResult = strings[1];
         }
 
-        tv_CarPosition.setText("车辆位置:"+reverseGeoCodeResult);
+        tv_CarPosition.setText("车辆位置:" + reverseGeoCodeResult);
     }
 
     @Override

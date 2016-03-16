@@ -266,6 +266,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 //开启报警服务
                 startAlarmService();
 
+                maptabFragment.InitCarLocation();
             }
 
             @Override
