@@ -128,7 +128,7 @@ public class SplashActivity extends BaseActivity {
                 String baseUrl = "http://fir.im/api/v2/app/version/%s?token=%s";
                 //下面是正式的 版本调整
                 // String checkUpdateUrl = String.format(baseUrl, "553ca95096a9fc5c14001802", "39d16f30ebf111e4a2da4efe6522248a4b9d9ed4");
-                String checkUpdateUrl = String.format(baseUrl, "556c810d2bb8ac0e5d001a30", "b9d54ba0b12411e4bc2c492c76a46d264a53ba2f");
+                String checkUpdateUrl = String.format(baseUrl, "56d8305ea1de523fd2000010", "653b6b146dd19b4ce30dea9bbfa4a1e2");
                 try {
                     URL url = new URL(checkUpdateUrl);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -412,7 +412,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void httpGetWeather(String city) {
-        String ss = city;
         city = city.replace("市", "");
         Log.e(TAG, "city：" + city);
         city = StringUtils.encode(city);

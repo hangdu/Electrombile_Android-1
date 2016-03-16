@@ -73,7 +73,7 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener{
     private static final String TAG = "FragmentActivity:";
-    private static final int DELAYTIME = 500;
+//    private static final int DELAYTIME = 500;
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -96,10 +96,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private ImageView img_car;
     private ListView OtherCarListview;
     public ArrayList<HashMap<String, Object>> list;
-    List<String> IMEIlist;
-    public SimpleAdapter simpleAdapter;
-    View left_menu;
-
+    private List<String> IMEIlist;
+    private SimpleAdapter simpleAdapter;
+    private View left_menu;
 
     /**
      * The handler. to process exit()
@@ -122,9 +121,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     };
 
-    public RadioGroup getMain_radio() {
-        return main_radio;
-    }
+//    public RadioGroup getMain_radio() {
+//        return main_radio;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +134,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         setContentView(R.layout.activity_fragment);
 //        log.info("onCreate-finish");
         //初始化界面
-        com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onStart");
         initView();
         initData();
         //判断是否绑定设备
@@ -209,8 +207,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     //取消显示常驻通知栏
     public void cancelNotification() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(getApplicationContext()
-                .NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
         notificationManager.cancel(R.string.app_name);
     }
 
