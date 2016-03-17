@@ -25,11 +25,10 @@
             android:layout_centerInParent="true"
             android:textColor="#009f53"
             android:textSize="17.33sp"
-            android:text="失车详情"/>
+            android:text="使用向导"/>
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/dialog_tv_carName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
@@ -37,27 +36,7 @@
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="16sp"
-        android:text="车辆名称"/>
-
-    <TextView
-        android:id="@+id/dialog_tv_LastCarLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
-        android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="最后一次定位地点"/>
-
-    <TextView
-        android:id="@+id/dialog_tv_LastLocateTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
-        android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="最后一次定位时间"/>
+        android:text="任意选择地点作为参考,按下信号发射控制器,开始第一次数据采集吧"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -66,28 +45,10 @@
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="16sp"
-        android:text="车辆现在在室内的可能性:"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
-        android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="有GPS信号室外可能性更大"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="17dp"
-        android:paddingRight="17dp"
-        android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="无GPS信号可能在室内,请继续使用精确找车"/>
+        android:text="按下控制器, 再点击以下按钮"/>
 
     <Button
-        android:id="@+id/btn_nextstep"
+        android:id="@+id/btn_getSignal"
         android:layout_width="138.33dp"
         android:layout_height="30dp"
         android:layout_marginTop="17dp"
@@ -95,7 +56,7 @@
         android:background="@drawable/yellow_rect"
         android:textColor="#dadada"
         android:textSize="17.33dp"
-        android:text="下一步"/>
+        android:text="开始采集"/>
 
     <View
         android:layout_width="match_parent"

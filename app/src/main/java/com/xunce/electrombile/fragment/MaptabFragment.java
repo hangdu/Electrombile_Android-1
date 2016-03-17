@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,7 +47,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity2;
-import com.xunce.electrombile.activity.FindActivity;
+import com.xunce.electrombile.activity.FindCarActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -83,7 +82,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_CarPosition;
     private GeoCoder mSearch = null;
     private BroadcastReceiver MyBroadcastReceiver;
-    private Boolean state;
     View titleView;
     TextView titleTextView;
     Button btn_back;
@@ -157,8 +155,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
-
-        state = false;
 //        log.info("onCreate-finish");
     }
 
@@ -269,7 +265,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private void initView(View v) {
         titleView = v.findViewById(R.id.ll_button) ;
         titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
-//        titleTextView.setText("地图");
         btn_back = (Button)titleView.findViewById(R.id.btn_back);
         btn_back.setVisibility(View.INVISIBLE);
         btn_back.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +285,13 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         layout_FindMode_up = (LinearLayout)v.findViewById(R.id.layout_FindMode_up);
         btn_arriveNearby = (Button)v.findViewById(R.id.btn_arriveNearby);
+        btn_arriveNearby.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(m_context, FindCarActivity.class);
+                startActivity(intent);
+            }
+        });
         ll_historyAndlocate = (RelativeLayout)v.findViewById(R.id.ll_historyAndlocate);
         tv_FindModeCarName = (TextView)v.findViewById(R.id.tv_FindModeCarName);
         tv_FindModeCarPosition = (TextView)v.findViewById(R.id.tv_FindModeCarPosition);
@@ -474,7 +476,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        //设置布局  有个问题啊  没有做适配
         dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
@@ -491,7 +492,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                state = true;
                 ToFindCarModeUI();
             }
         });
@@ -503,7 +503,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-        //设置布局  有个问题啊  没有做适配
         dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
