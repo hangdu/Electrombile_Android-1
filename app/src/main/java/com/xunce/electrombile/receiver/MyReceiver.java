@@ -213,8 +213,6 @@ public class MyReceiver extends BroadcastReceiver {
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
                 break;
         }
-
-//        dealErr(code);
     }
 
     private void caseOpenAutoLock(int result){
@@ -362,11 +360,6 @@ public class MyReceiver extends BroadcastReceiver {
         LogUtil.log.i("保存数据1");
         ((FragmentActivity) mContext).setManager.setInitLocation(Flat + "", Flong + "");
         if (trackPoint != null) {
-//            if (!((FragmentActivity) mContext).maptabFragment.isPlaying) {
-////                timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
-////                ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
-//            }
-//            ((FragmentActivity) mContext).switchFragment.reverserGeoCedec(trackPoint.point);
             timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
             ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
         }

@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,6 +67,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     //电动车标志
     private Marker markerMobile;
+    private Marker markerPerson;
     //轨迹图层
     private TextView tvUpdateTime;
     private InfoWindow mInfoWindow;
@@ -86,6 +90,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     LinearLayout layout_FindMode_up;
     Button btn_arriveNearby;
     RelativeLayout ll_historyAndlocate;
+    TextView tv_FindModeCarName;
+    TextView tv_FindModeCarPosition;
+    LocationManager locationManager;
+    LocationListener locationListener;
 //    private Logger log;
 
     private Handler playHandler = new Handler() {
@@ -264,6 +272,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 //        titleTextView.setText("地图");
         btn_back = (Button)titleView.findViewById(R.id.btn_back);
         btn_back.setVisibility(View.INVISIBLE);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToMapFragmentUI();
+            }
+        });
 
         mMapView = (MapView) v.findViewById(R.id.bmapView);
         mMapView.showZoomControls(false);
@@ -277,6 +291,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         layout_FindMode_up = (LinearLayout)v.findViewById(R.id.layout_FindMode_up);
         btn_arriveNearby = (Button)v.findViewById(R.id.btn_arriveNearby);
         ll_historyAndlocate = (RelativeLayout)v.findViewById(R.id.ll_historyAndlocate);
+        tv_FindModeCarName = (TextView)v.findViewById(R.id.tv_FindModeCarName);
+        tv_FindModeCarPosition = (TextView)v.findViewById(R.id.tv_FindModeCarPosition);
 
         //定位电动车按钮
         Button btnLocation = (Button) v.findViewById(R.id.btn_location);
@@ -339,7 +355,11 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option2);
 
-        ToMapFragmentUI();
+        titleTextView.setText("地图");
+        layout_FindMode_up.setVisibility(View.INVISIBLE);
+        btn_arriveNearby.setVisibility(View.INVISIBLE);
+        btn_back.setVisibility(View.INVISIBLE);
+        ll_historyAndlocate.setVisibility(View.VISIBLE);
 
         HideInfowindow();
         setCarname();
@@ -352,9 +372,59 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         layout_FindMode_up.setVisibility(View.VISIBLE);
         btn_arriveNearby.setVisibility(View.VISIBLE);
-
         btn_back.setVisibility(View.VISIBLE);
         ll_historyAndlocate.setVisibility(View.INVISIBLE);
+
+
+        tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
+        InitCarLocation();
+
+//        tv_FindModeCarPosition.setText("车辆位置:");
+
+        BitmapDescriptor bitmap = BitmapDescriptorFactory
+                .fromResource(R.drawable.marker_person);
+        //构建MarkerOption，用于在地图上添加Marker
+        LatLng point = new LatLng(30.5171, 114.4392);
+        MarkerOptions option2 = new MarkerOptions()
+                .position(point)
+                .icon(bitmap);
+        //在地图上添加Marker，并显示
+        markerPerson = (Marker) mBaiduMap.addOverlay(option2);
+
+        //怎么判断车在室内还是在室外呢???
+
+        //根据车的位置和人的位置  需要对地图进行缩放???
+
+        //获取到手机的位置
+        getPhoneLocation();
+    }
+
+    private void getPhoneLocation(){
+        // Acquire a reference to the system Location Manager
+        if(locationManager == null){
+            locationManager = (LocationManager) m_context.getSystemService(Context.LOCATION_SERVICE);
+        }
+
+        // Define a listener that responds to location updates
+        if(locationListener == null){
+            locationListener = new LocationListener() {
+                public void onLocationChanged(Location location) {
+                    // Called when a new location is found by the network location provider.
+                    LatLng oldPoint = new LatLng(location.getLatitude(), location.getLongitude());
+                    LatLng bdPoint = mCenter.convertPoint(oldPoint);
+                    markerPerson.setPosition(bdPoint);
+                }
+
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                public void onProviderEnabled(String provider) {}
+
+                public void onProviderDisabled(String provider) {}
+            };
+        }
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 1, locationListener);
     }
 
     private void ToMapFragmentUI(){
@@ -365,9 +435,17 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         btn_back.setVisibility(View.INVISIBLE);
         ll_historyAndlocate.setVisibility(View.VISIBLE);
+
+        //人的marker去掉
+        markerPerson.remove();
+        //地图缩放
+        MarkerLocationCenter(markerMobile.getPosition());
+
+        //解除gps位置监听
+        locationManager.removeUpdates(locationListener);
     }
 
-    //
+
     private void findCarGuide1(){
         final LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_findcar_guide1, null);
@@ -396,8 +474,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
-
-
         //设置布局  有个问题啊  没有做适配
         dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
@@ -415,8 +491,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-//                Intent intent = new Intent(m_context, FindActivity.class);
-//                startActivity(intent);
                 state = true;
                 ToFindCarModeUI();
             }
@@ -530,6 +604,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
 
         tv_CarPosition.setText("车辆位置:" + reverseGeoCodeResult);
+        tv_FindModeCarPosition.setText("车辆位置:" + reverseGeoCodeResult);
     }
 
     @Override
