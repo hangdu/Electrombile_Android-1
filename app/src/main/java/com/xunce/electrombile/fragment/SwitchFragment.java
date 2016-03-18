@@ -734,10 +734,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         //接收到广播会被自动调用
         @Override
         public void onReceive (Context context, Intent intent) {
+            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
+                m_context.refreshBindList1();
+            }
+            else{
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.refreshBindList1();
+            }
             //从Intent中获取action
-            DeviceChangeHeadImage();
-            setSafedays();
-            m_context.refreshBindList1();
         }
     }
 

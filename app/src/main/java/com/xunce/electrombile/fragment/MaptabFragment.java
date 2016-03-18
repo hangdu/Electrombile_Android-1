@@ -546,6 +546,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      * 获取最新的位置
      */
     public void updateLocation() {
+        tv_CarPosition.setText("车辆位置:");
         if ((m_context).mac != null )
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
     }
@@ -579,7 +580,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void setCarname()
     {
         tv_CarName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
-        tv_CarPosition.setText("车辆位置:");
+
     }
 
     public void HideInfowindow()
@@ -615,9 +616,14 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         //接收到广播会被自动调用
         @Override
         public void onReceive (Context context, Intent intent) {
-            HideInfowindow();
-            setCarname();
-            InitCarLocation();
+            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
+                setCarname();
+            }
+            else{
+                HideInfowindow();
+                setCarname();
+                InitCarLocation();
+            }
         }
     }
 }

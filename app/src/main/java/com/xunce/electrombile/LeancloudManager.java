@@ -360,6 +360,9 @@ public class LeancloudManager {
                                 if (e == null) {
                                     ToastUtils.showShort(context,"车的昵称上传成功");
                                     settingManager.setCarName(IMEI,carname);
+                                    Intent intent = new Intent("com.app.bc.test");
+                                    intent.putExtra("KIND", "CHANGECARNICKNAME");
+                                    context.sendBroadcast(intent);//发送广播事件
                                 }
                                 else {
                                     ToastUtils.showShort(context,"车的昵称上传失败");

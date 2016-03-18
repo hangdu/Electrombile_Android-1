@@ -60,7 +60,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     TextView tv_CarIMEI;
     RelativeLayout btn_DeleteDevice;
     String IMEI;
-    SettingManager setManager;
+    private SettingManager setManager;
     private ProgressDialog progressDialog;
     RelativeLayout btn_DeviceChange;
     Boolean Flag_Maincar;
@@ -287,7 +287,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     tv_CarName.setText("车辆名称:"+nickname);
                     dialog.dismiss();
                     //上传服务器
-                    leancloudManager.uploadCarName(IMEI,nickname);
+                    leancloudManager.uploadCarName(IMEI, nickname);
+                    //发送一个广播
+
                 }
             }
         });
