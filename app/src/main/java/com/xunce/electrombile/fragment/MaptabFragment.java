@@ -47,6 +47,7 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity2;
+import com.xunce.electrombile.activity.FindActivity;
 import com.xunce.electrombile.activity.FindCarActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
@@ -288,6 +289,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_arriveNearby.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Intent intent = new Intent(m_context, FindActivity.class);
                 Intent intent = new Intent(m_context, FindCarActivity.class);
                 startActivity(intent);
             }

@@ -288,6 +288,8 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseSeekSendToFindAct(int value) {
+
+
         if (value == -1) {
             return;
         }

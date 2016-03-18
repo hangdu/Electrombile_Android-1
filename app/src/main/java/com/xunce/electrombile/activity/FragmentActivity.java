@@ -555,6 +555,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
         //发广播
         Intent intent = new Intent("com.app.bc.test");
+        intent.putExtra("KIND","OTHER");
         sendBroadcast(intent);//发送广播事件
 
         closeDrawable();

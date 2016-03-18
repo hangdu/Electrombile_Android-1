@@ -147,6 +147,7 @@ public class CarManageActivity extends Activity {
 
                             //发送广播提醒switchFragment  发生了切解绑主车辆的行为(只有主车辆被解绑了  才需要去发送广播)
                             Intent intent = new Intent("com.app.bc.test");
+                            intent.putExtra("KIND","OTHER");
                             sendBroadcast(intent);//发送广播事件
                         }
                         else{
@@ -180,6 +181,7 @@ public class CarManageActivity extends Activity {
 
         //发送广播提醒switchFragment  发生了切换车辆的行为
         Intent intent = new Intent("com.app.bc.test");
+        intent.putExtra("KIND","OTHER");
         sendBroadcast(intent);//发送广播事件
     }
 

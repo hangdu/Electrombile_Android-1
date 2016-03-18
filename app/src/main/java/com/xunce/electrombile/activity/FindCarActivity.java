@@ -21,7 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.CmdCenter;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.receiver.MyReceiver;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,6 +38,10 @@ public class FindCarActivity extends Activity {
     private TextView tv_secondResult;
     private TextView tv_thirdResult;
     private MyReceiver receiver;
+    private TextView tv_realtime_tensity;
+    private MqttConnectManager mqttConnectManager;
+    private CmdCenter mCenter;
+    private SettingManager settingManager;
 
     Handler handler = new Handler(){
         @Override
@@ -45,6 +52,12 @@ public class FindCarActivity extends Activity {
                 timer.cancel();
                 tv_second.setText("30");
                 btn_continueGetSignal.setEnabled(true);
+                if (mqttConnectManager.returnMqttStatus()) {
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOff(),settingManager.getIMEI());
+                }
+                else{
+                    ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
+                }
             } else {
                 tv_second.setText(secondleft+"");
             }
@@ -82,10 +95,16 @@ public class FindCarActivity extends Activity {
             @Override
             public void onClick(View v) {
                 TimeCountdown();
+                //发送seek on的命令
+
             }
         });
+        tv_realtime_tensity = (TextView)findViewById(R.id.tv_realtime_tensity);
 
         registerBroadCast();
+        settingManager = SettingManager.getInstance();
+        mqttConnectManager = MqttConnectManager.getInstance();
+        mCenter = CmdCenter.getInstance();
     }
 
     private void registerBroadCast() {
@@ -134,6 +153,13 @@ public class FindCarActivity extends Activity {
             public void onClick(View v) {
                 dialog.dismiss();
                 TimeCountdown();
+
+                if (mqttConnectManager.returnMqttStatus()) {
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(),settingManager.getIMEI());
+                }
+                else{
+                    ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
+                }
             }
         });
 
@@ -154,6 +180,7 @@ public class FindCarActivity extends Activity {
 //            Log.i(TAG, "find接收调用");
             Bundle bundle = intent.getExtras();
             int data = bundle.getInt("intensity");
+            tv_realtime_tensity.setText(data+"");
 //            Log.i(TAG, data + "");
 //            cancelDialog(data);
         }

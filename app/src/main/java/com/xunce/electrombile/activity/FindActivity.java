@@ -283,6 +283,4 @@ public class FindActivity extends BaseActivity {
             cancelDialog(data);
         }
     }
-
-
 }

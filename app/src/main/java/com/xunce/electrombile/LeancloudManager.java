@@ -281,6 +281,7 @@ public class LeancloudManager {
                             }
                             if (settingManager.getIMEI().equals(IMEI)) {
                                 Intent intent = new Intent("com.app.bc.test");
+                                intent.putExtra("KIND","OTHER");
                                 context.sendBroadcast(intent);//发送广播事件
                             }
 
@@ -301,6 +302,7 @@ public class LeancloudManager {
 
                                     if (settingManager.getIMEI().equals(IMEI)) {
                                         Intent intent = new Intent("com.app.bc.test");
+                                        intent.putExtra("KIND","OTHER");
                                         context.sendBroadcast(intent);//发送广播事件
                                     }
                                 }
