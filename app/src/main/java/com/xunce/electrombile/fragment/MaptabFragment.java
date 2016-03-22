@@ -37,6 +37,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
@@ -47,7 +48,6 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity2;
-import com.xunce.electrombile.activity.FindActivity;
 import com.xunce.electrombile.activity.FindCarActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
@@ -55,8 +55,6 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
@@ -189,6 +187,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (mBaiduMap != null) {
             m_context.timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
             updateLocation();
+            com.orhanobut.logger.Logger.i("InitCarLocation", "发送cmd_location");
         }
     }
 
@@ -370,7 +369,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         HideInfowindow();
         setCarname();
-//        InitCarLocation();
     }
 
     //找车模式的UI
@@ -385,9 +383,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
         InitCarLocation();
-
-//        tv_FindModeCarPosition.setText("车辆位置:");
-
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.marker_person);
         //构建MarkerOption，用于在地图上添加Marker
@@ -400,10 +395,42 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         //怎么判断车在室内还是在室外呢???
 
-        //根据车的位置和人的位置  需要对地图进行缩放???
-
         //获取到手机的位置
         getPhoneLocation();
+    }
+
+    //根据车的位置和人的位置  需要对地图进行缩放???
+    private void scaleMap(){
+        LatLng p1 = markerMobile.getPosition();
+        LatLng p2 = markerPerson.getPosition();
+
+        double latitude_min;
+        double latitude_max;
+        double longitude_min;
+        double longitude_max;
+        if(p1.latitude<p2.latitude){
+            latitude_min = p1.latitude;
+            latitude_max = p2.latitude;
+        }
+        else{
+            latitude_min = p2.latitude;
+            latitude_max = p1.latitude;
+        }
+
+        if(p1.longitude<p2.longitude){
+            longitude_min = p1.longitude;
+            longitude_max = p2.longitude;
+        }
+        else{
+            longitude_min = p2.longitude;
+            longitude_max = p1.longitude;
+        }
+
+        LatLng southwest = new LatLng(latitude_min,longitude_min);
+        LatLng northeast = new LatLng(latitude_max,longitude_max);
+        LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
     }
 
     private void getPhoneLocation(){
@@ -420,6 +447,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     LatLng oldPoint = new LatLng(location.getLatitude(), location.getLongitude());
                     LatLng bdPoint = mCenter.convertPoint(oldPoint);
                     markerPerson.setPosition(bdPoint);
+                    scaleMap();
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {}

@@ -128,12 +128,9 @@ public class MyReceiver extends BroadcastReceiver {
         switch (cmd) {
             //如果是设置围栏的命令
             case ProtocolConstants.CMD_FENCE_ON:
-                //新加代码
                 Message msg = Message.obtain();
                 msg.what = 2;
                 alarmHandler.sendMessage(msg);
-
-//                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(code, true, "防盗开启成功");
                 break;
 
@@ -143,7 +140,6 @@ public class MyReceiver extends BroadcastReceiver {
                 Message msg1 = Message.obtain();
                 msg1.what = 2;
                 alarmHandler.sendMessage(msg1);
-//                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseFence(code, false, "防盗关闭成功");
                 break;
 
@@ -163,6 +159,7 @@ public class MyReceiver extends BroadcastReceiver {
                 break;
 
             case ProtocolConstants.CMD_LOCATION:
+                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseGetGPS(code,protocol);
                 break;
 
@@ -196,7 +193,7 @@ public class MyReceiver extends BroadcastReceiver {
     //这个函数是主动查询gps的时候执行的函数 后面那个服务器主动上报用的
     private void caseGetGPS(int code,Protocol protocol) {
         //result为101的时候不能执行cancelWaitTimeOut()
-        ((FragmentActivity) mContext).cancelWaitTimeOut();
+//        ((FragmentActivity) mContext).cancelWaitTimeOut();
 
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:

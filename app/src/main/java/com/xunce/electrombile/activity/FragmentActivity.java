@@ -117,7 +117,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 return;
             }
             dismissWaitDialog();
-            ToastUtils.showShort(FragmentActivity.this, "指令下发失败，请检查网络和设备工作是否正常。");
+            ToastUtils.showShort(FragmentActivity.this, "FragmentActivity指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
 
@@ -247,8 +247,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             dismissWaitDialog();
             timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
         }
+        else{
+            timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        }
     }
-
 
     /**
      * 建立MQTT连接
@@ -258,6 +260,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             @Override
             public void MqttConnectSuccess() {
                 //这些是在呈现了页面之后执行的
+                com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
                 mac = mqttConnectManager.getMac();
                 mqttConnectManager.subscribe(setManager.getIMEI());
                 ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");

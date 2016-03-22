@@ -113,9 +113,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public static final int CROP_PHOTO=2;
     public static final int CHOOSE_PHOTO=3;
 
-//    private DrawerLayout mDrawerLayout;
-
-
 
 //    private Logger log;
 
@@ -302,12 +299,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         loadBitmap();
-
-//        bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
-//        if(bitmap!=null){
-//            headImage.setImageBitmap(bitmap);
-//            m_context.setLeftMenuCarImage(bitmap);
-//        }
 
         img_weather = (ImageView)v.findViewById(R.id.img_weather);
 
