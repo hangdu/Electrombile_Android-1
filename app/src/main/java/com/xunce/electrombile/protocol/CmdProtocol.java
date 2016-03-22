@@ -47,8 +47,7 @@ public class CmdProtocol extends Protocol {
         String lng = keyForValue(ProtocolConstants.LNG,temp);
         long long_timestamp = Long.parseLong(keyForValue(ProtocolConstants.TIMESTAMP, temp));
         Date date = new Date(long_timestamp*1000);
-        //为什么相差了16个小时
-        date.setHours(date.getHours()+16);
+        date.setHours(date.getHours());
         TracksManager.TrackPoint trackPoint = new TracksManager.TrackPoint(date,Double.parseDouble(lat),Double.parseDouble(lng));
         return trackPoint;
     }

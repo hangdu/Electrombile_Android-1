@@ -220,7 +220,7 @@ public class MyReceiver extends BroadcastReceiver {
         if(0 == result){
             //默认是自动落锁5分钟
             ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
-                    ((FragmentActivity)mContext).mCenter.cmdAutolockTimeSet(5),((FragmentActivity) mContext).setManager.getIMEI());
+                    ((FragmentActivity) mContext).mCenter.cmdAutolockTimeSet(5), ((FragmentActivity) mContext).setManager.getIMEI());
 
             ((FragmentActivity)mContext).setManager.setAutoLockStatus(true);
             return;
@@ -369,12 +369,13 @@ public class MyReceiver extends BroadcastReceiver {
 
     private void cmdGPSgetresult(Protocol protocol){
         TracksManager.TrackPoint trackPoint = protocol.getNewResult();
-        Date date = trackPoint.time;
-
-        CmdCenter mCenter = CmdCenter.getInstance();
-        LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
-        trackPoint = new TracksManager.TrackPoint(date,bdPoint);
-        ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+        if(trackPoint!=null){
+            Date date = trackPoint.time;
+            CmdCenter mCenter = CmdCenter.getInstance();
+            LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
+            trackPoint = new TracksManager.TrackPoint(date,bdPoint);
+            ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+        }
     }
 
     public void setAlarmHandler(Handler AlarmHandler){
