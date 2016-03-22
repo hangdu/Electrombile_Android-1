@@ -472,11 +472,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                         if(data.weather.contains("雨")){
                             img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
                         }
-                        else if(data.weather.equals("多云")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                        else if(data.weather.contains("雪")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
                         }
                         else{
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
                         }
                     }
 
