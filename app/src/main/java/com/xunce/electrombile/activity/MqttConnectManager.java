@@ -68,11 +68,11 @@ public class MqttConnectManager {
                 ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
                 com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
                 //设置重连
-                if (mac != null) {
+                if (mac != null&&!mac.isConnected()) {
                     getMqttConnection();
                 }
                 else{
-                    ToastUtils.showShort(mcontext, "mac为空");
+                    ToastUtils.showShort(mcontext, "mac为空 或者 连接好的状态");
                 }
             }
 
@@ -147,14 +147,13 @@ public class MqttConnectManager {
 
     public void subscribe(String IMEI){
         //订阅命令字
-        String initTopic = IMEI;
-        String topic1 = "dev2app/" + initTopic + "/cmd";
+        String topic1 = "dev2app/" + IMEI + "/cmd";
         //订阅GPS数据
-        String topic2 = "dev2app/" + initTopic + "/gps";
+        String topic2 = "dev2app/" + IMEI + "/gps";
         //订阅上报的信号强度
-        String topic3 = "dev2app/" + initTopic + "/433";
+        String topic3 = "dev2app/" + IMEI + "/433";
         //订阅报警
-        String topic4 = "dev2app/" + initTopic + "/alarm";
+        String topic4 = "dev2app/" + IMEI + "/alarm";
         String[] topic = {topic1, topic2, topic3, topic4};
         int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
                 ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
@@ -168,7 +167,6 @@ public class MqttConnectManager {
             e.printStackTrace();
             ToastUtils.showShort(App.getInstance(), "订阅失败!请稍后重启再试！");
         }
-
     }
 
     public boolean unSubscribe(String IMEI) {
