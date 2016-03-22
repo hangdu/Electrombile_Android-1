@@ -43,26 +43,6 @@ public class CmdCenter {
     /**
      * The m center.
      */
-//    private static CmdCenter mCenter;
-
-
-    //报警用的标志位
-
-
-
-//
-//    /**
-//     * Gets the single instance of CmdCenter.
-//     *
-//     * @param c the c
-//     * @return single instance of CmdCenter
-//     */
-//    public static CmdCenter getInstance() {
-//        if (mCenter == null) {
-//            mCenter = new CmdCenter();
-//        }
-//        return mCenter;
-//    }
 
     private CmdCenter(){
 
@@ -73,14 +53,6 @@ public class CmdCenter {
     public static CmdCenter getInstance() {
         return INSTANCE;
     }
-
-    /**
-     * Inits the.
-
-     */
-//    private void init() {
-//        mSettingManager = SettingManager.getInstance();
-//    }
 
     //由GPS坐标转换成百度经纬度坐标
     public LatLng convertPoint(LatLng sourcePoint) {
@@ -147,9 +119,7 @@ public class CmdCenter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String s = obj.toString();
-        return s;
-//        return obj.toString();
+        return obj.toString();
     }
 
     private String getCmdString(int cmd,int period) {
@@ -160,10 +130,11 @@ public class CmdCenter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String s = obj.toString();
-        return s;
-//        return obj.toString();
+        return obj.toString();
     }
 
-
+    //用于app第一次向设备查询信息 可以查到设备的电量  位置信息  报警开关状态  自动落锁状态等
+    public byte[] getInitialStatus(){
+        return getCmdString(ProtocolConstants.APP_CMD_STATUS_GET).getBytes();
+    }
 }

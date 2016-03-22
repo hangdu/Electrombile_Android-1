@@ -121,10 +121,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     };
 
-//    public RadioGroup getMain_radio() {
-//        return main_radio;
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        LogConfigure();
@@ -200,9 +196,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     public void gpsCallBack(LatLng desLat, TracksManager.TrackPoint trackPoint) {
         maptabFragment.locateMobile(trackPoint);
-        //传递数据给地图的Fragment
-        //如果正在播放轨迹，则更新位置
-
     }
 
     //取消显示常驻通知栏
@@ -269,7 +262,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 //开启报警服务
                 startAlarmService();
 
-                maptabFragment.InitCarLocation();
+                sendMessage(FragmentActivity.this,mCenter.getInitialStatus(),setManager.getIMEI());
             }
 
             @Override
@@ -369,7 +362,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         img_car = (ImageView)left_menu.findViewById(R.id.img_car);
         OtherCarListview = (ListView)left_menu.findViewById(R.id.OtherCarListview);
     }
-
 
 
     /**
@@ -472,28 +464,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             Historys.exit();
         }
     }
-
-//    private void GetAlarmStatusFromServer(){
-//        if (mac != null && mac.isConnected())
-//        {
-//            sendMessage(FragmentActivity.this, mCenter.cmdFenceGet(), setManager.getIMEI());
-//        }
-//        else{
-//            //绝对不会到这个分支来
-//            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
-//        }
-//    }
-//
-//    private void GetAutoLockStatusFromServer(){
-//        if (mac != null && mac.isConnected())
-//        {
-//            sendMessage(FragmentActivity.this, mCenter.APP_CMD_AUTOLOCK_GET(), setManager.getIMEI());
-//        }
-//        else{
-//            //绝对不会到这个分支来
-//            ToastUtils.showShort(FragmentActivity.this, "mqtt连接失败");
-//        }
-//    }
 
 //    private void LogConfigure(){
 //        LogConfigurator logConfigurator = new LogConfigurator();

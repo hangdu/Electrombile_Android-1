@@ -1,6 +1,7 @@
 package com.xunce.electrombile.protocol;
 
 import com.xunce.electrombile.Constants.ProtocolConstants;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 
 import java.util.Date;
@@ -14,10 +15,12 @@ public class CmdProtocol extends Protocol {
     protected int state;
     protected int period;
     protected int code;
+    private SettingManager settingManager;
 
 
     public CmdProtocol(String tmp) {
         super(tmp);
+        settingManager = SettingManager.getInstance();
     }
 
     @Override
@@ -50,6 +53,43 @@ public class CmdProtocol extends Protocol {
         date.setHours(date.getHours());
         TracksManager.TrackPoint trackPoint = new TracksManager.TrackPoint(date,Double.parseDouble(lat),Double.parseDouble(lng));
         return trackPoint;
+    }
+
+    @Override
+    public Boolean getInitialStatusResult(){
+        String temp = keyForValue(ProtocolConstants.RESULT);
+        if (isEmpty(temp)) return false;
+
+        //小安宝的开关状态查询
+        String lock = keyForValue(ProtocolConstants.LOCK,temp);
+        if(lock.equals("true")){
+            settingManager.setAlarmFlag(true);
+        }
+        else{
+            settingManager.setAlarmFlag(false);
+        }
+
+        //自动落锁的状态查询
+        String autolock = keyForValue(ProtocolConstants.AUTOLOCK,temp);
+        String isOn = keyForValue(ProtocolConstants.isOn,autolock);
+        if(isOn.equals("true")){
+            settingManager.setAutoLockStatus(true);
+            //获取到自动落锁的时间
+            String period = keyForValue(ProtocolConstants.PERIOD,autolock);
+            settingManager.setAutoLockTime(Integer.parseInt(period));
+        }
+        else{
+            settingManager.setAutoLockStatus(false);
+        }
+
+        //电池的状态查询
+        String battery = keyForValue(ProtocolConstants.BATERRY,temp);
+        String percent = keyForValue(ProtocolConstants.PERCENT,battery);
+        settingManager.setBatteryPercent(Integer.parseInt(percent));
+
+        String miles = keyForValue(ProtocolConstants.MILES,battery);
+        settingManager.setMiles(Integer.parseInt(miles));
+        return true;
     }
 
 

@@ -66,6 +66,7 @@ public class MqttConnectManager {
             @Override
             public void connectionLost(Throwable throwable) {
                 ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
+                com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
                 //设置重连
                 if (mac != null) {
                     getMqttConnection();
@@ -106,26 +107,7 @@ public class MqttConnectManager {
         }
     }
 
-//    public void ReMqttConnect(){
-//        try {
-//            mac.connect(mcp, this, new IMqttActionListener() {
-//                @Override
-//                public void onSuccess(IMqttToken asyncActionToken) {
-//                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接成功");
-////                    onMqttConnectListener.MqttConnectSuccess();
-//                }
-//
-//                @Override
-//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    ToastUtils.showShort(mcontext, "mac非空,重连服务器连接失败");
-////                    onMqttConnectListener.MqttConnectFail();
-//                }
-//            });
-//            Connections.getInstance(mcontext).addConnection(connection);
-//        } catch (MqttException e1) {
-//            e1.printStackTrace();
-//        }
-//    }
+
 
     public interface OnMqttConnectListener {
         void MqttConnectSuccess();

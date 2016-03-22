@@ -55,6 +55,10 @@ public class Protocol implements Serializable {
 
     ;
 
+    public Boolean getInitialStatusResult(){
+        throw new NullPointerException();
+    }
+
     public int getResult() {
         throw new NullPointerException();
     }

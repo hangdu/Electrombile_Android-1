@@ -246,6 +246,26 @@ public class SettingManager {
         spf.edit().putString(FLAGCARSWITCHED, flagCarSwitched).apply();
     }
 
+    //电池电量
+    public void setBatteryPercent(int percent){
+        spf.edit().putInt("percent", percent).apply();
+    }
+
+    public int getBatteryPercent(){
+        return spf.getInt("percent",0);
+    }
+
+    //获取可行驶公里数
+    public void setMiles(int miles){
+        spf.edit().putInt("miles", miles).apply();
+    }
+
+    public int getMiles(){
+        return spf.getInt("miles",0);
+    }
+
+
+
     public String getFlagCarSwitched(){
         return spf.getString(FLAGCARSWITCHED, "没有切换");
     }

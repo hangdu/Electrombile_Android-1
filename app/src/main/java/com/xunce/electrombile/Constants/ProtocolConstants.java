@@ -39,6 +39,15 @@ public class ProtocolConstants {
     public final static String TYPE = "type";
     public final static String PERIOD = "period";
 
+    public final static String LOCK = "lock";
+    public final static String AUTOLOCK = "autolock";
+    public final static String isOn = "isOn";
+    public final static String BATERRY = "baterry";
+    public final static String PERCENT = "percent";
+    public final static String MILES = "miles";
+
+
+
     //开启电子围栏告警
     public final static int CMD_FENCE_ON = 1;
     //关闭电子围栏告警
@@ -61,6 +70,8 @@ public class ProtocolConstants {
     public final static int APP_CMD_AUTO_PERIOD_GET = 10;
 
     public final static int APP_CMD_AUTOLOCK_GET = 11;
+
+    public final static int APP_CMD_STATUS_GET = 13;
 
     //围栏打开状态
     public final static int ON = 1;

@@ -83,16 +83,16 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_CarPosition;
     private GeoCoder mSearch = null;
     private BroadcastReceiver MyBroadcastReceiver;
-    View titleView;
-    TextView titleTextView;
-    Button btn_back;
-    LinearLayout layout_FindMode_up;
-    Button btn_arriveNearby;
-    RelativeLayout ll_historyAndlocate;
-    TextView tv_FindModeCarName;
-    TextView tv_FindModeCarPosition;
-    LocationManager locationManager;
-    LocationListener locationListener;
+    private View titleView;
+    private TextView titleTextView;
+    private Button btn_back;
+    private LinearLayout layout_FindMode_up;
+    private Button btn_arriveNearby;
+    private RelativeLayout ll_historyAndlocate;
+    private TextView tv_FindModeCarName;
+    private TextView tv_FindModeCarPosition;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
 //    private Logger log;
 
@@ -382,7 +382,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
         tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
-        InitCarLocation();
+//        InitCarLocation();
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.marker_person);
         //构建MarkerOption，用于在地图上添加Marker
@@ -580,8 +580,10 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      */
     public void updateLocation() {
         tv_CarPosition.setText("车辆位置:");
-        if ((m_context).mac != null )
+        if ((m_context).mac != null ){
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
+        }
+
     }
 
     /**
@@ -655,7 +657,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             else{
                 HideInfowindow();
                 setCarname();
-                InitCarLocation();
+//                InitCarLocation();
             }
         }
     }

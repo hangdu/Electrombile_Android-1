@@ -185,6 +185,10 @@ public class MyReceiver extends BroadcastReceiver {
                 caseGetAutoLockStatus(code,protocol);
                 break;
 
+            case ProtocolConstants.APP_CMD_STATUS_GET:
+                caseGetInitialStatus(code,protocol);
+                break;
+
             default:
                 break;
         }
@@ -192,9 +196,6 @@ public class MyReceiver extends BroadcastReceiver {
 
     //这个函数是主动查询gps的时候执行的函数 后面那个服务器主动上报用的
     private void caseGetGPS(int code,Protocol protocol) {
-        //result为101的时候不能执行cancelWaitTimeOut()
-//        ((FragmentActivity) mContext).cancelWaitTimeOut();
-
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:
                 cmdGPSgetresult(protocol);
@@ -212,9 +213,9 @@ public class MyReceiver extends BroadcastReceiver {
         }
     }
 
-    private void caseOpenAutoLock(int result){
+    private void caseOpenAutoLock(int code){
         //执行fragmentactivity中的函数
-        if(0 == result){
+        if(0 == code){
             //默认是自动落锁5分钟
             ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
                     ((FragmentActivity) mContext).mCenter.cmdAutolockTimeSet(5), ((FragmentActivity) mContext).setManager.getIMEI());
@@ -222,16 +223,16 @@ public class MyReceiver extends BroadcastReceiver {
             ((FragmentActivity)mContext).setManager.setAutoLockStatus(true);
             return;
         }
-        dealErr(result);
+        dealErr(code);
     }
 
-    private void caseCloseAutoLock(int result){
-        if(0 == result){
+    private void caseCloseAutoLock(int code){
+        if(0 == code){
             ToastUtils.showShort(mContext, "自动落锁关闭");
             ((FragmentActivity) mContext).setManager.setAutoLockStatus(false);
             return;
         }
-        dealErr(result);
+        dealErr(code);
     }
 
     private void caseGetAutolockPeriod(int code,Protocol protocol) {
@@ -243,15 +244,15 @@ public class MyReceiver extends BroadcastReceiver {
         dealErr(code);
     }
 
-    public void caseSetAutoLockTime(int result){
-        if(result == 0){
+    public void caseSetAutoLockTime(int code){
+        if(code == 0){
            //自动落锁时间成功设置之后  把时间写到本地
             ToastUtils.showShort(mContext, "自动落锁成功");
             ((FragmentActivity) mContext).setManager.setAutoLockTime(Autolock.period);
 
             return;
         }
-        dealErr(result);
+        dealErr(code);
     }
 
     public void caseGetAutoLockStatus(int code,Protocol protocol){
@@ -275,6 +276,28 @@ public class MyReceiver extends BroadcastReceiver {
         dealErr(code);
     }
 
+    private void caseGetInitialStatus(int code,Protocol protocol){
+        if(code == 0){
+            ToastUtils.showShort(mContext, "设备状态查询成功");
+            //这个地方要加上处理函数的
+            TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+            if(trackPoint!=null){
+                Date date = trackPoint.time;
+                CmdCenter mCenter = CmdCenter.getInstance();
+                LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
+                trackPoint = new TracksManager.TrackPoint(date,bdPoint);
+                ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+            }
+            else{
+                //包错误
+                return;
+            }
+            protocol.getInitialStatusResult();
+            return;
+        }
+        dealErr(code);
+    }
+
     private void caseSeek(int result, String success) {
         if (ProtocolConstants.ERR_SUCCESS == result) {
             ToastUtils.showShort(mContext, success);
@@ -285,8 +308,6 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void caseSeekSendToFindAct(int value) {
-
-
         if (value == -1) {
             return;
         }
