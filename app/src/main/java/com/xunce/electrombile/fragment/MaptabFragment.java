@@ -94,6 +94,11 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private LocationManager locationManager;
     private LocationListener locationListener;
 
+    public static final String status_LocateCar = "LOCATECAR";
+    public static final String status_FindCar = "FINDCAR";
+
+    public String status = status_LocateCar;
+
 //    private Logger log;
 
     private Handler playHandler = new Handler() {
@@ -373,6 +378,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     //找车模式的UI
     private void ToFindCarModeUI(){
+        status = status_FindCar;
         titleTextView.setText("车辆位置");
 
         layout_FindMode_up.setVisibility(View.VISIBLE);
@@ -382,7 +388,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
         tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
-//        InitCarLocation();
+        InitCarLocation();
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.marker_person);
         //构建MarkerOption，用于在地图上添加Marker
@@ -463,6 +469,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void ToMapFragmentUI(){
+        status = status_LocateCar;
         titleTextView.setText("地图");
 
         layout_FindMode_up.setVisibility(View.INVISIBLE);
@@ -657,7 +664,13 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             else{
                 HideInfowindow();
                 setCarname();
-//                InitCarLocation();
+                InitCarLocation();
+
+                //如果是找车界面  需要切换到locateCar界面
+                if(status.equals(status_FindCar)){
+                    ToMapFragmentUI();
+                    status  = status_LocateCar;
+                }
             }
         }
     }
