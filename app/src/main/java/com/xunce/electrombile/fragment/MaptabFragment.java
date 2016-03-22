@@ -55,6 +55,8 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
@@ -93,6 +95,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     TextView tv_FindModeCarPosition;
     LocationManager locationManager;
     LocationListener locationListener;
+
 //    private Logger log;
 
     private Handler playHandler = new Handler() {

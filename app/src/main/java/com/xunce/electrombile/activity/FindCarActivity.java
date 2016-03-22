@@ -26,10 +26,15 @@ import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.receiver.MyReceiver;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class FindCarActivity extends Activity {
+    private static final String status_start = "START";
+    private static final String status_stop = "STOP";
+    private String status;
     private int secondleft;
     private Timer timer;
     private TextView tv_second;
@@ -42,6 +47,9 @@ public class FindCarActivity extends Activity {
     private MqttConnectManager mqttConnectManager;
     private CmdCenter mCenter;
     private SettingManager settingManager;
+    private ArrayList<Integer> intensityList;
+    //需要记录采集的次数
+    private int count = 0;
 
     Handler handler = new Handler(){
         @Override
@@ -53,7 +61,11 @@ public class FindCarActivity extends Activity {
                 tv_second.setText("30");
                 btn_continueGetSignal.setEnabled(true);
                 if (mqttConnectManager.returnMqttStatus()) {
-                    mqttConnectManager.sendMessage(mCenter.cmdSeekOff(),settingManager.getIMEI());
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOff(), settingManager.getIMEI());
+                    status = status_stop;
+                    tv_realtime_tensity.setText(0+"");
+                    int maxIntensity = findMaxIntensity();
+                    setIntentsityResult(maxIntensity);
                 }
                 else{
                     ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
@@ -94,9 +106,21 @@ public class FindCarActivity extends Activity {
         btn_continueGetSignal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TimeCountdown();
                 //发送seek on的命令
-
+                if (mqttConnectManager.returnMqttStatus()) {
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(), settingManager.getIMEI());
+                    //开始倒计时
+                    TimeCountdown();
+                    intensityList.clear();
+//                    intensityList = new ArrayList<Integer>();
+                    //数据采集次数增加
+                    count++;
+                    status = status_start;
+                    btn_continueGetSignal.setEnabled(false);
+                }
+                else{
+                    ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
+                }
             }
         });
         tv_realtime_tensity = (TextView)findViewById(R.id.tv_realtime_tensity);
@@ -152,10 +176,16 @@ public class FindCarActivity extends Activity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                TimeCountdown();
+
 
                 if (mqttConnectManager.returnMqttStatus()) {
-                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(),settingManager.getIMEI());
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(), settingManager.getIMEI());
+                    //开始倒计时
+                    TimeCountdown();
+                    intensityList = new ArrayList<Integer>();
+                    //第一次数据采集
+                    count = 1;
+                    status = status_start;
                 }
                 else{
                     ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
@@ -180,9 +210,39 @@ public class FindCarActivity extends Activity {
 //            Log.i(TAG, "find接收调用");
             Bundle bundle = intent.getExtras();
             int data = bundle.getInt("intensity");
-            tv_realtime_tensity.setText(data+"");
-//            Log.i(TAG, data + "");
-//            cancelDialog(data);
+            if(status.equals(status_start)){
+                tv_realtime_tensity.setText(data+"");
+                intensityList.add(data);
+            }
+        }
+    }
+
+    private int findMaxIntensity(){
+        if(intensityList.size() == 0){
+            return 0;
+        }
+        int maxIntensity = intensityList.get(0);
+        for(int i=1;i<intensityList.size();i++){
+            if(intensityList.get(i)>maxIntensity){
+                maxIntensity = intensityList.get(i);
+            }
+        }
+        return maxIntensity;
+    }
+
+    private void setIntentsityResult(int maxIntensity){
+        switch (count){
+            case 1:
+                tv_firstResult.setText(maxIntensity+"");
+                break;
+            case 2:
+                tv_secondResult.setText(maxIntensity+"");
+                break;
+            case 3:
+                tv_thirdResult.setText(maxIntensity+"");
+                break;
+            default:
+                break;
         }
     }
 }
