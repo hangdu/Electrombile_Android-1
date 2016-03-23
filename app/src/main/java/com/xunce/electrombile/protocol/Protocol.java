@@ -55,7 +55,7 @@ public class Protocol implements Serializable {
 
     ;
 
-    public Boolean getInitialStatusResult(){
+    public TracksManager.TrackPoint getInitialStatusResult(){
         throw new NullPointerException();
     }
 

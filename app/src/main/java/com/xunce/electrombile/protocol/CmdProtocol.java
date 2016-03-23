@@ -56,9 +56,18 @@ public class CmdProtocol extends Protocol {
     }
 
     @Override
-    public Boolean getInitialStatusResult(){
+    public TracksManager.TrackPoint getInitialStatusResult(){
         String temp = keyForValue(ProtocolConstants.RESULT);
-        if (isEmpty(temp)) return false;
+        if (isEmpty(temp)) return null;
+
+        //获取gps位置信息
+        String gps = keyForValue(ProtocolConstants.GPS,temp);
+        String lat = keyForValue(ProtocolConstants.LAT,gps);
+        String lng = keyForValue(ProtocolConstants.LNG,gps);
+        long long_timestamp = Long.parseLong(keyForValue(ProtocolConstants.TIMESTAMP, gps));
+        Date date = new Date(long_timestamp*1000);
+        date.setHours(date.getHours());
+        TracksManager.TrackPoint trackPoint = new TracksManager.TrackPoint(date,Double.parseDouble(lat),Double.parseDouble(lng));
 
         //小安宝的开关状态查询
         String lock = keyForValue(ProtocolConstants.LOCK,temp);
@@ -83,13 +92,14 @@ public class CmdProtocol extends Protocol {
         }
 
         //电池的状态查询
-        String battery = keyForValue(ProtocolConstants.BATERRY,temp);
+        String battery = keyForValue(ProtocolConstants.BATTERY,temp);
         String percent = keyForValue(ProtocolConstants.PERCENT,battery);
         settingManager.setBatteryPercent(Integer.parseInt(percent));
 
         String miles = keyForValue(ProtocolConstants.MILES,battery);
         settingManager.setMiles(Integer.parseInt(miles));
-        return true;
+
+        return trackPoint;
     }
 
 

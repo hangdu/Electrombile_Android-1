@@ -99,6 +99,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private List<String> IMEIlist;
     private SimpleAdapter simpleAdapter;
     private View left_menu;
+    private Boolean firsttime_Flag = true;
+
 
     /**
      * The handler. to process exit()
@@ -254,15 +256,19 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             public void MqttConnectSuccess() {
                 //这些是在呈现了页面之后执行的
                 com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
-                mac = mqttConnectManager.getMac();
-                mqttConnectManager.subscribe(setManager.getIMEI());
-                ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
+                if(firsttime_Flag){
+                    mac = mqttConnectManager.getMac();
+                    mqttConnectManager.subscribe(setManager.getIMEI());
+                    ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
 //                log.info("getMqttConnection  服务器连接成功");
-                setManager.setMqttStatus(true);
-                //开启报警服务
-                startAlarmService();
+                    setManager.setMqttStatus(true);
+                    //开启报警服务
+                    startAlarmService();
 
-                sendMessage(FragmentActivity.this,mCenter.getInitialStatus(),setManager.getIMEI());
+                    sendMessage(FragmentActivity.this,mCenter.getInitialStatus(),setManager.getIMEI());
+
+                    firsttime_Flag = false;
+                }
             }
 
             @Override

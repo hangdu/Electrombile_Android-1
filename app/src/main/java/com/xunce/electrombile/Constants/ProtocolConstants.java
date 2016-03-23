@@ -42,9 +42,11 @@ public class ProtocolConstants {
     public final static String LOCK = "lock";
     public final static String AUTOLOCK = "autolock";
     public final static String isOn = "isOn";
-    public final static String BATERRY = "baterry";
+    public final static String BATTERY = "battery";
     public final static String PERCENT = "percent";
     public final static String MILES = "miles";
+    public final static String GPS = "gps";
+
 
 
 

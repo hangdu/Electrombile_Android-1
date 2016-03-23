@@ -264,7 +264,7 @@ public class MyReceiver extends BroadcastReceiver {
                 ((FragmentActivity) mContext).setManager.setAutoLockStatus(true);
                 //若为打开状态  还要查询到自动落锁的时间
                 ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
-                        ((FragmentActivity)mContext).mCenter.cmdAutolockTimeGet(),((FragmentActivity) mContext).setManager.getIMEI());
+                        ((FragmentActivity) mContext).mCenter.cmdAutolockTimeGet(), ((FragmentActivity) mContext).setManager.getIMEI());
 
             }
             else if(state == 0){
@@ -279,8 +279,8 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseGetInitialStatus(int code,Protocol protocol){
         if(code == 0){
             ToastUtils.showShort(mContext, "设备状态查询成功");
-            //这个地方要加上处理函数的
-            TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+
+            TracksManager.TrackPoint trackPoint = protocol.getInitialStatusResult();
             if(trackPoint!=null){
                 Date date = trackPoint.time;
                 CmdCenter mCenter = CmdCenter.getInstance();
@@ -292,10 +292,11 @@ public class MyReceiver extends BroadcastReceiver {
                 //包错误
                 return;
             }
-            protocol.getInitialStatusResult();
-            return;
         }
-        dealErr(code);
+        else{
+            dealErr(code);
+        }
+
     }
 
     private void caseSeek(int result, String success) {
