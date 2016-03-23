@@ -73,6 +73,8 @@ public class ProtocolConstants {
 
     public final static int APP_CMD_AUTOLOCK_GET = 11;
 
+    public final static int APP_CMD_BATTERY = 12;
+
     public final static int APP_CMD_STATUS_GET = 13;
 
     //围栏打开状态

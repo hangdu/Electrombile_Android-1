@@ -2,6 +2,7 @@ package com.xunce.electrombile.protocol;
 
 import android.text.TextUtils;
 
+import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 
@@ -56,6 +57,11 @@ public class Protocol implements Serializable {
     ;
 
     public TracksManager.TrackPoint getInitialStatusResult(){
+        throw new NullPointerException();
+    }
+
+
+    public Boolean getBatteryInfo(){
         throw new NullPointerException();
     }
 

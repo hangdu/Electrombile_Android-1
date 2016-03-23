@@ -137,4 +137,11 @@ public class CmdCenter {
     public byte[] getInitialStatus(){
         return getCmdString(ProtocolConstants.APP_CMD_STATUS_GET).getBytes();
     }
+
+    //app主动查询电量
+    public byte[] getBatteryInfo(){
+        return getCmdString(ProtocolConstants.APP_CMD_BATTERY).getBytes();
+    }
+
+
 }

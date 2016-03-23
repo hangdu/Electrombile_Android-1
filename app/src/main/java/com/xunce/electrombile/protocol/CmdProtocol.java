@@ -103,6 +103,21 @@ public class CmdProtocol extends Protocol {
     }
 
 
+    @Override
+    public Boolean getBatteryInfo(){
+        String temp = keyForValue(ProtocolConstants.RESULT);
+        if (isEmpty(temp)) return false;
+
+        //获取gps位置信息
+        String percent = keyForValue(ProtocolConstants.PERCENT,temp);
+        settingManager.setBatteryPercent(Integer.parseInt(percent));
+
+        String miles = keyForValue(ProtocolConstants.MILES,temp);
+        settingManager.setMiles(Integer.parseInt(miles));
+        return true;
+    }
+
+
 
     @Override
     public int getState() {

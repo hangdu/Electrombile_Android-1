@@ -108,6 +108,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private PopupWindow mpopupWindow;
     private Uri imageUri;
     private TextView tv_Safeday;
+    private TextView tv_battery;
+
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -318,6 +320,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_temperature = (TextView)v.findViewById(R.id.tv_temperature);
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
+
+        LinearLayout ll_PowerandDistance = (LinearLayout)v.findViewById(R.id.ll_PowerandDistance);
+        ll_PowerandDistance.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                m_context.sendMessage(m_context,mCenter.getBatteryInfo(),setManager.getIMEI());
+            }
+        });
+
+        tv_battery = (TextView)v.findViewById(R.id.tv_battery);
     }
 
     private void initEvent() {
@@ -733,7 +745,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 setSafedays();
                 m_context.refreshBindList1();
             }
-            //从Intent中获取action
         }
     }
 
@@ -857,5 +868,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 m_context.setLeftMenuCarImage(bitmap);
             }
         }
+    }
+
+    public void refreshBatteryInfo(){
+        tv_battery.setText(setManager.getBatteryPercent()+"%");
     }
 }

@@ -185,6 +185,10 @@ public class MyReceiver extends BroadcastReceiver {
                 caseGetAutoLockStatus(code,protocol);
                 break;
 
+            case ProtocolConstants.APP_CMD_BATTERY:
+                caseGetBatteryInfo(code,protocol);
+                break;
+
             case ProtocolConstants.APP_CMD_STATUS_GET:
                 caseGetInitialStatus(code,protocol);
                 break;
@@ -298,6 +302,21 @@ public class MyReceiver extends BroadcastReceiver {
         }
 
     }
+
+    private void caseGetBatteryInfo(int code,Protocol protocol){
+        if(code == 0){
+            if(!protocol.getBatteryInfo()){
+                ToastUtils.showShort(mContext,"获取电量失败");
+            }
+            else{
+                ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
+            }
+        }
+        else{
+            dealErr(code);
+        }
+    }
+
 
     private void caseSeek(int result, String success) {
         if (ProtocolConstants.ERR_SUCCESS == result) {
