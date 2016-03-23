@@ -17,6 +17,7 @@ import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.fragment.SwitchFragment;
 import com.xunce.electrombile.manager.CmdCenter;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.protocol.CmdFactory;
 import com.xunce.electrombile.protocol.GPSFactory;
@@ -46,9 +47,11 @@ public class MyReceiver extends BroadcastReceiver {
     private String destinationName;
     private byte select = 0;
     private Protocol protocol;
+    private SettingManager settingManager;
 
     public MyReceiver(Context context) {
         mContext = context;
+        settingManager = SettingManager.getInstance();
     }
 
     private Protocol createFactory(byte msg, String jsonString) {
@@ -282,25 +285,34 @@ public class MyReceiver extends BroadcastReceiver {
 
     private void caseGetInitialStatus(int code,Protocol protocol){
         if(code == 0){
-            ToastUtils.showShort(mContext, "设备状态查询成功");
-
             TracksManager.TrackPoint trackPoint = protocol.getInitialStatusResult();
             if(trackPoint!=null){
+                ToastUtils.showShort(mContext, "设备状态查询成功");
                 Date date = trackPoint.time;
                 CmdCenter mCenter = CmdCenter.getInstance();
                 LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
                 trackPoint = new TracksManager.TrackPoint(date,bdPoint);
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
-            }
-            else{
-                //包错误
-                return;
+
+                //设置小安宝的开关状态
+                if(settingManager.getAlarmFlag()){
+                    ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
+                    ((FragmentActivity) mContext).switchFragment.showNotification("安全宝防盗系统已启动");
+                }
+                else{
+                    ((FragmentActivity) mContext).switchFragment.closeStateAlarmBtn();
+                }
+
+                //设置电池的电量
+                ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
+
+                //自动落锁的状态设置
+//                ((FragmentActivity) mContext).settingsFragment.refreshAutolockStatus();
             }
         }
         else{
             dealErr(code);
         }
-
     }
 
     private void caseGetBatteryInfo(int code,Protocol protocol){
@@ -309,6 +321,7 @@ public class MyReceiver extends BroadcastReceiver {
                 ToastUtils.showShort(mContext,"获取电量失败");
             }
             else{
+                ToastUtils.showShort(mContext,"获取电量成功");
                 ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
             }
         }

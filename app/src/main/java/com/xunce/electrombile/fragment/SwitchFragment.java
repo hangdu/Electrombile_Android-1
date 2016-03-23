@@ -873,4 +873,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void refreshBatteryInfo(){
         tv_battery.setText(setManager.getBatteryPercent()+"%");
     }
+
+    public void refreshBatteryToNULL(){
+        tv_battery.setText("正在获取电量");
+    }
 }

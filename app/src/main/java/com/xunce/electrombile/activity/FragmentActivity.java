@@ -265,7 +265,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     //开启报警服务
                     startAlarmService();
 
-                    sendMessage(FragmentActivity.this,mCenter.getInitialStatus(),setManager.getIMEI());
+                    sendMessage(FragmentActivity.this, mCenter.getInitialStatus(), setManager.getIMEI());
 
                     firsttime_Flag = false;
                 }
@@ -505,16 +505,20 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         simpleAdapter.notifyDataSetChanged();
     }
 
+    //设备切换
     private void DeviceChange(int position){
         String previous_IMEI = setManager.getIMEI();
         String current_IMEI = IMEIlist.get(position+1);
-        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
+        //在这里就解订阅原来的设备号,并且订阅新的设备号
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
             mqttConnectManager.unSubscribe(previous_IMEI);
             setManager.setIMEI(current_IMEI);
             mqttConnectManager.subscribe(current_IMEI);
-            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), current_IMEI);
+
+            //查询APP初始状态
+            mqttConnectManager.sendMessage(mCenter.getInitialStatus(), current_IMEI);
+            switchFragment.refreshBatteryToNULL();
             ToastUtils.showShort(this, "切换成功");
         }
         else{

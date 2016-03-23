@@ -320,7 +320,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                 if(!NextCarIMEI.equals("空")){
                     setManager.setIMEI(NextCarIMEI);
                     mqttConnectManager.subscribe(NextCarIMEI);
-                    mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), NextCarIMEI);
+                    mqttConnectManager.sendMessage(mCenter.getInitialStatus(), NextCarIMEI);
 
                     IMEIlist.remove(0);
                     setManager.setIMEIlist(IMEIlist);
@@ -356,7 +356,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
     //设备切换
     private void DeviceChange(){
-        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的开关状态
+        //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的初始状态
         mqttConnectManager = MqttConnectManager.getInstance();
         mCenter = CmdCenter.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
@@ -364,7 +364,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             mqttConnectManager.unSubscribe(setManager.getIMEI());
             setManager.setIMEI(IMEI);
             mqttConnectManager.subscribe(IMEI);
-            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), IMEI);
+            mqttConnectManager.sendMessage(mCenter.getInitialStatus(), IMEI);
             ToastUtils.showShort(CarInfoEditActivity.this,"切换成功");
         }
         else{
@@ -372,7 +372,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         }
 
         //更新IMEIlist
-        String IMEI_now = setManager.getIMEI();
         String IMEI_previous = IMEIlist.get(0);
         IMEIlist.set(0,IMEI);
         IMEIlist.set(othercarListPosition+1,IMEI_previous);

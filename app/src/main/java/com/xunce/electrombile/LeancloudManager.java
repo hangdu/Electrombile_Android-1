@@ -258,7 +258,6 @@ public class LeancloudManager {
                     if (!list.isEmpty()) {
                         if (list.size() != 1) {
                             ToastUtils.showShort(context, "DID表中  该IMEI对应多条记录");
-                            return;
                         }
                         AVObject avObject = list.get(0);
 

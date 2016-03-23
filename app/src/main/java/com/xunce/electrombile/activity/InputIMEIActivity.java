@@ -144,7 +144,7 @@ public class InputIMEIActivity extends Activity {
         if(1 == BindedDeviceNum){
             //刚刚绑定的就是第一个设备:订阅;查询
             mqttConnectManager.subscribe(settingManager.getIMEI());
-            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
+            mqttConnectManager.sendMessage(mCenter.getInitialStatus(), settingManager.getIMEI());
 
         }
         else if(BindedDeviceNum > 1){
@@ -152,7 +152,7 @@ public class InputIMEIActivity extends Activity {
             if(mqttConnectManager.unSubscribe(previous_IMEI)){
                 //解订阅成功
                 mqttConnectManager.subscribe(settingManager.getIMEI());
-                mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
+                mqttConnectManager.sendMessage(mCenter.getInitialStatus(), settingManager.getIMEI());
             }
         }
         gotoAct();
@@ -199,9 +199,9 @@ public class InputIMEIActivity extends Activity {
                 if (IMEI.equals("")) {
                     ToastUtils.showShort(InputIMEIActivity.this, "设备号不能为空");
                 }
-//                else if (IMEI.length() != 16) {
-//                    ToastUtils.showShort(InputIMEIActivity.this, "设备号的长度不对");
-//                }
+                else if (IMEI.length() != 15) {
+                    ToastUtils.showShort(InputIMEIActivity.this, "设备号的长度不对");
+                }
                 else {
                     //开始查找IMEI
                     progressDialog.show();

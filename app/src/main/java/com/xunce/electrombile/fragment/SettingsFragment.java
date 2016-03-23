@@ -92,7 +92,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onResume() {
 //        log.info("onResume-start");
         super.onResume();
-        refreshAutolockStatus();
+//        refreshAutolockStatus();
 //        log.info("onResume-finish");
     }
 
@@ -316,7 +316,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         refreshAutolockStatus();
     }
 
-    private void refreshAutolockStatus(){
+    public void refreshAutolockStatus(){
         //设置自动落锁的开关状态
         if(setManager.getAutoLockStatus()){
             int period = setManager.getAutoLockTime();
