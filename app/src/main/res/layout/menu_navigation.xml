@@ -17,7 +17,7 @@
             android:layout_marginLeft="3.33dp"
             android:layout_width="106.33dp"
             android:layout_height="117dp"
-            android:src="@drawable/person"/>
+            android:src="@drawable/default_carimage"/>
 
         <TextView
             android:id="@+id/tv_currentCar"

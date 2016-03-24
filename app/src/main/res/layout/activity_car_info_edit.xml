@@ -19,7 +19,7 @@
             android:id="@+id/img_car"
             android:layout_width="105dp"
             android:layout_height="114dp"
-            android:src="@drawable/person"/>
+            android:src="@drawable/default_carimage"/>
 
         <LinearLayout
             android:layout_toRightOf="@+id/img_car"

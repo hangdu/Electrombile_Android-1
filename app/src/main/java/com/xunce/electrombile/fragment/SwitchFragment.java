@@ -391,13 +391,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
             else{
                 //默认图像
-                Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
+                Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
                 headImage.setImageBitmap(bitmap);
                 m_context.setLeftMenuCarImage(bitmap);
             }
         }
         else{
-            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.person);
+            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
             headImage.setImageBitmap(bitmap);
             m_context.setLeftMenuCarImage(bitmap);
         }

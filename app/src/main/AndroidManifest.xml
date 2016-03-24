@@ -180,7 +180,6 @@
         <activity android:name=".activity.account.ForgetPassActivity2" />
         <activity android:name=".activity.account.ResetPassActivity" />
         <activity android:name=".activity.SpecificHistoryTrackActivity" />
-        <activity android:name=".activity.account.HeadImageActivity" />
         <activity android:name=".activity.CropActivity" />
         <activity android:name=".activity.GuideActivity" />
         <activity android:name=".activity.FindCarActivity"></activity>

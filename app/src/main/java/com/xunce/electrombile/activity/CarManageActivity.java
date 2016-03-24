@@ -196,12 +196,12 @@ public class CarManageActivity extends Activity {
             }
             else{
                 //默认图像
-                bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.person);
+                bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.default_carimage);
                 img_car.setImageBitmap(bitmap);
             }
         }
         else{
-            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.person);
+            Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.default_carimage);
             img_car.setImageBitmap(bitmap);
         }
     }
