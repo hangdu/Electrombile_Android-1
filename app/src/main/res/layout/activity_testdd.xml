@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.xunce.electrombile.activity.TestddActivity">
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/ll_button"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:background="#1dcf96"-->
+        <!--android:layout_height="44dp">-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:text = "历史报告"-->
+            <!--android:textSize="17.33sp"-->
+            <!--android:textColor="#d0f9e5"/>-->
+    <!--</RelativeLayout>-->
+
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
+    <com.xunce.electrombile.view.RefreshableView
+        android:id="@+id/refreshable_view_Date"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/viewpager"
+        android:orientation="vertical">
+
+        <ExpandableListView
+            android:id="@+id/expandableListView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </ExpandableListView>
+    </com.xunce.electrombile.view.RefreshableView>
+
+</LinearLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:focusableInTouchMode="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1dcf96">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#ffffff">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="修改用户昵称"/>
+    </RelativeLayout>
+
+    <EditText
+        android:layout_marginTop="23.33dp"
+        android:id="@+id/et_nickname"
+        android:layout_width="136.67dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:background="#026c4a" />
+
+    <Button
+        android:id="@+id/btn_sure"
+        android:layout_marginTop="31.67dp"
+        android:layout_width="136.67dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/yellow_rect"
+        android:text="提交"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"/>
+</LinearLayout>

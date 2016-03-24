@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#f3f3f3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
+    <TextView
+        android:layout_marginTop="13.33dp"
+        android:layout_marginLeft="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17.33sp"
+        android:textColor="#909090"
+        android:text = "自动落锁中"/>
+
+    <RadioGroup
+        android:id = "@+id/RadioGroup_switch"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id = "@+id/rb_openautolock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "开启"/>
+
+        <RadioButton
+            android:id = "@+id/rb_closeautolock"
+            android:layout_marginLeft="98.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "关闭"/>
+    </RadioGroup>
+
+
+
+    <RelativeLayout
+        android:id = "@+id/relative_locktime"
+        android:layout_marginTop="29.33dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioGroup
+            android:id = "@+id/RadioGroup_locktime"
+            android:layout_width="278.33dp"
+            android:layout_height="115dp"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:background="@drawable/rectangular">
+            <RadioButton
+                android:id = "@+id/rb_5min"
+                android:button="@null"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/antolock_time_radio_btn"
+                android:textSize="18.67sp"
+                android:text = "5分钟"/>
+
+            <RadioButton
+                android:id = "@+id/rb_10min"
+                android:button="@null"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/antolock_time_radio_btn"
+                android:textSize="18.67sp"
+                android:text = "10分钟"/>
+
+            <RadioButton
+                android:id = "@+id/rb_15min"
+                android:button="@null"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/antolock_time_radio_btn"
+                android:textSize="18.67sp"
+                android:text = "15分钟"/>
+        </RadioGroup>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:layout_marginLeft="45dp"
+        android:textSize="15.33sp"
+        android:textColor="#909090"
+        android:text = "何为自动落锁中?"/>
+</LinearLayout>

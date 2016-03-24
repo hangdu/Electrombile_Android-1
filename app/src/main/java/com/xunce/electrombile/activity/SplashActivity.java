@@ -33,8 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
 
-import im.fir.sdk.FIR;
-
 
 public class SplashActivity extends BaseActivity {
 
@@ -61,19 +59,40 @@ public class SplashActivity extends BaseActivity {
                     AVUser currentUser = AVUser.getCurrentUser();
                     if (currentUser != null) {
                         Intent intent;
-                        FIR.addCustomizeValue("user", currentUser.getUsername());
+//                        FIR.addCustomizeValue("user", currentUser.getUsername());
                         LogUtil.log.e("verified", "verified:" + currentUser.isMobilePhoneVerified());
                         if (currentUser.isMobilePhoneVerified()) {
+                            if(setManager.getIMEIlist().size() == 0){
+                                //虽然上次退出的时候是登录状态  但是没有把设备绑定好
+                                intent = new Intent(SplashActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                SplashActivity.this.finish();
+                                return;
+                            }
+                            setManager.setFirstLogin(false);
                             intent = new Intent(SplashActivity.this, FragmentActivity.class);
                             startActivity(intent);
-                        } else {
+                        }
+                        else {
+                            setManager.setPhoneNumber(currentUser.getUsername());
                             intent = new Intent(SplashActivity.this, VerifiedActivity.class);
                             startActivity(intent);
                         }
                         SplashActivity.this.finish();
                     } else {
-                        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                        startActivity(intent);
+                        setManager.setFirstLogin(true);
+                        //判断是否进入导航页面
+                        if(setManager.getNeedGuide()){
+                            setManager.setNeedGuide(false);
+                            Intent intent = new Intent(SplashActivity.this, GuideActivity.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            //之后需要把这句话注释掉
+//                            setManager.setNeedGuide(true);
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
                         SplashActivity.this.finish();
                     }
                     break;
@@ -85,7 +104,7 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
+        ServiceConstants.MQTT_HOST = setManager.getServer();
         getDeviceId();
     }
 
@@ -109,7 +128,7 @@ public class SplashActivity extends BaseActivity {
                 String baseUrl = "http://fir.im/api/v2/app/version/%s?token=%s";
                 //下面是正式的 版本调整
                 // String checkUpdateUrl = String.format(baseUrl, "553ca95096a9fc5c14001802", "39d16f30ebf111e4a2da4efe6522248a4b9d9ed4");
-                String checkUpdateUrl = String.format(baseUrl, "556c810d2bb8ac0e5d001a30", "b9d54ba0b12411e4bc2c492c76a46d264a53ba2f");
+                String checkUpdateUrl = String.format(baseUrl, "56d8305ea1de523fd2000010", "653b6b146dd19b4ce30dea9bbfa4a1e2");
                 try {
                     URL url = new URL(checkUpdateUrl);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

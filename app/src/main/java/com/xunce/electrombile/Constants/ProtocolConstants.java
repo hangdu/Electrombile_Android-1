@@ -31,11 +31,24 @@ public class ProtocolConstants {
     public final static String CMD = "cmd";
     public final static String RESULT = "result";
     public final static String STATE = "state";
+    public final static String CODE = "code";
     public final static String LAT = "lat";
     public final static String LNG = "lng";
     public final static String TIMESTAMP = "timestamp";
     public final static String INTENSITY = "intensity";
     public final static String TYPE = "type";
+    public final static String PERIOD = "period";
+
+    public final static String LOCK = "lock";
+    public final static String AUTOLOCK = "autolock";
+    public final static String isOn = "isOn";
+    public final static String BATTERY = "battery";
+    public final static String PERCENT = "percent";
+    public final static String MILES = "miles";
+    public final static String GPS = "gps";
+
+
+
 
     //开启电子围栏告警
     public final static int CMD_FENCE_ON = 1;
@@ -57,6 +70,12 @@ public class ProtocolConstants {
     public final static int APP_CMD_AUTO_PERIOD_SET = 9;
     //    10	APP_CMD_AUTO_PERIOD_GET	查询自动锁车的检测周期
     public final static int APP_CMD_AUTO_PERIOD_GET = 10;
+
+    public final static int APP_CMD_AUTOLOCK_GET = 11;
+
+    public final static int APP_CMD_BATTERY = 12;
+
+    public final static int APP_CMD_STATUS_GET = 13;
 
     //围栏打开状态
     public final static int ON = 1;

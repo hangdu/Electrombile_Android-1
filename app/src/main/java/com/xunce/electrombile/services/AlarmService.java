@@ -32,9 +32,8 @@ public class AlarmService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        setManager = new SettingManager(this);
+        setManager = SettingManager.getInstance();
         startMqttClient();
-        //subscribe(mac);
         registerBroadCast();
     }
 
@@ -59,27 +58,6 @@ public class AlarmService extends Service {
         Connection connection = Connections.getInstance(this).getConnection(ServiceConstants.handler);
         mac = connection.getClient();
     }
-
-//    /**
-//     * 订阅话题
-//     *
-//     * @param mac mqtt的客户端
-//     */
-//    private void subscribe(MqttAndroidClient mac) {
-//        if (mac != null && mac.isConnected()) {
-//            //订阅命令字
-//            String initTopic = setManager.getIMEI();
-//            String topic1 = "dev2app/" + initTopic + "/alarm";
-//            int qos = ServiceConstants.MQTT_QUALITY_OF_SERVICE;
-//            try {
-//                mac.subscribe(topic1, qos);
-//                LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-//            } catch (MqttException e) {
-//                e.printStackTrace();
-//                ToastUtils.showShort(this, "订阅失败!请稍后重启再试！");
-//            }
-//        }
-//    }
 
     @Override
     public void onDestroy() {

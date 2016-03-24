@@ -16,9 +16,18 @@ import im.fir.sdk.FIR;
 public class App extends Application {
     private static final String TAG = "App";
 
+    private static App instance;
+
+    public static App getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        //initial BugHD
+        FIR.init(this);
+        instance = this;
 
         //initial the Baidu map SDK
         initBaiduSDK();
@@ -28,8 +37,6 @@ public class App extends Application {
                 "yovqy5zy16og43zwew8i6qmtkp2y6r9b18zerha0fqi5dqsw");
 //        YunBaManager.start(getApplicationContext());
 
-        //initial BugHD
-        FIR.init(this);
 
 //        YunBaManager.subscribe(getApplicationContext(), new String[]{"e2link/"+setManager.getIMEI()}, new IMqttActionListener() {
 //

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1dcf96">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#ffffff">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="失车详情"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/dialog_tv_carName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="车辆名称"/>
+
+    <TextView
+        android:id="@+id/dialog_tv_LastCarLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="最后一次定位地点"/>
+
+    <TextView
+        android:id="@+id/dialog_tv_LastLocateTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="最后一次定位时间"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="车辆现在在室内的可能性:"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="有GPS信号室外可能性更大"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="无GPS信号可能在室内,请继续使用精确找车"/>
+
+    <Button
+        android:id="@+id/btn_nextstep"
+        android:layout_width="138.33dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="17dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/yellow_rect"
+        android:textColor="#dadada"
+        android:textSize="17.33dp"
+        android:text="下一步"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="17dp">
+    </View>
+</LinearLayout>

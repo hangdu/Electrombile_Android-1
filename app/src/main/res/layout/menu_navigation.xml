@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="265dp"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:gravity="center_horizontal"
+    android:background="#1dcf96"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/relative_currentcar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/img_car"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="3.33dp"
+            android:layout_width="106.33dp"
+            android:layout_height="117dp"
+            android:src="@drawable/default_carimage"/>
+
+        <TextView
+            android:id="@+id/tv_currentCar"
+            android:layout_toRightOf="@+id/img_car"
+            android:layout_marginLeft="8.33dp"
+            android:layout_marginTop="58.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fefefe"
+            android:textSize="17.33sp"
+            android:text="当前车辆"/>
+
+        <TextView
+            android:id="@+id/menutext1"
+            android:layout_alignLeft="@+id/tv_currentCar"
+            android:layout_below="@+id/tv_currentCar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fefefe"
+            android:textSize="17.33sp" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_otherCar"
+        android:layout_below="@+id/relative_currentcar"
+        android:layout_marginTop="23.33dp"
+        android:layout_marginLeft="38.33dp"
+        android:textColor="#ffffff"
+        android:textSize="17.33sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="其他车辆"/>
+
+    <RelativeLayout
+        android:layout_below="@+id/tv_otherCar"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" >
+
+        <ListView
+            android:id = "@+id/OtherCarListview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </ListView>
+
+    </RelativeLayout>
+
+</RelativeLayout>

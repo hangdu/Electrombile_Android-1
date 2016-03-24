@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:focusableInTouchMode="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1dcf96">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#ffffff">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="性别选择"/>
+    </RelativeLayout>
+
+    <RadioGroup
+        android:id = "@+id/radioGroup_chooseGender"
+        android:layout_marginTop="26.67dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id = "@+id/rb_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "男"/>
+
+        <RadioButton
+            android:id = "@+id/rb_female"
+            android:layout_marginLeft="58.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "女"/>
+    </RadioGroup>
+
+
+    <Button
+        android:id="@+id/btn_sure"
+        android:layout_marginTop="31.67dp"
+        android:layout_width="138.33dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/yellow_rect"
+        android:textColor="#fff2d6"
+        android:text="确认"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"/>
+</LinearLayout>

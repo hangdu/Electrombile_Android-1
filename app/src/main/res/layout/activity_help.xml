@@ -2,53 +2,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/app_style">
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:scrollbars="vertical"
-        android:fadingEdge="vertical">
+        android:fadingEdge="vertical"
+        android:scrollbars="vertical">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/tv_help1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_help1"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
                 android:text="1.如何绑定设备？
         \n按返回键返回主界面，点击屏幕下方第三个按钮，然后点击页面最上方的“绑定设备”按钮，在弹出的界面中，点击扫码绑定设备，扫描产品盒上的二维码即可。如果您没有二维码，请联系客服人员。"
-                android:textSize="25sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="30dp"
-                android:layout_centerHorizontal="true"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"/>
+                android:textSize="25sp" />
             <TextView
+                android:id="@+id/tv_help2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_help2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
                 android:text="2.如何解除绑定？
         \n按返回键返回主界面，点击屏幕下方第三个按钮，然后点击页面最下方的“退出登录”按钮，再重新登录并绑定设备即可。"
-                android:textSize="25sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="30dp"
-                android:layout_centerHorizontal="true"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"/>
+                android:textSize="25sp" />
             <TextView
+                android:id="@+id/tv_help3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_help3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
                 android:text="3.安全系统说明
         \n安全按钮亮时，安全系统为打开状态，如果此期间，您的电动车被移动超过500米，则会触发报警，此时，您的手机会发出报警声并震动。当安全按钮为灰色时，安全系统关闭，即使您的电动车被他人移动，手机端也不会报警！"
-                android:textSize="25sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="30dp"
-                android:layout_centerHorizontal="true"
-                android:paddingLeft="30dp"
-                android:paddingRight="30dp"/>
+                android:textSize="25sp" />
             </LinearLayout>
 
     </ScrollView>

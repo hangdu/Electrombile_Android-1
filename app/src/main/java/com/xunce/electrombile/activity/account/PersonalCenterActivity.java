@@ -1,56 +1,43 @@
 package com.xunce.electrombile.activity.account;
 
-import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.UpdatePasswordCallback;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
-import com.xunce.electrombile.utils.device.SDCardUtils;
-import com.xunce.electrombile.utils.system.BitmapUtils;
-import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.manager.SettingManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.GregorianCalendar;
 
-public class PersonalCenterActivity extends BaseActivity {
-
-    /*头像名称*/
-    //private static final String IMAGE_FILE_NAME = "faceImage.png";
-    /* 请求码*/
-    private static final int IMAGE_REQUEST_CODE = 0;
-    private static final int CAMERA_REQUEST_CODE = 1;
-    private static final int RESULT_REQUEST_CODE = 2;
-    private String[] items = new String[]{"选择本地图片", "拍照"};
-    private String imgFilePath = Environment.getExternalStorageDirectory().toString()
-            + "/safeGuard";
-    private ImageView faceImage;
-    private ImageView carView1;
-    private ImageView carView2;
-    private ImageView carView3;
-    private ImageView carView4;
-    private int photoNumber = 0;
-    private ImageView[] iv;
-    private String[] path = {"/faceImage.png", "/car1Image.png", "/car2Image.png", "/car3Image.png", "/car4Image.png"};
-
-    //设置设备号
-    private TextView tv_imei;
-    //设置车牌号
-    private EditText et_car_number;
-    //设置sim卡号
-    private EditText et_sim_number;
-
+public class PersonalCenterActivity extends BaseActivity{
+    private TextView tv_UserName;
+    private TextView tv_Gender;
+    private TextView tv_BirthDate;
+    private SettingManager settingManager;
+    private LeancloudManager leancloudManager;
+    private Boolean gender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,206 +47,279 @@ public class PersonalCenterActivity extends BaseActivity {
 
     @Override
     public void initViews() {
-        faceImage = (ImageView) findViewById(R.id.head_portrait);
-        carView1 = (ImageView) findViewById(R.id.car1View);
-        carView2 = (ImageView) findViewById(R.id.car2View);
-        carView3 = (ImageView) findViewById(R.id.car3View);
-        carView4 = (ImageView) findViewById(R.id.car4View);
-        iv = new ImageView[]{faceImage, carView1, carView2, carView3, carView4};
+        View titleView = findViewById(R.id.ll_button) ;
+        TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
+        titleTextView.setText("个人中心");
+        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PersonalCenterActivity.this.finish();
+            }
+        });
 
-        tv_imei = (TextView) findViewById(R.id.tv_imei);
-        et_car_number = (EditText) findViewById(R.id.et_car_number);
-        et_sim_number = (EditText) findViewById(R.id.et_sim_number);
+        tv_UserName = (TextView)findViewById(R.id.tv_UserName);
+        tv_Gender = (TextView)findViewById(R.id.tv_Gender);
+        tv_BirthDate = (TextView)findViewById(R.id.tv_BirthDate);
+
+        RelativeLayout layout_nickname = (RelativeLayout)findViewById(R.id.layout_UserName);
+        RelativeLayout layout_gender = (RelativeLayout)findViewById(R.id.layout_Gender);
+        RelativeLayout layout_BirthDate = (RelativeLayout)findViewById(R.id.layout_BirthDate);
+        LinearLayout layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
+        btn_back = (Button)findViewById(R.id.btn_back);
+
+        layout_nickname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeNickName();
+            }
+        });
+
+        layout_gender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeGender();
+            }
+        });
+
+        layout_BirthDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePicker = new DatePickerDialog(PersonalCenterActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        tv_BirthDate.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                        GregorianCalendar gregorianCalendar = new GregorianCalendar (year,monthOfYear,dayOfMonth);
+                        leancloudManager.uploadUserInfo(gregorianCalendar.getTime());
+                    }
+                }, 2013, 7, 20);
+                datePicker.show();
+            }
+        });
+
+        layout_ChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changePass();
+            }
+        });
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+
+            }
+        });
+    }
+
+    private void changeNickName(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_changenickname, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
+
+        Button btn_suretochangeName = (Button)view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+        final EditText et_nickname = (EditText)view.findViewById(R.id.et_nickname);
+
+        btn_suretochangeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nickname = et_nickname.getText().toString();
+                if(nickname.equals("")){
+                    dialog.dismiss();
+                }
+                else{
+                    tv_UserName.setText(nickname);
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(nickname);
+                }
+
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+    }
+
+    private void changeGender(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_changegender, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
+
+        Button btn_suretochangeGender = (Button)view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+        RadioGroup radioGroup_chooseGender = (RadioGroup)view.findViewById(R.id.radioGroup_chooseGender);
+        RadioButton rb_male = (RadioButton)view.findViewById(R.id.rb_male);
+        RadioButton rb_female = (RadioButton)view.findViewById(R.id.rb_female);
+        //初始化
+        if(settingManager.getGender()){
+            rb_male.setChecked(true);
+        }
+        else{
+            rb_female.setChecked(true);
+        }
+
+        radioGroup_chooseGender.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rb_male) {
+                    //some code
+                    gender = true;
+                } else if (checkedId == R.id.rb_female) {
+                    //some code
+                    gender = false;
+                }
+            }
+        });
+
+        btn_suretochangeGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //用户什么也没有点击
+                if(gender == null){
+                    dialog.dismiss();
+                }
+                else if(gender){
+                    tv_Gender.setText("男");
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(gender);
+                }
+                else{
+                    tv_Gender.setText("女");
+                    dialog.dismiss();
+                    //上传服务器
+                    leancloudManager.uploadUserInfo(gender);
+                }
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
+        //设置布局  有个问题啊  没有做适配
+        dialog.addContentView(view, new LinearLayout.LayoutParams(
+                dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+    }
+
+    private void changePass() {
+        //解析xml
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.changepassword, null);
+        final Dialog dialog = new Dialog(PersonalCenterActivity.this, R.style.Translucent_NoTitle_white);
+
+        //找按钮
+        Button confirm = (Button) view.findViewById(R.id.btn_sure);
+        Button cancel = (Button) view.findViewById(R.id.btn_cancel);
+
+        final EditText oldPass = (EditText)view.findViewById(R.id.et_oldpass);
+        final EditText newPass = (EditText)view.findViewById(R.id.et_newpass);
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String old_password = oldPass.getText().toString().trim();
+                String new_password = newPass.getText().toString().trim();
+                if(!new_password.isEmpty())
+                {
+                    AVUser currentUser = AVUser.getCurrentUser();
+                    currentUser.updatePasswordInBackground(old_password, new_password, new UpdatePasswordCallback() {
+                        @Override
+                        public void done(AVException e) {
+                            Log.d("TAG", "something wrong");
+                            if (e == null) {
+                                //修改密码成功
+                                Toast.makeText(PersonalCenterActivity.this, "修改密码成功", Toast.LENGTH_SHORT).show();
+                                oldPass.setText("");
+                                newPass.setText("");
+                                dialog.dismiss();
+                            } else {
+                                //原密码错误
+                                Toast.makeText(PersonalCenterActivity.this, "原密码错误,修改密码失败", Toast.LENGTH_SHORT).show();
+                                oldPass.setText("");
+                                newPass.setText("");
+                            }
+                        }
+                    });
+                }
+                //新密码为空
+                else{
+                    Toast.makeText(PersonalCenterActivity.this, "新密码为空,修改密码失败", Toast.LENGTH_SHORT).show();
+                    oldPass.setText("");
+                    newPass.setText("");
+                }
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        WindowManager m = PersonalCenterActivity.this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+
+        //设置布局
+        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
     }
 
     @Override
     public void initEvents() {
-        loadAndSetImg(faceImage, "/faceImage.png");
-        int ImageState = setManager.getPersonCenterImage();
-
-        //设置图片
-        for (int i = 1; i <= ImageState; i++) {
-            iv[i].setVisibility(View.VISIBLE);
-            loadAndSetImg(iv[i], path[i]);
-            if (i == ImageState && ImageState != 4) {
-                iv[i + 1].setVisibility(View.VISIBLE);
-            }
+        settingManager = SettingManager.getInstance();
+        //获取setting中的昵称 出生年代 性别
+        tv_UserName.setText(settingManager.getNickname());
+        if(settingManager.getGender()){
+            tv_Gender.setText("男");
         }
+        else{
+            tv_Gender.setText("女");
+        }
+        tv_BirthDate.setText(settingManager.getBirthdate());
 
-        //设置文字
-        tv_imei.setText("设备卡号:" + setManager.getIMEI());
-        et_sim_number.setText(setManager.getPersonCenterSimNumber());
-        et_car_number.setText(setManager.getPersonCenterCarNumber());
+        leancloudManager = LeancloudManager.getInstance();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        //保存输入的数据
-        setManager.setPersonCenterCarNumber(et_car_number.getText().toString().trim());
-        setManager.setPersonCenterSimNumber(et_sim_number.getText().toString().trim());
-
     }
 
-    private void loadAndSetImg(ImageView imageView, String nameImg) {
-        com.lidroid.xutils.BitmapUtils bitmapUtils = new com.lidroid.xutils.BitmapUtils(this);
-        bitmapUtils.configDefaultLoadFailedImage(R.drawable.iv_person_head);//加载失败图片
-        bitmapUtils.configDefaultBitmapConfig(Bitmap.Config.RGB_565);//设置图片压缩类型
-        bitmapUtils.configDefaultCacheExpiry(0);
-        bitmapUtils.configDefaultAutoRotation(true);
-        bitmapUtils.display(imageView, imgFilePath + nameImg);
-    }
-
-    public void changeHeadPortrait(View view) {
-        photoNumber = 0;
-        showDialog();
-    }
-
-    /**
-     * 显示选择对话框
-     */
-    private void showDialog() {
-
-        new AlertDialog.Builder(this)
-                .setTitle("设置头像")
-                .setItems(items, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                Intent intentFromGallery = new Intent();
-                                intentFromGallery.setType("image/*"); // 设置文件类型
-                                intentFromGallery
-                                        .setAction(Intent.ACTION_GET_CONTENT);
-                                startActivityForResult(intentFromGallery,
-                                        IMAGE_REQUEST_CODE);
-                                break;
-                            case 1:
-                                Intent intentFromCapture = new Intent(
-                                        MediaStore.ACTION_IMAGE_CAPTURE);
-                                // 判断存储卡是否可以用，可用进行存储
-                                if (SDCardUtils.hasSdcard()) {
-
-                                    intentFromCapture.putExtra(
-                                            MediaStore.EXTRA_OUTPUT,
-                                            Uri.fromFile(new File(imgFilePath)));
-                                }
-
-                                startActivityForResult(intentFromCapture,
-                                        CAMERA_REQUEST_CODE);
-                                break;
-                        }
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                }).show();
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //结果码不等于取消的时候
-        if (resultCode != RESULT_CANCELED) {
-            switch (requestCode) {
-                case IMAGE_REQUEST_CODE:
-                    startPhotoZoom(data.getData());
-                    break;
-                case CAMERA_REQUEST_CODE:
-                    if (SDCardUtils.hasSdcard()) {
-                        File tempFile = new File(imgFilePath + "/tempImg.png");
-                        startPhotoZoom(Uri.fromFile(tempFile));
-                    } else {
-                        ToastUtils.showShort(this, "未找到存储卡，无法存储照片！");
-                    }
-                    break;
-                case RESULT_REQUEST_CODE:
-                    if (data != null) {
-                        getImageToView(iv[photoNumber], data, path[photoNumber]);
-                    }
-                    break;
-            }
+    private class ChoiceOnClickListener implements DialogInterface.OnClickListener {
+        private int which = 0;
+        @Override
+        public void onClick(DialogInterface dialogInterface, int which) {
+            this.which = which;
         }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
-    /**
-     * 裁剪图片方法实现
-     *
-     * @param uri
-     */
-    public void startPhotoZoom(Uri uri) {
-
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        // 设置裁剪
-        intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 338);
-        intent.putExtra("outputY", 338);
-        intent.putExtra("return-data", true);
-        startActivityForResult(intent, 2);
-    }
-
-    /**
-     * 保存裁剪之后的图片数据
-     *
-     * @param
-     */
-    private void getImageToView(ImageView imageView, Intent data, String path) {
-        Bundle extras = data.getExtras();
-        if (extras != null) {
-            Bitmap photo = extras.getParcelable("data");
-            Drawable drawable = new BitmapDrawable(photo);
-            imageView.setImageDrawable(drawable);
-            saveFaceImg(photo, path);
+        public int getWhich() {
+            return which;
         }
     }
-
-    private void saveFaceImg(Bitmap photo, String path) {
-        try {
-            BitmapUtils.saveBitmapToFile(photo, imgFilePath + path);
-            ToastUtils.showShort(this, "设置成功！");
-            setNextImageDisplay();
-        } catch (IOException e) {
-            e.printStackTrace();
-            ToastUtils.showShort(this, "保存失败，请重试。");
-        }
-    }
-
-    private void setNextImageDisplay() {
-        if (photoNumber < 4)
-            iv[photoNumber + 1].setVisibility(View.VISIBLE);
-        setManager.setPersonCenterImage(photoNumber);
-    }
-
-    public void addDevice1Photo(View view) {
-        photoNumber = 1;
-        showDialog();
-    }
-
-    public void addDevice2Photo(View view) {
-        photoNumber = 2;
-        showDialog();
-    }
-
-    public void addDevice3Photo(View view) {
-        photoNumber = 3;
-        showDialog();
-    }
-
-    public void addDevice4Photo(View view) {
-        photoNumber = 4;
-        showDialog();
-    }
-
 }

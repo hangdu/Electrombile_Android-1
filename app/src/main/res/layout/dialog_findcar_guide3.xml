@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1dcf96">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#ffffff">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="使用向导"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="任意选择地点作为参考,按下信号发射控制器,开始第一次数据采集吧"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="按下控制器, 再点击以下按钮"/>
+
+    <Button
+        android:id="@+id/btn_getSignal"
+        android:layout_width="138.33dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="17dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/yellow_rect"
+        android:textColor="#dadada"
+        android:textSize="17.33dp"
+        android:text="开始采集"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="17dp">
+    </View>
+</LinearLayout>

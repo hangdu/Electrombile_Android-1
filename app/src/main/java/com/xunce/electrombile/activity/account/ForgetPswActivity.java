@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -140,7 +141,7 @@ public class ForgetPswActivity extends BaseActivity implements OnClickListener {
 	/**
 	 * The ll input psw.
 	 */
-	private LinearLayout llInputPsw;
+	private RelativeLayout llInputPsw;
 	/**
 	 * The tb psw flag.
 	 */
@@ -170,7 +171,7 @@ public class ForgetPswActivity extends BaseActivity implements OnClickListener {
 		btnReGetCode = (Button) findViewById(R.id.btnReGetCode);
 		btnSure = (Button) findViewById(R.id.btnSure);
 		llInputCode = (LinearLayout) findViewById(R.id.llInputCode);
-		llInputPsw = (LinearLayout) findViewById(R.id.llInputPsw);
+		llInputPsw = (RelativeLayout) findViewById(R.id.llInputPsw);
 		//ivBack = (ImageView) findViewById(R.id.ivBack);
 		tbPswFlag = (ToggleButton) findViewById(R.id.tbPswFlag);
 		toogleUI(ui_statu.DEFAULT);

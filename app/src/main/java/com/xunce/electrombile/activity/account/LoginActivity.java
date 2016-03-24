@@ -32,13 +32,18 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
+import com.avos.avoscloud.AVObject;
+import com.orhanobut.logger.Logger;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
+import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.utils.system.IntentUtils;
+import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
-
+import java.util.List;
 
 /**
  * ClassName: Class LoginActivity. <br/>
@@ -47,7 +52,6 @@ import com.xunce.electrombile.utils.useful.StringUtils;
  * @author Lien
  */
 public class LoginActivity extends BaseActivity implements OnClickListener {
-
 	/**
 	 * The et name.
 	 */
@@ -77,6 +81,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * The dialog.
 	 */
 	private ProgressDialog dialog;
+
+	private LeancloudManager leancloudManager;
+	private LeancloudManager.OnGetBindListListener onGetBindListListener;
+
+//	private Boolean HaveDevice;
 	/**
 	 * The handler.
 	 */
@@ -85,36 +94,74 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			super.handleMessage(msg);
 			handler_key key = handler_key.values()[msg.what];
 			switch (key) {
+				case TOAST:
+					ToastUtils.showShort(LoginActivity.this,msg.obj.toString());
+
 			// 登陆成功
-			case LOGIN_SUCCESS:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT)
-						.show();
-				dialog.cancel();
-				IntentUtils.getInstance().startActivity(LoginActivity.this,
-						FragmentActivity.class);
-				finish();
-				break;
+				case LOGIN_SUCCESS:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT)
+							.show();
+					dialog.cancel();
+
+					//成功登陆之后需要判断该用户有没有绑定设备:如果没有绑定的话,需要跳转到设备绑定的页面;如果已经绑定过的话,就跳转到主页面
+					findLeancloud();
+					break;
+
 			// 登陆失败
-			case LOGIN_FAIL:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "用户名或密码错误" + "",
-                        Toast.LENGTH_SHORT).show();
-				dialog.cancel();
-				break;
-			// 登录超时
-			case LOGIN_TIMEOUT:
-				handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
-				Toast.makeText(LoginActivity.this, "登陆超时,请检查网络连接！", Toast.LENGTH_SHORT)
-						.show();
-				dialog.cancel();
-				break;
-			}
+				case LOGIN_FAIL:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "用户名或密码错误" + "",
+							Toast.LENGTH_SHORT).show();
+					dialog.cancel();
+					break;
+				// 登录超时
+				case LOGIN_TIMEOUT:
+					handler.removeMessages(handler_key.LOGIN_TIMEOUT.ordinal());
+					Toast.makeText(LoginActivity.this, "登陆超时,请检查网络连接！", Toast.LENGTH_SHORT)
+							.show();
+					dialog.cancel();
+					break;
+				}
 		}
 	};
 
+
+	private void findLeancloud(){
+		//我需要在这里判断设备列表是否为空啊
+		leancloudManager = LeancloudManager.getInstance();
+		onGetBindListListener = new LeancloudManager.OnGetBindListListener() {
+			@Override
+			public void onGetBindListSuccess(List<AVObject> list) {
+				if(list.size() == 0){
+					//进入绑定设备的activity
+					Intent intent = new Intent(LoginActivity.this, BindingActivity2.class);
+					intent.putExtra("From","LoginActivity");
+					startActivity(intent);
+					finish();
+				}
+				else{
+					//直接进入主界面
+					IntentUtils.getInstance().startActivity(LoginActivity.this, FragmentActivity.class);
+					finish();
+				}
+			}
+
+			@Override
+			public void onGetBindListFail() {
+				ToastUtils.showShort(LoginActivity.this,"获取绑定列表失败");
+			}
+		};
+		leancloudManager.setonGetBindListListener(onGetBindListListener);
+		leancloudManager.getUserIMEIlistFromServer();
+
+		leancloudManager.getUserInfoFromServer();
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Logger.i("LoginActivity-onCreate", "start");
 		setContentView(R.layout.activity_login);
         super.onCreate(savedInstanceState);
 	}
@@ -124,11 +171,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 */
     @Override
 	 public void initEvents() {
-
 		tvForgot.setOnClickListener(this);
 		btnLogin.setOnClickListener(this);
 		btnRegister.setOnClickListener(this);
-
 	}
 
 	/**
@@ -147,7 +192,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		if (setManager.getPhoneNumber() != null) {
 			etName.setText(setManager.getPhoneNumber());
 		}
-
 	}
 
 	@Override
@@ -155,17 +199,15 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.tvForgot:
 			// 打开忘记密码Activity
-			IntentUtils.getInstance().startActivity(this,
-					ForgetPswActivity.class);
+			IntentUtils.getInstance().startActivity(this, ForgetPassActivity2.class);
 			break;
 		case R.id.btnLogin:
             //登陆方法
             mLogin();
 			break;
 		case R.id.btnRegister:
-				// 打开注册Activity
 			IntentUtils.getInstance().startActivity(this,
-					RegisterActivity.class);
+					RegisterActivity_Part1.class);
 			break;
 		}
 
@@ -199,7 +241,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
                     }
                 } else {
                     if (avUser != null) {
-						setManager.setPhoneNumber(avUser.getMobilePhoneNumber());
+						LogUtil.log.d(avUser.getUsername());
+						setManager.setPhoneNumber(avUser.getUsername());
 						if (avUser.isMobilePhoneVerified()) {
 							handler.sendEmptyMessage(handler_key.LOGIN_SUCCESS.ordinal());
 						} else {
@@ -207,8 +250,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 							Toast.makeText(LoginActivity.this, "请验证", Toast.LENGTH_SHORT)
 									.show();
 							dialog.cancel();
-							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
-							startActivity(intent);
+//							Intent intent = new Intent(LoginActivity.this, VerifiedActivity.class);
+//							startActivity(intent);
 						}
 					} else {
 						handler.sendEmptyMessage(handler_key.LOGIN_FAIL.ordinal());
@@ -245,7 +288,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * @author Lien
 	 */
 	private enum handler_key {
-
 		/**
 		 * 登陆成功.
 		 */
@@ -261,6 +303,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		 */
 		LOGIN_TIMEOUT,
 
+
+		TOAST,
 	}
 
 }

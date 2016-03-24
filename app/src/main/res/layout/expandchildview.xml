@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/history_detail_background">
+        
+        <ImageView
+            android:id="@+id/detail_line"
+            android:layout_marginLeft="30dp"
+            android:layout_width="7.33dp"
+            android:layout_height="66.67dp"
+            android:src="@drawable/history_detail_line"/>
+        
+        <ImageView
+            android:id="@+id/img_startPoint"
+            android:layout_marginTop="4.67dp"
+            android:layout_toRightOf="@+id/detail_line"
+            android:layout_marginLeft="105dp"
+            android:layout_width="8.33dp"
+            android:layout_height="12dp"
+            android:src="@drawable/history_detail_startplace"/>
+
+        <TextView
+            android:id="@+id/tv_startPoint"
+            android:layout_marginTop="4.67dp"
+            android:layout_toRightOf="@+id/img_startPoint"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="罗宇东路"/>
+
+        <ImageView
+            android:id="@+id/img_endPoint"
+            android:layout_below="@+id/img_startPoint"
+            android:layout_alignLeft="@+id/img_startPoint"
+            android:layout_marginTop="6.67dp"
+            android:layout_width="8.33dp"
+            android:layout_height="12dp"
+            android:src="@drawable/history_detail_endplace" />
+
+        <TextView
+            android:id="@+id/tv_endPoint"
+            android:layout_below="@+id/img_startPoint"
+            android:layout_marginTop="6.67dp"
+            android:layout_toRightOf="@+id/img_endPoint"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="光谷"/>
+        
+        <ImageView
+            android:layout_width="6.67dp"
+            android:layout_height="12.33dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="13.33dp"
+            android:src="@drawable/history_detail_next"/>
+    </RelativeLayout>
+
+</LinearLayout>

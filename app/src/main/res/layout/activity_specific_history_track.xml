@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xunce.electrombile.activity.SpecificHistoryTrackActivity">
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/viewpager"
+        android:clickable="true" />
+
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
+    <RelativeLayout
+        android:layout_below="@+id/ll_button"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="11.67dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_CarName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:background="#1dcf96"
+                android:text="车辆名称:"/>
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_startPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:background="#1dcf96"
+                android:text="起始位置:"/>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_endPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:background="#1dcf96"
+                android:text="终点位置:"/>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="5dp"/>
+
+            <TextView
+                android:id="@+id/tv_routeTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:background="#1dcf96"
+                android:text="历时:"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="52.67dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_play"
+            android:layout_marginLeft="23.33dp"
+            android:layout_width="35.33dp"
+            android:layout_height="34.33dp"
+            android:background="@drawable/btn_play1"/>
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_toRightOf="@+id/btn_play"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="26.67dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:thumb="@drawable/thumb"
+            android:thumbOffset="8dp"
+            android:progressDrawable="@drawable/widget_slider_style" />
+
+        <Button
+            android:id="@+id/btn_speed"
+            android:layout_toRightOf="@+id/seekbar"
+            android:layout_marginLeft="26.67dp"
+            android:layout_width="35.33dp"
+            android:layout_height="34.33dp"
+            android:background="@drawable/btn_speed"/>
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#f4f4f4"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/space1"
+        android:layout_width="match_parent"
+        android:layout_height="6.67dp">
+    </View>
+
+
+
+    <RelativeLayout
+        android:id="@+id/ll"
+        android:layout_below="@+id/space1"
+        android:layout_width="match_parent"
+        android:background="@drawable/history_date_background"
+        android:layout_height="66.67dp">
+
+        <ImageView
+            android:layout_width="6.67dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="30dp"
+            android:src="@drawable/history_date_line"/>
+
+        <TextView
+            android:id="@+id/groupDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_centerVertical="true"
+            android:text="25十一月"
+            android:textSize="16sp"
+            android:textColor="#000000"/>
+        
+        <View
+            android:layout_toRightOf="@+id/groupDate"
+            android:layout_marginLeft="9dp"
+            android:layout_width="1dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:background="#d8d8d8"/>
+
+        <TextView
+            android:id="@+id/lldistance"
+            android:layout_toRightOf="@+id/groupDate"
+            android:layout_marginLeft="18dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="#000000"
+            android:text="总公里"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_toRightOf="@+id/lldistance"
+            android:layout_marginLeft="29.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="#1dcf96"
+            android:text="16.7km"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_below="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="6.67dp">
+    </View>
+</RelativeLayout>

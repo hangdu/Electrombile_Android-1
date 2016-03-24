@@ -43,49 +43,18 @@ public class CmdCenter {
     /**
      * The m center.
      */
-    private static CmdCenter mCenter;
 
-    /**
-     * The m setting manager.
-     */
-    private SettingManager mSettingManager;
+    private CmdCenter(){
 
-    //报警用的标志位
-
-
-    /**
-     * Instantiates a new cmd center.
-     *
-     * @param c the c
-     */
-    private CmdCenter(Context c) {
-        if (mCenter == null) {
-            init(c);
-        }
     }
 
-    /**
-     * Gets the single instance of CmdCenter.
-     *
-     * @param c the c
-     * @return single instance of CmdCenter
-     */
-    public static CmdCenter getInstance(Context c) {
-        if (mCenter == null) {
-            mCenter = new CmdCenter(c);
-        }
-        return mCenter;
+    private final static CmdCenter INSTANCE = new CmdCenter();
+
+    public static CmdCenter getInstance() {
+        return INSTANCE;
     }
 
-    /**
-     * Inits the.
-     *
-     * @param c the c
-     */
-    private void init(Context c) {
-        mSettingManager = new SettingManager(c);
-    }
-
+    //由GPS坐标转换成百度经纬度坐标
     public LatLng convertPoint(LatLng sourcePoint) {
         CoordinateConverter cdc = new CoordinateConverter();
         cdc.from(CoordinateConverter.CoordType.GPS);
@@ -122,6 +91,27 @@ public class CmdCenter {
         return getCmdString(ProtocolConstants.CMD_SEEK_OFF).getBytes();
     }
 
+    //自动落锁系列命令
+    public byte[] cmdAutolockOn() {
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_LOCK_ON).getBytes();
+    }
+
+    public byte[] cmdAutolockOff() {
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_LOCK_OFF).getBytes();
+    }
+
+    public byte[] cmdAutolockTimeSet(int period){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_PERIOD_SET,period).getBytes();
+    }
+
+    public byte[] cmdAutolockTimeGet(){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTO_PERIOD_GET).getBytes();
+    }
+
+    public byte[] APP_CMD_AUTOLOCK_GET(){
+        return getCmdString(ProtocolConstants.APP_CMD_AUTOLOCK_GET).getBytes();
+    }
+
     private String getCmdString(int cmd) {
         JSONObject obj = new JSONObject();
         try {
@@ -130,6 +120,27 @@ public class CmdCenter {
             e.printStackTrace();
         }
         return obj.toString();
+    }
+
+    private String getCmdString(int cmd,int period) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put(ProtocolConstants.CMD, cmd);
+            obj.put("period",period);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
+    }
+
+    //用于app第一次向设备查询信息 可以查到设备的电量  位置信息  报警开关状态  自动落锁状态等
+    public byte[] getInitialStatus(){
+        return getCmdString(ProtocolConstants.APP_CMD_STATUS_GET).getBytes();
+    }
+
+    //app主动查询电量
+    public byte[] getBatteryInfo(){
+        return getCmdString(ProtocolConstants.APP_CMD_BATTERY).getBytes();
     }
 
 

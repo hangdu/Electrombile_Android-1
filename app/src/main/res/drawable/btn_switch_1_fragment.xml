@@ -2,14 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/white" />
-            <corners android:radius="89dp" />
+            <solid android:color="@color/bright_foreground_material_light" />
+            <corners android:radius="@dimen/btn_radius" />
         </shape>
     </item>
 
     <item android:bottom="2dp">
         <shape android:shape="rectangle">
-            <corners android:radius="90dp" />
+            <corners android:radius="1dp" />
             <padding
                 android:bottom="3dp"
                 android:left="3dp"
@@ -24,7 +24,7 @@
             <!--android:width="2dp"-->
             <!--android:color="#ffffff" />-->
             <size
-                android:width="211dp"
+                android:width="45dp"
                 android:height="45dp" />
         </shape>
     </item>

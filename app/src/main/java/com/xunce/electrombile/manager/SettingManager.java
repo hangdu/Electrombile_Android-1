@@ -20,6 +20,15 @@ package com.xunce.electrombile.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.xunce.electrombile.Constants.ServiceConstants;
+import com.xunce.electrombile.applicatoin.App;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * SharePreference处理类.
  *
@@ -37,18 +46,14 @@ public class SettingManager {
      * The phone num.
      */
     private final String PHONE_NUM = "phoneNumber";
-    // 手机号码
-    /**
-     * The password.
-     */
-    //private final String PASSWORD = "password";
-    // 密码
-    /**
-     * The token.
-     */
-    // private final String TOKEN = "token";
-    // 用户名
-    //did
+
+    private final String NICKNAME = "nickname";
+    private final String GENDER = "gender";
+    private final String BIRTHDATE="birthdate";
+    private final String AUTOLOCKSTATUS = "autolockstatus";
+    private final String AUTOLOCKTIME = "autolocktime";
+    private final String FLAGCARSWITCHED = "flagcarswitched";
+    private final String MQTTSTATUS = "MqttStatus";
     private final String IMEI = "imie";
 
     //用户中心相关
@@ -60,24 +65,26 @@ public class SettingManager {
     private final String Lat = "lat";
     private final String Longitude = "longitude";
 
+    private final String Server = "Server";
+
+    private final String UpdateTime = "UpdateTime";
+
     /**
      * The spf.
      */
     SharedPreferences spf;
-    /**
-     * The c.
-     */
-    private Context c;
 
+    private final static SettingManager INSTANCE = new SettingManager();
+    public static SettingManager getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * Instantiates a new setting manager.
-     *
-     * @param c the c
      */
-    public SettingManager(Context c) {
-        this.c = c;
-        spf = c.getSharedPreferences(SHARE_PREFERENCES, Context.MODE_PRIVATE);
+    private SettingManager() {
+        Context cc = App.getInstance();
+        spf = cc.getSharedPreferences(SHARE_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     /**
@@ -107,8 +114,8 @@ public class SettingManager {
      * @param longitude 经度
      */
     public void setInitLocation(String lat, String longitude) {
-        spf.edit().putString(Lat, lat).commit();
-        spf.edit().putString(Longitude, longitude).commit();
+        spf.edit().putString(Lat, lat).apply();
+        spf.edit().putString(Longitude, longitude).apply();
     }
 
     /**
@@ -140,7 +147,7 @@ public class SettingManager {
      * @param alarmFlag
      */
     public void setAlarmFlag(boolean alarmFlag) {
-        spf.edit().putBoolean(ALARM_FLAG, alarmFlag).commit();
+        spf.edit().putBoolean(ALARM_FLAG, alarmFlag).apply();
     }
 
     /**
@@ -157,7 +164,110 @@ public class SettingManager {
      * @param phoneNumber 电话号码
      */
     public void setPhoneNumber(String phoneNumber) {
-        spf.edit().putString(PHONE_NUM, phoneNumber).commit();
+        spf.edit().putString(PHONE_NUM, phoneNumber).apply();
+    }
+
+    public void setUpdateTime(long millisecond){
+        spf.edit().putLong(UpdateTime, millisecond).apply();
+    }
+
+    public long getUpdateTime(){
+        return spf.getLong(UpdateTime,0);
+    }
+
+
+
+    //存取IMEI列表  有没有方判断list中哪一个IMEI是正在被监视的???
+    public void setIMEIlist(List<String> IMEIlist){
+        if(IMEIlist == null){
+            spf.edit().putString("IMEILIST", null).apply();
+            return;
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        for (String IMEI : IMEIlist) {
+            jsonArray.put(IMEI);
+        }
+        spf.edit().putString("IMEILIST", jsonArray.toString()).apply();
+    }
+
+    public List<String> getIMEIlist(){
+        List<String> IMEIlist = new ArrayList<>();
+        JSONArray jsonArray;
+        try{
+            jsonArray = new JSONArray(spf.getString("IMEILIST", null));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                IMEIlist.add(jsonArray.getString(i));
+            }
+        }catch (Exception e){
+            //这里怎么处理呢?
+        }
+        return IMEIlist;
+    }
+
+    //记录是否是第一次登录
+    public void setFirstLogin(Boolean flag){
+        spf.edit().putBoolean("FIRSTLOGIN", flag).apply();
+    }
+    public Boolean getFistLogin(){
+        return spf.getBoolean("FIRSTLOGIN", true);
+    }
+
+
+
+
+    public void setMqttStatus(Boolean MqttStatus){
+        spf.edit().putBoolean(MQTTSTATUS, MqttStatus).apply();
+    }
+
+    public Boolean getMqttStatus() {
+        return spf.getBoolean(MQTTSTATUS, false);
+    }
+
+
+
+    public void setAutoLockStatus(Boolean autoLockStatus){
+        spf.edit().putBoolean(AUTOLOCKSTATUS, autoLockStatus).apply();
+    }
+
+    public Boolean getAutoLockStatus(){
+        return spf.getBoolean(AUTOLOCKSTATUS, false);
+    }
+
+    public void setAutoLockTime(int autolocktime){
+        spf.edit().putInt(AUTOLOCKTIME, autolocktime).apply();
+    }
+
+    public int getAutoLockTime(){
+        return spf.getInt(AUTOLOCKTIME, 5);
+    }
+
+    public void setFlagCarSwitched(String flagCarSwitched){
+        spf.edit().putString(FLAGCARSWITCHED, flagCarSwitched).apply();
+    }
+
+    //电池电量
+    public void setBatteryPercent(int percent){
+        spf.edit().putInt("percent", percent).apply();
+    }
+
+    public int getBatteryPercent(){
+        return spf.getInt("percent",0);
+    }
+
+    //获取可行驶公里数
+    public void setMiles(int miles){
+        spf.edit().putInt("miles", miles).apply();
+    }
+
+    public int getMiles(){
+        return spf.getInt("miles",0);
+    }
+
+
+
+    public String getFlagCarSwitched(){
+        return spf.getString(FLAGCARSWITCHED, "没有切换");
     }
 
     /**
@@ -173,7 +283,15 @@ public class SettingManager {
      * @param did  IMEI号
      */
     public void setIMEI(String did) {
-        spf.edit().putString(IMEI, did).commit();
+        spf.edit().putString(IMEI, did).apply();
+    }
+
+    public String getServer() {
+        return spf.getString(Server, ServiceConstants.MQTT_HOST);
+    }
+
+    public void setServer(String server) {
+        spf.edit().putString(Server, server).apply();
     }
 
 
@@ -194,7 +312,7 @@ public class SettingManager {
      * @param did
      */
     public void setPersonCenterImage(int did) {
-        spf.edit().putInt(PHOTO_FLAG, did).commit();
+        spf.edit().putInt(PHOTO_FLAG, did).apply();
     }
 
     /**
@@ -212,7 +330,7 @@ public class SettingManager {
      * @param carNumber
      */
     public void setPersonCenterCarNumber(String carNumber) {
-        spf.edit().putString(CAR_NUMBER, carNumber).commit();
+        spf.edit().putString(CAR_NUMBER, carNumber).apply();
     }
 
     /**
@@ -230,8 +348,71 @@ public class SettingManager {
      * @param simNumber
      */
     public void setPersonCenterSimNumber(String simNumber) {
-        spf.edit().putString(SIM_NUMBER, simNumber).commit();
+        spf.edit().putString(SIM_NUMBER, simNumber).apply();
+    }
+
+    //用户昵称
+    public void setNickname(String nickname) {
+        spf.edit().putString(NICKNAME, nickname).apply();
+    }
+    public String getNickname() {
+        return spf.getString(NICKNAME, "test");
+    }
+
+
+    //性别
+    public void setGender(Boolean gender){
+        spf.edit().putBoolean(GENDER, gender).apply();
+    }
+
+    public Boolean getGender(){
+        return spf.getBoolean(GENDER, true);
+    }
+
+
+    //出生日期
+    public void setBirthDate(String birthDate){
+        spf.edit().putString(BIRTHDATE, birthDate).apply();
+    }
+
+    public String getBirthdate(){
+        return spf.getString(BIRTHDATE, "1994-01-01");
     }
 
     /********************************以上为个人中心相关****************************************/
+
+    //每个IMEI都会对应一个json数据 里面包含设备的昵称和设备的绑定日期
+    public void setCarName(String IMEI,String carName){
+        spf.edit().putString(IMEI+"carname", carName).apply();
+    }
+
+    public String getCarName(String IMEI){
+        return spf.getString(IMEI+"carname",null);
+    }
+
+    public void setCreateTime(String IMEI,String CreateTime){
+        spf.edit().putString(IMEI+"createtime", CreateTime).apply();
+    }
+
+    public String getCreateTime(String IMEI){
+        return spf.getString(IMEI+"createtime",null);
+    }
+
+    public void removeKey(String IMEI){
+        spf.edit().remove(IMEI+"carname");
+        spf.edit().remove(IMEI + "createtime");
+    }
+
+
+    //控制是否需要导航
+    public void setNeedGuide(Boolean needGuide){
+        spf.edit().putBoolean("NEEDGUIDE", needGuide).apply();
+    }
+
+    public Boolean getNeedGuide(){
+        return spf.getBoolean("NEEDGUIDE",true);
+    }
+
+
+
 }

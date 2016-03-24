@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#11c16d"
+    android:background="@color/app_style"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context=".SplashActivity">

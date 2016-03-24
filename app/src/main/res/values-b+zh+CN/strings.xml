@@ -69,7 +69,7 @@
     <string name="name">名称</string>
     <string name="forget_password">忘记密码</string>
     <string name="forget_password_hint1">手机号</string>
-    <string name="forget_password_get_verifycode">获取验证码</string>
+    <string name="forget_password_get_verifycode">获取</string>
     <string name="forget_password_verifycode">验证码</string>
     <string name="forget_password_get_verifycode_again">重新获取验证码</string>
     <string name="help">帮助</string>

@@ -9,103 +9,122 @@
         android:layout_below="@id/viewpager"
         android:clickable="true" />
 
-    <LinearLayout
-        android:id="@+id/history_container"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="120dp"
-        android:orientation="horizontal">
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
+    <RelativeLayout
+        android:id="@+id/findcar_container"
+        android:background="#1dcf96"
+        android:layout_marginTop="44dp"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_alignParentTop="true">
 
         <Button
-            android:id="@+id/btn_play"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/selector_btn_play" />
-
-        <Button
-            android:id="@+id/btn_pause"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="80dp"
-            android:background="@drawable/selector_btn_pause" />
-
-        <Button
-            android:id="@+id/btn_cancel_track"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignTop="@+id/btn_play_or_pause"
-            android:layout_marginBottom="80dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/selector_btn_cancel" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_map"
-        android:layout_width="320dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/map_tiao_fragment_act"
-        android:orientation="horizontal"
-        android:weightSum="3">
+            android:id="@+id/find_car"
+            android:layout_marginLeft="25dp"
+            android:layout_width="38.33dp"
+            android:layout_height="38.33dp"
+            android:background="@drawable/img_findcar" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18.67dp"
+            android:layout_below="@+id/find_car"
+            android:textSize="12.67sp"
+            android:textColor="#ffffff"
+            android:text = "精确找车"/>
+
+        <TextView
+            android:id="@+id/tv_CarName"
+            android:layout_marginTop="11.67dp"
+            android:layout_marginLeft="106.67dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text = "车辆名称:"/>
+
+        <TextView
+            android:id="@+id/tv_CarPosition"
+            android:layout_below="@+id/tv_CarName"
+            android:layout_alignLeft="@+id/tv_CarName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text = "车辆位置:"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_FindMode_up"
+        android:layout_marginTop="44dp"
+        android:background="#1dcf96"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_FindModeCarName"
+            android:layout_marginLeft="33.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text="车辆名称:"/>
+
+        <TextView
+            android:id="@+id/tv_FindModeCarPosition"
+            android:layout_marginLeft="33.33dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text="车辆位置:"/>
+
+        <TextView
+            android:layout_marginLeft="33.33dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:text="GPS正在定位"/>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/ll_historyAndlocate"
+        android:layout_width="38.33dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="68.67dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true">
+        <Button
             android:id="@+id/btn_record"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/common_btn_white"
-            android:clickable="true"
-            android:drawableLeft="@drawable/history_trail"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="历史轨迹"
-            android:textColor="#8d8d8d" />
+            android:layout_width="match_parent"
+            android:layout_height="38.33dp"
+            android:background="@drawable/history"/>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#848484" />
-
-        <TextView
+        <Button
             android:id="@+id/btn_location"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/common_btn_white"
-            android:clickable="true"
-            android:drawableLeft="@drawable/ic_location"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="定位"
-            android:textColor="#8d8d8d" />
+            android:layout_below="@+id/btn_record"
+            android:layout_alignLeft="@+id/btn_record"
+            android:layout_width="match_parent"
+            android:layout_height="38.33dp"
+            android:background="@drawable/location"/>
+    </RelativeLayout>
 
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#848484" />
-
-        <TextView
-            android:id="@+id/tv_find_ele"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/common_btn_white"
-            android:clickable="true"
-            android:drawableLeft="@drawable/find"
-            android:gravity="center"
-            android:singleLine="true"
-            android:text="精确找车"
-            android:textColor="#8d8d8d" />
-
-    </LinearLayout>
-
-
+    <Button
+        android:id="@+id/btn_arriveNearby"
+        android:layout_width="138.33dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="23.33dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/yellow_rect"
+        android:textSize="17.33sp"
+        android:textColor="@color/white"
+        android:text="到达车辆附近"/>
 </RelativeLayout>

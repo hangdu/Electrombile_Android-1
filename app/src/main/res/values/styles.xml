@@ -42,7 +42,7 @@
     <style name="loginEditTextTheme">
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:textSize">15sp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/edit_text_color</item>
     </style>
     <style name="noBackgroundDialog" parent="android:style/Theme.Dialog">
         <item name="android:windowBackground">@android:color/transparent</item>
@@ -54,11 +54,33 @@
         <item name="android:background">@drawable/layout_selector</item>
         <item name="android:clickable">true</item>
     </style>
+
+    <style name="clickableLayout_settingFragment1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">66.67dp</item>
+        <item name="android:background">@drawable/layout_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="clickableLayout_settingFragment2">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/layout_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+
     <style name="clickableLayoutTextview">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingLeft">20dp</item>
+    </style>
+
+    <style name="clickableLayoutTextview1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">20dp</item>
     </style>
 
@@ -75,10 +97,13 @@
     </style>
 
     <style name="main_tab_bottom">
-        <item name="android:padding">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_gravity">center_horizontal|bottom</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">48dp</item>
         <item name="android:button">@null</item>
         <item name="android:layout_weight">1.0</item>
         <item name="android:textSize">16sp</item>
@@ -96,6 +121,7 @@
     <style name="Translucent_NoTitle_trans" parent="Translucent_NoTitle_white">
         <item name="android:background">#00000000</item>
     </style>
+
 
 
 </resources>

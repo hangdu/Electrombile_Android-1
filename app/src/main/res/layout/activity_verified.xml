@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#16c772"
+    android:background="@color/app_style"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context="com.xunce.electrombile.activity.account.VerifiedActivity">
@@ -28,6 +28,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:background="@drawable/line_et"
             android:gravity="center"
             android:hint="@string/forget_password_verifycode"
             android:inputType="number"
@@ -36,13 +37,10 @@
 
         <Button
             android:id="@+id/btnReGetCode"
-            android:layout_width="89dp"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
             android:layout_marginRight="5dp"
             android:background="@drawable/btn_getverifycode_register_act"
-            android:ellipsize="marquee"
-            android:focusableInTouchMode="true"
-            android:marqueeRepeatLimit="marquee_forever"
             android:onClick="getVerifiedCode"
             android:singleLine="true"
             android:text="@string/forget_password_get_verifycode"
