@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.LogUtil;
@@ -291,7 +292,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         setSafedays();
 
         btnAlarmState1 = (Button) v.findViewById(R.id.btn_AlarmState1);
-        Button ChangeAutobike = (Button) v.findViewById(R.id.ChangeAutobike);
+        RelativeLayout ChangeAutobike = (RelativeLayout) v.findViewById(R.id.ChangeAutobike);
         headImage = (ImageView) v.findViewById(R.id.img_headImage);
         headImage.setOnClickListener(new OnClickListener() {
             @Override

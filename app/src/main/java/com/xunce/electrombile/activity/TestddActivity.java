@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -214,7 +215,7 @@ public class TestddActivity extends Activity{
         View titleView = findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
         titleTextView.setText("历史报告");
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        RelativeLayout btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

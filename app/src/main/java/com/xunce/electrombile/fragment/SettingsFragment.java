@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.avos.avoscloud.AVUser;
@@ -310,7 +311,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         View titleView = view.findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
         titleTextView.setText("我");
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        RelativeLayout btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setVisibility(View.INVISIBLE);
 
         refreshAutolockStatus();

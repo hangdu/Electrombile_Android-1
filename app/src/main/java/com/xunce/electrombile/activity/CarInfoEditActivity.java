@@ -192,7 +192,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     void initView(){
         View titleView = findViewById(R.id.ll_button) ;
         titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        RelativeLayout btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

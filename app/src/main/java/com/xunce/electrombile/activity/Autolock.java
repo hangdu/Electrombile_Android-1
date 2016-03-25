@@ -49,7 +49,7 @@ public class Autolock extends BaseActivity{
         View titleView = findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
         titleTextView.setText("自动落锁设置");
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        RelativeLayout btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

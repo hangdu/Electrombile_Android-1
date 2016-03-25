@@ -85,7 +85,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private BroadcastReceiver MyBroadcastReceiver;
     private View titleView;
     private TextView titleTextView;
-    private Button btn_back;
+    private RelativeLayout btn_back;
     private LinearLayout layout_FindMode_up;
     private Button btn_arriveNearby;
     private RelativeLayout ll_historyAndlocate;
@@ -273,7 +273,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private void initView(View v) {
         titleView = v.findViewById(R.id.ll_button) ;
         titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
-        btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setVisibility(View.INVISIBLE);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -50,7 +50,7 @@ public class PersonalCenterActivity extends BaseActivity{
         View titleView = findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);
         titleTextView.setText("个人中心");
-        Button btn_back = (Button)titleView.findViewById(R.id.btn_back);
+        RelativeLayout btn_back = (RelativeLayout)titleView.findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +66,7 @@ public class PersonalCenterActivity extends BaseActivity{
         RelativeLayout layout_gender = (RelativeLayout)findViewById(R.id.layout_Gender);
         RelativeLayout layout_BirthDate = (RelativeLayout)findViewById(R.id.layout_BirthDate);
         LinearLayout layout_ChangePassword = (LinearLayout)findViewById(R.id.layout_ChangePassword);
-        btn_back = (Button)findViewById(R.id.btn_back);
+        btn_back = (RelativeLayout)findViewById(R.id.btn_back);
 
         layout_nickname.setOnClickListener(new View.OnClickListener() {
             @Override
