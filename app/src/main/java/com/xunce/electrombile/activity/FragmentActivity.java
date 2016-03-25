@@ -45,6 +45,7 @@ import com.xunce.electrombile.applicatoin.Historys;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -90,7 +91,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public MyReceiver receiver;
     private MqttConnectManager mqttConnectManager;
     private DrawerLayout mDrawerLayout;
-//    private Logger log;
     //获取到include中的ui(左滑出来的)
     private TextView BindedCarIMEI;
     private ImageView img_car;
@@ -100,7 +100,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private SimpleAdapter simpleAdapter;
     private View left_menu;
     private Boolean firsttime_Flag = true;
-
 
     /**
      * The handler. to process exit()
@@ -125,8 +124,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        LogConfigure();
-//        log.info("onCreate-start");
+        MyLog.delFile();
+        MyLog.d("FragmentActivity","onCreate");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
@@ -142,7 +141,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onStart() {
-//        log.info("onStart-start");
+
+        MyLog.d("FragmentActivity","onStart");
         com.orhanobut.logger.Logger.i("FragmentActivity-onStart", "start");
         super.onStart();
         if (!NetworkUtils.isNetworkConnected(this)) {
@@ -154,7 +154,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     protected void onResume() {
         //这个函数的onResume会被反复执行吗?
-//        log.info("onResume-start");
+        MyLog.d("FragmentActivity","onResume");
         com.orhanobut.logger.Logger.i("FragmentActivity-onResume", "onResume");
         super.onResume();
         //下面这句话只需要执行一次

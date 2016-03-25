@@ -4,6 +4,7 @@ import android.content.Context;
 import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.applicatoin.App;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -65,6 +66,7 @@ public class MqttConnectManager {
         mac.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
+                MyLog.d("MqttConnectManager", "connectionLost  正在重连");
                 ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
                 com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
                 //设置重连
