@@ -261,7 +261,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     mac = mqttConnectManager.getMac();
                     mqttConnectManager.subscribe(setManager.getIMEI());
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
-//                log.info("getMqttConnection  服务器连接成功");
                     setManager.setMqttStatus(true);
                     //开启报警服务
                     startAlarmService();

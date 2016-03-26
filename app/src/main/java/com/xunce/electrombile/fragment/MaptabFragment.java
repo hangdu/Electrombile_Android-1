@@ -99,7 +99,15 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public String status = status_LocateCar;
 
-//    private Logger log;
+    public Boolean LostCarSituation = false;
+
+    private TextView dialog_tv_LastCarLocation;
+    private TextView dialog_tv_LastLocateTime;
+    private TextView dialog_tv_status;
+    private Button btn_LostCarnextstep;
+    private String status_GPSornot;
+    private TextView tv_GPSornot;
+
 
     private Handler playHandler = new Handler() {
         @Override
@@ -109,6 +117,9 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 mInfoWindow = new InfoWindow(markerView, trackPoint.point, -100);
                 SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
+                if(LostCarSituation){
+                    dialog_tv_LastLocateTime.setText("最后一次定位时间:"+sdfWithSecond.format(trackPoint.time));
+                }
                 mBaiduMap.showInfoWindow(mInfoWindow);
                 //设置车辆位置  填到textview中
                 mSearch.reverseGeoCode(new ReverseGeoCodeOption()
@@ -282,6 +293,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             }
         });
 
+        tv_GPSornot = (TextView)v.findViewById(R.id.tv_GPSornot);
+
         mMapView = (MapView) v.findViewById(R.id.bmapView);
         mMapView.showZoomControls(false);
         mBaiduMap = mMapView.getMap();
@@ -372,6 +385,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_back.setVisibility(View.INVISIBLE);
         ll_historyAndlocate.setVisibility(View.VISIBLE);
 
+
         HideInfowindow();
         setCarname();
     }
@@ -400,6 +414,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         markerPerson = (Marker) mBaiduMap.addOverlay(option2);
 
         //怎么判断车在室内还是在室外呢???
+        tv_GPSornot.setText(status_GPSornot);
 
         //获取到手机的位置
         getPhoneLocation();
@@ -505,6 +520,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                LostCarSituation = true;
                 findCarGuide2(dialog_width);
             }
         });
@@ -525,10 +541,22 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         View view = inflater.inflate(R.layout.dialog_findcar_guide2, null);
         final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
 
-        Button btn_nextstep = (Button)view.findViewById(R.id.btn_nextstep);
+        btn_LostCarnextstep = (Button)view.findViewById(R.id.btn_nextstep);
         Button cancel = (Button) view.findViewById(R.id.btn_cancel);
 
-        btn_nextstep.setOnClickListener(new View.OnClickListener() {
+        TextView dialog_tv_carName = (TextView)view.findViewById(R.id.dialog_tv_carName);
+        dialog_tv_LastCarLocation = (TextView)view.findViewById(R.id.dialog_tv_LastCarLocation);
+        dialog_tv_LastLocateTime = (TextView)view.findViewById(R.id.dialog_tv_LastLocateTime);
+        dialog_tv_status = (TextView)view.findViewById(R.id.dialog_tv_status);
+
+        dialog_tv_carName.setText("车辆名称:"+setManager.getCarName(setManager.getIMEI()));
+//        dialog_tv_LastCarLocation.setText(tv_CarPosition.getText());
+
+        if ((m_context).mac != null ){
+            (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
+        }
+
+        btn_LostCarnextstep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -546,6 +574,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
     }
+
 
     //把电动车的位置放在地图中间
     private void MarkerLocationCenter(LatLng point){
@@ -647,6 +676,26 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_CarPosition.setText("车辆位置:" + reverseGeoCodeResult);
         tv_FindModeCarPosition.setText("车辆位置:" + reverseGeoCodeResult);
+
+        if(LostCarSituation){
+            dialog_tv_LastCarLocation.setText("最后一次定位地点:" + reverseGeoCodeResult);
+            LostCarSituation = false;
+        }
+    }
+
+    public void caseLostCarSituationOffline(){
+        dialog_tv_status.setText("设备不在线");
+        btn_LostCarnextstep.setVisibility(View.INVISIBLE);
+    }
+
+    public void caseLostCarSituationWaiting(){
+        dialog_tv_status.setText("设备在室内");
+        status_GPSornot = "设备在室内";
+    }
+
+    public void caseLostCarSituationSuccess(){
+        dialog_tv_status.setText("设备在室外,定位成功");
+        status_GPSornot = "设备在室外,定位成功";
     }
 
     @Override

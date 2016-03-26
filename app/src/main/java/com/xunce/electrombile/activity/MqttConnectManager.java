@@ -76,12 +76,12 @@ public class MqttConnectManager {
             public void connectionLost(Throwable throwable) {
                 if(status.equals(OK)||status.equals(CONNECTING_FAIL)){
                     MyLog.d("MqttConnectManager", "connectionLost  正在重连");
-                    ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
-                    com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
+                    ToastUtils.showShort(mcontext, "mqtt连接断开,正在重连中");
                     //设置重连
-                    if (mac != null&&!mac.isConnected()) {
-                        getMqttConnection();
+                    if (mac != null&&!mac.isConnected()&&!status.equals(IS_CONNECTING)) {
+                        MyLog.d("MqttConnectManager", "getMqttConnection开始连接");
                         status = IS_CONNECTING;
+                        getMqttConnection();
                     }
                     else{
                         ToastUtils.showShort(mcontext, "mac为空 或者 连接好的状态");

@@ -205,14 +205,18 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseGetGPS(int code,Protocol protocol) {
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:
-                cmdGPSgetresult(protocol);
+                cmdGPSgetresult(protocol,code);
                 return;
 
             case ProtocolConstants.ERR_WAITING:
-                cmdGPSgetresult(protocol);
+                cmdGPSgetresult(protocol,code);
                 return;
             case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
+                if(((FragmentActivity) mContext).maptabFragment.LostCarSituation){
+                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationOffline();
+                    ((FragmentActivity) mContext).maptabFragment.LostCarSituation = false;
+                }
                 break;
             case ProtocolConstants.ERR_INTERNAL:
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
@@ -424,7 +428,7 @@ public class MyReceiver extends BroadcastReceiver {
         }
     }
 
-    private void cmdGPSgetresult(Protocol protocol){
+    private void cmdGPSgetresult(Protocol protocol,int code){
         TracksManager.TrackPoint trackPoint = protocol.getNewResult();
         if(trackPoint!=null){
             Date date = trackPoint.time;
@@ -432,6 +436,13 @@ public class MyReceiver extends BroadcastReceiver {
             LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
             trackPoint = new TracksManager.TrackPoint(date,bdPoint);
             ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+
+            if(code == 101){
+                ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationWaiting();
+            }
+            else if(code == 0){
+                ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationSuccess();
+            }
         }
     }
 
