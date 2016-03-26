@@ -29,6 +29,14 @@ public class MqttConnectManager {
     Connection connection;
     OnMqttConnectListener onMqttConnectListener;
 
+    public static final String OK = "OK";
+    public static final String LOST = "LOST";
+    public static final String IS_CONNECTING = "IS_CONNECTING";
+    public static final String CONNECTING_FAIL = "CONNECTING_FAIL";
+    public static String status = OK;
+
+
+
 
     private MqttConnectManager(){
 
@@ -66,16 +74,23 @@ public class MqttConnectManager {
         mac.setCallback(new MqttCallback() {
             @Override
             public void connectionLost(Throwable throwable) {
-                MyLog.d("MqttConnectManager", "connectionLost  正在重连");
-                ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
-                com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
-                //设置重连
-                if (mac != null&&!mac.isConnected()) {
-                    getMqttConnection();
+                if(status.equals(OK)||status.equals(CONNECTING_FAIL)){
+                    MyLog.d("MqttConnectManager", "connectionLost  正在重连");
+                    ToastUtils.showShort(mcontext,"mqtt连接断开,正在重连中");
+                    com.orhanobut.logger.Logger.i("connectionLost", "mqtt连接中途断掉了");
+                    //设置重连
+                    if (mac != null&&!mac.isConnected()) {
+                        getMqttConnection();
+                        status = IS_CONNECTING;
+                    }
+                    else{
+                        ToastUtils.showShort(mcontext, "mac为空 或者 连接好的状态");
+                    }
                 }
-                else{
-                    ToastUtils.showShort(mcontext, "mac为空 或者 连接好的状态");
+                else if(status.equals(IS_CONNECTING)){
+                    //do nothing
                 }
+
             }
 
             @Override

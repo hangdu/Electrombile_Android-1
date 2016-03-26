@@ -255,6 +255,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             @Override
             public void MqttConnectSuccess() {
                 //这些是在呈现了页面之后执行的
+                MqttConnectManager.status = MqttConnectManager.OK;
                 com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
                 if(firsttime_Flag){
                     mac = mqttConnectManager.getMac();
@@ -273,6 +274,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
             @Override
             public void MqttConnectFail() {
+                MqttConnectManager.status = MqttConnectManager.CONNECTING_FAIL;
                 ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
             }
         });

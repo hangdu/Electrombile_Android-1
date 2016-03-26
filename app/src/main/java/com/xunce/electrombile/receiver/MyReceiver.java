@@ -296,6 +296,7 @@ public class MyReceiver extends BroadcastReceiver {
 
                 //设置小安宝的开关状态
                 if(settingManager.getAlarmFlag()){
+                    //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
                     ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
                     ((FragmentActivity) mContext).switchFragment.showNotification("安全宝防盗系统已启动");
                 }
