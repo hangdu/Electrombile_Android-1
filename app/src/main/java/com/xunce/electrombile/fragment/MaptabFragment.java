@@ -664,7 +664,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             else{
                 HideInfowindow();
                 setCarname();
-//                InitCarLocation();
+                InitCarLocation();
 
                 //如果是找车界面  需要切换到locateCar界面
                 if(status.equals(status_FindCar)){

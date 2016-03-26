@@ -158,6 +158,10 @@ public class Autolock extends BaseActivity{
                 case 15:
                     rb_Open15min.setChecked(true);
                     break;
+                default:
+                    //这是个bug   只应该是这3个值
+                    rb_Open5min.setChecked(true);
+                    break;
             }
         }
     }

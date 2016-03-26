@@ -93,7 +93,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     public void onResume() {
 //        log.info("onResume-start");
         super.onResume();
-//        refreshAutolockStatus();
+        refreshAutolockStatus();
 //        log.info("onResume-finish");
     }
 

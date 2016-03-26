@@ -96,11 +96,13 @@ public class MqttConnectManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     onMqttConnectListener.MqttConnectSuccess();
+                    MyLog.d("getMqttConnection","MqttConnectSuccess 连接服务器成功");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     onMqttConnectListener.MqttConnectFail();
+                    MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器失败");
                 }
             });
             Connections.getInstance(mcontext).addConnection(connection);
