@@ -131,9 +131,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         @Override
         public void handleMessage(Message msg){
             switch (msg.what){
-                case 1://处理侧滑的message
-//                    myHorizontalScrollView.UpdateListview();
+                case 0:
+                    caseGetInitialStatus();
                     break;
+
+//                case 1://处理侧滑的message
+////                    myHorizontalScrollView.UpdateListview();
+//                    break;
                 case 2:
                     cancelWaitTimeOut();
                     break;
@@ -741,11 +745,35 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
                 m_context.refreshBindList1();
             }
-            else{
+            else if(intent.getStringExtra("KIND").equals("OTHER")){
                 DeviceChangeHeadImage();
                 setSafedays();
                 m_context.refreshBindList1();
             }
+            else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
+                caseGetInitialStatus();
+            }
+        }
+    }
+
+    private void caseGetInitialStatus(){
+        if(rootView!=null){
+            //设置小安宝的开关状态
+            if(setManager.getAlarmFlag()){
+                //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
+                openStateAlarmBtn();
+                showNotification("安全宝防盗系统已启动");
+            }
+            else{
+                closeStateAlarmBtn();
+            }
+            //设置电池的电量
+            refreshBatteryInfo();
+        }
+        else{
+            Message msg = Message.obtain();
+            msg.what = 0;
+            mhandler.sendMessageDelayed(msg,3000);
         }
     }
 

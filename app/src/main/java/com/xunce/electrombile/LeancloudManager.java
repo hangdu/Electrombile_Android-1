@@ -200,10 +200,6 @@ public class LeancloudManager {
 
     //根据IMEIlist把每一个的  object:车辆绑定时间和key:createdAt(Date)从服务器上面拉取上来
 
-    public void getUserIMEIinfoFromServer(){
-
-    }
-
     public void uploadImageToServer(final String IMEI,Bitmap bitmap){
         AVQuery<AVObject> query = new AVQuery<>("DID");
         query.whereEqualTo("IMEI", IMEI);

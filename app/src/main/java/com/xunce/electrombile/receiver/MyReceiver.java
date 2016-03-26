@@ -294,18 +294,23 @@ public class MyReceiver extends BroadcastReceiver {
                 trackPoint = new TracksManager.TrackPoint(date,bdPoint);
                 ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
 
-                //设置小安宝的开关状态
-                if(settingManager.getAlarmFlag()){
-                    //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
-                    ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
-                    ((FragmentActivity) mContext).switchFragment.showNotification("安全宝防盗系统已启动");
-                }
-                else{
-                    ((FragmentActivity) mContext).switchFragment.closeStateAlarmBtn();
-                }
+                //发送广播吧
+                Intent intent = new Intent("com.app.bc.test");
+                intent.putExtra("KIND","GETINITIALSTATUS");
+                mContext.sendBroadcast(intent);//发送广播事件
 
-                //设置电池的电量
-                ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
+//                //设置小安宝的开关状态
+//                if(settingManager.getAlarmFlag()){
+//                    //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
+//                    ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
+//                    ((FragmentActivity) mContext).switchFragment.showNotification("安全宝防盗系统已启动");
+//                }
+//                else{
+//                    ((FragmentActivity) mContext).switchFragment.closeStateAlarmBtn();
+//                }
+//
+//                //设置电池的电量
+//                ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
 
                 //自动落锁的状态设置
 //                ((FragmentActivity) mContext).settingsFragment.refreshAutolockStatus();

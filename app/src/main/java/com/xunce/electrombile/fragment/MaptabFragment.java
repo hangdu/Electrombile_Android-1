@@ -661,7 +661,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
                 setCarname();
             }
-            else{
+            else if(intent.getStringExtra("KIND").equals("OTHER")){
                 HideInfowindow();
                 setCarname();
                 InitCarLocation();
@@ -672,6 +672,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     status  = status_LocateCar;
                 }
             }
+
         }
     }
 }
