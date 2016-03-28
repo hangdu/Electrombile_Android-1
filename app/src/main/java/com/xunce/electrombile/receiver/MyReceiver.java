@@ -436,13 +436,16 @@ public class MyReceiver extends BroadcastReceiver {
             LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
             trackPoint = new TracksManager.TrackPoint(date,bdPoint);
             ((FragmentActivity) mContext).maptabFragment.locateMobile(trackPoint);
+            if(((FragmentActivity) mContext).maptabFragment.LostCarSituation){
+                if(code == 101){
+                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationWaiting();
+                }
+                else if(code == 0){
+                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationSuccess();
+                }
+            }
 
-            if(code == 101){
-                ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationWaiting();
-            }
-            else if(code == 0){
-                ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationSuccess();
-            }
+
         }
     }
 

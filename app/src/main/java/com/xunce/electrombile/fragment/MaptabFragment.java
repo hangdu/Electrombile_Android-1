@@ -500,6 +500,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         //解除gps位置监听
         locationManager.removeUpdates(locationListener);
+
+        LostCarSituation = false;
     }
 
 
