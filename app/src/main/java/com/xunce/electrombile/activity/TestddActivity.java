@@ -286,6 +286,9 @@ public class TestddActivity extends Activity{
     }
 
     private void findCloud(final Date st, final Date et, int skip) {
+        if(NetworkUtils.checkNetwork(this)){
+            return;
+        }
         //创建数据库
         if(!startT.equals(todayDate)&&(FlagRecentDate)){
             if(dbManage == null){

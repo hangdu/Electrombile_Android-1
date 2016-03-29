@@ -77,8 +77,12 @@ public class MqttConnectManager {
                 if(status.equals(OK)||status.equals(CONNECTING_FAIL)){
                     MyLog.d("MqttConnectManager", "connectionLost  正在重连");
                     ToastUtils.showShort(mcontext, "mqtt连接断开,正在重连中");
+                    if(mac == null){
+                        return;
+                    }
+
                     //设置重连
-                    if (mac != null&&!mac.isConnected()&&!status.equals(IS_CONNECTING)) {
+                    if (!mac.isConnected()&&!status.equals(IS_CONNECTING)) {
                         MyLog.d("MqttConnectManager", "getMqttConnection开始连接");
                         status = IS_CONNECTING;
                         getMqttConnection();
@@ -126,6 +130,28 @@ public class MqttConnectManager {
         }
     }
 
+    public void MqttDisconnect(){
+        if(returnMqttStatus()){
+            try{
+                mac.disconnect(this,new IMqttActionListener(){
+                    @Override
+                    public void onSuccess(IMqttToken asyncActionToken) {
+                        MyLog.d("MqttDisconnect","断开连接成功");
+                        mac = null;
+                    }
+
+                    @Override
+                    public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                        MyLog.d("MqttDisconnect", "断开连接失败");
+                    }
+
+                });
+                MyLog.d("MqttDisconnect","MqttDisconnect");
+            }catch(MqttException e){
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     public interface OnMqttConnectListener {
@@ -139,7 +165,7 @@ public class MqttConnectManager {
 
     public Boolean returnMqttStatus(){
         if(mac != null&& mac.isConnected()){
-                return true;
+            return true;
         }
         else{
             return false;

@@ -84,53 +84,39 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
     @Override
     public void onStart() {
-//        log.info("onStart-start");
         super.onStart();
-//        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
-//        log.info("onResume-start");
         super.onResume();
         refreshAutolockStatus();
-//        log.info("onResume-finish");
     }
 
     @Override
     public void onPause() {
-//        log.info("onPause-start");
         super.onPause();
-//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop() {
-//        log.info("onStop-start");
         super.onStop();
-//        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
-//        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-//        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
-//        log.info("onDestroy-start");
         super.onDestroy();
-//        log.info("onDestroy-finish");
     }
 
     @Override
     public void onDetach(){
-//        log.info("onDetach-start");
         super.onDetach();
-//        log.info("onDetach-finish");
     }
 
     @Override
@@ -266,6 +252,10 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
                 m_context.stopService(intent);
                 ToastUtils.showShort(m_context, "退出登录成功");
                 setManager.cleanAll();
+
+                //关闭mqttclient
+                mqttConnectManager.MqttDisconnect();
+
                 intent = new Intent(m_context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

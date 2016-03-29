@@ -51,6 +51,7 @@ import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FindCarActivity;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
+import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
@@ -130,15 +131,11 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
-//        log = Logger.getLogger(MaptabFragment.class);
-//        log.info("onAttach-start");
         super.onAttach(activity);
-//        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//        log.info("onCreate-start");
         super.onCreate(savedInstanceState);
         //注意该方法要再setContentView方法之前实现
         SDKInitializer.initialize(m_context);
@@ -173,19 +170,16 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
-//        log.info("onCreate-finish");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        log.info("onCreateView-start");
         if (rootView == null) {
             View view = inflater.inflate(R.layout.map_fragment, container, false);
             initView(view);
             rootView = view;
         }
-//        log.info("onCreateView-finish");
         return rootView;
     }
 
@@ -196,7 +190,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
 
     public void InitCarLocation(){
-        if (checkNetwork()) return;
+        if (NetworkUtils.checkNetwork(m_context)) return;
         //检查是否绑定
         if (checkBind()) return;
 
@@ -209,55 +203,42 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-//        log.info("onActivityCreated-start");
         super.onActivityCreated(savedInstanceState);
-//        log.info("onActivityCreated-finish");
     }
 
     @Override
     public void onStart(){
-//        log.info("onStart-start");
         super.onStart();
-//        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
-//        log.info("onResume-start");
         mMapView.setVisibility(View.VISIBLE);
         mMapView.onResume();
         super.onResume();
-//        log.info("onResume-finish");
     }
 
     @Override
     public void onPause() {
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
-//        log.info("onPause-start");
         mMapView.onPause();
         super.onPause();
-//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
-//        log.info("onStop-start");
         super.onStop();
-//        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
-//        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-//        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
-//        log.info("onDestroy-start");
         mBaiduMap.clear();
         mMapView.onDestroy();
         mMapView = null;
@@ -266,14 +247,11 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         m_context = null;
         mSearch = null;
         super.onDestroy();
-//        log.info("onDestroy-finish");
     }
 
     @Override
     public void onDetach(){
-//        log.info("onDetach-start");
         super.onDetach();
-//        log.info("onDetach-finish");
     }
 
     /**
@@ -324,7 +302,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View view) {
                 //检查网络
-                if (checkNetwork()) return;
+                if (NetworkUtils.checkNetwork(m_context)) return;
                 //检查是否绑定
                 if (checkBind()) return;
 
@@ -342,7 +320,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View view) {
                 //检查网络
-                if (checkNetwork()) return;
+                if (NetworkUtils.checkNetwork(m_context)) return;
                 //检查是否绑定
                 if (checkBind()) return;
                 Intent intent = new Intent(m_context, TestddActivity.class);
@@ -361,7 +339,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             @Override
             public void onClick(View v) {
                 //检查网络
-                if (checkNetwork()) return;
+                if (NetworkUtils.checkNetwork(m_context)) return;
                 //检查是否绑定
                 if (checkBind()) return;
                 //出现找车导航页面1
@@ -420,7 +398,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         getPhoneLocation();
     }
 
-    //根据车的位置和人的位置  需要对地图进行缩放???
+    //根据车的位置和人的位置  需要对地图进行缩放
     private void scaleMap(){
         LatLng p1 = markerMobile.getPosition();
         LatLng p2 = markerPerson.getPosition();
@@ -637,19 +615,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         return false;
     }
 
-    /**
-     * 检查网络
-     *
-     * @return 返回是否有网络连接
-     */
-    private boolean checkNetwork() {
-        if (!NetworkUtils.isNetworkConnected(m_context)) {
-            networkDialog = NetworkUtils.networkDialog(m_context, true);
-            return true;
-        }
-        return false;
-    }
-
     public void setCarname()
     {
         tv_CarName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
@@ -723,7 +688,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     status  = status_LocateCar;
                 }
             }
-
         }
     }
 }

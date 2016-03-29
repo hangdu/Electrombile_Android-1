@@ -95,7 +95,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
     public void AfterDeleteSuccess(){
         if(LastCar){
-            //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈???
+            //1.解订阅, 2.logout 3.跳转到登录界面  并且把之前的activity清空栈
             if(mqttConnectManager.returnMqttStatus()){
                 if(mqttConnectManager.unSubscribe(IMEI)){
 
@@ -116,6 +116,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
                     //删除设备头像    sharepreference中的部分信息:IMEI号码对应的绑定日期和车昵称
                     deleteCarInfo();
+
+                    //关闭mqttclient
+                    mqttConnectManager.MqttDisconnect();
 
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -111,13 +111,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_Safeday;
     private TextView tv_battery;
 
-
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
     public static final int CHOOSE_PHOTO=3;
-
-
-//    private Logger log;
 
     public Handler timeHandler = new Handler() {
         @Override
@@ -134,10 +130,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 0:
                     caseGetInitialStatus();
                     break;
-
-//                case 1://处理侧滑的message
-////                    myHorizontalScrollView.UpdateListview();
-//                    break;
                 case 2:
                     cancelWaitTimeOut();
                     break;
@@ -159,15 +151,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onAttach(Activity activity) {
-//        log = Logger.getLogger(SwitchFragment.class);
-//        log.info("onAttach-start");
         super.onAttach(activity);
-//        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
-//        log.info("onCreate-start");
         com.orhanobut.logger.Logger.i("SwitchFragment", "onCreate");
         super.onCreate(saveInstanceState);
         // 初始化搜索模块，注册事件监听
@@ -191,7 +179,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 //execute the task
             }
         }, DELAYTIME);
-//        log.info("onCreate-finish");
 
         MyBroadcastReceiver = new MyBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
@@ -202,44 +189,35 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        log.info("onCreateView-start");
         com.orhanobut.logger.Logger.i("SwitchFragment", "onCreateView");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.switch_fragment, container, false);
             initView(rootView);
         }
-//        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        log.info("onViewCreated-start");
         com.orhanobut.logger.Logger.i("SwitchFragment", "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         initEvent();
-//        log.info("onViewCreated-finish");
       }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-//        log.info("onActivityCreated-start");
         com.orhanobut.logger.Logger.i("SwitchFragment", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-//        log.info("onActivityCreated-finish");
     }
 
     @Override
     public void onStart(){
-//        log.info("onStart-start");
         com.orhanobut.logger.Logger.i("SwitchFragment", "onStart");
         super.onStart();
-//        log.info("onStart-finish");
     }
 
     @Override
     public void onResume() {
-//        log.info("onResume-start");
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
@@ -247,48 +225,37 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         } else {
             closeStateAlarmBtn();
         }
-//        log.info("onResume-finish");
     }
 
     @Override
     public void onPause() {
-//        log.info("onPause-start");
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
         super.onPause();
-//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
-//        log.info("onStop-start");
         super.onStop();
-//        log.info("onStop-finish");
     }
 
     @Override
     public void onDestroyView() {
-//        log.info("onDestroyView-start");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-//        log.info("onDestroyView-finish");
     }
 
     @Override
     public void onDestroy() {
-//        log.info("onDestroy-start");
         m_context.unregisterReceiver(MyBroadcastReceiver);
         m_context = null;
         mSearch = null;
 
         super.onDestroy();
-//        log.info("onDestroy-finish");
     }
 
     @Override
     public void onDetach(){
-//        log.info("onDetach-start");
         super.onDetach();
-//        log.info("onDetach-finish");
     }
 
     private void initView(View v){
@@ -319,6 +286,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         btnAlarmState1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(m_context)){
+                    //无网络
+                    return;
+                }
                 alarmStatusChange();
             }
         });
@@ -673,14 +644,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     //点击打开报警按钮时按钮样式的响应操作
     public void openStateAlarmBtn() {
         alarmState = true;
-//        btnAlarmState1.setText("防盗关闭");
         btnAlarmState1.setBackgroundResource(R.drawable.img_open);
     }
 
     //点击关闭报警按钮时按钮样式的响应操作
     public void closeStateAlarmBtn() {
         alarmState = false;
-//        btnAlarmState1.setText("防盗开启");
         btnAlarmState1.setBackgroundResource(R.drawable.img_close);
     }
 

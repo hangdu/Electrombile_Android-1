@@ -14,6 +14,7 @@ import android.os.Build;
 import android.provider.Settings;
 
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.utils.system.ToastUtils;
 
 /**
  * 
@@ -88,6 +89,16 @@ public class NetworkUtils {
 		}
 		return false;
 	}
+
+
+
+    public static boolean checkNetwork(Context context) {
+        if (!NetworkUtils.isNetworkConnected(context)) {
+            ToastUtils.showShort(context,"无网络连接");
+            return true;
+        }
+        return false;
+    }
 	
  	/**
  	 * 获取当前WIFI的SSID.
