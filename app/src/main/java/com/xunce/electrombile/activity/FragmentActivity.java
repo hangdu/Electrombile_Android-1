@@ -42,6 +42,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
+import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
@@ -125,11 +126,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         MyLog.delFile();
+        DBManage.updateDatabase();
         MyLog.d("FragmentActivity","onCreate");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
-//        log.info("onCreate-finish");
         //初始化界面
         initView();
         initData();
@@ -141,14 +142,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onStart() {
-
         MyLog.d("FragmentActivity","onStart");
         com.orhanobut.logger.Logger.i("FragmentActivity-onStart", "start");
         super.onStart();
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
         }
-//        log.info("onStart-finish");
     }
 
     @Override
@@ -162,7 +161,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             //这句话干嘛的
             mac.registerResources(this);
         }
-//        log.info("onResume-finish");
     }
 
     @Override
@@ -175,15 +173,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     public void onStop(){
-//        log.info("onStop-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "onStop");
         super.onStop();
-//        log.info("onStop-finish");
     }
 
     @Override
     protected void onDestroy() {
-//        log.info("onDestroy-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onDestroy", "start");
         cancelNotification();
         if (mac != null) {
@@ -192,7 +187,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
         super.onDestroy();
-//        log.info("onDestroy-finish");
     }
 
     @Override
@@ -337,7 +331,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         else {
             getMqttConnection();
             ToastUtils.showShort(FragmentActivity.this, "登陆成功");
-//            log.info("登录成功");
         }
     }
 

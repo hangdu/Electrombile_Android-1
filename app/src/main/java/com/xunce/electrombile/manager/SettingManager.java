@@ -413,6 +413,12 @@ public class SettingManager {
         return spf.getBoolean("NEEDGUIDE",true);
     }
 
+    //记录上次清理数据库的时间
+    public void setUpdateDatabaseTime(long timestamp){
+        spf.edit().putLong("UPDATEDATABASETIME", timestamp).apply();
+    }
 
-
+    public long getUpdateDatabaseTime(){
+        return spf.getLong("UPDATEDATABASETIME",0);
+    }
 }

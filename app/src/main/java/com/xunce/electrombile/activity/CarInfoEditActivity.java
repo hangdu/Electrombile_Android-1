@@ -440,21 +440,19 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
     //解绑一台设备的时候需要把本地相关的一级和二级数据库文件也删除掉
     private void deleteDatabaseFile(){
-        //先删除二级数据库  在删除一级数据库
-        //先看一下本地有没有相应的数据库文件
-        DBManage dbManage = new DBManage(CarInfoEditActivity.this,IMEI);
-        List<String> dateList = dbManage.getAllDateInDateTrackTable();
-        dbManage.closeDB();
-
-        String TableName = "IMEI_"+IMEI+".db";
-        for(int i = 0;i<dateList.size();i++){
-            String SecondTableName = dateList.get(i)+"_IMEI_"+IMEI+".db";
-            Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
-            Log.d("test","test");
+        String packageName = getPackageName();
+        String path = "/data/data/"+packageName+"/databases";
+        File file = new File(path);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            for(File file1:files){
+                String fileName = file1.getName();
+                if(fileName.contains(IMEI)){
+                    file1.delete();
+                }
+            }
         }
-        Boolean delete = getApplication().deleteDatabase(TableName);
     }
-
 
     enum handler_key{
         DELETE_RECORD,

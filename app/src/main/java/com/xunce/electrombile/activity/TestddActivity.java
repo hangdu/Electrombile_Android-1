@@ -182,8 +182,6 @@ public class TestddActivity extends Activity{
         setContentView(R.layout.activity_testdd);
         init();
 
-//        deleteAllSecondTable();
-
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
         sm = SettingManager.getInstance();
@@ -200,8 +198,12 @@ public class TestddActivity extends Activity{
 //            updateListView();
         }
 
+        //有时候为了测试需要用到这个函数
+//        deleteAllSecondTable();
 
     }
+
+
 
     @Override
     protected void onStart() {
@@ -258,7 +260,6 @@ public class TestddActivity extends Activity{
 
                 Intent intent = new Intent(TestddActivity.this,SpecificHistoryTrackActivity.class);
                 Bundle extras = new Bundle();
-//                extras.putSerializable("trackDataList", (Serializable)trackDataList);
                 extras.putString("startPoint", childData.get(groupPosition).get(childPosition).get(STARTPOINT));
                 extras.putString("endPoint", childData.get(groupPosition).get(childPosition).get(ENDPOINT));
                 intent.putExtras(extras);
@@ -304,7 +305,6 @@ public class TestddActivity extends Activity{
         final int finalSkip = totalSkip;
         AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
         String IMEI = sm.getIMEI();
-        // Log.i(TAG, "IMEI+++++" + IMEI);
         query.setLimit(1000);
         query.whereEqualTo("IMEI", IMEI);
         query.whereGreaterThanOrEqualTo("createdAt", startT);
@@ -363,7 +363,6 @@ public class TestddActivity extends Activity{
                     }
 
                 } else {
-//                    clearListViewWhenFail();
                     dialog.setTitle("查询失败"+e.getMessage());
                     dialog.show();
                     watiDialog.dismiss();
@@ -459,7 +458,7 @@ public class TestddActivity extends Activity{
         gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
         endT = gcEnd.getTime();
 
-        //如果查询的数据是30天之外的  就不要直接和leancloud交互了,不要存取数据库
+        //如果查询的数据是30天之外的  就直接和leancloud交互,不要存取数据库
         if(groupPosition>30){
             FlagRecentDate = false;
             findCloud(startT, endT, 0);
@@ -476,7 +475,7 @@ public class TestddActivity extends Activity{
         }
         else{
             IfDatabaseExist();
-            if(true == DatabaseExistFlag){
+            if(DatabaseExistFlag){
                 String TableName = "IMEI_"+sm.getIMEI()+".db";
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
 
@@ -579,14 +578,13 @@ public class TestddActivity extends Activity{
         adapter.notifyDataSetChanged();
 
         if(ReverseNumber == totalTrackNumber*2){
-            if(!startT.equals(todayDate)&&(FlagRecentDate == true)){
+            if(!startT.equals(todayDate)&&(FlagRecentDate)){
                 //确实是近期的数据才会插入到数据库
                 android.os.Message msg = android.os.Message.obtain();
                 msg.what = 1;
                 mhandler.sendMessage(msg);
             }
         }
-        return;
     }
 
    //更新ItemList
@@ -647,24 +645,21 @@ public class TestddActivity extends Activity{
         }
     }
 
-//    private void deleteAllSecondTable(){
-//        if(dbManage == null){
-//            dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-//        }
-//        List<String> dateList = dbManage.getAllDateInDateTrackTable();
-//        for(int i = 0;i<dateList.size();i++){
-//            String SecondTableName = dateList.get(i)+"_IMEI_"+sm.getIMEI()+".db";
-//            Boolean deleteSecondTable = getApplication().deleteDatabase(SecondTableName);
-//            Log.d("test","test");
-//        }
-//        String TableName = "IMEI_"+sm.getIMEI()+".db";
-//        Boolean delete = getApplication().deleteDatabase(TableName);
-//    }
-
-    //test
-
-
-    //test
+    //删除所有的二级数据表
+    private void deleteAllSecondTable(){
+        String path = "/data/data/com.xunce.electrombile/databases";
+        File file = new File(path);
+        if(file.exists()){
+            File[] files = file.listFiles();
+            for(File file1:files){
+                String fileName = file1.getName();
+                if(fileName.contains("年")){
+                    file1.delete();
+                }
+                Log.d("name",fileName);
+            }
+        }
+    }
 
 
     //    private Boolean IfDatabaseExist() {
@@ -676,5 +671,6 @@ public class TestddActivity extends Activity{
 //        }
 //    }
 
-    //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
+    //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:
+    // 可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
 }
