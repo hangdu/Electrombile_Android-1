@@ -188,6 +188,7 @@ public class MyReceiver extends BroadcastReceiver {
                 caseGetAutoLockStatus(code,protocol);
                 break;
 
+            //查询电量
             case ProtocolConstants.APP_CMD_BATTERY:
                 caseGetBatteryInfo(code,protocol);
                 break;
@@ -303,6 +304,8 @@ public class MyReceiver extends BroadcastReceiver {
                 intent.putExtra("KIND","GETINITIALSTATUS");
                 mContext.sendBroadcast(intent);//发送广播事件
 
+                ((FragmentActivity) mContext).startThread();
+
 //                //设置小安宝的开关状态
 //                if(settingManager.getAlarmFlag()){
 //                    //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
@@ -321,7 +324,21 @@ public class MyReceiver extends BroadcastReceiver {
             }
         }
         else{
-            dealErr(code);
+//            dealErr(code);
+            switch (code) {
+                case ProtocolConstants.ERR_WAITING:
+                    ToastUtils.showShort(mContext, "正在设置命令，请稍后...");
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE * 2);
+                    return;
+                case ProtocolConstants.ERR_OFFLINE:
+                    ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
+                    ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
+                    ((FragmentActivity) mContext).stopThread();
+                    break;
+                case ProtocolConstants.ERR_INTERNAL:
+                    ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
+                    break;
+            }
         }
     }
 
@@ -336,16 +353,30 @@ public class MyReceiver extends BroadcastReceiver {
             }
         }
         else{
-            dealErr(code);
+//            dealErr(code);
+            switch (code) {
+                case ProtocolConstants.ERR_WAITING:
+                    ToastUtils.showShort(mContext, "正在设置命令，请稍后...");
+                    timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE * 2);
+                    return;
+                case ProtocolConstants.ERR_OFFLINE:
+                    ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
+                    ((FragmentActivity) mContext).setManager.setAlarmFlag(false);
+                    ((FragmentActivity) mContext).stopThread();
+                    break;
+                case ProtocolConstants.ERR_INTERNAL:
+                    ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
+                    break;
+            }
         }
     }
 
 
-    private void caseSeek(int result, String success) {
-        if (ProtocolConstants.ERR_SUCCESS == result) {
+    private void caseSeek(int code, String success) {
+        if (ProtocolConstants.ERR_SUCCESS == code) {
             ToastUtils.showShort(mContext, success);
         } else {
-            dealErr(result);
+            dealErr(code);
         }
         caseSeekSendToFindAct(0);
     }
@@ -394,8 +425,8 @@ public class MyReceiver extends BroadcastReceiver {
         }
     }
 
-    private void dealErr(int result) {
-        switch (result) {
+    private void dealErr(int code) {
+        switch (code) {
             case ProtocolConstants.ERR_WAITING:
                 ToastUtils.showShort(mContext, "正在设置命令，请稍后...");
                 timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE * 2);

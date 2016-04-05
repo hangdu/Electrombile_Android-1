@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -51,22 +49,17 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.receiver.MyReceiver;
-import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.view.viewpager.CustomViewPager;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 /**
  * Created by heyukun on 2015/3/24. 修改 by liyanbo
@@ -76,6 +69,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener{
     private static final String TAG = "FragmentActivity:";
 //    private static final int DELAYTIME = 500;
+    private static final int REFRESHTIME = 1000*60*30;
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
     public SwitchFragment switchFragment;
@@ -101,6 +95,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private SimpleAdapter simpleAdapter;
     private View left_menu;
     private Boolean firsttime_Flag = true;
+    Thread myThread;
+
 
     /**
      * The handler. to process exit()
@@ -122,6 +118,51 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             ToastUtils.showShort(FragmentActivity.this, "FragmentActivity指令下发失败，请检查网络和设备工作是否正常。");
         }
     };
+
+    final Handler handler = new Handler( ) {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    MyLog.d("handler","updateData");
+                    updateData();
+                    break;
+            }
+        }
+    };
+
+    //主动刷新电量和总公里数
+    private void updateData(){
+        //查询电量
+        sendMessage(FragmentActivity.this,mCenter.getBatteryInfo(),setManager.getIMEI());
+
+        //查询总的公里数
+        AVQuery<AVObject> query = new AVQuery<>("DID");
+        query.whereEqualTo("IMEI", setManager.getIMEI());
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (!list.isEmpty()) {
+                        if (list.size() != 1) {
+                            ToastUtils.showShort(FragmentActivity.this, "DID表中  该IMEI对应多条记录");
+                            return;
+                        }
+                        AVObject avObject = list.get(0);
+
+                        try {
+                            int itinerary = (int)avObject.get("itinerary");
+                            switchFragment.refreshItineraryInfo(itinerary);
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                        }
+                    }
+                } else {
+                    ToastUtils.showShort(FragmentActivity.this, "在DID表中查询该IMEI 查询失败");
+                }
+            }
+        });
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,15 +206,18 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onPause() {
-//        log.info("onPause-start");
         com.orhanobut.logger.Logger.i("FragmentActivity-onPause", "onPause");
         super.onPause();
-//        log.info("onPause-finish");
     }
 
     @Override
     public void onStop(){
         com.orhanobut.logger.Logger.i("FragmentActivity-onStop", "onStop");
+
+        if (myThread != null) {
+            myThread.interrupt();
+        }
+
         super.onStop();
     }
 
@@ -262,6 +306,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     sendMessage(FragmentActivity.this, mCenter.getInitialStatus(), setManager.getIMEI());
 
                     firsttime_Flag = false;
+
+                    RefreshThread refreshThread = new RefreshThread();
+                    myThread = new Thread(refreshThread);
+                    myThread.start();
                 }
             }
 
@@ -271,7 +319,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 ToastUtils.showShort(FragmentActivity.this, "连接服务器失败");
             }
         });
-//        log.info("getMqttConnection 开始连接服务器");
         mqttConnectManager.getMqttConnection();
     }
 
@@ -374,6 +421,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mqttConnectManager.setContext(FragmentActivity.this);
         mqttConnectManager.initMqtt();
 
+
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
         list.add(maptabFragment);
@@ -389,7 +437,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         checkId = 0;
                         break;
                     case R.id.rbMap:
-//                        log.info("rbMap-clicked");
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
                         break;
@@ -465,20 +512,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-//    private void LogConfigure(){
-//        LogConfigurator logConfigurator = new LogConfigurator();
-//        logConfigurator.setFileName(Environment.getExternalStorageDirectory()
-//                + File.separator + "MyApp" + File.separator + "logs"
-//                + File.separator + "log4j.txt");
-//        logConfigurator.setRootLevel(Level.DEBUG);
-//        logConfigurator.setLevel("org.apache", Level.ERROR);
-//        logConfigurator.setFilePattern("%d %-5p [%c{2}]-[%L] %m%n");
-//        logConfigurator.setMaxFileSize(1024 * 1024 * 5);
-//        logConfigurator.setImmediateFlush(true);
-//        logConfigurator.configure();
-//        log = Logger.getLogger(FragmentActivity.class);
-//        log.info("My Application Created");
-//    }
+
 
     @Override
     public void onBackPressed() {
@@ -548,5 +582,38 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     public void setLeftMenuCarImage(Bitmap bm){
         img_car.setImageBitmap(bm);
+    }
+
+    class RefreshThread implements Runnable {
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    MyLog.d("refreshTime","refreshTime");
+                    Thread.sleep(REFRESHTIME);
+                } catch (InterruptedException e) {
+                    myThread = null;
+                    return;
+                }
+
+                Message message = new Message();
+                message.what = 1;
+
+                handler.sendMessage(message);
+            }
+        }
+    }
+
+    public void stopThread(){
+        if(myThread!=null){
+            myThread.interrupt();
+        }
+    }
+
+    public void startThread(){
+        if(myThread==null){
+            RefreshThread refreshThread = new RefreshThread();
+            myThread = new Thread(refreshThread);
+            myThread.start();
+        }
     }
 }

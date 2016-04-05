@@ -41,6 +41,10 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
+import com.avos.avoscloud.FindCallback;
 import com.avos.avoscloud.LogUtil;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -84,6 +88,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultListener,OnClickListener {
     private static final int DELAYTIME = 1000;
@@ -110,6 +115,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Uri imageUri;
     private TextView tv_Safeday;
     private TextView tv_battery;
+    private TextView tv_distance;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -297,15 +303,50 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_weatherCondition = (TextView)v.findViewById(R.id.tv_weatherCondition);
         tv_location = (TextView)v.findViewById(R.id.tv_location);
 
-        LinearLayout ll_PowerandDistance = (LinearLayout)v.findViewById(R.id.ll_PowerandDistance);
-        ll_PowerandDistance.setOnClickListener(new OnClickListener() {
+        RelativeLayout ll_Power = (RelativeLayout)v.findViewById(R.id.ll_Power);
+        ll_Power.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 m_context.sendMessage(m_context,mCenter.getBatteryInfo(),setManager.getIMEI());
             }
         });
 
+        RelativeLayout ll_Distance = (RelativeLayout)v.findViewById(R.id.ll_Distance);
+        ll_Distance.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //查询总的公里数
+                AVQuery<AVObject> query = new AVQuery<>("DID");
+                query.whereEqualTo("IMEI", setManager.getIMEI());
+                query.findInBackground(new FindCallback<AVObject>() {
+                    @Override
+                    public void done(List<AVObject> list, AVException e) {
+                        if (e == null) {
+                            if (!list.isEmpty()) {
+                                if (list.size() != 1) {
+                                    ToastUtils.showShort(m_context, "DID表中  该IMEI对应多条记录");
+                                    return;
+                                }
+                                AVObject avObject = list.get(0);
+
+                                try {
+                                    int itinerary = (int)avObject.get("itinerary");
+                                    refreshItineraryInfo(itinerary);
+                                    ToastUtils.showShort(m_context,"获取累计公里数成功");
+                                } catch (Exception ee) {
+                                    ee.printStackTrace();
+                                }
+                            }
+                        } else {
+                            ToastUtils.showShort(m_context, "在DID表中查询该IMEI 查询失败");
+                        }
+                    }
+                });
+            }
+        });
+
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
+        tv_distance = (TextView)v.findViewById(R.id.tv_distance);
     }
 
     private void initEvent() {
@@ -347,8 +388,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 break;
         }
     }
-
-
 
     public void loadBitmap() {
         BitmapWorkerTask task = new BitmapWorkerTask();
@@ -874,5 +913,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void refreshBatteryToNULL(){
         tv_battery.setText("正在获取电量");
+    }
+
+    public void refreshItineraryInfo(int itinerary){
+        tv_distance.setText(itinerary+"公里");
     }
 }

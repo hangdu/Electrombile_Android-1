@@ -65,7 +65,6 @@ public class LeancloudManager {
         AVUser currentUser = AVUser.getCurrentUser();
         String UserName = (String)currentUser.get("name");
         Boolean sex = (Boolean)currentUser.get("isMale");
-        //不确定这个对不对
         Date date = (Date)currentUser.get("birth");
         int i = 0;
 

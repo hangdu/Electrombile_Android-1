@@ -151,6 +151,7 @@
             android:layout_height="83dp"
             android:orientation="horizontal">
             <RelativeLayout
+                android:id="@+id/ll_Power"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
@@ -195,6 +196,7 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/ll_Distance"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
@@ -208,7 +210,7 @@
 
                 <TextView
                     android:id="@+id/tv_total"
-                    android:layout_marginTop="33dp"
+                    android:layout_marginTop="23dp"
                     android:layout_toRightOf="@id/img_distance"
                     android:layout_marginLeft="33dp"
                     android:layout_width="wrap_content"
