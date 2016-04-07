@@ -128,6 +128,6 @@
     <string name="disconnecting">Disconnecting from</string>
     <string name="connectionError">An error occurred connecting to</string>
     <string name="title_activity_register_activity__part1">RegisterActivity_Part1</string>
-    <string name="mapOffline_tv_hotCity">所有城市</string>
-    <string name="mapOffline_tv_Location">下载管理</string>
+    <string name="mapOffline_tv_hotCity">下载地图</string>
+    <string name="mapOffline_tv_already">已下载地图</string>
 </resources>

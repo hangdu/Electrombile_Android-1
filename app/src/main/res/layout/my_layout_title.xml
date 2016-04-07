@@ -24,12 +24,5 @@
             android:background="@drawable/back"/>
     </RelativeLayout>
 
-    <!--<Button-->
-        <!--android:id = "@+id/btn_back"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_marginLeft="13.33dp"-->
-        <!--android:layout_width="20dp"-->
-        <!--android:layout_height="17dp"-->
-        <!--android:background="@drawable/back"/>-->
 </RelativeLayout>
 

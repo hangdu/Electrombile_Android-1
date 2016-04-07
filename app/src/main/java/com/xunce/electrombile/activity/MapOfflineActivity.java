@@ -6,9 +6,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.map.offline.MKOLSearchRecord;
@@ -48,6 +52,18 @@ public class MapOfflineActivity extends Activity implements MKOfflineMapListener
     }
 
     private void initView() {
+        View v = findViewById(R.id.ll_button);
+        TextView tv_title = (TextView)v.findViewById(R.id.tv_title);
+        tv_title.setText("地图下载");
+        RelativeLayout btn_back = (RelativeLayout)v.findViewById(R.id.btn_back);
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
         ExpandableListView allCityList = (ExpandableListView) findViewById(R.id.lv_mapOffline_allCity);
         ListView managerList = (ListView) findViewById(R.id.lv_mapOffline_manager);
         ArrayList<OfflinemapBean> allCities = new ArrayList<OfflinemapBean>();
@@ -129,20 +145,21 @@ public class MapOfflineActivity extends Activity implements MKOfflineMapListener
         switch (type) {
             case MKOfflineMap.TYPE_DOWNLOAD_UPDATE: {
                 // 处理下载进度更新提示
-                Logger.i("下载更新");
-                MKOLUpdateElement update = mkOfflineMap.getUpdateInfo(state);
-                // 处理下载进度更新提示
-                if (update != null) {
-                    if (update.ratio == 100) {
-                        ExpandableListadapter.getBeanbyId(state).setState(OfflinemapBean.STATE.FINISHED);
-                    } else {
-                        ExpandableListadapter.setDownProgress(update.ratio, state);
+                    Logger.i("下载更新");
+                    MKOLUpdateElement update = mkOfflineMap.getUpdateInfo(state);
+                    // 处理下载进度更新提示
+                    if (update != null) {
+                        if (update.ratio == 100) {
+                            ExpandableListadapter.getBeanbyId(state).setState(OfflinemapBean.STATE.FINISHED);
+                        } else {
+                            ExpandableListadapter.setDownProgress(update.ratio, state);
+                        }
+                        ExpandableListadapter.updateView();
                     }
-                    ExpandableListadapter.updateView();
+                    ManagerListadapter.updateView();
                 }
-                ManagerListadapter.updateView();
-            }
-            break;
+                break;
+
             case MKOfflineMap.TYPE_NEW_OFFLINE:
                 // 有新离线地图安装
                 Logger.i("新的离线地图安装");
@@ -156,7 +173,6 @@ public class MapOfflineActivity extends Activity implements MKOfflineMapListener
                     ExpandableListadapter.getBeanbyId(state).setState(OfflinemapBean.STATE.UPDATE);
                 }
                 // MKOLUpdateElement e = mOffline.getUpdateInfo(state);
-
                 break;
         }
     }

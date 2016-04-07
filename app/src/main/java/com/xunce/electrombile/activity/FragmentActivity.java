@@ -230,6 +230,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         }
         if (TracksManager.getTracks() != null) TracksManager.clearTracks();
+
         super.onDestroy();
     }
 

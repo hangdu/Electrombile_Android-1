@@ -4,15 +4,24 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
+    <include
+        android:id="@+id/ll_button"
+        layout="@layout/my_layout_title" />
+
     <LinearLayout
         android:id="@+id/ll_mapOffline_Location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_marginTop="30px"
+            android:layout_marginLeft="105px"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mapOffline_tv_Location"/>
+            android:textSize="42px"
+            android:textColor="#7f7f7f"
+            android:text="@string/mapOffline_tv_already"/>
+
         <ListView
             android:id="@+id/lv_mapOffline_manager"
             android:layout_width="match_parent"
@@ -20,9 +29,14 @@
             tools:listitem="@layout/item_mapofflinelist_child"></ListView>
 
     </LinearLayout>
+
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_marginTop="65px"
+        android:layout_marginLeft="105px"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="42px"
+        android:textColor="#7f7f7f"
         android:text="@string/mapOffline_tv_hotCity"/>
 
     <ExpandableListView
