@@ -59,5 +59,6 @@
         android:id="@+id/lv_mapOffline_allCity"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:divider="@null"
         tools:listitem="@layout/item_mapofflinelist_parent"/>
 </LinearLayout>
