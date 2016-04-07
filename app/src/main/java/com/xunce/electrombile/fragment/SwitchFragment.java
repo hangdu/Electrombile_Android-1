@@ -116,6 +116,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_Safeday;
     private TextView tv_battery;
     private TextView tv_distance;
+    private TextView tv_angleRank;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -347,6 +348,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
         tv_distance = (TextView)v.findViewById(R.id.tv_distance);
+        tv_angleRank = (TextView)v.findViewById(R.id.tv_angleRank);
     }
 
     private void initEvent() {
@@ -756,6 +758,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             else if(intent.getStringExtra("KIND").equals("OTHER")){
                 DeviceChangeHeadImage();
                 setSafedays();
+                m_context.updateTotalItinerary();
                 m_context.refreshBindList1();
             }
             else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
@@ -917,5 +920,76 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void refreshItineraryInfo(int itinerary){
         tv_distance.setText(itinerary+"公里");
+        //星
+        if(itinerary<500){
+            int a = itinerary/100;
+            switch (a){
+                case 0:
+                    tv_angleRank.setText("1星");
+                    break;
+                case 1:
+                    tv_angleRank.setText("2星");
+                    break;
+                case 2:
+                    tv_angleRank.setText("3星");
+                    break;
+                case 3:
+                    tv_angleRank.setText("4星");
+                    break;
+                case 4:
+                    tv_angleRank.setText("5星");
+                    break;
+                default:
+                    break;
+
+            }
+        }
+        //钻
+        else if(itinerary<3000){
+            int a = (itinerary-500)/500;
+            switch (a){
+                case 0:
+                    tv_angleRank.setText("1钻");
+                    break;
+                case 1:
+                    tv_angleRank.setText("2钻");
+                    break;
+                case 2:
+                    tv_angleRank.setText("3钻");
+                    break;
+                case 3:
+                    tv_angleRank.setText("4钻");
+                    break;
+                case 4:
+                    tv_angleRank.setText("5钻");
+                    break;
+                default:
+                    break;
+            }
+        }
+        //冠
+        else{
+            int a = (itinerary-3000)/1000;
+            switch (a){
+                case 0:
+                    tv_angleRank.setText("1冠");
+                    break;
+                case 1:
+                    tv_angleRank.setText("2冠");
+                    break;
+                case 2:
+                    tv_angleRank.setText("3冠");
+                    break;
+                case 3:
+                    tv_angleRank.setText("4冠");
+                    break;
+//                case 4:
+//                    tv_angelUp.setText("5冠");
+//                    break;
+                default:
+                    tv_angleRank.setText("5冠");
+                    break;
+            }
+        }
     }
 }

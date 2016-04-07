@@ -127,11 +127,11 @@
                     android:id="@+id/tv_angelUp"
                     android:layout_width="wrap_content"
                     android:layout_height="25dp"
-                    android:text="环保天使"
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
                     android:textColor="#094b00"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:text="环保天使"/>
 
                 <TextView
                     android:id="@+id/tv_angleRank"
@@ -140,8 +140,7 @@
                     android:layout_height="25dp"
                     android:layout_centerHorizontal="true"
                     android:textColor="#d8ecd8"
-                    android:textSize="12sp"
-                    android:text="初级环保"/>
+                    android:textSize="12sp" />
             </RelativeLayout>
         </RelativeLayout>
 

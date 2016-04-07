@@ -123,18 +123,21 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    MyLog.d("handler","updateData");
-                    updateData();
+                    MyLog.d("handler", "updateData");
+                    //查询电量
+                    getBatteryInfo();
+                    updateTotalItinerary();
                     break;
             }
         }
     };
 
-    //主动刷新电量和总公里数
-    private void updateData(){
-        //查询电量
-        sendMessage(FragmentActivity.this,mCenter.getBatteryInfo(),setManager.getIMEI());
+    private void getBatteryInfo(){
+        sendMessage(this, mCenter.getBatteryInfo(), setManager.getIMEI());
+    }
 
+    //主动刷新电量和总公里数
+    public void updateTotalItinerary(){
         //查询总的公里数
         AVQuery<AVObject> query = new AVQuery<>("DID");
         query.whereEqualTo("IMEI", setManager.getIMEI());
@@ -148,7 +151,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                             return;
                         }
                         AVObject avObject = list.get(0);
-
                         try {
                             int itinerary = (int)avObject.get("itinerary");
                             switchFragment.refreshItineraryInfo(itinerary);
@@ -304,7 +306,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     //开启报警服务
                     startAlarmService();
 
+                    //获取小安宝的初始状态:电量;自动落锁状态;小安宝的开关状态
                     sendMessage(FragmentActivity.this, mCenter.getInitialStatus(), setManager.getIMEI());
+
+                    //获取总公里数
+                    updateTotalItinerary();
 
                     firsttime_Flag = false;
 
