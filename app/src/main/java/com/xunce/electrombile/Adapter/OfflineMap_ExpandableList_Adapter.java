@@ -115,7 +115,7 @@ public class OfflineMap_ExpandableList_Adapter extends BaseExpandableListAdapter
         if (convertView != null) {
             holder = (buttonViewHolder) convertView.getTag();
         } else {
-            convertView = mInflater.inflate(R.layout.item_mapofflinelist_child, null);
+            convertView = mInflater.inflate(R.layout.item_mapofflinelist_child_expand, null);
             holder = new buttonViewHolder();
             holder.cityName = (TextView) convertView.findViewById(R.id.Item_TextView_Child);
             holder.buttonDownload = (ImageButton) convertView.findViewById(R.id

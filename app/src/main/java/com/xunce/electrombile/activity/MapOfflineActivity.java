@@ -63,7 +63,6 @@ public class MapOfflineActivity extends Activity implements MKOfflineMapListener
             }
         });
 
-
         ExpandableListView allCityList = (ExpandableListView) findViewById(R.id.lv_mapOffline_allCity);
         ListView managerList = (ListView) findViewById(R.id.lv_mapOffline_manager);
         ArrayList<OfflinemapBean> allCities = new ArrayList<OfflinemapBean>();

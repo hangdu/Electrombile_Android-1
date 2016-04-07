@@ -12,8 +12,8 @@
         android:layout_height="33.33dp"
         android:layout_weight="1"
         android:layout_gravity="center"
-        android:src = "@drawable/img_offlinemap_yes"/>
-    
+        android:src = "@drawable/img_offlinemap_no"/>
+
     <TextView
         android:id="@+id/Item_TextView_Child"
         android:layout_width="0dp"
