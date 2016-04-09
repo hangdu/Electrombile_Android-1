@@ -123,18 +123,15 @@ public class TracksManager implements Serializable{
         SetMapTrack(groupposition,tracks);
     }
 
-
-    //这个函数看的不是很懂啊
-    public void setTracks1(int groupposition,List<AVObject> objects){
+    public void initTracks(){
         tracks = new ArrayList<>();
-        Log.i("Track managet-----", "setTranks" + objects.size());
-        ArrayList<TrackPoint> dataList = null;
+    }
+
+    //添加一段轨迹
+    public void setOneTrack(List<AVObject> objects){
+        ArrayList<TrackPoint> dataList = new ArrayList<>();
 
         for(AVObject thisObject: objects){
-            if(dataList == null){
-                dataList = new ArrayList<>();
-                tracks.add(dataList);
-            }
             double lat = thisObject.getDouble(KET_LAT);
             double lon = thisObject.getDouble(KET_LONG);
             //百度地图的LatLng类对输入有限制，如果longitude过大，则会导致结果不正确
@@ -143,12 +140,15 @@ public class TracksManager implements Serializable{
             LatLng bdPoint = mCenter.convertPoint(oldPoint);
 
             TrackPoint p = new TrackPoint(thisObject.getCreatedAt(), bdPoint);
+            //不确定这样处理会不会有什么错误   现在关于日期处理的这个部分还没有搞得很清楚
             p.time.setHours(p.time.getHours());
+            if(isOutOfHubei(bdPoint)){
+                Log.i(TAG, "out range");
+                continue;
+            }
             dataList.add(p);
         }
-
         tracks.add(dataList);
-        SetMapTrack(groupposition,tracks);
     }
 
     public static class TrackPoint implements Serializable{
@@ -166,23 +166,16 @@ public class TracksManager implements Serializable{
         }
     }
 
+    //groupposition是指某一天
     public void SetMapTrack(int groupposition, ArrayList<ArrayList<TrackPoint>> tracks){
         String grouppositon_str = String.valueOf(groupposition);
         map.put(grouppositon_str, tracks);
 
         int size =tracks.size();
-
-//        HashMap<String, ArrayList<ArrayList<TrackPoint>>> map1 = map;
         Log.d(" tracks_size",String.valueOf(size));
     }
 
     public HashMap<String, ArrayList<ArrayList<TrackPoint>>> getMapTrack(){
         return map;
     }
-
-    public void RefreshTracks()
-    {
-        tracks = new ArrayList<>();
-    }
-
 }

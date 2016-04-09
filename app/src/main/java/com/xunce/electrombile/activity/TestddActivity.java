@@ -109,6 +109,8 @@ public class TestddActivity extends Activity{
     List<Map<String, String>> groupData;
     List<List<Map<String, String>>> childData;
 
+    private int trackCount;
+
     private Handler mhandler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg){
@@ -372,45 +374,87 @@ public class TestddActivity extends Activity{
     }
 
     private void findCloud(){
+        if(NetworkUtils.checkNetwork(this)){
+            return;
+        }
+        //创建数据库
+        if(!startT.equals(todayDate)&&(FlagRecentDate)){
+            if(dbManage == null){
+                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+            }
+            //什么时候需要创建这张表  当为近期的数据的时候
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+            String date = sdf.format(endT);
+            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+        }
+
         String ItineraryTableName = "Itinerary_"+sm.getIMEI();
         AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
         query.whereGreaterThanOrEqualTo("createdAt", startT);
         query.whereLessThan("createdAt", endT);
-        query.findInBackground(new FindCallback<AVObject>(){
+
+        watiDialog.setMessage("正在查询数据，请稍后…");
+        watiDialog.show();
+
+        query.findInBackground(new FindCallback<AVObject>() {
             @Override
             public void done(List<AVObject> avObjects, AVException e) {
-                if(e == null){
-                    if(avObjects.size() == 0){
+                if (e == null) {
+                    if (avObjects.size() == 0) {
                         //该天没有轨迹
+                        watiDialog.dismiss();
                         dialog.setTitle("此时间段内没有数据");
                         dialog.show();
-                        return;
-                    }
-                    else{
-                        for(AVObject avObject:avObjects){
+//                        return;
+                    } else {
+                        tracksManager.initTracks();
+                        trackCount = 0;
+                        final int count = avObjects.size();
+                        for (AVObject avObject : avObjects) {
                             //再查询一次  查询对应的gps
                             long start_timestamp = avObject.getLong("start");
                             long end_timestamp = avObject.getLong("end");
-                            if(start_timestamp!=-1&&end_timestamp!=-1){
+                            if (start_timestamp >10 && end_timestamp >10) {
                                 AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
-                                Date startDate = new Date(start_timestamp);
-                                Date endDate = new Date(end_timestamp);
+
+                                String IMEI = sm.getIMEI();
+                                query.setLimit(1000);
+                                query.whereEqualTo("IMEI", IMEI);
+
+                                //单位转换:  由秒转换成毫秒
+                                Date startDate = new Date(start_timestamp * 1000);
+                                Date endDate = new Date(end_timestamp * 1000);
                                 query.whereGreaterThanOrEqualTo("createdAt", startDate);
                                 query.whereLessThan("createdAt", endDate);
                                 query.findInBackground(new FindCallback<AVObject>() {
                                     @Override
                                     public void done(List<AVObject> list, AVException e) {
-                                        if(e == null){
-                                            tracksManager.setTranks(GroupPosition, list);
-                                            updateListView();
+                                        if (e == null) {
+                                            //如果固件分段有问题的话  这个地方的size可能为0或者1
+                                            if(list.size()>1){
+                                                tracksManager.setOneTrack(list);
+                                            }
+                                            trackCount++;
+                                            if(trackCount == count){
+                                                updateListView();
+                                                watiDialog.dismiss();
+                                            }
+
+                                        }
+                                        else{
+                                            dialog.setTitle("查询失败"+e.getMessage());
+                                            dialog.show();
+                                            watiDialog.dismiss();
                                         }
                                     }
                                 });
                             }
+                            else{
+                                trackCount++;
+                            }
                         }
                     }
                 }
-
             }
         });
     }
@@ -448,29 +492,23 @@ public class TestddActivity extends Activity{
             geoCoder2.init();
 
                 //计算开始点和结束点时间间隔
-            long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
-            long days = diff / (60 * 60 * 24);
-            long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
-            double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
-            int secodes = (int)((minutes - Math.floor(minutes)) * 60);
+//            long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
+//            long days = diff / (60 * 60 * 24);
+//            long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
+//            double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
+//            int secodes = (int)((minutes - Math.floor(minutes)) * 60);
 
             //计算路程
-            double distance = 0;
-            for(int j = 0; j < trackList.size() - 1; j++){
-                LatLng m_start = trackList.get(j).point;
-                LatLng m_end = trackList.get(j +1).point;
-                distance += DistanceUtil.getDistance(m_start, m_end);
+//            double distance = 0;
+//            for(int j = 0; j < trackList.size() - 1; j++){
+//                LatLng m_start = trackList.get(j).point;
+//                LatLng m_end = trackList.get(j +1).point;
+//                distance += DistanceUtil.getDistance(m_start, m_end);
+//
+//            }
+//            int distanceKM = (int)(distance / 1000);
+//            int diatanceM = (int)(distance - distanceKM * 1000);
 
-            }
-            int distanceKM = (int)(distance / 1000);
-            int diatanceM = (int)(distance - distanceKM * 1000);
-            //更新列表信息
-//            HashMap<String, Object> map = new HashMap<String, Object>();
-//            map.put("ItemTotalTime", "历时:" + days + "天" + hours +"小时" + (int)Math.floor(minutes) + "分钟" + secodes + "秒");
-//            map.put("ItemStartTime", "开始时间:" + sdfWithSecond.format(startP.time));
-//            map.put("ItemEndTime", "结束时间:" + sdfWithSecond.format(endP.time));
-//            map.put("ItemDistance", "距离:" + distanceKM + "千米" + diatanceM + "米");
-//            listItem.add(map);
 
             map = new HashMap<>();
             listMap.add(map);
@@ -505,7 +543,8 @@ public class TestddActivity extends Activity{
         //如果查询的数据是30天之外的  就直接和leancloud交互,不要存取数据库
         if(groupPosition>30){
             FlagRecentDate = false;
-            findCloud(startT, endT, 0);
+//            findCloud(startT, endT, 0);
+            findCloud();
             return;
         }
 
@@ -513,7 +552,8 @@ public class TestddActivity extends Activity{
 
         if(startT.equals(todayDate)){
             //直接从leancloud上获取数据
-            findCloud(startT, endT, 0);
+//            findCloud(startT, endT, 0);
+            findCloud();
             return;
 
         }
@@ -541,7 +581,8 @@ public class TestddActivity extends Activity{
                 int resultCount = dbManage.query(filter);
                 if(0 == resultCount){
                     //之前没有查过,数据库里没有相关的数据
-                    findCloud(startT, endT, 0);
+//                    findCloud(startT, endT, 0);
+                    findCloud();
                     return;
                 }
                 else if(1 == resultCount){
@@ -588,7 +629,8 @@ public class TestddActivity extends Activity{
                 }
             }
             else{
-                findCloud(startT, endT, 0);
+//                findCloud(startT, endT, 0);
+                findCloud();
                 return;
             }
         }
