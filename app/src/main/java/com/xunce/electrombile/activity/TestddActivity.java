@@ -377,16 +377,6 @@ public class TestddActivity extends Activity{
         if(NetworkUtils.checkNetwork(this)){
             return;
         }
-        //创建数据库
-        if(!startT.equals(todayDate)&&(FlagRecentDate)){
-            if(dbManage == null){
-                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-            }
-            //什么时候需要创建这张表  当为近期的数据的时候
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-            String date = sdf.format(endT);
-            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
-        }
 
         String ItineraryTableName = "Itinerary_"+sm.getIMEI();
         AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
@@ -405,8 +395,34 @@ public class TestddActivity extends Activity{
                         watiDialog.dismiss();
                         dialog.setTitle("此时间段内没有数据");
                         dialog.show();
-//                        return;
+
+                        //在数据表里插入一条数据  表示没有数据
+                        if(!startT.equals(todayDate)&&FlagRecentDate){
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+//                            String date = formatter.format(endT);
+                            long timeStamp = endT.getTime()/1000;
+                            //存到数据库
+                            dbManage.insert(timeStamp, -1, null, null, null);
+                        }
+
+                        //需要插入到数据库中  表示没有数据啊
+                        List<Map<String, String>> listMap = new ArrayList<>();
+                        childData.set(GroupPosition, listMap);
+                        adapter.notifyDataSetChanged();
+                        return;
+
                     } else {
+                        //创建数据库
+                        if(!startT.equals(todayDate)&&(FlagRecentDate)){
+                            if(dbManage == null){
+                                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+                            }
+                            //什么时候需要创建这张表  当为近期的数据的时候
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                            String date = sdf.format(endT);
+                            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+                        }
+
                         tracksManager.initTracks();
                         trackCount = 0;
                         final int count = avObjects.size();
@@ -455,6 +471,13 @@ public class TestddActivity extends Activity{
                         }
                     }
                 }
+                else{
+                    watiDialog.dismiss();
+                    //在leancloud上没有对应的里程表
+                    if(e.getCode() == 101){
+                        ToastUtils.showShort(TestddActivity.this,"无数据表");
+                    }
+                }
             }
         });
     }
@@ -491,25 +514,6 @@ public class TestddActivity extends Activity{
             GeoCodering geoCoder2 = new GeoCodering(this,endP.point,i,1);
             geoCoder2.init();
 
-                //计算开始点和结束点时间间隔
-//            long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
-//            long days = diff / (60 * 60 * 24);
-//            long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
-//            double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
-//            int secodes = (int)((minutes - Math.floor(minutes)) * 60);
-
-            //计算路程
-//            double distance = 0;
-//            for(int j = 0; j < trackList.size() - 1; j++){
-//                LatLng m_start = trackList.get(j).point;
-//                LatLng m_end = trackList.get(j +1).point;
-//                distance += DistanceUtil.getDistance(m_start, m_end);
-//
-//            }
-//            int distanceKM = (int)(distance / 1000);
-//            int diatanceM = (int)(distance - distanceKM * 1000);
-
-
             map = new HashMap<>();
             listMap.add(map);
         }
@@ -543,7 +547,6 @@ public class TestddActivity extends Activity{
         //如果查询的数据是30天之外的  就直接和leancloud交互,不要存取数据库
         if(groupPosition>30){
             FlagRecentDate = false;
-//            findCloud(startT, endT, 0);
             findCloud();
             return;
         }
@@ -552,7 +555,6 @@ public class TestddActivity extends Activity{
 
         if(startT.equals(todayDate)){
             //直接从leancloud上获取数据
-//            findCloud(startT, endT, 0);
             findCloud();
             return;
 
@@ -560,20 +562,7 @@ public class TestddActivity extends Activity{
         else{
             IfDatabaseExist();
             if(DatabaseExistFlag){
-                String TableName = "IMEI_"+sm.getIMEI()+".db";
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-
-//                dbManage.delete();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-                String date = sdf.format(endT);
-//                dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
-//                dbManage.deleteSecondTable();
-
-                IfDatabaseExist();
-                IfSecondTableExist();
-
-                //看里面有没有想要的数据
-
                 //由毫秒转换成秒
                 long timeStamp = endT.getTime()/1000;
 
@@ -581,7 +570,6 @@ public class TestddActivity extends Activity{
                 int resultCount = dbManage.query(filter);
                 if(0 == resultCount){
                     //之前没有查过,数据库里没有相关的数据
-//                    findCloud(startT, endT, 0);
                     findCloud();
                     return;
                 }
@@ -629,7 +617,6 @@ public class TestddActivity extends Activity{
                 }
             }
             else{
-//                findCloud(startT, endT, 0);
                 findCloud();
                 return;
             }
@@ -713,50 +700,4 @@ public class TestddActivity extends Activity{
             dbManageSecond.closeDB();
         }
     }
-
-    private void IfSecondTableExist(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-        String date = sdf.format(endT);
-
-        String path = "/data/data/com.xunce.electrombile/databases/"+date+"_IMEI_"+sm.getIMEI()+".db";
-        File dbtest = new File(path);
-        if (dbtest.exists()) {
-            Log.d("test", "test");
-            SecondTableExistFlag = true;
-
-//            getApplication().deleteDatabase(path);
-        } else {
-            Log.d("test", "test");
-            SecondTableExistFlag = false;
-        }
-    }
-
-    //删除所有的二级数据表
-    private void deleteAllSecondTable(){
-        String path = "/data/data/com.xunce.electrombile/databases";
-        File file = new File(path);
-        if(file.exists()){
-            File[] files = file.listFiles();
-            for(File file1:files){
-                String fileName = file1.getName();
-                if(fileName.contains("年")){
-                    file1.delete();
-                }
-                Log.d("name",fileName);
-            }
-        }
-    }
-
-
-    //    private Boolean IfDatabaseExist() {
-//        File dbtest = new File("/data/data/com.xunce.electrombile/databases/IMEI_8650670216630370.db");
-//        if (dbtest.exists()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
-    //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:
-    // 可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
 }
