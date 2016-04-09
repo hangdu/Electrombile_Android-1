@@ -349,6 +349,7 @@ public class MyReceiver extends BroadcastReceiver {
             }
             else{
                 ToastUtils.showShort(mContext,"获取电量成功");
+                //这个时候有可能会出现switchFragment的view没有渲染好的情况
                 ((FragmentActivity) mContext).switchFragment.refreshBatteryInfo();
             }
         }

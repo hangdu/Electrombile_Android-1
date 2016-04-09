@@ -137,7 +137,7 @@ public class BitmapUtils {
 	}
 
 	public static Bitmap compressImageFromFile(String IMEI) {
-//		String srcPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/crop_result.png";
+		//先要判断一下这个文件里的内容是否为空
 		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
 		BitmapFactory.Options newOpts = new BitmapFactory.Options();
 		newOpts.inJustDecodeBounds = true;//只读边,不读内容
