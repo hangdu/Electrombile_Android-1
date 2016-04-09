@@ -65,9 +65,9 @@ public class DBManage {
             Toast.makeText(mcontext, "insert失败", Toast.LENGTH_SHORT).show();
 
         }
-        else{
-            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
-        }
+//        else{
+////            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
+//        }
     }
 
 
@@ -146,9 +146,9 @@ public class DBManage {
             Toast.makeText(mcontext, "insert失败", Toast.LENGTH_SHORT).show();
 
         }
-        else{
-            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
-        }
+//        else{
+//            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
+//        }
     }
 
 //    public void deleteSecondTable(){
