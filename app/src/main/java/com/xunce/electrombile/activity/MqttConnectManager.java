@@ -35,9 +35,6 @@ public class MqttConnectManager {
     public static final String CONNECTING_FAIL = "CONNECTING_FAIL";
     public static String status = OK;
 
-
-
-
     private MqttConnectManager(){
 
     }
@@ -199,7 +196,10 @@ public class MqttConnectManager {
         String topic3 = "dev2app/" + IMEI + "/433";
         //订阅报警
         String topic4 = "dev2app/" + IMEI + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
+
+        String topic5 = "dev2app/" + IMEI + "/notify";
+
+        String[] topic = {topic1, topic2, topic3, topic4, topic5};
         int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
                 ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
         try {
@@ -223,7 +223,9 @@ public class MqttConnectManager {
         String topic3 = "dev2app/" + IMEI + "/433";
 
         String topic4 = "dev2app/" + IMEI + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
+
+        String topic5 = "dev2app/" + IMEI + "/notify";
+        String[] topic = {topic1, topic2, topic3, topic4, topic5};
         try {
             mac.unsubscribe(topic);
             return true;

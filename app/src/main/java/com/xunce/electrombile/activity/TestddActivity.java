@@ -404,22 +404,22 @@ public class TestddActivity extends Activity{
             geoCoder2.init();
 
                 //计算开始点和结束点时间间隔
-            long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
-            long days = diff / (60 * 60 * 24);
-            long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
-            double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
-            int secodes = (int)((minutes - Math.floor(minutes)) * 60);
-
-            //计算路程
-            double distance = 0;
-            for(int j = 0; j < trackList.size() - 1; j++){
-                LatLng m_start = trackList.get(j).point;
-                LatLng m_end = trackList.get(j +1).point;
-                distance += DistanceUtil.getDistance(m_start, m_end);
-
-            }
-            int distanceKM = (int)(distance / 1000);
-            int diatanceM = (int)(distance - distanceKM * 1000);
+//            long diff = (endP.time.getTime() - startP.time.getTime()) / 1000 +1;
+//            long days = diff / (60 * 60 * 24);
+//            long hours = (diff-days*(60 * 60 * 24))/(60 * 60);
+//            double minutes = (diff-days*( 60 * 60 * 24.0)-hours*(60 * 60))/(60.0);
+//            int secodes = (int)((minutes - Math.floor(minutes)) * 60);
+//
+//            //计算路程
+//            double distance = 0;
+//            for(int j = 0; j < trackList.size() - 1; j++){
+//                LatLng m_start = trackList.get(j).point;
+//                LatLng m_end = trackList.get(j +1).point;
+//                distance += DistanceUtil.getDistance(m_start, m_end);
+//
+//            }
+//            int distanceKM = (int)(distance / 1000);
+//            int diatanceM = (int)(distance - distanceKM * 1000);
             //更新列表信息
 //            HashMap<String, Object> map = new HashMap<String, Object>();
 //            map.put("ItemTotalTime", "历时:" + days + "天" + hours +"小时" + (int)Math.floor(minutes) + "分钟" + secodes + "秒");
@@ -476,19 +476,7 @@ public class TestddActivity extends Activity{
         else{
             IfDatabaseExist();
             if(DatabaseExistFlag){
-                String TableName = "IMEI_"+sm.getIMEI()+".db";
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-
-//                dbManage.delete();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-                String date = sdf.format(endT);
-//                dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
-//                dbManage.deleteSecondTable();
-
-                IfDatabaseExist();
-                IfSecondTableExist();
-
-                //看里面有没有想要的数据
 
                 //由毫秒转换成秒
                 long timeStamp = endT.getTime()/1000;
@@ -628,49 +616,19 @@ public class TestddActivity extends Activity{
         }
     }
 
-    private void IfSecondTableExist(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-        String date = sdf.format(endT);
-
-        String path = "/data/data/com.xunce.electrombile/databases/"+date+"_IMEI_"+sm.getIMEI()+".db";
-        File dbtest = new File(path);
-        if (dbtest.exists()) {
-            Log.d("test", "test");
-            SecondTableExistFlag = true;
-
-//            getApplication().deleteDatabase(path);
-        } else {
-            Log.d("test", "test");
-            SecondTableExistFlag = false;
-        }
-    }
-
-    //删除所有的二级数据表
-    private void deleteAllSecondTable(){
-        String path = "/data/data/com.xunce.electrombile/databases";
-        File file = new File(path);
-        if(file.exists()){
-            File[] files = file.listFiles();
-            for(File file1:files){
-                String fileName = file1.getName();
-                if(fileName.contains("年")){
-                    file1.delete();
-                }
-                Log.d("name",fileName);
-            }
-        }
-    }
-
-
-    //    private Boolean IfDatabaseExist() {
-//        File dbtest = new File("/data/data/com.xunce.electrombile/databases/IMEI_8650670216630370.db");
+//    private void IfSecondTableExist(){
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+//        String date = sdf.format(endT);
+//
+//        String path = "/data/data/com.xunce.electrombile/databases/"+date+"_IMEI_"+sm.getIMEI()+".db";
+//        File dbtest = new File(path);
 //        if (dbtest.exists()) {
-//            return true;
+//            Log.d("test", "test");
+//            SecondTableExistFlag = true;
+//
 //        } else {
-//            return false;
+//            Log.d("test", "test");
+//            SecondTableExistFlag = false;
 //        }
 //    }
-
-    //刷新数据库  把其中非近期的数据删掉:把每一个字符串都转变为date 比较  然后觉得是否删除.优化:
-    // 可以先以日期来合并数据库里的数据(GroupBy)  然后再刷新
 }
