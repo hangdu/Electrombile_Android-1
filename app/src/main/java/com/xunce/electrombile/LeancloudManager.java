@@ -266,8 +266,7 @@ public class LeancloudManager {
 
                         //设备头像
                         if (avObject.get("Image") == null) {
-                            //服务器上的头像数据为空  所以需要上传数据到数据库啊
-                            Log.d("test", "test");
+                            //服务器上的头像数据为空
                             String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
                             File f = new File(fileName);
                             if(f.exists()){
@@ -286,6 +285,9 @@ public class LeancloudManager {
                             avFile.getDataInBackground(new GetDataCallback() {
                                 public void done(byte[] data, AVException e) {
                                     //process data or exception.
+                                    if(data == null){
+                                        return;
+                                    }
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                                     String fileName = Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png";
                                     try {

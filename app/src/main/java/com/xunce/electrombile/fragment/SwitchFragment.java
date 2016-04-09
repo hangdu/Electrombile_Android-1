@@ -137,6 +137,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 0:
                     caseGetInitialStatus();
                     break;
+                case 1:
+                    refreshBatteryInfo();
+                    break;
                 case 2:
                     cancelWaitTimeOut();
                     break;
@@ -152,7 +155,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
                     break;
             }
-            return;
         }
     };
 
@@ -247,12 +249,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onDestroyView() {
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onDestroyView");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
+
+//        tv_battery.setText("test");
+//        Log.d("test","test");
     }
 
     @Override
     public void onDestroy() {
+        com.orhanobut.logger.Logger.i("SwitchFragment", "onDestroy");
         m_context.unregisterReceiver(MyBroadcastReceiver);
         m_context = null;
         mSearch = null;
@@ -392,6 +399,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void loadBitmap() {
+        //如果这个文件在本地是没有的  就直接加载默认的图片
+        String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.png";
+        File file = new File(srcPath);
+        if(!file.exists()){
+//            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
+//            headImage.setImageBitmap(bitmap);
+//            m_context.setLeftMenuCarImage(bitmap);
+            return;
+        }
         BitmapWorkerTask task = new BitmapWorkerTask();
         task.execute();
     }
@@ -911,10 +927,21 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void refreshBatteryInfo(){
-        tv_battery.setText(setManager.getBatteryPercent()+"%");
+        //有可能这个时候视图还没有渲染好
+        if(tv_battery == null){
+            Message msg = Message.obtain();
+            msg.what = 1;
+            mhandler.sendMessageDelayed(msg,3000);
+        }
+        else{
+            tv_battery.setText(setManager.getBatteryPercent()+"%");
+        }
     }
 
     public void refreshBatteryToNULL(){
+        if(tv_battery == null){
+            return;
+        }
         tv_battery.setText("正在获取电量");
     }
 
@@ -983,9 +1010,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 3:
                     tv_angleRank.setText("4冠");
                     break;
-//                case 4:
-//                    tv_angelUp.setText("5冠");
-//                    break;
                 default:
                     tv_angleRank.setText("5冠");
                     break;
