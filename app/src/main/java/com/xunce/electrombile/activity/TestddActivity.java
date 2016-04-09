@@ -371,50 +371,6 @@ public class TestddActivity extends Activity{
         });
     }
 
-    private void findCloud(){
-        String ItineraryTableName = "Itinerary_"+sm.getIMEI();
-        AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
-        query.whereGreaterThanOrEqualTo("createdAt", startT);
-        query.whereLessThan("createdAt", endT);
-        query.findInBackground(new FindCallback<AVObject>(){
-            @Override
-            public void done(List<AVObject> avObjects, AVException e) {
-                if(e == null){
-                    if(avObjects.size() == 0){
-                        //该天没有轨迹
-                        dialog.setTitle("此时间段内没有数据");
-                        dialog.show();
-                        return;
-                    }
-                    else{
-                        for(AVObject avObject:avObjects){
-                            //再查询一次  查询对应的gps
-                            long start_timestamp = avObject.getLong("start");
-                            long end_timestamp = avObject.getLong("end");
-                            if(start_timestamp!=-1&&end_timestamp!=-1){
-                                AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
-                                Date startDate = new Date(start_timestamp);
-                                Date endDate = new Date(end_timestamp);
-                                query.whereGreaterThanOrEqualTo("createdAt", startDate);
-                                query.whereLessThan("createdAt", endDate);
-                                query.findInBackground(new FindCallback<AVObject>() {
-                                    @Override
-                                    public void done(List<AVObject> list, AVException e) {
-                                        if(e == null){
-                                            tracksManager.setTranks(GroupPosition, list);
-                                            updateListView();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }
-                }
-
-            }
-        });
-    }
-
     private void updateListView(){
         //如果没有数据，弹出对话框
         if(tracksManager.getTracks().size() == 0){

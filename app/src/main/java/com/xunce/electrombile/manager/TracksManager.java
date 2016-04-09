@@ -122,35 +122,7 @@ public class TracksManager implements Serializable{
         Log.i(TAG, "tracks1 size:" + tracks.size());
         SetMapTrack(groupposition,tracks);
     }
-
-
-    //这个函数看的不是很懂啊
-    public void setTracks1(int groupposition,List<AVObject> objects){
-        tracks = new ArrayList<>();
-        Log.i("Track managet-----", "setTranks" + objects.size());
-        ArrayList<TrackPoint> dataList = null;
-
-        for(AVObject thisObject: objects){
-            if(dataList == null){
-                dataList = new ArrayList<>();
-                tracks.add(dataList);
-            }
-            double lat = thisObject.getDouble(KET_LAT);
-            double lon = thisObject.getDouble(KET_LONG);
-            //百度地图的LatLng类对输入有限制，如果longitude过大，则会导致结果不正确
-            //lybvinci 修改 @date 9.28
-            LatLng oldPoint = new LatLng(lat, lon);
-            LatLng bdPoint = mCenter.convertPoint(oldPoint);
-
-            TrackPoint p = new TrackPoint(thisObject.getCreatedAt(), bdPoint);
-            p.time.setHours(p.time.getHours());
-            dataList.add(p);
-        }
-
-        tracks.add(dataList);
-        SetMapTrack(groupposition,tracks);
-    }
-
+    
     public static class TrackPoint implements Serializable{
         public Date time;
         public LatLng point;
@@ -172,7 +144,6 @@ public class TracksManager implements Serializable{
 
         int size =tracks.size();
 
-//        HashMap<String, ArrayList<ArrayList<TrackPoint>>> map1 = map;
         Log.d(" tracks_size",String.valueOf(size));
     }
 
