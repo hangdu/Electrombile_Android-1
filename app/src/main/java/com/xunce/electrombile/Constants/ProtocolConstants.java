@@ -29,6 +29,7 @@ public class ProtocolConstants {
      * 新协议中的Json关键字
      **************************************************/
     public final static String CMD = "cmd";
+    public final static String NOTIFY = "notify";
     public final static String RESULT = "result";
     public final static String STATE = "state";
     public final static String CODE = "code";
@@ -46,6 +47,7 @@ public class ProtocolConstants {
     public final static String PERCENT = "percent";
     public final static String MILES = "miles";
     public final static String GPS = "gps";
+    public final static String DATA = "data";
 
 
 

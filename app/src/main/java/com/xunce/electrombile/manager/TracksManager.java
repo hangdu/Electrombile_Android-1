@@ -151,6 +151,7 @@ public class TracksManager implements Serializable{
         tracks.add(dataList);
     }
 
+
     public static class TrackPoint implements Serializable{
         public Date time;
         public LatLng point;

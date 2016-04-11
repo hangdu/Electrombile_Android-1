@@ -301,90 +301,6 @@ public class TestddActivity extends Activity{
         super.onDestroy();
     }
 
-    private void findCloud(final Date st, final Date et, int skip) {
-        if(NetworkUtils.checkNetwork(this)){
-            return;
-        }
-        //创建数据库
-        if(!startT.equals(todayDate)&&(FlagRecentDate)){
-            if(dbManage == null){
-                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
-            }
-            //什么时候需要创建这张表  当为近期的数据的时候
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-            String date = sdf.format(endT);
-            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
-        }
-
-        totalSkip += skip;
-        final int finalSkip = totalSkip;
-        AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
-        String IMEI = sm.getIMEI();
-        query.setLimit(1000);
-        query.whereEqualTo("IMEI", IMEI);
-        query.whereGreaterThanOrEqualTo("createdAt", startT);
-        query.whereLessThan("createdAt", endT);
-        query.setSkip(finalSkip);
-        watiDialog.setMessage("正在查询数据，请稍后…");
-        watiDialog.show();
-        query.findInBackground(new FindCallback<AVObject>() {
-            @Override
-            public void done(List<AVObject> avObjects, AVException e) {
-                //  Log.i(TAG, e + "");
-                if (e == null) {
-                    if (avObjects.size() == 0) {
-                        watiDialog.dismiss();
-                        //如果查的不是今天的数据 ,且确实是30天之内的数据   才会把无数据插入数据库
-                        if(!startT.equals(todayDate)&&FlagRecentDate){
-                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-//                            String date = formatter.format(endT);
-                            long timeStamp = endT.getTime()/1000;
-                            //存到数据库
-                            dbManage.insert(timeStamp, -1, null, null, null);
-                        }
-
-                        //需要插入到数据库中  表示没有数据啊
-                        List<Map<String, String>> listMap = new ArrayList<>();
-                        childData.set(GroupPosition, listMap);
-                        adapter.notifyDataSetChanged();
-                        dialog.setTitle("此时间段内没有数据");
-                        dialog.show();
-                        return;
-                    }
-                    else if(startT.equals(todayDate)&&avObjects.size() == 1){
-                        List<Map<String, String>> listMap = new ArrayList<>();
-                        childData.set(GroupPosition, listMap);
-                        adapter.notifyDataSetChanged();
-                        dialog.setTitle("此时间段内没有数据");
-                        dialog.show();
-                        return;
-                    }
-
-                    for (AVObject thisObject : avObjects) {
-                        totalAVObjects.add(thisObject);
-                    }
-                    if (avObjects.size() >= 1000) {
-                        //     Log.d(TAG, "data more than 1000");
-                        findCloud(st, et, 1000);
-                    }
-                    if ((totalAVObjects.size() > 1000) && (avObjects.size() < 1000) ||
-                            (totalSkip == 0) && (avObjects.size() < 1000)) {
-                        tracksManager.setTranks(GroupPosition, totalAVObjects);
-//                        //更新本地数据
-                        TracksBean.getInstance().setTracksData(tracksManager.getTracks());
-
-                        updateListView();
-                        watiDialog.dismiss();
-                    }
-
-                } else {
-                    dialog.setTitle("查询失败"+e.getMessage());
-                    dialog.show();
-                    watiDialog.dismiss();
-                }
-            }
-        });
-    }
 
     private void findCloud(){
         if(NetworkUtils.checkNetwork(this)){
@@ -576,6 +492,7 @@ public class TestddActivity extends Activity{
             IfDatabaseExist();
             if(DatabaseExistFlag){
                 dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+
                 //由毫秒转换成秒
                 long timeStamp = endT.getTime()/1000;
 
@@ -751,4 +668,5 @@ public class TestddActivity extends Activity{
             }
         });
     }
+
 }

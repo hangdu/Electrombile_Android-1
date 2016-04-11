@@ -153,7 +153,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         AVObject avObject = list.get(0);
                         try {
                             int itinerary = (int)avObject.get("itinerary");
-                            switchFragment.refreshItineraryInfo(itinerary);
+                            switchFragment.refreshItineraryInfo(itinerary/1000.0);
                         } catch (Exception ee) {
                             ee.printStackTrace();
                         }

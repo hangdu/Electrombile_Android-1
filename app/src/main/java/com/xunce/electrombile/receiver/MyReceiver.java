@@ -22,11 +22,14 @@ import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.protocol.CmdFactory;
 import com.xunce.electrombile.protocol.GPSFactory;
+import com.xunce.electrombile.protocol.NotifyFactory;
+import com.xunce.electrombile.protocol.NotifyProtocol;
 import com.xunce.electrombile.protocol.Protocol;
 import com.xunce.electrombile.protocol.ProtocolFactoryInterface;
 import com.xunce.electrombile.protocol._433Factory;
 import com.xunce.electrombile.utils.system.ToastUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -74,6 +77,12 @@ public class MyReceiver extends BroadcastReceiver {
                 factory = new _433Factory();
                 protocol = factory.createProtocol(jsonString);
                 break;
+            case 0x05:
+                LogUtil.log.d("收到notify");
+                factory = new NotifyFactory();
+                protocol = factory.createProtocol(jsonString);
+                break;
+
             default:
                 break;
         }
@@ -108,8 +117,11 @@ public class MyReceiver extends BroadcastReceiver {
                     protocol = createFactory(select, s);
                     Log.i(TAG, "433找车");
                     on433Arrived(protocol);
-                } else if(destinationName.contains("notify")){
-                    MyLog.d(TAG,"notify");
+                } else if (destinationName.contains("notify")) {
+                    select = 0x05;
+                    protocol = createFactory(select, s);
+                    MyLog.d(TAG, "notify");
+                    onNotifyArrived(protocol);
                 }
 
             } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {
@@ -123,6 +135,31 @@ public class MyReceiver extends BroadcastReceiver {
     private void on433Arrived(Protocol protocol) {
         int intensity = protocol.getIntensity();
         caseSeekSendToFindAct(intensity);
+    }
+
+    private void onNotifyArrived(Protocol protocol){
+        int notify = protocol.getNotify();
+        switch (notify){
+            //上报的自动落锁状态
+            case 1:
+                NotifyProtocol.NotifyAutolockData notifyAutolockData = protocol.getData();
+                if(notifyAutolockData!=null){
+                    long timestamp = notifyAutolockData.Timestamp;
+                    Date date = new Date(timestamp*1000);
+                    SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String date_str = sdfWithSecond.format(date);
+                    ToastUtils.showShort(mContext,date_str+" 自动落锁成功");
+
+                    //打开防盗模式
+                    ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
+                            ((FragmentActivity) mContext).mCenter.cmdFenceOn(), ((FragmentActivity) mContext).setManager.getIMEI());
+
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void onCmdArrived(Protocol protocol) {
