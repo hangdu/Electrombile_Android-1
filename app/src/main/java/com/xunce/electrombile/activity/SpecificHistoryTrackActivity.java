@@ -108,7 +108,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
         endPoint = intent.getStringExtra("endPoint");
-//        int size = trackDataList.size();
         setContentView(R.layout.activity_specific_history_track);
 
         initViews();
@@ -225,7 +224,13 @@ public class SpecificHistoryTrackActivity extends Activity {
         LayoutInflater inflater = (LayoutInflater) this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         markerView = inflater.inflate(R.layout.view_marker, null);
+
         tv_pointTime = (TextView)markerView.findViewById(R.id.tv_updateTime);
+        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdfWithSecond.format(trackDataList.get(0).time);
+        String[] strs = time.split(" ");
+        tv_pointTime.setText(strs[1]);
+
         TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
         tv_speedname.setText("速度:");
         TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
