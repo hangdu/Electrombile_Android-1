@@ -339,7 +339,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
                                 try {
                                     int itinerary = (int)avObject.get("itinerary");
-                                    refreshItineraryInfo(itinerary);
+                                    refreshItineraryInfo(itinerary/1000.0);
                                     ToastUtils.showShort(m_context,"获取累计公里数成功");
                                 } catch (Exception ee) {
                                     ee.printStackTrace();
@@ -945,12 +945,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_battery.setText("正在获取电量");
     }
 
-    public void refreshItineraryInfo(int itinerary){
+    public void refreshItineraryInfo(double itinerary){
         tv_distance.setText(itinerary+"公里");
         //星
         if(itinerary<500){
-            int a = itinerary/100;
-            switch (a){
+            double a = itinerary/100;
+            switch ((int)a){
                 case 0:
                     tv_angleRank.setText("1星");
                     break;
@@ -973,8 +973,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
         //钻
         else if(itinerary<3000){
-            int a = (itinerary-500)/500;
-            switch (a){
+            double a = (itinerary-500)/500;
+            switch ((int)a){
                 case 0:
                     tv_angleRank.setText("1钻");
                     break;
@@ -996,8 +996,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
         //冠
         else{
-            int a = (itinerary-3000)/1000;
-            switch (a){
+            double a = (itinerary-3000)/1000;
+            switch ((int)a){
                 case 0:
                     tv_angleRank.setText("1冠");
                     break;

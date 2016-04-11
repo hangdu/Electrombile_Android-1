@@ -148,6 +148,11 @@ public class MyReceiver extends BroadcastReceiver {
                     SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String date_str = sdfWithSecond.format(date);
                     ToastUtils.showShort(mContext,date_str+" 自动落锁成功");
+
+                    //打开防盗模式
+                    ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
+                            ((FragmentActivity) mContext).mCenter.cmdFenceOn(), ((FragmentActivity) mContext).setManager.getIMEI());
+
                 }
                 break;
 
