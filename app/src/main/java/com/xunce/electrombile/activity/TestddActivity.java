@@ -110,6 +110,7 @@ public class TestddActivity extends Activity{
     List<List<Map<String, String>>> childData;
 
     private int trackCount;
+//    private int milesOneDay;
 
     private Handler mhandler = new Handler(){
         @Override
@@ -120,6 +121,12 @@ public class TestddActivity extends Activity{
                     ConstructListview(Refresh_count);
                     refreshableView.finishRefreshing();
                     adapter.notifyDataSetChanged();
+
+                    //刷新每天的公里数
+                    int result = Refresh_count*7;
+                    for(int i = result-7;i<result;i++){
+                        findMilesOnedayFromCloud(i);
+                    }
                     break;
 
                 case 1:
@@ -182,7 +189,6 @@ public class TestddActivity extends Activity{
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(TestddActivity.this);
         setContentView(R.layout.activity_testdd);
-        init();
 
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
@@ -193,6 +199,8 @@ public class TestddActivity extends Activity{
         sdfWithSecond.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
 
         totalAVObjects = new ArrayList<AVObject>();
+
+        init();
 
         if (TracksBean.getInstance().getTracksData().size() != 0) {
             tracksManager.clearTracks();
@@ -281,6 +289,11 @@ public class TestddActivity extends Activity{
                 mhandler.sendMessage(msg);
             }
         }, 1);
+
+        for(int i = 0;i<6;i++){
+            findMilesOnedayFromCloud(i);
+        }
+
     }
 
     @Override
@@ -679,7 +692,7 @@ public class TestddActivity extends Activity{
         {
             map = new HashMap<>();
             map.put(DATE, result[i]);
-            map.put(DISTANCEPERDAY,"16km");
+            map.put(DISTANCEPERDAY,"0km");
             groupData.add(map);
         }
 
@@ -699,5 +712,43 @@ public class TestddActivity extends Activity{
         if(dbManageSecond!=null){
             dbManageSecond.closeDB();
         }
+    }
+
+
+    //去leancloud查询每天的总公里数
+    private void findMilesOnedayFromCloud(final int groupPosition){
+        //一次需要获取到7天的里程
+        GregorianCalendar gcStart = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
+        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+        Date startTime= gcStart.getTime();
+
+        GregorianCalendar gcEnd = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
+        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+        Date endTime = gcEnd.getTime();
+
+        String ItineraryTableName = "Itinerary_"+sm.getIMEI();
+        //查出当天的总里程
+        AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
+        query.whereGreaterThanOrEqualTo("createdAt", startTime);
+        query.whereLessThan("createdAt", endTime);
+
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if(e == null){
+                    if(list.size() > 0){
+                        int milesOneDay = 0;
+                        for(AVObject avObject:list){
+                           int milesOneTrack = (int)avObject.get("miles");
+                            milesOneDay+=milesOneTrack;
+                        }
+                        groupData.get(groupPosition).put(DISTANCEPERDAY,milesOneDay/1000.0+"km");
+                        adapter.notifyDataSetChanged();
+                    }
+                }else{
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
