@@ -16,6 +16,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.fragment.SwitchFragment;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -107,6 +108,8 @@ public class MyReceiver extends BroadcastReceiver {
                     protocol = createFactory(select, s);
                     Log.i(TAG, "433找车");
                     on433Arrived(protocol);
+                } else if(destinationName.contains("notify")){
+                    MyLog.d(TAG,"notify");
                 }
 
             } else if (callbackAction.equals(ActivityConstants.onConnectionLost)) {

@@ -199,9 +199,10 @@ public class MqttConnectManager {
         String topic3 = "dev2app/" + IMEI + "/433";
         //订阅报警
         String topic4 = "dev2app/" + IMEI + "/alarm";
-        String[] topic = {topic1, topic2, topic3, topic4};
+        String topic5 = "dev2app/" + IMEI + "/notify";
+        String[] topic = {topic1, topic2, topic3, topic4, topic5};
         int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
-                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,ServiceConstants.MQTT_QUALITY_OF_SERVICE};
         try {
             mac.subscribe(topic, qos);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
