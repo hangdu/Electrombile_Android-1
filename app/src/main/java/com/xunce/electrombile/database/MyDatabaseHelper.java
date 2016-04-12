@@ -19,7 +19,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             +"trackNumber integer,"
             +"StartPoint text,"
             +"EndPoint text,"
-            +"time text)";
+            +"time text,"
+            +"OneTrackMile integer)";
 
     public static final String CREATE_DATETRACKSECOND = "create table datetracksecond("
             +"id integer primary key autoincrement,"

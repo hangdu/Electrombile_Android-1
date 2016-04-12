@@ -32,11 +32,13 @@ public class TracksManager implements Serializable{
     private final long MAX_DISTANCE = 200;//30分钟
     private CmdCenter mCenter;
     private HashMap<String, ArrayList<ArrayList<TrackPoint>>> map;
+    public HashMap<String, ArrayList<Integer>> milesMap;
 
     public TracksManager(Context context){
         tracks = new ArrayList<ArrayList<TrackPoint>>();
         mCenter = CmdCenter.getInstance();
         map = new HashMap<>();
+        milesMap = new HashMap<>();
     }
 
     public static ArrayList<ArrayList<TrackPoint>> getTracks(){
@@ -174,6 +176,11 @@ public class TracksManager implements Serializable{
 
         int size =tracks.size();
         Log.d(" tracks_size",String.valueOf(size));
+    }
+
+    public void setMilesMap(int groupposition,ArrayList<Integer> milesList){
+        String grouppositon_str = String.valueOf(groupposition);
+        milesMap.put(grouppositon_str,milesList);
     }
 
     public HashMap<String, ArrayList<ArrayList<TrackPoint>>> getMapTrack(){

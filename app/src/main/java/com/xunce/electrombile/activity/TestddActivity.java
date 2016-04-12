@@ -69,6 +69,7 @@ public class TestddActivity extends Activity{
     private static final String DISTANCEPERDAY = "distancePerDay";
     private static final String STARTPOINT = "startPoint";
     private static final String ENDPOINT = "endPoint";
+    private static final String MILES = "miles";
 
     TracksManager tracksManager;
     //查询的开始和结束时间
@@ -110,7 +111,7 @@ public class TestddActivity extends Activity{
     List<List<Map<String, String>>> childData;
 
     private int trackCount;
-//    private int milesOneDay;
+    ArrayList<Integer> localmilesList;
 
     private Handler mhandler = new Handler(){
         @Override
@@ -140,18 +141,18 @@ public class TestddActivity extends Activity{
     private void insertDatabase(){
         //前面已经加过判断数据是近期数据的逻辑了
         //获取到当天的日期
-
+        ArrayList<Integer> milesList = tracksManager.milesMap.get(String.valueOf(GroupPosition));
         long timeStamp = endT.getTime()/1000;
         for(int i = 0; i <childData.get(GroupPosition).size();i++){
             dbManage.insert(timeStamp,i,childData.get(GroupPosition).get(i).get(STARTPOINT),
-                    childData.get(GroupPosition).get(i).get(ENDPOINT),null);
+                    childData.get(GroupPosition).get(i).get(ENDPOINT),null,milesList.get(i));
         }
         insertDateTrackSecond();
     }
 
     private void insertNullData(){
         long timeStamp = endT.getTime()/1000;
-        dbManage.insert(timeStamp, -1, null, null, null);
+        dbManage.insert(timeStamp, -1, null, null, null, 0);
     }
 
     private void insertDateTrackSecond(){
@@ -207,9 +208,17 @@ public class TestddActivity extends Activity{
 //            updateListView();
         }
 
-        //有时候为了测试需要用到这个函数
-//        deleteAllSecondTable();
-
+        //删除数据库啊
+//        String path = "/data/data/com.xunce.electrombile/databases";
+//        File filePath = new File(path);
+//        File[] files = filePath.listFiles();
+//        for(File file:files){
+//            String filename = file.getName();
+//            Log.d("test","test");
+//            if(filename.contains("IMEI")){
+//                file.delete();
+//            }
+//        }
     }
 
 
@@ -271,6 +280,7 @@ public class TestddActivity extends Activity{
                 Bundle extras = new Bundle();
                 extras.putString("startPoint", childData.get(groupPosition).get(childPosition).get(STARTPOINT));
                 extras.putString("endPoint", childData.get(groupPosition).get(childPosition).get(ENDPOINT));
+                extras.putString("miles", childData.get(groupPosition).get(childPosition).get(MILES));
                 intent.putExtras(extras);
 
                 //这个地方传数据总是有问题啊
@@ -330,7 +340,7 @@ public class TestddActivity extends Activity{
 //                            String date = formatter.format(endT);
                             long timeStamp = endT.getTime()/1000;
                             //存到数据库
-                            dbManage.insert(timeStamp, -1, null, null, null);
+                            dbManage.insert(timeStamp, -1, null, null, null,0);
                         }
 
                         //需要插入到数据库中  表示没有数据啊
@@ -354,7 +364,14 @@ public class TestddActivity extends Activity{
                         tracksManager.initTracks();
                         trackCount = 0;
                         final int count = avObjects.size();
-                        for (AVObject avObject : avObjects) {
+
+                        if(localmilesList == null){
+                            localmilesList = new ArrayList<Integer>();
+                        }else{
+                            localmilesList.clear();
+                        }
+
+                        for (final AVObject avObject : avObjects) {
                             //再查询一次  查询对应的gps
                             long start_timestamp = avObject.getLong("start");
                             long end_timestamp = avObject.getLong("end");
@@ -377,13 +394,15 @@ public class TestddActivity extends Activity{
                                             //如果固件分段有问题的话  这个地方的size可能为0或者1
                                             if(list.size()>1){
                                                 tracksManager.setOneTrack(list);
+                                                int mile = (int)avObject.get("miles");
+                                                localmilesList.add(mile);
                                             }
                                             trackCount++;
                                             if(trackCount == count){
                                                 updateListView();
                                                 watiDialog.dismiss();
+                                                tracksManager.setMilesMap(GroupPosition, localmilesList);
                                             }
-
                                         }
                                         else{
                                             dialog.setTitle("查询失败"+e.getMessage());
@@ -520,6 +539,8 @@ public class TestddActivity extends Activity{
                         Map<String,String> map = new HashMap<>();
                         map.put(STARTPOINT,dbManage.dateTrackList.get(0).StartPoint);
                         map.put(ENDPOINT,dbManage.dateTrackList.get(0).EndPoint);
+                        map.put(MILES,String.valueOf(dbManage.dateTrackList.get(0).miles));
+
                         List<Map<String, String>> listMap = new ArrayList<>();
                         listMap.add(map);
                         childData.set(groupPosition, listMap);
@@ -537,6 +558,8 @@ public class TestddActivity extends Activity{
                         map = new HashMap<>();
                         map.put(STARTPOINT,dbManage.dateTrackList.get(i).StartPoint);
                         map.put(ENDPOINT, dbManage.dateTrackList.get(i).EndPoint);
+                        map.put(MILES, String.valueOf(dbManage.dateTrackList.get(i).miles));
+
                         listMap.add(map);
                     }
                     childData.set(groupPosition, listMap);
@@ -571,6 +594,7 @@ public class TestddActivity extends Activity{
         if(0 == Start_End_TYPE)
         {
             childData.get(GroupPosition).get(TrackPosition).put(STARTPOINT,result);
+            childData.get(GroupPosition).get(TrackPosition).put(MILES,String.valueOf(localmilesList.get(TrackPosition)));
         }
 
         else{

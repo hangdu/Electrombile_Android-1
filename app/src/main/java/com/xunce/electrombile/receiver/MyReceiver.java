@@ -246,6 +246,7 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseGetGPS(int code,Protocol protocol) {
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:
+                Logger.i("接收","code为0");
                 cmdGPSgetresult(protocol,code);
                 return;
 

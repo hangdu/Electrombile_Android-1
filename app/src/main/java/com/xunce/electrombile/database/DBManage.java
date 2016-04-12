@@ -54,12 +54,14 @@ public class DBManage {
         cv = new ContentValues();
     }
 
-    public void insert(long timestamp,int trackNumber,String StartPoint,String EndPoint,String time){
+    public void insert(long timestamp,int trackNumber,String StartPoint,String EndPoint,String time,int OneTrackMile){
         cv.put("timestamp",timestamp);
         cv.put("trackNumber",trackNumber);
         cv.put("StartPoint",StartPoint);
         cv.put("EndPoint",EndPoint);
         cv.put("time",time);
+        cv.put("OneTrackMile",OneTrackMile);
+
         long res = sqldb.insert("datetrack", null, cv);
         if(-1 == res){
             Toast.makeText(mcontext, "insert失败", Toast.LENGTH_SHORT).show();
@@ -110,6 +112,8 @@ public class DBManage {
                 dateTrack.StartPoint = mCursor.getString(mCursor.getColumnIndex("StartPoint"));
                 dateTrack.EndPoint = mCursor.getString(mCursor.getColumnIndex("EndPoint"));
                 dateTrack.time = mCursor.getString(mCursor.getColumnIndex("time"));
+                dateTrack.miles = mCursor.getInt(mCursor.getColumnIndex("OneTrackMile"));
+
                 dateTrackList.add(dateTrack);
             } while (mCursor.moveToNext());
         }

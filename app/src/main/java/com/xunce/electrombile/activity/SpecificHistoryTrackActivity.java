@@ -52,6 +52,7 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private String startPoint;
     private String endPoint;
+    private int miles;
 
     private Button btn_play;
     private Button btn_speed;
@@ -117,6 +118,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
         endPoint = intent.getStringExtra("endPoint");
+        miles = Integer.parseInt(intent.getStringExtra("miles"));
         setContentView(R.layout.activity_specific_history_track);
 
         initViews();
@@ -196,7 +198,7 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         });
 
-        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI()));
+        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI())+"miles:"+miles);
         tv_startPoint.setText("起始位置:" + startPoint);
         tv_endPoint.setText("终点位置:" + endPoint);
 
