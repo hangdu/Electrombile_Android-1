@@ -92,6 +92,12 @@ public class SpecificHistoryTrackActivity extends Activity {
                         e.printStackTrace();
                     }
                     break;
+
+                case BOUND_REFRESH:
+                    LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
+                    MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
+                    mBaiduMap.setMapStatus(mMapStatusUpdate);
+                    break;
             }
         }
     };
@@ -99,7 +105,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     //播放线程消息类型
     enum handleKey {
         CHANGE_POINT,
-        SET_MARKER
+        BOUND_REFRESH
     }
 
 
@@ -144,6 +150,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         btn_speed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(DELAY == DELAY1){
                     DELAY = DELAY2;
                     //还需要修改贴图
@@ -296,6 +303,10 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         mInfoWindow = new InfoWindow(markerView,trackDataList.get(0).point, -100);
         mBaiduMap.showInfoWindow(mInfoWindow);
+
+        Message msg = Message.obtain();
+        msg.what = handleKey.BOUND_REFRESH.ordinal();
+        playHandler.sendMessageDelayed(msg,300);
     }
 
     /**
