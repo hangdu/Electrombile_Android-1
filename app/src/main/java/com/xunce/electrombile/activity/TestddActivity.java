@@ -99,7 +99,7 @@ public class TestddActivity extends Activity{
     int totalTrackNumber = 0;
     int ReverseNumber = 0;
     Boolean DatabaseExistFlag;
-    Boolean SecondTableExistFlag;
+//    Boolean SecondTableExistFlag;
     Date todayDate;
     Boolean FlagRecentDate;//30天之内
 
@@ -147,7 +147,6 @@ public class TestddActivity extends Activity{
                     childData.get(GroupPosition).get(i).get(ENDPOINT),null);
         }
         insertDateTrackSecond();
-        return;
     }
 
     private void insertNullData(){

@@ -39,7 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpecificHistoryTrackActivity extends Activity {
-    private static final int DELAY = 1000;
+    private static final int DELAY1 = 1000;
+    private static final int DELAY2 = 800;
+    private static final int DELAY5 = 500;
+    private static int DELAY = DELAY1;
     private static String START = "start";
     private static String PLAYING = "playing";
     private static String PAUSE = "pause";
@@ -136,7 +139,26 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_endPoint = (TextView)findViewById(R.id.tv_endPoint);
         TextView tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
         btn_play = (Button)findViewById(R.id.btn_play);
+
         btn_speed = (Button)findViewById(R.id.btn_speed);
+        btn_speed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(DELAY == DELAY1){
+                    DELAY = DELAY2;
+                    //还需要修改贴图
+                }
+                else if(DELAY == DELAY2){
+                    DELAY = DELAY5;
+                    //还需要修改贴图
+                }
+                else if(DELAY == DELAY5){
+                    DELAY = DELAY1;
+                    //还需要修改贴图
+                }
+            }
+        });
+
         seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -368,6 +390,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         tv_pointTime.setText(strs[1]);
         mBaiduMap.showInfoWindow(mInfoWindow);
         playOrder += 1;
+
         sendPlayMessage(DELAY);
     }
 }
