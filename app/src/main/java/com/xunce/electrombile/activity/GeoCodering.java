@@ -69,7 +69,7 @@ public class GeoCodering implements OnGetGeoCoderResultListener {
         }
 
         //是由testddactivity调用的
-        activity.RefreshMessageList(TrackPosition, Start_End_Type, result.getAddress());
+        activity.RefreshMessageList(TrackPosition, Start_End_Type, ReverseGeoCodeResult);
     }
 }
 
