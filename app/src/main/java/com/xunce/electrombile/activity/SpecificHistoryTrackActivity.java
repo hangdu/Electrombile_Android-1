@@ -198,7 +198,8 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         });
 
-        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI())+"miles:"+miles);
+//        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI())+"miles:"+miles);
+        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI()));
         tv_startPoint.setText("起始位置:" + startPoint);
         tv_endPoint.setText("终点位置:" + endPoint);
 
@@ -208,6 +209,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         long diff = time2 - time1;
         // Difference in seconds
         long diffSec = diff / 1000;
+
         if(diffSec/3600 == 0){
             //小于1h
             int min = (int)diffSec/60;
@@ -265,6 +267,9 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
         tv_speedname.setText("速度:");
         TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
+        //单位为km/h
+        double speed = miles/1000.0/(diffSec/3600.0);
+        tv_speed.setText(speed+"km/h");
 
         seekBar.setMax(trackDataList.size()-1);
     }

@@ -8,40 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.FindCallback;
-import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.SDKInitializer;
-import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.geocode.GeoCodeResult;
-import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
-import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.baidu.mapapi.utils.DistanceUtil;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.TracksBean;
 import com.xunce.electrombile.database.DBManage;
-import com.xunce.electrombile.database.DateTrack;
 import com.xunce.electrombile.database.DateTrackSecond;
-import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
@@ -71,47 +52,46 @@ public class TestddActivity extends Activity{
     private static final String ENDPOINT = "endPoint";
     private static final String MILES = "miles";
 
-    TracksManager tracksManager;
+    private TracksManager tracksManager;
     //查询的开始和结束时间
-    Date startT;
-    Date endT;
+    private Date startT;
+    private Date endT;
 
-    ExpandableAdapter adapter;
+    private ExpandableAdapter adapter;
     //用来获取时间
     static Calendar can;
     //查询失败对话框
-    Dialog dialog;
+    private Dialog dialog;
     //管理应用数据的类
-    SettingManager sm;
-    SimpleDateFormat sdfWithSecond;
-    SimpleDateFormat sdf;
+    private SettingManager sm;
+    private SimpleDateFormat sdfWithSecond;
+    private SimpleDateFormat sdf;
     //需要跳过的个数
-    int totalSkip;
-    List<AVObject> totalAVObjects;
+    private int totalSkip;
+    private List<AVObject> totalAVObjects;
     //等待对话框
     private ProgressDialog watiDialog;
 
     static int GroupPosition = 0;
-    ExpandableListView expandableListView;
+    private ExpandableListView expandableListView;
 
-    RefreshableView refreshableView;
+    private RefreshableView refreshableView;
     private int Refresh_count = 1;
 
-    int totalTrackNumber = 0;
-    int ReverseNumber = 0;
+    private int totalTrackNumber = 0;
+    private int ReverseNumber = 0;
     Boolean DatabaseExistFlag;
-//    Boolean SecondTableExistFlag;
-    Date todayDate;
-    Boolean FlagRecentDate;//30天之内
+    private Date todayDate;
+    private Boolean FlagRecentDate;//30天之内
 
     public DBManage dbManage;
     public DBManage dbManageSecond;
 
-    List<Map<String, String>> groupData;
-    List<List<Map<String, String>>> childData;
+    private List<Map<String, String>> groupData;
+    private List<List<Map<String, String>>> childData;
 
     private int trackCount;
-    ArrayList<Integer> localmilesList;
+    private ArrayList<Integer> localmilesList;
 
     private Handler mhandler = new Handler(){
         @Override
