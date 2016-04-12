@@ -189,7 +189,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 playOrder = Progress;
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
-                if(status.equals(PLAYING)){
+                if (status.equals(PLAYING)) {
                     Message msg = Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
                     msg.obj = playOrder;
@@ -269,6 +269,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
         //单位为km/h
         double speed = miles/1000.0/(diffSec/3600.0);
+        speed=((int)(speed*100))/100.0;
         tv_speed.setText(speed+"km/h");
 
         seekBar.setMax(trackDataList.size()-1);
