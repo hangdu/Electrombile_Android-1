@@ -99,7 +99,7 @@ public class MyLog {
      * @return
      * **/
     private static void writeLogtoFile(String mylogtype, String tag, String text) {// 新建或打开日志文件
-        Date nowtime = new Date();
+        Date nowtime = new Date(System.currentTimeMillis());
         String needWriteFiel = logfile.format(nowtime);
         String needWriteMessage = myLogSdf.format(nowtime) + "    " + mylogtype
                 + "    " + tag + "    " + text;
