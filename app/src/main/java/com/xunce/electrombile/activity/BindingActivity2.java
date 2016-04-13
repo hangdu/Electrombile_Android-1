@@ -158,9 +158,9 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         finish();
     }
 
-    public void getIMEIlist(){
-        IMEIlist = settingManager.getIMEIlist();
-    }
+//    public void getIMEIlist(){
+//        IMEIlist = settingManager.getIMEIlist();
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

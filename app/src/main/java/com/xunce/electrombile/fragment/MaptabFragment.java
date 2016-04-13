@@ -646,7 +646,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         if(LostCarSituation){
             dialog_tv_LastCarLocation.setText("最后一次定位地点:" + reverseGeoCodeResult);
-            LostCarSituation = false;
+//            LostCarSituation = false;
         }
     }
 
