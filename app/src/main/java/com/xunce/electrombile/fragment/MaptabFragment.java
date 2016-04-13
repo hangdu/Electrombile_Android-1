@@ -119,7 +119,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
                 if(LostCarSituation){
-                    dialog_tv_LastLocateTime.setText("最后一次定位时间:"+sdfWithSecond.format(trackPoint.time));
+                    dialog_tv_LastLocateTime.setText(sdfWithSecond.format(trackPoint.time));
                 }
                 mBaiduMap.showInfoWindow(mInfoWindow);
                 //设置车辆位置  填到textview中
@@ -645,8 +645,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_FindModeCarPosition.setText("车辆位置:" + reverseGeoCodeResult);
 
         if(LostCarSituation){
-            dialog_tv_LastCarLocation.setText("最后一次定位地点:" + reverseGeoCodeResult);
-//            LostCarSituation = false;
+            dialog_tv_LastCarLocation.setText(reverseGeoCodeResult);
         }
     }
 
