@@ -207,20 +207,20 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     public void onDecodeCompletion(String barcodeFormat, String barcode, Bitmap bitmap) {
         if (barcode != null) {
             if (barcode.contains("IMEI")) {
-//                try {
-//                    IMEI = JSONUtils.ParseJSON(barcode, "IMEI");
-//                } catch (JSONException e) {
-//                    ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！"+e.getMessage());
-//                    MyLog.d("解析二维码",e.getMessage());
-//                    e.printStackTrace();
-//                    return;
-//                }
-                String[] strs = barcode.split(";");
-                if(strs[2].contains("IMEI")){
-                    IMEI = strs[2].substring(5,strs[2].length());
-                }else{
-                    ToastUtils.showShort(BindingActivity2.this, "扫描失败,字符串格式不对");
+                try {
+                    IMEI = JSONUtils.ParseJSON(barcode, "IMEI");
+                } catch (JSONException e) {
+                    ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！"+e.getMessage());
+                    MyLog.d("解析二维码",e.getMessage());
+                    e.printStackTrace();
+                    return;
                 }
+//                String[] strs = barcode.split(";");
+//                if(strs[2].contains("IMEI")){
+//                    IMEI = strs[2].substring(5,strs[2].length());
+//                }else{
+//                    ToastUtils.showShort(BindingActivity2.this, "扫描失败,字符串格式不对");
+//                }
 
 
                 //判断IMEI号是否是15位

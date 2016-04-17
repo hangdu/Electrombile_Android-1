@@ -1,7 +1,10 @@
 package com.xunce.electrombile.activity;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -96,6 +99,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private View left_menu;
     private Boolean firsttime_Flag = true;
     Thread myThread;
+    private AlarmManager alarmManager;
 
 
     /**
@@ -337,6 +341,14 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         intent.setAction("com.xunce.electrombile.alarmservice");
         intent.setPackage(getPackageName());
         FragmentActivity.this.startService(intent);
+
+//        alarmManager = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
+//        Intent intent = new Intent();
+//        intent.setAction("com.xunce.electrombile.alarmservice");
+//        intent.setPackage(getPackageName());
+//        final PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,0,10000,pi);
+
     }
 
     /**

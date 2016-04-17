@@ -231,6 +231,17 @@ public class CarManageActivity extends Activity {
             tv_CurrentCar.setText((String)Othercarlist.get(0).get("WhichCar"));
             Othercarlist.remove(0);
             adapter.notifyDataSetChanged();
+            //头像也要变过来
+
+            String IMEI = settingManager.getIMEI();
+            Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
+            if(bitmap!=null){
+                img_car.setImageBitmap(bitmap);
+            }
+            else{
+                bitmap = BitmapFactory.decodeResource(this.getResources(),R.drawable.default_carimage);
+                img_car.setImageBitmap(bitmap);
+            }
         }
     }
 
