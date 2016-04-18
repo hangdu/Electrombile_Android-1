@@ -119,6 +119,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
                     //关闭mqttclient
                     mqttConnectManager.MqttDisconnect();
+                    mqttConnectManager.removeConnectionInDatabase();
 
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -23,6 +23,7 @@ import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.TracksBean;
 import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.database.DateTrackSecond;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
@@ -80,7 +81,7 @@ public class TestddActivity extends Activity{
 
     private int totalTrackNumber = 0;
     private int ReverseNumber = 0;
-    Boolean DatabaseExistFlag;
+    private Boolean DatabaseExistFlag;
     private Date todayDate;
     private Boolean FlagRecentDate;//30天之内
 
@@ -341,7 +342,7 @@ public class TestddActivity extends Activity{
                             dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
                         }
 
-                        tracksManager.initTracks();
+                        tracksManager.initTracks(avObjects.size());
                         trackCount = 0;
                         final int count = avObjects.size();
 
@@ -352,7 +353,12 @@ public class TestddActivity extends Activity{
                         }
 
                         for (final AVObject avObject : avObjects) {
+                            //通过createdtime进行排序啊  先验证这个地方确实有问题  返回的路程段不是按照时间排序的
+                            //验证的结果是:查询结果确实是按照时间排序的
                             //再查询一次  查询对应的gps
+                            Date date1 = avObject.getCreatedAt();
+                            MyLog.d("TestddActivity", sdfWithSecond.format(date1));
+
                             long start_timestamp = avObject.getLong("start");
                             long end_timestamp = avObject.getLong("end");
                             if (start_timestamp >10 && end_timestamp >10) {
@@ -373,7 +379,7 @@ public class TestddActivity extends Activity{
                                         if (e == null) {
                                             //如果固件分段有问题的话  这个地方的size可能为0或者1
                                             if(list.size()>1){
-                                                tracksManager.setOneTrack(list);
+                                                tracksManager.setOneTrack(list,trackCount);
                                                 int mile = (int)avObject.get("miles");
                                                 localmilesList.add(mile);
                                             }

@@ -14,6 +14,8 @@ package com.xunce.electrombile.mqtt;
 
 import android.content.Context;
 
+import com.xunce.electrombile.log.MyLog;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 
 import java.util.HashMap;
@@ -123,5 +125,4 @@ public class Connections {
         connections.remove(connection.handle());
         persistence.deleteConnection(connection);
     }
-
 }

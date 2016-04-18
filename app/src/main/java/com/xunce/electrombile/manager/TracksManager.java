@@ -125,12 +125,12 @@ public class TracksManager implements Serializable{
         SetMapTrack(groupposition,tracks);
     }
 
-    public void initTracks(){
-        tracks = new ArrayList<>();
+    public void initTracks(int capacity){
+        tracks = new ArrayList<>(capacity);
     }
 
     //添加一段轨迹
-    public void setOneTrack(List<AVObject> objects){
+    public void setOneTrack(List<AVObject> objects,int position){
         ArrayList<TrackPoint> dataList = new ArrayList<>();
 
         for(AVObject thisObject: objects){
@@ -150,7 +150,8 @@ public class TracksManager implements Serializable{
             }
             dataList.add(p);
         }
-        tracks.add(dataList);
+//        tracks.add(dataList);
+        tracks.set(position,dataList);
     }
 
 

@@ -241,22 +241,30 @@ public class DBManage {
 
     //删除30天之外的数据
     static public void updateDatabase(){
-        SettingManager settingManager = SettingManager.getInstance();
-        long lastUpdateTime = settingManager.getUpdateDatabaseTime();
-        if(lastUpdateTime == 0){
-            //清理  表示第一次调用这个函数
-            sub_updateDatabase();
-            settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                //doing some work
+                SettingManager settingManager = SettingManager.getInstance();
+                long lastUpdateTime = settingManager.getUpdateDatabaseTime();
+                if(lastUpdateTime == 0){
+                    //清理  表示第一次调用这个函数
+                    sub_updateDatabase();
+                    settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                }
 
-        else{
-            long timestamp_now = System.currentTimeMillis();
-            long compare = 720 * 3600 * 1000;
-            if(timestamp_now-lastUpdateTime>compare){
-                sub_updateDatabase();
-                settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                else{
+                    long timestamp_now = System.currentTimeMillis();
+                    long compare = 720 * 3600 * 1000;
+                    if(timestamp_now-lastUpdateTime>compare){
+                        sub_updateDatabase();
+                        settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                    }
+                }
             }
-        }
+        };
+        new Thread(runnable).start();
+
     }
 
     static public void sub_updateDatabase(){

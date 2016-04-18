@@ -108,11 +108,12 @@ public class MqttConnectManager {
 
     public void getMqttConnection(){
         try {
+            MyLog.d("getMqttConnection", "1");
             mac.connect(mcp, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     onMqttConnectListener.MqttConnectSuccess();
-                    MyLog.d("getMqttConnection","MqttConnectSuccess 连接服务器成功");
+                    MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器成功");
                 }
 
                 @Override
@@ -121,10 +122,16 @@ public class MqttConnectManager {
                     MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器失败");
                 }
             });
+            MyLog.d("getMqttConnection", "2");
             Connections.getInstance(mcontext).addConnection(connection);
+            MyLog.d("getMqttConnection", "3");
         } catch (MqttException e1) {
             e1.printStackTrace();
         }
+    }
+
+    public void removeConnectionInDatabase(){
+        Connections.getInstance(mcontext).removeConnection(connection);
     }
 
     public void MqttDisconnect(){

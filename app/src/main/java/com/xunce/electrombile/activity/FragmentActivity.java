@@ -1,10 +1,7 @@
 package com.xunce.electrombile.activity;
 
-import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -43,7 +40,6 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
-import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
@@ -98,9 +94,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private SimpleAdapter simpleAdapter;
     private View left_menu;
     private Boolean firsttime_Flag = true;
-    Thread myThread;
-    private AlarmManager alarmManager;
-
+    private Thread myThread;
 
     /**
      * The handler. to process exit()
@@ -172,19 +166,25 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MyLog.delFile();
-        DBManage.updateDatabase();
+//        MyLog.delFile();
+//        DBManage.updateDatabase();
         MyLog.d("FragmentActivity","onCreate");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
+        MyLog.d("FragmentActivity", "onCreate1");
         //初始化界面
         initView();
+        MyLog.d("FragmentActivity", "onCreate2");
         initData();
         //判断是否绑定设备
+        MyLog.d("FragmentActivity", "onCreate3");
         queryIMEI();
+        MyLog.d("FragmentActivity", "onCreate4");
         Historys.put(this);
+        MyLog.d("FragmentActivity", "onCreate5");
         registerBroadCast();
+        MyLog.d("FragmentActivity", "onCreate6");
     }
 
     @Override
@@ -341,14 +341,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         intent.setAction("com.xunce.electrombile.alarmservice");
         intent.setPackage(getPackageName());
         FragmentActivity.this.startService(intent);
-
-//        alarmManager = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
-//        Intent intent = new Intent();
-//        intent.setAction("com.xunce.electrombile.alarmservice");
-//        intent.setPackage(getPackageName());
-//        final PendingIntent pi = PendingIntent.getService(this, 0, intent, 0);
-//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,0,10000,pi);
-
     }
 
     /**
@@ -439,7 +431,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mqttConnectManager = MqttConnectManager.getInstance();
         mqttConnectManager.setContext(FragmentActivity.this);
         mqttConnectManager.initMqtt();
-
 
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);

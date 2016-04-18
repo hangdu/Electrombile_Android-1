@@ -117,7 +117,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_Safeday;
     private TextView tv_battery;
     private TextView tv_distance;
-//    private TextView tv_angleRank;
     private ImageView img_angle1;
     private ImageView img_angle2;
     private ImageView img_angle3;
@@ -258,9 +257,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         com.orhanobut.logger.Logger.i("SwitchFragment", "onDestroyView");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-
-//        tv_battery.setText("test");
-//        Log.d("test","test");
     }
 
     @Override

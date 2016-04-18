@@ -151,7 +151,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //注意该方法要再setContentView方法之前实现
-        SDKInitializer.initialize(m_context);
+//        SDKInitializer.initialize(m_context);
         currentTrack = new TrackPoint(new Date(), 0, 0);
         LayoutInflater inflater = (LayoutInflater) m_context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

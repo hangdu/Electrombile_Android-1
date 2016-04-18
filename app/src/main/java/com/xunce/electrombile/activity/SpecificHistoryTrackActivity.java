@@ -113,7 +113,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(this);
+//        SDKInitializer.initialize(this);
 
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
@@ -314,7 +314,7 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         Message msg = Message.obtain();
         msg.what = handleKey.BOUND_REFRESH.ordinal();
-        playHandler.sendMessageDelayed(msg,300);
+        playHandler.sendMessageDelayed(msg,800);
     }
 
     /**

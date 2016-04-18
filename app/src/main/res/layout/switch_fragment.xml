@@ -148,23 +148,19 @@
                     <ImageView
                         android:id="@+id/angle2"
                         android:layout_width="14dp"
-                        android:layout_height="wrap_content"
-                        android:background = "@drawable/star"/>
+                        android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/angle3"
                         android:layout_width="14dp"
-                        android:layout_height="wrap_content"
-                        android:background = "@drawable/star"/>
+                        android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/angle4"
                         android:layout_width="14dp"
-                        android:layout_height="wrap_content"
-                        android:background = "@drawable/star"/>
+                        android:layout_height="wrap_content"/>
                     <ImageView
                         android:id="@+id/angle5"
                         android:layout_width="14dp"
-                        android:layout_height="wrap_content"
-                        android:background = "@drawable/star"/>
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
             </RelativeLayout>

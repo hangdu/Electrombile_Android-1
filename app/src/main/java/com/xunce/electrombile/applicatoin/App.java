@@ -5,6 +5,8 @@ import android.app.Application;
 import com.avos.avoscloud.AVAnalytics;
 import com.avos.avoscloud.AVOSCloud;
 import com.baidu.mapapi.SDKInitializer;
+import com.xunce.electrombile.database.DBManage;
+import com.xunce.electrombile.log.MyLog;
 
 import im.fir.sdk.FIR;
 //import io.yunba.android.manager.YunBaManager;
@@ -52,7 +54,8 @@ public class App extends Application {
 
         AVAnalytics.enableCrashReport(this, true);
 
-
+        MyLog.delFile();
+        DBManage.updateDatabase();
     }
 
     private void initBaiduSDK() {

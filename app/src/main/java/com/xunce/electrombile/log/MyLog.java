@@ -144,35 +144,41 @@ public class MyLog {
      * 删除制定的日志文件
      * */
     public static void delFile() {// 删除日志文件
-        //列出该目录下的所有文件
-        String path = Environment.getExternalStorageDirectory()+File.separator+"safeguard1";
-        File file = new File(path);
-        if(!file.exists()){
-            return;
-        }
-
-        Date nowtime = new Date();
-        Calendar now = Calendar.getInstance();
-        now.setTime(nowtime);
-        now.set(Calendar.DATE, now.get(Calendar.DATE)
-                - SDCARD_LOG_FILE_SAVE_DAYS);
-        Date comparedDate = now.getTime();
-
-        File[] files = file.listFiles();
-
-        for(int i = 0;i<files.length;i++){
-            String fileName = files[i].getName();
-            //得到了日期
-            String subfileName = fileName.substring(0, 10);
-            try{
-                Date date = logfile.parse(subfileName);
-                if(date.before(comparedDate)){
-                    files[i].delete();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                //列出该目录下的所有文件
+                String path = Environment.getExternalStorageDirectory()+File.separator+"safeguard1";
+                File file = new File(path);
+                if(!file.exists()){
+                    return;
                 }
-            }catch(Exception e){
-                e.printStackTrace();
+
+                Date nowtime = new Date();
+                Calendar now = Calendar.getInstance();
+                now.setTime(nowtime);
+                now.set(Calendar.DATE, now.get(Calendar.DATE)
+                        - SDCARD_LOG_FILE_SAVE_DAYS);
+                Date comparedDate = now.getTime();
+
+                File[] files = file.listFiles();
+
+                for(int i = 0;i<files.length;i++){
+                    String fileName = files[i].getName();
+                    //得到了日期
+                    String subfileName = fileName.substring(0, 10);
+                    try{
+                        Date date = logfile.parse(subfileName);
+                        if(date.before(comparedDate)){
+                            files[i].delete();
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        };
+        new Thread(runnable).start();
     }
 
 
