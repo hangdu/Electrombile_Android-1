@@ -48,15 +48,15 @@ public class Connections {
 
         //attempt to restore state
         persistence = new Persistence(context);
-        try {
-            List<Connection> l = persistence.restoreConnections(context);
-            MyLog.d("Connections-database-size",l.size()+"");
-            for (Connection c : l) {
-                connections.put(c.handle(), c);
-            }
-        } catch (PersistenceException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            List<Connection> l = persistence.restoreConnections(context);
+//            MyLog.d("Connections-database-size",l.size()+"");
+//            for (Connection c : l) {
+//                connections.put(c.handle(), c);
+//            }
+//        } catch (PersistenceException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -89,6 +89,7 @@ public class Connections {
      * @param connection connection to add
      */
     public void addConnection(Connection connection) {
+        String handle = connection.handle();
         connections.put(connection.handle(), connection);
         try {
             persistence.persistConnection(connection);

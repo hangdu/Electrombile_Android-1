@@ -165,6 +165,11 @@ public class MyLog {
 
                 for(int i = 0;i<files.length;i++){
                     String fileName = files[i].getName();
+                    if(fileName.length()!=17){
+//                        Log.d("MyLog","fileName.length()!=17");
+                        continue;
+                    }
+//                    Log.d("MyLog","fileName.length()==17");
                     //得到了日期
                     String subfileName = fileName.substring(0, 10);
                     try{

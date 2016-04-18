@@ -179,7 +179,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         initData();
         //判断是否绑定设备
         MyLog.d("FragmentActivity", "onCreate3");
-        queryIMEI();
+        queryIMEIandMqttConnection();
         MyLog.d("FragmentActivity", "onCreate4");
         Historys.put(this);
         MyLog.d("FragmentActivity", "onCreate5");
@@ -366,7 +366,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     /**
      * 查询并判断是否该建立MQTT连接
      */
-    public void queryIMEI(){
+    public void queryIMEIandMqttConnection(){
         if (setManager.getIMEI().isEmpty()) {
             AVQuery<AVObject> query = new AVQuery<>("Bindings");
             final AVUser currentUser = AVUser.getCurrentUser();

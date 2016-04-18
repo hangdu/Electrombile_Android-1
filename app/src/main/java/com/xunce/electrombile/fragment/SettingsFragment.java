@@ -249,7 +249,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
                 //关闭mqttclient
                 mqttConnectManager.MqttDisconnect();
-                mqttConnectManager.removeConnectionInDatabase();
+//                mqttConnectManager.removeConnectionInDatabase();
 
                 intent = new Intent(m_context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

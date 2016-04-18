@@ -1,6 +1,8 @@
 package com.xunce.electrombile.activity;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.applicatoin.App;
@@ -57,6 +59,7 @@ public class MqttConnectManager {
                 mcontext,
                 false);
         ServiceConstants.handler = connection.handle();
+        Log.d("initMqtt",ServiceConstants.handler);
         mcp = new MqttConnectOptions();
         /*
          * true :那么在客户机建立连接时，将除去客户机的任何旧预订。当客户机断开连接时，会除去客户机在会话期间创建的任何新预订。
@@ -122,17 +125,17 @@ public class MqttConnectManager {
                     MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器失败");
                 }
             });
-            MyLog.d("getMqttConnection", "2");
-            Connections.getInstance(mcontext).addConnection(connection);
-            MyLog.d("getMqttConnection", "3");
+//            MyLog.d("getMqttConnection", "2");
+//            Connections.getInstance(mcontext).addConnection(connection);
+//            MyLog.d("getMqttConnection", "3");
         } catch (MqttException e1) {
             e1.printStackTrace();
         }
     }
 
-    public void removeConnectionInDatabase(){
-        Connections.getInstance(mcontext).removeConnection(connection);
-    }
+//    public void removeConnectionInDatabase(){
+//        Connections.getInstance(mcontext).removeConnection(connection);
+//    }
 
     public void MqttDisconnect(){
         if(returnMqttStatus()){
