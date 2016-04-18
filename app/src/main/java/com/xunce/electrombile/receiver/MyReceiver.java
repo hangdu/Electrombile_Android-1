@@ -105,6 +105,7 @@ public class MyReceiver extends BroadcastReceiver {
                     select = 0x01;
                     protocol = createFactory(select, s);
                     Log.i(TAG, "得到命令字");
+                    Logger.i(TAG,"得到命令字");
                     onCmdArrived(protocol);
                 } else if (destinationName.contains("gps")) {
                     select = 0x02;

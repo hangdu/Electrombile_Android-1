@@ -50,6 +50,7 @@ public class Connections {
         persistence = new Persistence(context);
         try {
             List<Connection> l = persistence.restoreConnections(context);
+            MyLog.d("Connections-database-size",l.size()+"");
             for (Connection c : l) {
                 connections.put(c.handle(), c);
             }

@@ -342,7 +342,7 @@ public class TestddActivity extends Activity{
                             dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
                         }
 
-                        tracksManager.initTracks(avObjects.size());
+                        tracksManager.initTracks();
                         trackCount = 0;
                         final int count = avObjects.size();
 

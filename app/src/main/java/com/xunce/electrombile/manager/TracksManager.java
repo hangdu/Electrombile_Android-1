@@ -125,8 +125,8 @@ public class TracksManager implements Serializable{
         SetMapTrack(groupposition,tracks);
     }
 
-    public void initTracks(int capacity){
-        tracks = new ArrayList<>(capacity);
+    public void initTracks(){
+        tracks = new ArrayList<>();
     }
 
     //添加一段轨迹
@@ -151,7 +151,8 @@ public class TracksManager implements Serializable{
             dataList.add(p);
         }
 //        tracks.add(dataList);
-        tracks.set(position,dataList);
+        tracks.add(position,dataList);
+        Log.d("setOneTrack","1");
     }
 
 
