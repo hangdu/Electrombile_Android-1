@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -116,7 +117,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_Safeday;
     private TextView tv_battery;
     private TextView tv_distance;
-    private TextView tv_angleRank;
+//    private TextView tv_angleRank;
+    private ImageView img_angle1;
+    private ImageView img_angle2;
+    private ImageView img_angle3;
+    private ImageView img_angle4;
+    private ImageView img_angle5;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -315,7 +321,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ll_Power.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_context.sendMessage(m_context,mCenter.getBatteryInfo(),setManager.getIMEI());
+                m_context.sendMessage(m_context, mCenter.getBatteryInfo(), setManager.getIMEI());
             }
         });
 
@@ -355,7 +361,12 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
         tv_distance = (TextView)v.findViewById(R.id.tv_distance);
-        tv_angleRank = (TextView)v.findViewById(R.id.tv_angleRank);
+//        tv_angleRank = (TextView)v.findViewById(R.id.tv_angleRank);
+        img_angle1 = (ImageView)v.findViewById(R.id.angle1);
+        img_angle2 = (ImageView)v.findViewById(R.id.angle2);
+        img_angle3 = (ImageView)v.findViewById(R.id.angle3);
+        img_angle4 = (ImageView)v.findViewById(R.id.angle4);
+        img_angle5 = (ImageView)v.findViewById(R.id.angle5);
     }
 
     private void initEvent() {
@@ -946,25 +957,47 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void refreshItineraryInfo(double itinerary){
-        tv_distance.setText(itinerary+"公里");
+        tv_distance.setText(itinerary + "公里");
+
         //星
         if(itinerary<500){
             double a = itinerary/100;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1星");
+//                    tv_angleRank.setText("1星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(1);
                     break;
                 case 1:
-                    tv_angleRank.setText("2星");
+//                    tv_angleRank.setText("2星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(2);
                     break;
                 case 2:
-                    tv_angleRank.setText("3星");
+
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(3);
+//                    tv_angleRank.setText("3星");
                     break;
                 case 3:
-                    tv_angleRank.setText("4星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    img_angle4.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(4);
+//                    tv_angleRank.setText("4星");
                     break;
                 case 4:
-                    tv_angleRank.setText("5星");
+//                    tv_angleRank.setText("5星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    img_angle4.setBackgroundResource(R.drawable.star);
+                    img_angle5.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(5);
                     break;
                 default:
                     break;
@@ -976,19 +1009,39 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             double a = (itinerary-500)/500;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(1);
+//                    tv_angleRank.setText("1钻");
                     break;
                 case 1:
-                    tv_angleRank.setText("2钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+//                    tv_angleRank.setText("2钻");
+                    VisibleNumber(2);
                     break;
                 case 2:
-                    tv_angleRank.setText("3钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(3);
+//                    tv_angleRank.setText("3钻");
                     break;
                 case 3:
-                    tv_angleRank.setText("4钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    img_angle4.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(4);
+//                    tv_angleRank.setText("4钻");
                     break;
                 case 4:
-                    tv_angleRank.setText("5钻");
+//                    tv_angleRank.setText("5钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    img_angle4.setBackgroundResource(R.drawable.diamond);
+                    img_angle5.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(5);
                     break;
                 default:
                     break;
@@ -999,21 +1052,81 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             double a = (itinerary-3000)/1000;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(1);
+//                    tv_angleRank.setText("1冠");
                     break;
                 case 1:
-                    tv_angleRank.setText("2冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(2);
+//                    tv_angleRank.setText("2冠");
                     break;
                 case 2:
-                    tv_angleRank.setText("3冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(3);
+//                    tv_angleRank.setText("3冠");
                     break;
                 case 3:
-                    tv_angleRank.setText("4冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    img_angle4.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(4);
+//                    tv_angleRank.setText("4冠");
                     break;
                 default:
-                    tv_angleRank.setText("5冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    img_angle4.setBackgroundResource(R.drawable.crown);
+                    img_angle5.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(5);
+//                    tv_angleRank.setText("5冠");
                     break;
             }
+        }
+    }
+
+    private void VisibleNumber(int number){
+        switch (number){
+            case 1:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.INVISIBLE);
+                img_angle3.setVisibility(View.INVISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 2:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.INVISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 3:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 4:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.VISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 5:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.VISIBLE);
+                img_angle5.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }
