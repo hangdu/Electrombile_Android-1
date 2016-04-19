@@ -26,12 +26,16 @@
             android:textColor="#ffffff" />
     </RelativeLayout>
 
-    <com.xunce.electrombile.activity.CircleImageView
-        android:id="@+id/src_pic"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true"
-        app:civ_border_width="2dp"
-        app:civ_border_color="@color/dark" />
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <com.xunce.electrombile.activity.CircleImageView
+            android:id="@+id/src_pic"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/dark" />
+    </RelativeLayout>
 </LinearLayout>

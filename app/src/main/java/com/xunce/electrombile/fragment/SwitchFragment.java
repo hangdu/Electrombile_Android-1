@@ -357,7 +357,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
         tv_distance = (TextView)v.findViewById(R.id.tv_distance);
-//        tv_angleRank = (TextView)v.findViewById(R.id.tv_angleRank);
         img_angle1 = (ImageView)v.findViewById(R.id.angle1);
         img_angle2 = (ImageView)v.findViewById(R.id.angle2);
         img_angle3 = (ImageView)v.findViewById(R.id.angle3);
