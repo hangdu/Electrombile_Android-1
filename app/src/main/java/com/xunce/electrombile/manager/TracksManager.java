@@ -122,11 +122,18 @@ public class TracksManager implements Serializable{
             tracks.remove(tracks.size() - 1);
         }
         Log.i(TAG, "tracks1 size:" + tracks.size());
-        SetMapTrack(groupposition,tracks);
+        SetMapTrack(groupposition, tracks);
     }
 
-    public void initTracks(){
-        tracks = new ArrayList<>();
+    public void initTracks(int size){
+        tracks = new ArrayList<>(size);
+
+//        ArrayList<TrackPoint> pointList = new ArrayList<>();
+//        for(int i=0;i<size;i++){
+//            tracks.add(pointList);
+//        }
+//        int a = tracks.size();
+//        Log.d("test","test");
     }
 
     //添加一段轨迹

@@ -342,9 +342,11 @@ public class TestddActivity extends Activity{
                             dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
                         }
 
-                        tracksManager.initTracks();
-                        trackCount = 0;
                         final int count = avObjects.size();
+
+                        tracksManager.initTracks(count);
+                        trackCount = 0;
+
 
                         if(localmilesList == null){
                             localmilesList = new ArrayList<Integer>();
@@ -378,7 +380,7 @@ public class TestddActivity extends Activity{
                                     public void done(List<AVObject> list, AVException e) {
                                         if (e == null) {
                                             //如果固件分段有问题的话  这个地方的size可能为0或者1
-                                            if(list.size()>1){
+                                            if(list.size()>0){
                                                 tracksManager.setOneTrack(list,trackCount);
                                                 int mile = (int)avObject.get("miles");
                                                 localmilesList.add(mile);
@@ -432,10 +434,10 @@ public class TestddActivity extends Activity{
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {
             //如果当前路线段只有一个点 不显示
-            if(tracksManager.getTracks().get(i).size() == 1) {
-                //tracksManager.getTracks().remove(i);
-                continue;
-            }
+//            if(tracksManager.getTracks().get(i).size() == 1) {
+//                //tracksManager.getTracks().remove(i);
+//                continue;
+//            }
             totalTrackNumber++;
             ArrayList<TrackPoint> trackList = tracksManager.getTracks().get(i);
 
