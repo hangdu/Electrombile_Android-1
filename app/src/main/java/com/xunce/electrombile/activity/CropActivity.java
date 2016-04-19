@@ -37,6 +37,7 @@ public class CropActivity extends Activity{
         //解析intent数据 还原uri
         Intent intent = getIntent();
         Uri imageUri = intent.getData();
+        final String IMEI = intent.getStringExtra("IMEI");
 
         srcPic = (ImageView) findViewById(R.id.src_pic);
 
@@ -53,7 +54,7 @@ public class CropActivity extends Activity{
             @Override
             public void onClick(View v) {
                 bitmap = ((BitmapDrawable)srcPic.getDrawable()).getBitmap();
-                saveMyBitmaptoFile(bitmap);
+                saveMyBitmaptoFile(bitmap,IMEI);
                 Intent intent = new Intent();
                 intent.putExtra("filePath", filePath);
                 setResult(RESULT_OK, intent);
@@ -107,9 +108,9 @@ public class CropActivity extends Activity{
     }
 
     //bitmap写文件
-    public void saveMyBitmaptoFile(Bitmap mBitmap){
+    public void saveMyBitmaptoFile(Bitmap mBitmap,String IMEI){
         //如果用户没有内存卡这句话会不会出错
-        filePath = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
+        filePath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
         File f = new File(filePath);
 
         FileOutputStream fOut = null;
@@ -122,7 +123,7 @@ public class CropActivity extends Activity{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        leancloudManager.uploadImageToServer(settingManager.getIMEI(), mBitmap);
+        leancloudManager.uploadImageToServer(IMEI, mBitmap);
     }
 
     @Override

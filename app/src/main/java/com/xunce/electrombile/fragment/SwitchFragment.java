@@ -376,6 +376,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 if(resultCode == Activity.RESULT_OK) {
                     Intent intent = new Intent(m_context,CropActivity.class);
                     intent.setData(imageUri);
+                    intent.putExtra("IMEI", setManager.getIMEI());
                     startActivityForResult(intent, CROP_PHOTO);
                 }
                 break;
@@ -385,6 +386,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     imageUri = data.getData();
                     Intent intent = new Intent(m_context,CropActivity.class);
                     intent.setData(imageUri);
+                    intent.putExtra("IMEI",setManager.getIMEI());
                     startActivityForResult(intent, CROP_PHOTO);
                 }
                 break;
