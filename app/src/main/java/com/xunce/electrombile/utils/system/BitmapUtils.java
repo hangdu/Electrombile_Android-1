@@ -140,27 +140,6 @@ public class BitmapUtils {
 		//先要判断一下这个文件里的内容是否为空
 		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
 		BitmapFactory.Options newOpts = new BitmapFactory.Options();
-		newOpts.inJustDecodeBounds = true;//只读边,不读内容
-		BitmapFactory.decodeFile(srcPath, newOpts);
-
-		int w = newOpts.outWidth;
-		int h = newOpts.outHeight;
-		//这个地方怎么适配呢   我现在用的直接是px为单位的
-		float hh = 100f;
-		float ww = 100f;
-		int be = 1;
-		if (w > h && w > ww) {
-			be = (int) (newOpts.outWidth / ww);
-		} else if (w < h && h > hh) {
-			be = (int) (newOpts.outHeight / hh);
-		}
-		if (be <= 0)
-			be = 1;
-		newOpts.inSampleSize = be;//设置采样率
-		newOpts.inPreferredConfig = Bitmap.Config.ARGB_8888;//该模式是默认的,可不设
-		newOpts.inPurgeable = true;// 同时设置才会有效
-		newOpts.inInputShareable = true;//。当系统内存不够时候图片自动被回收
-
 		newOpts.inJustDecodeBounds = false;
 		return BitmapFactory.decodeFile(srcPath,newOpts);
 	}

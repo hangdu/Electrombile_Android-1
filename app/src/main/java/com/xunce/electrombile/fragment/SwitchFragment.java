@@ -392,7 +392,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
             case CROP_PHOTO:
                 if(resultCode == Activity.RESULT_OK) {
-                    //上传到服务器
+                    headImage.setImageBitmap(null);
+                    bitmapRelease();
                     bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
                     if (bitmap != null) {
                         headImage.setImageBitmap(bitmap);
@@ -402,6 +403,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 break;
             default:
                 break;
+        }
+    }
+
+    public void bitmapRelease(){
+        if(bitmap != null && !bitmap.isRecycled()){
+            // 回收并且置为null
+            bitmap.recycle();
+            bitmap = null;
+            System.gc();
         }
     }
 

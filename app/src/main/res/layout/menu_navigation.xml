@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="265dp"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -11,12 +13,22 @@
         android:id="@+id/relative_currentcar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
+        <!--<ImageView-->
+            <!--android:id="@+id/img_car"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:layout_marginLeft="3.33dp"-->
+            <!--android:layout_width="106.33dp"-->
+            <!--android:layout_height="117dp"-->
+            <!--android:src="@drawable/default_carimage"/>-->
+
+        <com.xunce.electrombile.activity.CircleImageView
             android:id="@+id/img_car"
             android:layout_marginTop="10dp"
-            android:layout_marginLeft="3.33dp"
-            android:layout_width="106.33dp"
-            android:layout_height="117dp"
+            android:layout_marginLeft="8dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/dark"
             android:src="@drawable/default_carimage"/>
 
         <TextView

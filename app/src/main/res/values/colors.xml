@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="dark">#FF222222</color>
     <color name="tab_background">#404040</color>
     <color name="base_color_text_white">#fff</color>
     <color name="base_color_text_black">#3e3e39</color>
