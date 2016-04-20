@@ -36,16 +36,24 @@
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="16sp"
-        android:text="任意选择地点作为参考,按下信号发射控制器,开始第一次数据采集吧"/>
+        android:text="如动画,任意选择合适的地点作为参考点,按下信号发射控制器,开始第一次数据采集吧!"/>
+
+    <ImageView
+        android:layout_marginTop="12dp"
+        android:layout_width="539px"
+        android:layout_height="255px"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/img_remotecontrol"/>
 
     <TextView
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="17dp"
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="16sp"
-        android:text="按下控制器, 再点击以下按钮"/>
+        android:text="按下控制器,再点击以下按键"/>
 
     <Button
         android:id="@+id/btn_getSignal"
