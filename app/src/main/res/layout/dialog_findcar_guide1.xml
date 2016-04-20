@@ -4,11 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1dcf96">
+    android:background="@drawable/rect_dialog">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#ffffff">
+        android:background="@drawable/rect_dialog_title">
 
         <Button
             android:id="@+id/btn_cancel"
