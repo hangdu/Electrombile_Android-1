@@ -669,7 +669,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void caseLostCarSituationWaiting(){
         Message msg = Message.obtain();
         msg.what = 1;
-        playHandler.sendMessageDelayed(msg,1000);
+        playHandler.sendMessageDelayed(msg,3000);
     }
 
     public void caseLostCarSituationSuccess(){

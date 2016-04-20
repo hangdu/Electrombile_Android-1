@@ -1,17 +1,220 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/ll_button"
         layout="@layout/my_layout_title" />
 
     <LinearLayout
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:background="#42e9b3">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="17.33sp"
+                android:text="采集次数"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="17.33sp"
+                android:text="结果"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textSize="17.33sp"
+                android:text="排位"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <include
+            layout="@layout/activity_find_car_child" />
+        <View
+            android:layout_width="323.33dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="7dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#1dcf96"/>
+
+        <include
+            layout="@layout/activity_find_car_child" />
+        <View
+            android:layout_width="323.33dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="7dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#1dcf96"/>
+
+        <include
+            layout="@layout/activity_find_car_child" />
+        <View
+            android:layout_width="323.33dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="7dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#1dcf96"/>
+
+        <include
+            layout="@layout/activity_find_car_child" />
+
+        <View
+            android:layout_width="323.33dp"
+            android:layout_height="8dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="143.33dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+        
+        <View
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:background="#42e9b3"/>
+
+        <LinearLayout
+            android:layout_marginLeft="36dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="刚刚采集最大数值为1000,对应采集次数为2"
+                android:textSize="12.67sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="您的爱车就在第2次采集点附近"
+                android:textSize="12.67sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请到第2次采集点附近再更加精确查找"
+                android:textSize="12.67sp"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <View
+                android:layout_width="3dp"
+                android:layout_alignParentRight="true"
+                android:layout_height="match_parent"
+                android:background="#42e9b3"/>
+        </RelativeLayout>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        android:background="@color/white">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        
+        <ImageView
+            android:layout_width="34.33dp"
+            android:layout_height="33.33dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/img_findcar_phone"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="12.67sp"
+            android:layout_marginLeft="8.33dp"
+            android:text="客服协助找车热线:"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textSize="12.67sp"
+            android:text="027-88046747"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_NextStep"
+        android:layout_width="219.33dp"
+        android:layout_height="74.67dp"
+        android:layout_marginTop="36.67dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/nextstep_rect"
+        android:textColor="#ffffff"
+        android:textSize="17.33sp"
+        android:text = "继续采集"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <LinearLayout
         android:id="@+id/layout_second"
-        android:layout_below="@+id/ll_button"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="200dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -47,7 +250,6 @@
 
     <LinearLayout
         android:id="@+id/layout_firstResult"
-        android:layout_below="@+id/layout_realtime_tensity"
         android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,7 +267,6 @@
 
     <LinearLayout
         android:id="@+id/layout_secondResult"
-        android:layout_below="@+id/layout_firstResult"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -83,7 +284,6 @@
 
     <LinearLayout
         android:id="@+id/layout_thirdResult"
-        android:layout_below="@+id/layout_secondResult"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -101,9 +301,8 @@
 
     <Button
         android:id="@+id/btn_continueGetSignal"
-        android:layout_below="@+id/layout_thirdResult"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="继续采集"/>
-</RelativeLayout>
+</LinearLayout>
