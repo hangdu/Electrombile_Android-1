@@ -253,7 +253,11 @@ public class TestddActivity extends Activity{
                         get(String.valueOf(groupPosition)).get(childPosition);
 
                 if(SpecificHistoryTrackActivity.trackDataList.size() == 0){
-                    ToastUtils.showShort(TestddActivity.this,"trackDataList的size为0,无法完成跳转");
+                    ToastUtils.showShort(TestddActivity.this,"该段轨迹没有点,不跳转");
+                    return true;
+                }
+                else if(SpecificHistoryTrackActivity.trackDataList.size() == 1){
+                    ToastUtils.showShort(TestddActivity.this,"该段轨迹只有一个点,不跳转");
                     return true;
                 }
 
