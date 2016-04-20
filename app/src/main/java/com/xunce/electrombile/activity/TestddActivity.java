@@ -22,7 +22,6 @@ import com.baidu.mapapi.SDKInitializer;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.bean.TracksBean;
 import com.xunce.electrombile.database.DBManage;
-import com.xunce.electrombile.database.DateTrackSecond;
 import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -31,7 +30,6 @@ import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.io.File;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.xunce.electrombile.view.RefreshableView;
 
 //这个函数太大了
@@ -140,15 +137,9 @@ public class TestddActivity extends Activity{
         ArrayList<ArrayList<TrackPoint>> tracks = tracksManager.getTracks();
         for(int i = 0;i<tracks.size();i++){
             for(int j = 0;j<tracks.get(i).size();j++){
-                //下面这5句是为test用
-                DateTrackSecond dateTrackSecond = new DateTrackSecond();
-                dateTrackSecond.trackNumber = i;
-                dateTrackSecond.timestamp = tracks.get(i).get(j).time.getTime()/1000;
-                dateTrackSecond.latitude = tracks.get(i).get(j).point.latitude;
-                dateTrackSecond.longitude = tracks.get(i).get(j).point.longitude;
-
                 dbManageSecond.insertSecondTable(i, tracks.get(i).get(j).time.getTime() / 1000,
-                        tracks.get(i).get(j).point.longitude,tracks.get(i).get(j).point.latitude);
+                        tracks.get(i).get(j).point.longitude,tracks.get(i).get(j).point.latitude,
+                        tracks.get(i).get(j).speed);
             }
         }
     }
@@ -185,8 +176,6 @@ public class TestddActivity extends Activity{
 
         if (TracksBean.getInstance().getTracksData().size() != 0) {
             tracksManager.clearTracks();
-//            tracksManager.setTracksData(TracksBean.getInstance().getTracksData());
-//            updateListView();
         }
 
         //删除数据库啊
@@ -240,8 +229,16 @@ public class TestddActivity extends Activity{
         ConstructListview(1);
 
         expandableListView = (ExpandableListView)findViewById(R.id.expandableListView);
-        adapter = new ExpandableAdapter(this,groupData, R.layout.expandgroupview,new String[] {DATE,DISTANCEPERDAY},new int[]{R.id.groupDate,R.id.distance},
-                childData,R.layout.expandchildview,new String[] {STARTPOINT,ENDPOINT},new int[]{R.id.tv_startPoint,R.id.tv_endPoint},this);
+        adapter = new ExpandableAdapter(this,
+                groupData,
+                R.layout.expandgroupview,
+                new String[] {DATE,DISTANCEPERDAY},
+                new int[]{R.id.groupDate,R.id.distance},
+                childData,
+                R.layout.expandchildview,
+                new String[] {STARTPOINT,ENDPOINT},
+                new int[]{R.id.tv_startPoint,R.id.tv_endPoint},
+                this);
 
         expandableListView.setAdapter(adapter);
 
@@ -250,7 +247,8 @@ public class TestddActivity extends Activity{
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
                 closeDatabaseCollect();
-                SpecificHistoryTrackActivity.trackDataList = tracksManager.getMapTrack().get(String.valueOf(groupPosition)).get(childPosition);
+                SpecificHistoryTrackActivity.trackDataList = tracksManager.getMapTrack().
+                        get(String.valueOf(groupPosition)).get(childPosition);
 
                 if(SpecificHistoryTrackActivity.trackDataList.size() == 0){
                     ToastUtils.showShort(TestddActivity.this,"trackDataList的size为0,无法完成跳转");
@@ -346,7 +344,6 @@ public class TestddActivity extends Activity{
 
                         tracksManager.initTracks(count);
                         trackCount = 0;
-
 
                         if(localmilesList == null){
                             localmilesList = new ArrayList<Integer>();
@@ -474,9 +471,13 @@ public class TestddActivity extends Activity{
         if(totalAVObjects != null)
             totalAVObjects.clear();
 
-        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH),
+                can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+
         startT= gcStart.getTime();
-        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH),
+                can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+
         endT = gcEnd.getTime();
 
         //如果查询的数据是30天之外的  就直接和leancloud交互,不要存取数据库
@@ -582,7 +583,8 @@ public class TestddActivity extends Activity{
         if(0 == Start_End_TYPE)
         {
             childData.get(GroupPosition).get(TrackPosition).put(STARTPOINT,result);
-            childData.get(GroupPosition).get(TrackPosition).put(MILES,String.valueOf(localmilesList.get(TrackPosition)));
+            childData.get(GroupPosition).get(TrackPosition).put(MILES,
+                    String.valueOf(localmilesList.get(TrackPosition)));
         }
 
         else{
@@ -647,11 +649,15 @@ public class TestddActivity extends Activity{
     private void findMilesOnedayFromCloud(final int groupPosition){
         //一次需要获取到7天的里程
         GregorianCalendar gcStart = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
-        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+        gcStart.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH),
+                can.get(Calendar.DAY_OF_MONTH)-groupPosition, 0, 0, 0);
+
         Date startTime= gcStart.getTime();
 
         GregorianCalendar gcEnd = new GregorianCalendar(TimeZone.getTimeZone("GMT+08:00"));
-        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH), can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+        gcEnd.set(can.get(Calendar.YEAR), can.get(Calendar.MONTH),
+                can.get(Calendar.DAY_OF_MONTH)-groupPosition+1, 0, 0, 0);
+
         Date endTime = gcEnd.getTime();
 
         String ItineraryTableName = "Itinerary_"+sm.getIMEI();
@@ -679,5 +685,4 @@ public class TestddActivity extends Activity{
             }
         });
     }
-
 }

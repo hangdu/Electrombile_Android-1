@@ -52,19 +52,14 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private String startPoint;
     private String endPoint;
-    private int miles;
+//    private int miles;
 
     private Button btn_play;
-    private Button btn_speed;
-
     private Marker markerMobile;
-
     private LatLng southwest;
     private LatLng northeast;
 
     private BaiduMap mBaiduMap;
-
-    private Overlay tracksOverlay;
     private int playOrder = 0;
     public static MapView mMapView;
     private SeekBar seekBar;
@@ -73,6 +68,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     private InfoWindow mInfoWindow;
     private View markerView;
     private TextView tv_pointTime;
+    private TextView tv_speed;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -86,8 +82,6 @@ public class SpecificHistoryTrackActivity extends Activity {
                             markerMobile.setPosition(trackDataList.get((int) msg.obj).point);
                             SetSeekbar((int)msg.obj);
                             playLocateMobile((int) msg.obj);
-                            if((int) msg.obj == (trackDataList.size()-1)){
-                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -118,7 +112,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
         endPoint = intent.getStringExtra("endPoint");
-        miles = Integer.parseInt(intent.getStringExtra("miles"));
+//        miles = Integer.parseInt(intent.getStringExtra("miles"));
         setContentView(R.layout.activity_specific_history_track);
 
         initViews();
@@ -148,11 +142,10 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
         btn_play = (Button)findViewById(R.id.btn_play);
 
-        btn_speed = (Button)findViewById(R.id.btn_speed);
+        Button btn_speed = (Button)findViewById(R.id.btn_speed);
         btn_speed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if(DELAY == DELAY1){
                     DELAY = DELAY2;
                     //还需要修改贴图
@@ -198,7 +191,6 @@ public class SpecificHistoryTrackActivity extends Activity {
             }
         });
 
-//        tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI())+"miles:"+miles);
         tv_CarName.setText("车辆名称:" + settingManager.getCarName(settingManager.getIMEI()));
         tv_startPoint.setText("起始位置:" + startPoint);
         tv_endPoint.setText("终点位置:" + endPoint);
@@ -266,11 +258,8 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
         tv_speedname.setText("速度:");
-        TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
-        //单位为km/h
-        double speed = miles/1000.0/(diffSec/3600.0);
-        speed=((int)(speed*100))/100.0;
-        tv_speed.setText(speed+"km/h");
+        tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
+        tv_speed.setText(trackDataList.get(0).speed+"km/h");
 
         seekBar.setMax(trackDataList.size()-1);
     }
@@ -331,7 +320,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 .width(10)
                 .color(0xAA00FF00);
         //在地图上添加多边形Option，用于显示
-        tracksOverlay = mBaiduMap.addOverlay(polylineOption);
+       mBaiduMap.addOverlay(polylineOption);
     }
 
     /**
@@ -407,6 +396,8 @@ public class SpecificHistoryTrackActivity extends Activity {
         String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
         String[] strs = time.split(" ");
         tv_pointTime.setText(strs[1]);
+
+        tv_speed.setText(trackDataList.get(track + 1).speed+"km/h");
         mBaiduMap.showInfoWindow(mInfoWindow);
         playOrder += 1;
 

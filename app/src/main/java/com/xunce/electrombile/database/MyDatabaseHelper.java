@@ -27,7 +27,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             +"trackNumber integer,"
             +"timestamp integer,"
             +"longitude REAL,"
-            +"latitude REAL)";
+            +"latitude REAL,"
+            +"speed integer)";
 
     private Context mContext;
     public MyDatabaseHelper(Context context,String name,SQLiteDatabase.CursorFactory factory,int version){
