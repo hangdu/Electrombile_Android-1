@@ -142,21 +142,21 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
         btn_play = (Button)findViewById(R.id.btn_play);
 
-        Button btn_speed = (Button)findViewById(R.id.btn_speed);
+        final Button btn_speed = (Button)findViewById(R.id.btn_speed);
         btn_speed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(DELAY == DELAY1){
                     DELAY = DELAY2;
-                    //还需要修改贴图
+                    btn_speed.setBackgroundResource(R.drawable.img_speed2);
                 }
                 else if(DELAY == DELAY2){
                     DELAY = DELAY5;
-                    //还需要修改贴图
+                    btn_speed.setBackgroundResource(R.drawable.img_speed3);
                 }
                 else if(DELAY == DELAY5){
                     DELAY = DELAY1;
-                    //还需要修改贴图
+                    btn_speed.setBackgroundResource(R.drawable.img_speed1);
                 }
             }
         });
