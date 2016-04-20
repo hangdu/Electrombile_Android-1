@@ -138,9 +138,21 @@ public class BitmapUtils {
 
 	public static Bitmap compressImageFromFile(String IMEI) {
 		//先要判断一下这个文件里的内容是否为空
-		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
-		BitmapFactory.Options newOpts = new BitmapFactory.Options();
-		newOpts.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(srcPath,newOpts);
+		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
+		File f = new File(srcPath);
+
+		String srcPath1 = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+//		File f1 = new File(srcPath1);
+
+		if(f.exists()){
+			BitmapFactory.Options newOpts = new BitmapFactory.Options();
+			newOpts.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(srcPath,newOpts);
+		}
+		else{
+			BitmapFactory.Options newOpts = new BitmapFactory.Options();
+			newOpts.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(srcPath1,newOpts);
+		}
 	}
 }
