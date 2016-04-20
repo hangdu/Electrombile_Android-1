@@ -90,6 +90,7 @@ public class TestddActivity extends Activity{
 
     private int trackCount;
     private ArrayList<Integer> localmilesList;
+    private String IMEI;
 
     private Handler mhandler = new Handler(){
         @Override
@@ -165,8 +166,9 @@ public class TestddActivity extends Activity{
         tracksManager = new TracksManager(getApplicationContext());
         can = Calendar.getInstance();
         sm = SettingManager.getInstance();
-        sdf = new SimpleDateFormat("yyyy-MM-dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
+        IMEI = sm.getIMEI();
+        sdf = new SimpleDateFormat("yyyy年MM月dd日");
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
         sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdfWithSecond.setTimeZone(TimeZone.getTimeZone("GMT+08:00"));
 
@@ -289,13 +291,12 @@ public class TestddActivity extends Activity{
         super.onDestroy();
     }
 
-
     private void findCloud(){
         if(NetworkUtils.checkNetwork(this)){
             return;
         }
 
-        String ItineraryTableName = "Itinerary_"+sm.getIMEI();
+        String ItineraryTableName = "Itinerary_"+IMEI;
         AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
         query.whereGreaterThanOrEqualTo("createdAt", startT);
         query.whereLessThan("createdAt", endT);
@@ -315,8 +316,6 @@ public class TestddActivity extends Activity{
 
                         //在数据表里插入一条数据  表示没有数据
                         if(!startT.equals(todayDate)&&FlagRecentDate){
-                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-//                            String date = formatter.format(endT);
                             long timeStamp = endT.getTime()/1000;
                             //存到数据库
                             dbManage.insert(timeStamp, -1, null, null, null,0);
@@ -332,12 +331,11 @@ public class TestddActivity extends Activity{
                         //创建数据库
                         if(!startT.equals(todayDate)&&(FlagRecentDate)){
                             if(dbManage == null){
-                                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+                                dbManage = new DBManage(TestddActivity.this,IMEI);
                             }
                             //什么时候需要创建这张表  当为近期的数据的时候
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
                             String date = sdf.format(endT);
-                            dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+                            dbManageSecond = new DBManage(TestddActivity.this,IMEI,date);
                         }
 
                         final int count = avObjects.size();
@@ -352,18 +350,11 @@ public class TestddActivity extends Activity{
                         }
 
                         for (final AVObject avObject : avObjects) {
-                            //通过createdtime进行排序啊  先验证这个地方确实有问题  返回的路程段不是按照时间排序的
-                            //验证的结果是:查询结果确实是按照时间排序的
                             //再查询一次  查询对应的gps
-                            Date date1 = avObject.getCreatedAt();
-                            MyLog.d("TestddActivity", sdfWithSecond.format(date1));
-
                             long start_timestamp = avObject.getLong("start");
                             long end_timestamp = avObject.getLong("end");
                             if (start_timestamp >10 && end_timestamp >10) {
                                 AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
-
-                                String IMEI = sm.getIMEI();
                                 query.setLimit(1000);
                                 query.whereEqualTo("IMEI", IMEI);
 
@@ -399,6 +390,12 @@ public class TestddActivity extends Activity{
                             }
                             else{
                                 trackCount++;
+                                if(trackCount == count){
+                                    //说明当天查到的数据是由测试数据的  这个时候就处理为无数据
+                                    watiDialog.dismiss();
+                                    dialog.setTitle("此时间段内没有数据");
+                                    dialog.show();
+                                }
                             }
                         }
                     }
@@ -430,11 +427,6 @@ public class TestddActivity extends Activity{
         Map<String, String> map;
         for(int i=0;i<tracksManager.getTracks().size();i++)
         {
-            //如果当前路线段只有一个点 不显示
-//            if(tracksManager.getTracks().get(i).size() == 1) {
-//                //tracksManager.getTracks().remove(i);
-//                continue;
-//            }
             totalTrackNumber++;
             ArrayList<TrackPoint> trackList = tracksManager.getTracks().get(i);
 
@@ -498,7 +490,7 @@ public class TestddActivity extends Activity{
         else{
             IfDatabaseExist();
             if(DatabaseExistFlag){
-                dbManage = new DBManage(TestddActivity.this,sm.getIMEI());
+                dbManage = new DBManage(TestddActivity.this,IMEI);
 
                 //由毫秒转换成秒
                 long timeStamp = endT.getTime()/1000;
@@ -515,7 +507,6 @@ public class TestddActivity extends Activity{
                     if(dbManage.dateTrackList.get(0).trackNumber == -1){
                         //为空数据
                         List<Map<String, String>> listMap = new ArrayList<>();
-//                        listMap.add(map);
                         childData.set(groupPosition,listMap);
                         adapter.notifyDataSetChanged();
                         dialog.setTitle("此时间段内没有数据");
@@ -559,16 +550,14 @@ public class TestddActivity extends Activity{
             }
             else{
                 findCloud();
-                return;
             }
         }
     }
 
     private void getSecondTableData(){
         //提取二级数据库的数据
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
         String date = sdf.format(endT);
-        dbManageSecond = new DBManage(TestddActivity.this,sm.getIMEI(),date);
+        dbManageSecond = new DBManage(TestddActivity.this,IMEI,date);
         dbManageSecond.querySecondTable(dbManage.dateTrackList.size());
 
         //把数据库的数据填充到tracksManager的tracks中
@@ -606,7 +595,6 @@ public class TestddActivity extends Activity{
    //更新ItemList
     private void ConstructListview(int Count)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
         String[] result = new String[7*Count];
         //parse作用: 把String型的字符串转换成特定格式的date类型
         Calendar c = Calendar.getInstance();
@@ -660,7 +648,7 @@ public class TestddActivity extends Activity{
 
         Date endTime = gcEnd.getTime();
 
-        String ItineraryTableName = "Itinerary_"+sm.getIMEI();
+        String ItineraryTableName = "Itinerary_"+IMEI;
         //查出当天的总里程
         AVQuery<AVObject> query = new AVQuery<AVObject>(ItineraryTableName);
         query.whereGreaterThanOrEqualTo("createdAt", startTime);
