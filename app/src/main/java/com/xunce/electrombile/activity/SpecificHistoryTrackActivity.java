@@ -182,6 +182,9 @@ public class SpecificHistoryTrackActivity extends Activity {
                 playOrder = Progress;
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
+                mInfoWindow = new InfoWindow(markerView,p2, -100);
+                mBaiduMap.showInfoWindow(mInfoWindow);
+
                 if (status.equals(PLAYING)) {
                     Message msg = Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
@@ -274,6 +277,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option);
         markerMobile.setPosition(trackDataList.get(0).point);
+        markerMobile.setTitle("testtest");
 
         BitmapDescriptor bitmap_startpoint = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_startpoint);
@@ -392,6 +396,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         }
 
         mInfoWindow = new InfoWindow(markerView,p2, -100);
+
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
         String[] strs = time.split(" ");
