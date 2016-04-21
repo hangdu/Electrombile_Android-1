@@ -135,7 +135,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 1:
                     dialog_tv_status.setText("设备在室内");
                     status_GPSornot = "设备在室内";
-                    findCarGuide2_dialog.show();
                     break;
             }
 
@@ -564,7 +563,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         });
 
         findCarGuide2_dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
-//        findCarGuide2_dialog.show();
+        findCarGuide2_dialog.show();
     }
 
 
@@ -670,14 +669,13 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void caseLostCarSituationWaiting(){
         Message msg = Message.obtain();
         msg.what = 1;
-        playHandler.sendMessageDelayed(msg,1000);
+        playHandler.sendMessageDelayed(msg,3000);
     }
 
     public void caseLostCarSituationSuccess(){
         playHandler.removeMessages(1);
         dialog_tv_status.setText("设备在室外,定位成功");
         status_GPSornot = "设备在室外,定位成功";
-        findCarGuide2_dialog.show();
     }
 
     @Override

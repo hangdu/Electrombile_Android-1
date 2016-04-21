@@ -396,6 +396,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         }
 
         mInfoWindow = new InfoWindow(markerView,p2, -100);
+        mBaiduMap.showInfoWindow(mInfoWindow);
 
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
@@ -403,7 +404,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         tv_pointTime.setText(strs[1]);
 
         tv_speed.setText(trackDataList.get(track + 1).speed+"km/h");
-        mBaiduMap.showInfoWindow(mInfoWindow);
+
         playOrder += 1;
 
         sendPlayMessage(DELAY);
