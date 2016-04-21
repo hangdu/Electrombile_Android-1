@@ -1148,6 +1148,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 m_context.updateTotalItinerary();
                 m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
             }
+            else if(intent.getStringExtra("KIND").equals("CHANGEMAINPIC")){
+                BitmapWorkerTask task = new BitmapWorkerTask();
+                task.execute();
+            }
         }
     }
 }

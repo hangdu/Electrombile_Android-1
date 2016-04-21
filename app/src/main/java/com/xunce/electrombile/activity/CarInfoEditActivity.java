@@ -114,6 +114,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
                     //删除设备头像    sharepreference中的部分信息:IMEI号码对应的绑定日期和车昵称
                     deleteCarInfo();
+                    setManager.removeKey(IMEI);
 
                     //关闭mqttclient
                     mqttConnectManager.MqttDisconnect();
@@ -145,7 +146,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         if(f.exists()){
             f.delete();
         }
-        setManager.removeKey(IMEI);
+
     }
 
     @Override
@@ -223,6 +224,10 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     bitmap = BitmapUtils.compressImageFromFile(IMEI);
                     if (bitmap != null) {
                         img_car.setImageBitmap(bitmap);
+                        //发送广播 switchfragment的照片啊
+                        Intent intent = new Intent("com.app.bc.test");
+                        intent.putExtra("KIND", "CHANGEMAINPIC");
+                        sendBroadcast(intent);//发送广播事件
                     }
                 }
                 break;
@@ -417,6 +422,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         //删除头像文件
         deleteCarInfo();
+        setManager.removeKey(IMEI);
 
         Intent intent = new Intent();
         intent.putExtra("string_key","设备解绑");
