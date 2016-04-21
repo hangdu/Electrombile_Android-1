@@ -172,25 +172,18 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        MyLog.delFile();
-//        DBManage.updateDatabase();
-        MyLog.d("FragmentActivity","onCreate");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
-        MyLog.d("FragmentActivity", "onCreate1");
         //初始化界面
         initView();
-        MyLog.d("FragmentActivity", "onCreate2");
         initData();
         //判断是否绑定设备
         MyLog.d("FragmentActivity", "onCreate3");
         queryIMEIandMqttConnection();
         MyLog.d("FragmentActivity", "onCreate4");
         Historys.put(this);
-        MyLog.d("FragmentActivity", "onCreate5");
         registerBroadCast();
-        MyLog.d("FragmentActivity", "onCreate6");
     }
 
     @Override
@@ -586,9 +579,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     //设备切换
     private void DeviceChange(int position){
+        //第一步 关闭抽屉
+        closeDrawable();
+
+        showWaitDialog();
+
+        //第二步  逻辑上切换过来
         String previous_IMEI = setManager.getIMEI();
         String current_IMEI = IMEIlist.get(position+1);
-        //在这里就解订阅原来的设备号,并且订阅新的设备号
+           //在这里就解订阅原来的设备号,并且订阅新的设备号
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
             mqttConnectManager.unSubscribe(previous_IMEI);
@@ -603,25 +602,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         else{
             ToastUtils.showShort(this,"mqtt连接失败");
         }
-
         IMEIlist.set(0, setManager.getIMEI());
         IMEIlist.set(position + 1, previous_IMEI);
         setManager.setIMEIlist(IMEIlist);
 
-        //list改变
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("whichcar", previous_IMEI);
-        map.put("img", R.drawable.othercar);
-        list.set(position, map);
-        simpleAdapter.notifyDataSetChanged();
-
-        //发广播
+        //第三步:UI刷新
         Intent intent = new Intent("com.app.bc.test");
         intent.putExtra("KIND","SWITCHDEVICE");
         intent.putExtra("POSITION",position);
         sendBroadcast(intent);//发送广播事件
 
-        closeDrawable();
+        dismissWaitDialog();
     }
 
     public void openDrawable(){

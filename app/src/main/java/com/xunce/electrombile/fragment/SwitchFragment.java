@@ -784,40 +784,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    class MyBroadcastReceiver extends BroadcastReceiver {
-        //接收到广播会被自动调用
-        @Override
-        public void onReceive (Context context, Intent intent) {
-            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
-                m_context.refreshBindList1();
-            }
-            else if(intent.getStringExtra("KIND").equals("OTHER")){
-                DeviceChangeHeadImage();
-                setSafedays();
-                m_context.updateTotalItinerary();
-                m_context.refreshBindList1();
-            }
-            else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
-                caseGetInitialStatus();
-            }
-            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
-                int position = intent.getIntExtra("POSITION",0);
-                DeviceChangeHeadImage();
-                setSafedays();
-                m_context.updateTotalItinerary();
-                m_context.refreshBindList1(FragmentActivity.SWITCHDEVICE,position);
-            }
-            else if(intent.getStringExtra("KIND").equals("DELETENONMAINDEVICE")){
-                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,intent.getIntExtra("POSITION",0));
-            }
-            else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
-                DeviceChangeHeadImage();
-                setSafedays();
-                m_context.updateTotalItinerary();
-                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
-            }
-        }
-    }
 
     private void caseGetInitialStatus(){
         if(rootView!=null){
@@ -1079,20 +1045,17 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 0:
                     img_angle1.setBackgroundResource(R.drawable.crown);
                     VisibleNumber(1);
-//                    tv_angleRank.setText("1冠");
                     break;
                 case 1:
                     img_angle1.setBackgroundResource(R.drawable.crown);
                     img_angle2.setBackgroundResource(R.drawable.crown);
                     VisibleNumber(2);
-//                    tv_angleRank.setText("2冠");
                     break;
                 case 2:
                     img_angle1.setBackgroundResource(R.drawable.crown);
                     img_angle2.setBackgroundResource(R.drawable.crown);
                     img_angle3.setBackgroundResource(R.drawable.crown);
                     VisibleNumber(3);
-//                    tv_angleRank.setText("3冠");
                     break;
                 case 3:
                     img_angle1.setBackgroundResource(R.drawable.crown);
@@ -1100,7 +1063,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     img_angle3.setBackgroundResource(R.drawable.crown);
                     img_angle4.setBackgroundResource(R.drawable.crown);
                     VisibleNumber(4);
-//                    tv_angleRank.setText("4冠");
                     break;
                 default:
                     img_angle1.setBackgroundResource(R.drawable.crown);
@@ -1109,7 +1071,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     img_angle4.setBackgroundResource(R.drawable.crown);
                     img_angle5.setBackgroundResource(R.drawable.crown);
                     VisibleNumber(5);
-//                    tv_angleRank.setText("5冠");
                     break;
             }
         }
@@ -1152,6 +1113,41 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 img_angle4.setVisibility(View.VISIBLE);
                 img_angle5.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    class MyBroadcastReceiver extends BroadcastReceiver {
+        //接收到广播会被自动调用
+        @Override
+        public void onReceive (Context context, Intent intent) {
+            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
+                m_context.refreshBindList1();
+            }
+            else if(intent.getStringExtra("KIND").equals("OTHER")){
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1();
+            }
+            else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
+                caseGetInitialStatus();
+            }
+            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
+                int position = intent.getIntExtra("POSITION",0);
+                m_context.refreshBindList1(FragmentActivity.SWITCHDEVICE,position);
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETENONMAINDEVICE")){
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,intent.getIntExtra("POSITION",0));
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
+            }
         }
     }
 }
