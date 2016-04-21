@@ -528,18 +528,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-                        tv_temperature.setText(data.temp+"摄氏度");
-                        tv_weatherCondition.setText(data.weather);
-                        tv_location.setText(data.city);
+                        if(data!=null){
+                            tv_temperature.setText(data.temp+"摄氏度");
+                            tv_weatherCondition.setText(data.weather);
+                            tv_location.setText(data.city);
 
-                        if(data.weather.contains("雨")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
-                        }
-                        else if(data.weather.contains("雪")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
-                        }
-                        else{
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                            if(data.weather.contains("雨")){
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
+                            }
+                            else if(data.weather.contains("雪")){
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                            }
+                            else{
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                            }
                         }
                     }
 
