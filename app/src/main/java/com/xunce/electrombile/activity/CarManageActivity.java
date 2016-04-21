@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.BitmapUtils;
+import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.json.JSONArray;
 
@@ -104,10 +106,13 @@ public class CarManageActivity extends Activity {
         btn_AddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarManageActivity.this)){
+                    ToastUtils.showShort(CarManageActivity.this, "请检查网络连接,该操作无法完成");
+                    return;
+                }
                 Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
                 intent.putExtra("From","CarManageActivity");
                 startActivity(intent);
-
             }
         });
 

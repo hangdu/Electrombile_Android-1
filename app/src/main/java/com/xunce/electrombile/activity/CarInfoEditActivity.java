@@ -300,6 +300,10 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         btn_DeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarInfoEditActivity.this)){
+                    ToastUtils.showShort(CarInfoEditActivity.this, "请检查网络连接,该操作无法完成");
+                    return;
+                }
                 progressDialog.show();
                 releaseBinding();
             }
