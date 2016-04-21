@@ -88,7 +88,7 @@
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="20sp"
-        android:text="状态"/>
+        android:text="状态:正在更新"/>
 
 
     <Button
