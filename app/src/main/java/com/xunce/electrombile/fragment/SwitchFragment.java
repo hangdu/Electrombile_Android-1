@@ -800,6 +800,13 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
                 caseGetInitialStatus();
             }
+            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
+                int position = intent.getIntExtra("POSITION",0);
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1(1,position);
+            }
         }
     }
 

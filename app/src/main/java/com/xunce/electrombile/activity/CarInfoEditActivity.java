@@ -333,7 +333,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         });
 
         JudgeMainCarOrNot();
-//        getIMEIlist();
         IMEIlist = setManager.getIMEIlist();
     }
     

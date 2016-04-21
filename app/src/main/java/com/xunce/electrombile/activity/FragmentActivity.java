@@ -96,6 +96,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private Boolean firsttime_Flag = true;
     private Thread myThread;
 
+    public static final int SWITCHDEVICE = 1;
+    public static final int ADDDEVICE = 2;
+    public static final int DELETEDEVICE = 3;
+
+
     /**
      * The handler. to process exit()
      */
@@ -529,9 +534,32 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         exit();
     }
 
+    public void refreshBindList1(int type,int position){
+        IMEIlist = setManager.getIMEIlist();
+        BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
+        switch (type){
+            case SWITCHDEVICE:
+                list.get(position).put("whichcar", setManager.getCarName(IMEIlist.get(position + 1)));
+                simpleAdapter.notifyDataSetChanged();
+                break;
+            default:
+                list.clear();
+                for (int i = 1; i < IMEIlist.size(); i++) {
+                    HashMap<String, Object> map = null;
+                    map = new HashMap<>();
+                    map.put("whichcar",setManager.getCarName(IMEIlist.get(i)));
+                    map.put("img", R.drawable.othercar);
+                    list.add(map);
+                }
+                simpleAdapter.notifyDataSetChanged();
+                break;
+        }
+    }
+
     public void refreshBindList1(){
         IMEIlist = setManager.getIMEIlist();
         BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
+
         HashMap<String, Object> map = null;
         list.clear();
         for (int i = 1; i < IMEIlist.size(); i++) {
@@ -576,7 +604,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
         //发广播
         Intent intent = new Intent("com.app.bc.test");
-        intent.putExtra("KIND","OTHER");
+        intent.putExtra("KIND","SWITCHDEVICE");
+        intent.putExtra("POSITION",position);
         sendBroadcast(intent);//发送广播事件
 
         closeDrawable();

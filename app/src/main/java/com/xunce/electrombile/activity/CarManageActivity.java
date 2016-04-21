@@ -165,14 +165,13 @@ public class CarManageActivity extends Activity {
 
     private void caseDeviceChange(){
         getIMEIlist();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("WhichCar", tv_CurrentCar.getText());
-        map.put("img",R.drawable.othercar);
+
         //UI变化
         tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
 
-        Othercarlist.set(OthercarPositon, map);
+        Othercarlist.get(OthercarPositon).put("WhichCar", tv_CurrentCar.getText());
         adapter.notifyDataSetChanged();
+        
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
         settingManager.setFlagCarSwitched("切换");
 
@@ -181,7 +180,7 @@ public class CarManageActivity extends Activity {
 
         //发送广播提醒switchFragment  发生了切换车辆的行为
         Intent intent = new Intent("com.app.bc.test");
-        intent.putExtra("KIND","OTHER");
+        intent.putExtra("KIND","SWITCHDEVICE");
         sendBroadcast(intent);//发送广播事件
     }
 

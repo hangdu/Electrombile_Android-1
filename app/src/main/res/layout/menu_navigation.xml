@@ -13,13 +13,6 @@
         android:id="@+id/relative_currentcar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <!--<ImageView-->
-            <!--android:id="@+id/img_car"-->
-            <!--android:layout_marginTop="10dp"-->
-            <!--android:layout_marginLeft="3.33dp"-->
-            <!--android:layout_width="106.33dp"-->
-            <!--android:layout_height="117dp"-->
-            <!--android:src="@drawable/default_carimage"/>-->
 
         <com.xunce.electrombile.activity.CircleImageView
             android:id="@+id/img_car"

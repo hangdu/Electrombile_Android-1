@@ -701,6 +701,17 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     status  = status_LocateCar;
                 }
             }
+            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
+                HideInfowindow();
+                setCarname();
+                InitCarLocation();
+
+                //如果是找车界面  需要切换到locateCar界面
+                if(status.equals(status_FindCar)){
+                    ToMapFragmentUI();
+                    status  = status_LocateCar;
+                }
+            }
         }
     }
 }
