@@ -310,8 +310,11 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         btn_DeviceChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarInfoEditActivity.this)){
+                    ToastUtils.showShort(CarInfoEditActivity.this, "请检查网络连接,切换无法完成");
+                    return;
+                }
                 DeviceChange();
-
             }
         });
 
@@ -422,31 +425,28 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     private void DeviceChange(){
         //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的初始状态
         mqttConnectManager = MqttConnectManager.getInstance();
-        mCenter = CmdCenter.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
             mqttConnectManager.unSubscribe(setManager.getIMEI());
             setManager.setIMEI(IMEI);
             mqttConnectManager.subscribe(IMEI);
+            mCenter = CmdCenter.getInstance();
             mqttConnectManager.sendMessage(mCenter.getInitialStatus(), IMEI);
-            ToastUtils.showShort(CarInfoEditActivity.this,"切换成功");
+            //更新IMEIlist
+            String IMEI_previous = IMEIlist.get(0);
+            IMEIlist.set(0,IMEI);
+            IMEIlist.set(othercarListPosition+1,IMEI_previous);
+            setManager.setIMEIlist(IMEIlist);
+
+            Intent intent = new Intent();
+            intent.putExtra("string_key", "设备切换");
+            intent.putExtra("boolean_key", Flag_Maincar);
+            setResult(RESULT_OK, intent);
+            CarInfoEditActivity.this.finish();
         }
         else{
             ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");
         }
-
-        //更新IMEIlist
-        String IMEI_previous = IMEIlist.get(0);
-        IMEIlist.set(0,IMEI);
-        IMEIlist.set(othercarListPosition+1,IMEI_previous);
-        setManager.setIMEIlist(IMEIlist);
-
-        Intent intent = new Intent();
-        intent.putExtra("string_key","设备切换");
-        intent.putExtra("boolean_key", Flag_Maincar);
-        setResult(RESULT_OK, intent);
-        //解除订阅
-        CarInfoEditActivity.this.finish();
     }
 
     //在Binding数据表里删除一条记录

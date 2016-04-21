@@ -156,8 +156,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         }
                         AVObject avObject = list.get(0);
                         try {
-                            int itinerary = (int)avObject.get("itinerary");
-                            switchFragment.refreshItineraryInfo(itinerary/1000.0);
+                            int itinerary = (int) avObject.get("itinerary");
+                            switchFragment.refreshItineraryInfo(itinerary / 1000.0);
                         } catch (Exception ee) {
                             ee.printStackTrace();
                         }
@@ -301,7 +301,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 //这些是在呈现了页面之后执行的
                 MqttConnectManager.status = MqttConnectManager.OK;
                 com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
-                if(firsttime_Flag){
+                if (firsttime_Flag) {
                     mac = mqttConnectManager.getMac();
                     mqttConnectManager.subscribe(setManager.getIMEI());
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
@@ -579,6 +579,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     //设备切换
     private void DeviceChange(int position){
+        if(NetworkUtils.checkNetwork(this)){
+            ToastUtils.showShort(this, "请检查网络连接,切换无法完成");
+            return;
+        }
         //第一步 关闭抽屉
         closeDrawable();
 
@@ -598,20 +602,20 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             mqttConnectManager.sendMessage(mCenter.getInitialStatus(), current_IMEI);
             switchFragment.refreshBatteryToNULL();
             ToastUtils.showShort(this, "切换成功");
+
+            IMEIlist.set(0, setManager.getIMEI());
+            IMEIlist.set(position + 1, previous_IMEI);
+            setManager.setIMEIlist(IMEIlist);
+
+            //第三步:UI刷新
+            Intent intent = new Intent("com.app.bc.test");
+            intent.putExtra("KIND", "SWITCHDEVICE");
+            intent.putExtra("POSITION", position);
+            sendBroadcast(intent);//发送广播事件
         }
         else{
             ToastUtils.showShort(this,"mqtt连接失败");
         }
-        IMEIlist.set(0, setManager.getIMEI());
-        IMEIlist.set(position + 1, previous_IMEI);
-        setManager.setIMEIlist(IMEIlist);
-
-        //第三步:UI刷新
-        Intent intent = new Intent("com.app.bc.test");
-        intent.putExtra("KIND","SWITCHDEVICE");
-        intent.putExtra("POSITION",position);
-        sendBroadcast(intent);//发送广播事件
-
         dismissWaitDialog();
     }
 
