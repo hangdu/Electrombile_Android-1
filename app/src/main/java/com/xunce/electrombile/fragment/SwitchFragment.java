@@ -805,7 +805,16 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 DeviceChangeHeadImage();
                 setSafedays();
                 m_context.updateTotalItinerary();
-                m_context.refreshBindList1(1,position);
+                m_context.refreshBindList1(FragmentActivity.SWITCHDEVICE,position);
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETENONMAINDEVICE")){
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,intent.getIntExtra("POSITION",0));
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
             }
         }
     }

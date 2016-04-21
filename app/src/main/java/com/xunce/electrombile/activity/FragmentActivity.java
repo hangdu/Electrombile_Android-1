@@ -98,7 +98,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     public static final int SWITCHDEVICE = 1;
     public static final int ADDDEVICE = 2;
-    public static final int DELETEDEVICE = 3;
+    public static final int DELETEMAINDEVICE = 3;
+    public static final int DELETEMONMAINDEVICE = 4;
 
 
     /**
@@ -542,6 +543,18 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 list.get(position).put("whichcar", setManager.getCarName(IMEIlist.get(position + 1)));
                 simpleAdapter.notifyDataSetChanged();
                 break;
+
+            case DELETEMONMAINDEVICE:
+                list.remove(position);
+                simpleAdapter.notifyDataSetChanged();
+                break;
+
+            case DELETEMAINDEVICE:
+                list.remove(0);
+                simpleAdapter.notifyDataSetChanged();
+                break;
+
+
             default:
                 list.clear();
                 for (int i = 1; i < IMEIlist.size(); i++) {

@@ -70,7 +70,7 @@ public class CarManageActivity extends Activity {
         }
 
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
-        String carname = settingManager.getCarName(settingManager.getIMEI());
+//        String carname = settingManager.getCarName(settingManager.getIMEI());
         tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
 
         ListView listview = (ListView)findViewById(R.id.OtherCarListview);
@@ -122,7 +122,7 @@ public class CarManageActivity extends Activity {
                 OthercarPositon = position;
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
 //                intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
-                String imei = settingManager.getIMEIlist().get(position+1);
+//                String imei = settingManager.getIMEIlist().get(position+1);
                 intentCarEdit.putExtra("string_key", settingManager.getIMEIlist().get(position+1));
 
                 intentCarEdit.putExtra("list_position", position);
@@ -147,11 +147,15 @@ public class CarManageActivity extends Activity {
 
                             //发送广播提醒switchFragment  发生了切解绑主车辆的行为(只有主车辆被解绑了  才需要去发送广播)
                             Intent intent = new Intent("com.app.bc.test");
-                            intent.putExtra("KIND","OTHER");
+                            intent.putExtra("KIND","DELETEMAINDEVICE");
                             sendBroadcast(intent);//发送广播事件
                         }
                         else{
                             caseOtherCarUnbind();
+                            Intent intent = new Intent("com.app.bc.test");
+                            intent.putExtra("KIND","DELETENONMAINDEVICE");
+                            intent.putExtra("POSITION",OthercarPositon);
+                            sendBroadcast(intent);//发送广播事件
                         }
                     }
                     //设备切换
@@ -171,7 +175,7 @@ public class CarManageActivity extends Activity {
 
         Othercarlist.get(OthercarPositon).put("WhichCar", tv_CurrentCar.getText());
         adapter.notifyDataSetChanged();
-        
+
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
         settingManager.setFlagCarSwitched("切换");
 
@@ -210,7 +214,6 @@ public class CarManageActivity extends Activity {
         HashMap<String, Object> map = null;
         for(int i = 1;i<IMEIlist.size();i++){
             map = new HashMap<String, Object>();
-
             map.put("WhichCar",settingManager.getCarName(IMEIlist.get(i)));
             map.put("img",R.drawable.othercar);
             Othercarlist.add(map);
