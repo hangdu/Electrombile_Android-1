@@ -58,6 +58,7 @@ public class FindCarActivity extends Activity {
     private TextView tv_countdownSecond;
     private TextView tv_intensity;
     private Dialog countdownDialog;
+    private Dialog SignalUserguideDialog;
     private TextView tv_signalGetNumber1;
     private TextView tv_signalGetNumber2;
     private TextView tv_signalGetNumber3;
@@ -66,6 +67,11 @@ public class FindCarActivity extends Activity {
     private TextView tv_AnalyseResult1;
     private TextView tv_AnalyseResult2;
     private TextView tv_AnalyseResult3;
+
+    private Button btn_MoveTenMeter;
+
+    private TextView tv_MoveTenMeter;
+    private TextView title;
 
 
     Handler handler = new Handler(){
@@ -87,9 +93,6 @@ public class FindCarActivity extends Activity {
                 else{
                     ToastUtils.showShort(FindCarActivity.this, "mqtt连接失败");
                 }
-
-
-
             } else {
                 tv_countdownSecond.setText(secondleft+"s");
             }
@@ -150,20 +153,13 @@ public class FindCarActivity extends Activity {
         btn_continueGetSignal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //发送seek on的命令
-                if (mqttConnectManager.returnMqttStatus()) {
-                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(), settingManager.getIMEI());
-                    //开始倒计时
-                    TimeCountdown();
-                    intensityList.clear();
-                    countdownDialog.show();
-                    //数据采集次数增加
-                    count++;
-                    status = status_start;
+                intensityList.clear();
 
-                }
-                else{
-                    ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
+                if(count == 1){
+                    getSignalUserguideDialog();
+                }else{
+                    refreshSignalUserGuide();
+                    SignalUserguideDialog.show();
                 }
             }
         });
@@ -174,6 +170,21 @@ public class FindCarActivity extends Activity {
         mCenter = CmdCenter.getInstance();
     }
 
+    private void refreshSignalUserGuide(){
+        switch (count){
+            case 2:
+                title.setText("进行第三次数据采集");
+                tv_MoveTenMeter.setText("环绕当前点前行10m进行第三次采集!");
+                break;
+            case 3:
+                title.setText("进行第四次数据采集");
+                tv_MoveTenMeter.setText("环绕当前点前行10m进行第四次采集!");
+                break;
+
+        }
+    }
+
+
     private void processFindcarResult(){
         //对四次的结果进行排序
         int result1 = Integer.parseInt((String)tv_signalResult1.getText());
@@ -183,7 +194,7 @@ public class FindCarActivity extends Activity {
         int Result[] = new int[]{result1,result2,result3,result4};
 
         int maxResult = Result[0];
-        int maxPosition = 1;
+        int maxPosition = 0;
         for(int i=1;i<4;i++){
             if(Result[i]>maxResult){
                 maxResult = Result[i];
@@ -284,6 +295,46 @@ public class FindCarActivity extends Activity {
         countdownDialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         countdownDialog.show();
     }
+
+    private void getSignalUserguideDialog(){
+        final LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.dialog_getsignal_userguide, null);
+        SignalUserguideDialog = new Dialog(this, R.style.Translucent_NoTitle_white);
+        SignalUserguideDialog.setCanceledOnTouchOutside(false);// 设置点击屏幕Dialog不消失
+
+        btn_MoveTenMeter = (Button)view.findViewById(R.id.btn_MoveTenMeter);
+        btn_MoveTenMeter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SignalUserguideDialog.dismiss();
+
+                //发送seek on的命令
+                if (mqttConnectManager.returnMqttStatus()) {
+                    mqttConnectManager.sendMessage(mCenter.cmdSeekOn(), settingManager.getIMEI());
+                    countdownDialog.show();
+                    TimeCountdown();
+                    //数据采集次数增加
+                    count++;
+                    status = status_start;
+                }
+                else{
+                    ToastUtils.showShort(FindCarActivity.this,"mqtt连接失败");
+                }
+            }
+        });
+
+        tv_MoveTenMeter = (TextView)view.findViewById(R.id.tv_MoveTenMeter);
+        title = (TextView)view.findViewById(R.id.title);
+
+        //获取屏幕的宽度
+        WindowManager m = this.getWindowManager();
+        Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final int dialog_width = (int) (d.getWidth() * 0.75);
+
+        SignalUserguideDialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+        SignalUserguideDialog.show();
+    }
+
 
     private void TimeCountdown(){
         secondleft = 30;

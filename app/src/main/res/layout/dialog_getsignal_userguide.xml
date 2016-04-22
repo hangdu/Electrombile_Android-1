@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rect_dialog">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/rect_dialog_title">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="进行第二次数据采集"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="15.33sp"
+        android:text="非常棒,您已经离找到爱车又近一步了!"/>
+    
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:layout_width="546px"
+        android:layout_height="281px"
+        android:src="@drawable/img_walk"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/tv_MoveTenMeter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="15.33sp"
+        android:text="环绕当前点前行10m进行第二次采集!"/>
+
+    <Button
+        android:id="@+id/btn_MoveTenMeter"
+        android:layout_height="40dp"
+        android:layout_width="146.33dp"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/img_yellow_background"
+        android:textColor="#ffffff"
+        android:text="我已经移动10m"
+        android:textSize="17.33sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+</LinearLayout>
