@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rect_dialog">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/rect_dialog_title">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="采集数据"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="15.33sp"
+        android:text="请保持不动,采集30s信号!"/>
+
+    <TextView
+        android:id="@+id/tv_countdownSecond"
+        android:layout_marginTop="40dp"
+        android:background="@color/white"
+        android:layout_width="171.67dp"
+        android:layout_height="71.67dp"
+        android:text="30s"
+        android:textSize="50sp"
+        android:textColor="#1dcf96"
+        android:layout_gravity="center"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tv_intensity"
+        android:layout_marginTop="40dp"
+        android:background="@color/white"
+        android:layout_width="171.67dp"
+        android:layout_height="71.67dp"
+        android:textSize="50sp"
+        android:textColor="#1dcf96"
+        android:layout_gravity="center"
+        android:gravity="center" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp"/>
+
+</LinearLayout>

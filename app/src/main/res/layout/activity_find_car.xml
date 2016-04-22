@@ -66,6 +66,7 @@
         </LinearLayout>
 
         <include
+            android:id="@+id/ll_result1"
             layout="@layout/activity_find_car_child" />
         <View
             android:layout_width="323.33dp"
@@ -75,6 +76,7 @@
             android:background="#1dcf96"/>
 
         <include
+            android:id="@+id/ll_result2"
             layout="@layout/activity_find_car_child" />
         <View
             android:layout_width="323.33dp"
@@ -84,6 +86,7 @@
             android:background="#1dcf96"/>
 
         <include
+            android:id="@+id/ll_result3"
             layout="@layout/activity_find_car_child" />
         <View
             android:layout_width="323.33dp"
@@ -93,6 +96,7 @@
             android:background="#1dcf96"/>
 
         <include
+            android:id="@+id/ll_result4"
             layout="@layout/activity_find_car_child" />
 
         <View
@@ -119,21 +123,24 @@
             android:orientation="vertical"
             android:layout_gravity="center_vertical">
             <TextView
+                android:id="@+id/tv_AnalyseResult1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="刚刚采集最大数值为1000,对应采集次数为2"
+                android:text="刚刚采集最大数值为......"
                 android:textSize="12.67sp"/>
 
             <TextView
+                android:id="@+id/tv_AnalyseResult2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="您的爱车就在第2次采集点附近"
+                android:text="您的爱车就在第......次采集点附近"
                 android:textSize="12.67sp"/>
 
             <TextView
+                android:id="@+id/tv_AnalyseResult3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="请到第2次采集点附近再更加精确查找"
+                android:text="请到第......次采集点附近再更加精确查找"
                 android:textSize="12.67sp"/>
         </LinearLayout>
 
@@ -179,6 +186,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textSize="12.67sp"
+            android:textColor="#1dcf96"
             android:text="027-88046747"/>
         <View
             android:layout_width="0dp"
@@ -187,9 +195,9 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_NextStep"
-        android:layout_width="219.33dp"
-        android:layout_height="74.67dp"
+        android:id="@+id/btn_continueGetSignal"
+        android:layout_height="33.33dp"
+        android:layout_width="136.67dp"
         android:layout_marginTop="36.67dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/nextstep_rect"
@@ -197,112 +205,4 @@
         android:textSize="17.33sp"
         android:text = "继续采集"/>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <LinearLayout
-        android:id="@+id/layout_second"
-        android:layout_marginTop="200dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="倒计时30s采集信号:" />
-
-        <TextView
-            android:id="@+id/tv_second"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="30"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_realtime_tensity"
-        android:layout_below="@+id/layout_second"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="实时信号强度:" />
-
-        <TextView
-            android:id="@+id/tv_realtime_tensity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_firstResult"
-        android:layout_marginTop="80dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="第一次信号强度采集结果:"/>
-
-        <TextView
-            android:id="@+id/tv_firstResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_secondResult"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="第二次信号强度采集结果:"/>
-
-        <TextView
-            android:id="@+id/tv_secondResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_thirdResult"
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="第三次信号强度采集结果:"/>
-
-        <TextView
-            android:id="@+id/tv_thirdResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_continueGetSignal"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="继续采集"/>
 </LinearLayout>
