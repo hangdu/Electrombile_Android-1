@@ -500,32 +500,35 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     /**
      * 重复按下返回键退出app方法
-     */
-    public void exit() {
-        if (!isExit) {
-            isExit = true;
-            Toast.makeText(getApplicationContext(),
-                    "退出程序", Toast.LENGTH_SHORT).show();
-            exitHandler.sendEmptyMessageDelayed(0, 2000);
-        } else {
-            cancelNotification();
-            if (mac != null) {
-                mac.unregisterResources();
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-            }
-            //此方法会不在onDestory中调用，所以放在结束任务之前使用
-            if (TracksManager.getTracks() != null) TracksManager.clearTracks();
-            timeHandler.removeMessages(0);
-            timeHandler = null;
-            Historys.exit();
-        }
-    }
+//     */
+//    public void exit() {
+
+
+//        if (!isExit) {
+//            isExit = true;
+//            Toast.makeText(getApplicationContext(),
+//                    "退出程序", Toast.LENGTH_SHORT).show();
+//            exitHandler.sendEmptyMessageDelayed(0, 2000);
+//        } else {
+//            cancelNotification();
+//            if (mac != null) {
+//                mac.unregisterResources();
+//                LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+//            }
+//            //此方法会不在onDestory中调用，所以放在结束任务之前使用
+//            if (TracksManager.getTracks() != null) TracksManager.clearTracks();
+//            timeHandler.removeMessages(0);
+//            timeHandler = null;
+//            Historys.exit();
+//        }
+//    }
 
 
 
     @Override
     public void onBackPressed() {
-        exit();
+        moveTaskToBack(true);
+//        exit();
     }
 
     public void refreshBindList1(int type,int position){
