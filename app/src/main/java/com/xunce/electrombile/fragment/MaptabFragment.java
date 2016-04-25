@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.SDKInitializer;
@@ -56,12 +58,16 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
     //保存数据所需要的最短距离
-    private static final double MIN_DISTANCE = 100;
-//    private static final int DELAY = 1000;
+//    private static final double MIN_DISTANCE = 100;
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private static final int SHOWGPSDIALOG = 0;
+    //    private static final int DELAY = 1000;
     public static MapView mMapView;
     private static String TAG = "MaptabFragment:";
     public TrackPoint currentTrack;
@@ -75,7 +81,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private View markerView;
 
     //dialogs
-    private Dialog networkDialog;
+//    private Dialog networkDialog;
     private Dialog didDialog;
     private BaiduMap mBaiduMap;
     //缓存布局
@@ -109,6 +115,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private String status_GPSornot;
     private TextView tv_GPSornot;
     private Dialog findCarGuide2_dialog;
+    private Location currentLocation;
+    private boolean NetworkLocationListenerRemoved = false;//判断网络监听是否移除
 
 
     private Handler playHandler = new Handler() {
@@ -455,6 +463,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
                     // Called when a new location is found by the network location provider.
+                    if(isGPSOpened(1)&&!NetworkLocationListenerRemoved){
+                        //去掉网络监听  开启gps监听
+                        locationManager.removeUpdates(locationListener);
+                        NetworkLocationListenerRemoved = true;
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+                    }
                     LatLng oldPoint = new LatLng(location.getLatitude(), location.getLongitude());
                     LatLng bdPoint = mCenter.convertPoint(oldPoint);
                     markerPerson.setPosition(bdPoint);
@@ -469,8 +483,65 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             };
         }
 
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 1, locationListener);
+        isGPSOpened(SHOWGPSDIALOG);
+
+        String provider;
+        List<String> locationList = locationManager.getProviders(true);
+        if (locationList.contains(LocationManager.GPS_PROVIDER)) {
+            NetworkLocationListenerRemoved = true;
+            provider = LocationManager.GPS_PROVIDER;
+            locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
+            com.orhanobut.logger.Logger.d("GPS_PROVIDER 更新位置");
+        } else if (locationList.contains(LocationManager.NETWORK_PROVIDER)) {
+            NetworkLocationListenerRemoved = false;
+            provider = LocationManager.NETWORK_PROVIDER;
+            locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
+            com.orhanobut.logger.Logger.d("NETWORK_PROVIDER  更新位置");
+        } else {
+            Toast.makeText(m_context, "没有可用的定位服务", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //第一次调用
+    private boolean isGPSOpened(int type){
+        LocationManager locationManager
+                = (LocationManager) m_context.getSystemService(Context.LOCATION_SERVICE);
+        // 通过GPS卫星定位，定位级别可以精确到街（通过24颗卫星定位，在室外和空旷的地方定位准确、速度快）
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            if(type == SHOWGPSDIALOG){
+                //设置gps的dialog
+                Dialog GPSDialog = new AlertDialog.Builder(m_context).setMessage("GPS定位手机位置更加准确,请开启GPS!")
+                        .setTitle("请打开gps开关")
+                        .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setNegativeButton("开启", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(myIntent);
+                            }
+                        }).create();
+                GPSDialog.show();
+            }
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+
+
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 
     private void ToMapFragmentUI(){
