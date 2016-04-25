@@ -217,7 +217,7 @@ public class CarManageActivity extends Activity {
 
     private void initEvents(){
         getIMEIlist();
-        HashMap<String, Object> map = null;
+        HashMap<String, Object> map;
         for(int i = 1;i<IMEIlist.size();i++){
             map = new HashMap<String, Object>();
             map.put("WhichCar",settingManager.getCarName(IMEIlist.get(i)));

@@ -474,6 +474,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         });
 
         refreshBindList1();
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                refreshBindList1();
+                //execute the task
+            }
+        }, 2000);
     }
 
     /**

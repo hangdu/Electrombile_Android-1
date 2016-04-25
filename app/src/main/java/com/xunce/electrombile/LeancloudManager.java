@@ -179,6 +179,7 @@ public class LeancloudManager {
                         settingManager.setIMEIlist(IMEIlist);
                         settingManager.setIMEI(IMEIlist.get(0));
 
+
                         //获取IMEIlist中每一个设备对应的头像
 
                         for (String IMEI : IMEIlist) {
