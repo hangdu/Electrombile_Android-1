@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -399,7 +400,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_back.setVisibility(View.VISIBLE);
         ll_historyAndlocate.setVisibility(View.INVISIBLE);
 
-        tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
+        tv_FindModeCarName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
         InitCarLocation();
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.marker_person);
@@ -531,17 +532,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         }else{
             return true;
         }
-    }
-
-
-
-
-    /** Checks whether two providers are the same */
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
-        }
-        return provider1.equals(provider2);
     }
 
     private void ToMapFragmentUI(){

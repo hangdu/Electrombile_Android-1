@@ -190,6 +190,7 @@ public class CarManageActivity extends Activity {
         //发送广播提醒switchFragment  发生了切换车辆的行为
         Intent intent = new Intent("com.app.bc.test");
         intent.putExtra("KIND","SWITCHDEVICE");
+        intent.putExtra("POSITION",OthercarPositon);
         sendBroadcast(intent);//发送广播事件
     }
 
