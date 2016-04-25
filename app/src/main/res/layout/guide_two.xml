@@ -1,10 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#6eb9f3">
     <TextView
+        android:layout_marginTop="54dp"
+        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="导航界面2"/>
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="云端智能远程操控"/>
+
+    <TextView
+        android:layout_marginTop="12.67dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="车辆问题一手遮天"/>
+
+    <ImageView
+        android:layout_width="320dp"
+        android:layout_height="363dp"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/img_guide2"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

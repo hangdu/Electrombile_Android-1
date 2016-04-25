@@ -1,17 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1dcf96">
+    <TextView
+        android:layout_marginTop="54dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="智能体验 车辆自检"/>
 
     <TextView
+        android:layout_marginTop="12.67dp"
+        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="导航界面4"/>
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="给您最贴心的感受"/>
+
+    <ImageView
+        android:layout_width="320dp"
+        android:layout_height="363dp"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/img_guide4"
+        android:layout_gravity="center_horizontal"/>
 
     <Button
+        android:layout_marginTop="25dp"
         android:id="@+id/b_enter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "点击进入登录界面"/>
+        android:layout_width="166dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/yellow_rect"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text = "开启安全之旅"/>
 
 </LinearLayout>
+
+
