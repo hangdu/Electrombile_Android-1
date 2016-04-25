@@ -3,16 +3,22 @@ package com.xunce.electrombile.activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.baidu.mapapi.map.InfoWindow;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.manager.TracksManager;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.view.SlidingButton;
 
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -27,14 +33,21 @@ public class AlarmActivity extends BaseActivity {
     private TextView tv_alarm;
     private Animation operatingAnim;
     private MqttConnectManager mqttConnectManager;
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            VibratorUtil.VibrateCancle(AlarmActivity.this);
+            mPlayer.stop();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_alarm);
         super.onCreate(savedInstanceState);
         alarm();
-        Intent intent = getIntent();
-        int type = intent.getIntExtra(ProtocolConstants.TYPE, 2);
+//        Intent intent = getIntent();
+//        int type = intent.getIntExtra(ProtocolConstants.TYPE, 2);
         mqttConnectManager = MqttConnectManager.getInstance();
         //       int type = savedInstanceState.getInt("type");
     }
@@ -45,6 +58,8 @@ public class AlarmActivity extends BaseActivity {
         mPlayer = MediaPlayer.create(getApplicationContext(), R.raw.alarm);
         mPlayer.setLooping(true);
         mPlayer.start();
+        Message msg = Message.obtain();
+        mHandler.sendMessageDelayed(msg,1000*60);
     }
 
     @Override
