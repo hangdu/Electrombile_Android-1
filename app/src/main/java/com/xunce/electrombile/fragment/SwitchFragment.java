@@ -763,8 +763,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ArrayList<MKOLUpdateElement> localCitylist = mkOfflineMap.getAllUpdateInfo();
         if (localCitylist != null) {
             for (MKOLUpdateElement element : localCitylist) {
-                element.cityName.contains(localcity);
-                return element;
+                if(element.cityName.contains(localcity)){
+                    return element;
+                }
             }
         }
         return null;
