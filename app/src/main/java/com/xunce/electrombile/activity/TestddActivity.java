@@ -319,10 +319,10 @@ public class TestddActivity extends Activity{
                         dialog.show();
 
                         //在数据表里插入一条数据  表示没有数据
-                        if(!startT.equals(todayDate)&&FlagRecentDate){
-                            long timeStamp = endT.getTime()/1000;
+                        if (!startT.equals(todayDate) && FlagRecentDate) {
+                            long timeStamp = endT.getTime() / 1000;
                             //存到数据库
-                            dbManage.insert(timeStamp, -1, null, null, null,0);
+                            dbManage.insert(timeStamp, -1, null, null, null, 0);
                         }
 
                         //需要插入到数据库中  表示没有数据啊
@@ -333,13 +333,13 @@ public class TestddActivity extends Activity{
 
                     } else {
                         //创建数据库
-                        if(!startT.equals(todayDate)&&(FlagRecentDate)){
-                            if(dbManage == null){
-                                dbManage = new DBManage(TestddActivity.this,IMEI);
+                        if (!startT.equals(todayDate) && (FlagRecentDate)) {
+                            if (dbManage == null) {
+                                dbManage = new DBManage(TestddActivity.this, IMEI);
                             }
                             //什么时候需要创建这张表  当为近期的数据的时候
                             String date = sdf.format(endT);
-                            dbManageSecond = new DBManage(TestddActivity.this,IMEI,date);
+                            dbManageSecond = new DBManage(TestddActivity.this, IMEI, date);
                         }
 
                         final int count = avObjects.size();
@@ -347,9 +347,9 @@ public class TestddActivity extends Activity{
                         tracksManager.initTracks(count);
                         trackCount = 0;
 
-                        if(localmilesList == null){
+                        if (localmilesList == null) {
                             localmilesList = new ArrayList<Integer>();
-                        }else{
+                        } else {
                             localmilesList.clear();
                         }
 
@@ -357,7 +357,7 @@ public class TestddActivity extends Activity{
                             //再查询一次  查询对应的gps
                             long start_timestamp = avObject.getLong("start");
                             long end_timestamp = avObject.getLong("end");
-                            if (start_timestamp >10 && end_timestamp >10) {
+                            if (start_timestamp > 10 && end_timestamp > 10) {
                                 AVQuery<AVObject> query = new AVQuery<AVObject>("GPS");
                                 query.setLimit(1000);
                                 query.whereEqualTo("IMEI", IMEI);
@@ -372,29 +372,27 @@ public class TestddActivity extends Activity{
                                     public void done(List<AVObject> list, AVException e) {
                                         if (e == null) {
                                             //如果固件分段有问题的话  这个地方的size可能为0或者1
-                                            if(list.size()>0){
-                                                tracksManager.setOneTrack(list,trackCount);
-                                                int mile = (int)avObject.get("miles");
+                                            if (list.size() > 0) {
+                                                tracksManager.setOneTrack(list, trackCount);
+                                                int mile = (int) avObject.get("miles");
                                                 localmilesList.add(mile);
                                             }
                                             trackCount++;
-                                            if(trackCount == count){
+                                            if (trackCount == count) {
                                                 updateListView();
-                                                watiDialog.dismiss();
+//                                                watiDialog.dismiss();
                                                 tracksManager.setMilesMap(GroupPosition, localmilesList);
                                             }
-                                        }
-                                        else{
-                                            dialog.setTitle("查询失败"+e.getMessage());
+                                        } else {
+                                            dialog.setTitle("查询失败" + e.getMessage());
                                             dialog.show();
                                             watiDialog.dismiss();
                                         }
                                     }
                                 });
-                            }
-                            else{
+                            } else {
                                 trackCount++;
-                                if(trackCount == count){
+                                if (trackCount == count) {
                                     //说明当天查到的数据是由测试数据的  这个时候就处理为无数据
                                     watiDialog.dismiss();
                                     dialog.setTitle("此时间段内没有数据");
@@ -403,12 +401,11 @@ public class TestddActivity extends Activity{
                             }
                         }
                     }
-                }
-                else{
+                } else {
                     watiDialog.dismiss();
                     //在leancloud上没有对应的里程表
-                    if(e.getCode() == 101){
-                        ToastUtils.showShort(TestddActivity.this,"无数据表");
+                    if (e.getCode() == 101) {
+                        ToastUtils.showShort(TestddActivity.this, "无数据表");
                     }
                 }
             }
@@ -587,6 +584,7 @@ public class TestddActivity extends Activity{
         adapter.notifyDataSetChanged();
 
         if(ReverseNumber == totalTrackNumber*2){
+            watiDialog.dismiss();
             if(!startT.equals(todayDate)&&(FlagRecentDate)){
                 //确实是近期的数据才会插入到数据库
                 android.os.Message msg = android.os.Message.obtain();
