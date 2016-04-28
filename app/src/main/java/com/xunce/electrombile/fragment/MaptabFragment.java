@@ -107,7 +107,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public String status = status_LocateCar;
 
-    public Boolean LostCarSituation = false;
+    public boolean LostCarSituation = false;
 
     private TextView dialog_tv_LastCarLocation;
     private TextView dialog_tv_LastLocateTime;
@@ -118,6 +118,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Dialog findCarGuide2_dialog;
     private Location currentLocation;
     private boolean NetworkLocationListenerRemoved = false;//判断网络监听是否移除
+    private SimpleDateFormat sdfWithSecond;
 
 
     private Handler playHandler = new Handler() {
@@ -129,7 +130,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     if (msg.obj != null) {
                         TrackPoint trackPoint = (TrackPoint) msg.obj;
                         mInfoWindow = new InfoWindow(markerView, trackPoint.point, -100);
-                        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
                         if(LostCarSituation){
                             dialog_tv_LastLocateTime.setText(sdfWithSecond.format(trackPoint.time));
@@ -144,9 +144,9 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 1:
                     dialog_tv_status.setText("设备在室内");
                     status_GPSornot = "设备在室内";
+                    setLostCarSituationFlag();
                     break;
             }
-
         }
     };
 
@@ -158,10 +158,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //注意该方法要再setContentView方法之前实现
-//        SDKInitializer.initialize(m_context);
-//        SwitchFragment.mkOfflineMap.scan();
-
         currentTrack = new TrackPoint(new Date(), 0, 0);
         LayoutInflater inflater = (LayoutInflater) m_context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -193,6 +189,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
+        sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
@@ -721,30 +718,42 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         if(LostCarSituation){
             dialog_tv_LastCarLocation.setText(reverseGeoCodeResult);
+            setLostCarSituationFlag();
         }
-    }
-
-    public void caseLostCarSituationOffline(){
-        dialog_tv_status.setText("设备不在线");
-        btn_LostCarnextstep.setVisibility(View.INVISIBLE);
-    }
-
-    public void caseLostCarSituationWaiting(){
-        Message msg = Message.obtain();
-        msg.what = 1;
-        playHandler.sendMessageDelayed(msg,3000);
-    }
-
-    public void caseLostCarSituationSuccess(){
-        playHandler.removeMessages(1);
-        dialog_tv_status.setText("设备在室外,定位成功");
-        status_GPSornot = "设备在室外,定位成功";
     }
 
     @Override
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
 
     }
+
+    public void caseLostCarSituationOffline(TrackPoint trackPoint){
+        dialog_tv_status.setText("设备不在线");
+        btn_LostCarnextstep.setVisibility(View.INVISIBLE);
+
+        if(trackPoint!=null){
+            Date date = trackPoint.time;
+            String time = sdfWithSecond.format(date);
+            dialog_tv_LastLocateTime.setText(time);
+            mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                    .location(trackPoint.point));
+        }
+    }
+
+    public void caseLostCarSituationWaiting(){
+        Message msg = Message.obtain();
+        msg.what = 1;
+        playHandler.sendMessageDelayed(msg, 3000);
+    }
+
+    public void caseLostCarSituationSuccess(){
+        playHandler.removeMessages(1);
+        dialog_tv_status.setText("设备在室外,定位成功");
+        status_GPSornot = "设备在室外,定位成功";
+        setLostCarSituationFlag();
+    }
+
+
 
     class MyBroadcastReceiver extends BroadcastReceiver {
         //接收到广播会被自动调用
@@ -787,6 +796,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     status  = status_LocateCar;
                 }
             }
+        }
+    }
+
+    private void setLostCarSituationFlag(){
+        if(!dialog_tv_LastCarLocation.getText().equals("")&&!dialog_tv_status.getText().equals("状态:正在更新")){
+            LostCarSituation = false;
         }
     }
 }

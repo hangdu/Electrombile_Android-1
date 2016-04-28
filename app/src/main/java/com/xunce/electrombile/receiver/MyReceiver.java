@@ -252,13 +252,22 @@ public class MyReceiver extends BroadcastReceiver {
             case ProtocolConstants.ERR_WAITING:
                 cmdGPSgetresult(protocol,code);
                 return;
+
             case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
                 if(((FragmentActivity) mContext).maptabFragment.LostCarSituation){
-                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationOffline();
-                    ((FragmentActivity) mContext).maptabFragment.LostCarSituation = false;
+                    TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+                    if(trackPoint!=null){
+                        Date date = trackPoint.time;
+                        CmdCenter mCenter = CmdCenter.getInstance();
+                        LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
+                        trackPoint = new TracksManager.TrackPoint(date,bdPoint);
+                    }
+                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationOffline(trackPoint);
+//                    ((FragmentActivity) mContext).maptabFragment.LostCarSituation = false;
                 }
                 break;
+
             case ProtocolConstants.ERR_INTERNAL:
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
                 break;
@@ -516,8 +525,6 @@ public class MyReceiver extends BroadcastReceiver {
                     ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationSuccess();
                 }
             }
-
-
         }
     }
 
