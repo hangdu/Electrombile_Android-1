@@ -372,6 +372,7 @@ public class TestddActivity extends Activity{
                                     public void done(List<AVObject> list, AVException e) {
                                         if (e == null) {
                                             //如果固件分段有问题的话  这个地方的size可能为0或者1
+                                            //这个地方有多次查询  是可能出现轨迹的顺序错乱的
                                             if (list.size() > 0) {
                                                 tracksManager.setOneTrack(list, trackCount);
                                                 int mile = (int) avObject.get("miles");
@@ -379,8 +380,9 @@ public class TestddActivity extends Activity{
                                             }
                                             trackCount++;
                                             if (trackCount == count) {
+                                                //在这里需要先对tracks进行顺序调整
+                                                tracksManager.orderTracks();
                                                 updateListView();
-//                                                watiDialog.dismiss();
                                                 tracksManager.setMilesMap(GroupPosition, localmilesList);
                                             }
                                         } else {

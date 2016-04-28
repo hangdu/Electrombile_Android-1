@@ -157,6 +157,30 @@ public class TracksManager implements Serializable{
         Log.d("setOneTrack","1");
     }
 
+    public void orderTracks(){
+        int size = tracks.size();
+        if(size == 1){
+            return;
+        }
+        ArrayList<TrackPoint> temp;
+        Date MinDate;
+        int MinPosition;
+        for(int i=0;i<size;i++){
+            MinDate = tracks.get(i).get(0).time;
+            MinPosition = i;
+            for(int j = i+1;j<size;j++){
+                if(tracks.get(j).get(0).time.before(MinDate)){
+                    MinPosition = j;
+                }
+            }
+            if(MinPosition!=i){
+                temp = tracks.get(i);
+                tracks.set(i,tracks.get(MinPosition));
+                tracks.set(MinPosition,temp);
+            }
+        }
+    }
+
 
     public static class TrackPoint implements Serializable{
         public Date time;
