@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eeeeee"
@@ -8,69 +9,50 @@
         android:id="@+id/ll_button"
         layout="@layout/my_layout_title" />
 
-    <LinearLayout
+    <com.xunce.electrombile.view.TextViewDrawableSize
         android:id="@+id/rl_1"
-        style="@style/clickableLayout_settingFragment1"
-        android:layout_marginTop="6.67dp">
+        android:layout_marginTop="6.67dp"
+        android:background="@drawable/layout_selector"
+        android:layout_width="match_parent"
+        android:layout_height="66.67dp"
+        android:drawableLeft="@drawable/iv_login_act"
+        android:drawablePadding="20dp"
+        app:compoundDrawableHeight="35dp"
+        app:compoundDrawableWidth="35dp"
+        android:paddingLeft="10dp"
+        android:gravity="center_vertical"
+        android:text="车辆管理"/>
 
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/iv_login_act"/>
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="车辆管理"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-
-
-
-    <LinearLayout
+    <com.xunce.electrombile.view.TextViewDrawableSize
+        style="@style/clickableLayout_settingFragment2"
         android:id="@+id/layout_person_center"
+        android:drawableLeft="@drawable/person"
+        app:compoundDrawableHeight="35dp"
+        app:compoundDrawableWidth="35dp"
+        android:text="车主信息"/>
+
+
+    <com.xunce.electrombile.view.TextViewDrawableSize
         style="@style/clickableLayout_settingFragment2"
-        android:layout_marginTop="10dp">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/person"/>
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="车主信息"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layout_map_offline"
-        style="@style/clickableLayout_settingFragment2"
-        android:layout_marginTop="6.67dp">
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/mapdownload"/>
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="地图下载"
-            android:textColor="@color/black"/>
-    </LinearLayout>
+        android:drawableLeft="@drawable/mapdownload"
+        app:compoundDrawableHeight="35dp"
+        app:compoundDrawableWidth="35dp"
+        android:text="地图下载"/>
 
     <LinearLayout
         android:id="@+id/layout_autolock"
         style="@style/clickableLayout_settingFragment2"
         android:layout_marginTop="6.67dp">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/autolock" />
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="自动落锁"
-            android:textColor="@color/black" />
+        <com.xunce.electrombile.view.TextViewDrawableSize
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:drawableLeft="@drawable/autolock"
+            app:compoundDrawableHeight="35dp"
+            app:compoundDrawableWidth="35dp"
+            android:drawablePadding="20dp"
+            android:gravity="center_vertical"
+            android:text="自动落锁"/>
 
         <TextView
             android:id="@+id/tv_autolockstatus"
@@ -83,37 +65,21 @@
             android:textSize="12sp"/>
     </LinearLayout>
 
-    <LinearLayout
+    <com.xunce.electrombile.view.TextViewDrawableSize
+        style="@style/clickableLayout_settingFragment2"
         android:id="@+id/layout_help"
+        android:drawableLeft="@drawable/help"
+        app:compoundDrawableHeight="35dp"
+        app:compoundDrawableWidth="35dp"
+        android:text="使用帮助"/>
+
+    <com.xunce.electrombile.view.TextViewDrawableSize
         style="@style/clickableLayout_settingFragment2"
-        android:layout_marginTop="6.67dp">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/help"/>
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="使用帮助"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layout_about"
-        style="@style/clickableLayout_settingFragment2"
-        android:layout_marginTop="6.67dp">
-
-        <ImageView
-            style="@style/settings_fragment_iv"
-            android:src="@drawable/setting_tel"/>
-
-        <TextView
-            style="@style/clickableLayoutTextview1"
-            android:layout_gravity="center_vertical"
-            android:text="联系我们"
-            android:textColor="@color/black"/>
-    </LinearLayout>
+        android:drawableLeft="@drawable/setting_tel"
+        app:compoundDrawableHeight="35dp"
+        app:compoundDrawableWidth="35dp"
+        android:text="联系我们"/>
 
     <Button
         android:id="@+id/btn_logout"
