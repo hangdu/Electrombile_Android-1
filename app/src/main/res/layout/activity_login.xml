@@ -23,6 +23,7 @@
             android:layout_height="18.67dp"
             android:src="@drawable/img_person_white"/>
         <com.xunce.electrombile.view.EditTextWithDel
+            android:layout_marginLeft="7dp"
             android:id="@+id/etName"
             android:layout_toRightOf="@+id/img_phoneperson"
             android:layout_width="172.67dp"
@@ -52,6 +53,7 @@
             android:layout_height="18.67dp"
             android:src="@drawable/img_pass_white"/>
         <com.xunce.electrombile.view.EditTextWithDel
+            android:layout_marginLeft="7dp"
             android:id="@+id/etPsw"
             android:layout_toRightOf="@+id/img_pass"
             android:layout_width="172.67dp"

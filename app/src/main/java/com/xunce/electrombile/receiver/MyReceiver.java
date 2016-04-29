@@ -139,6 +139,7 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void onNotifyArrived(Protocol protocol){
+        MyLog.d("onNotifyArrived","start");
         int notify = protocol.getNotify();
         switch (notify){
             //上报的自动落锁状态
@@ -151,8 +152,11 @@ public class MyReceiver extends BroadcastReceiver {
                     String date_str = sdfWithSecond.format(date);
                     ToastUtils.showShort(mContext, date_str + " 自动落锁成功");
 
-                    //改变小安宝开关的样式  现在为开启状态
+                    MyLog.d("onNotifyArrived", "openStateAlarmBtn");
+                    //改变小安宝开关的样式  现在为开启状态  这个函数没有改变开关样式 为什么啊
+                    ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
                     ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
+                    ((FragmentActivity) mContext).switchFragment.showNotification("自动落锁成功");
                 }
                 break;
 
