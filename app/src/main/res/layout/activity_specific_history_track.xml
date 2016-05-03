@@ -105,6 +105,6 @@
             android:layout_marginLeft="26.67dp"
             android:layout_width="35.33dp"
             android:layout_height="34.33dp"
-            android:background="@drawable/btn_speed"/>
+            android:background="@drawable/img_speed1"/>
     </RelativeLayout>
 </RelativeLayout>

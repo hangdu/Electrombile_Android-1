@@ -138,30 +138,21 @@ public class BitmapUtils {
 
 	public static Bitmap compressImageFromFile(String IMEI) {
 		//先要判断一下这个文件里的内容是否为空
-		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
-		BitmapFactory.Options newOpts = new BitmapFactory.Options();
-		newOpts.inJustDecodeBounds = true;//只读边,不读内容
-		BitmapFactory.decodeFile(srcPath, newOpts);
+		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
+		File f = new File(srcPath);
 
-		int w = newOpts.outWidth;
-		int h = newOpts.outHeight;
-		//这个地方怎么适配呢   我现在用的直接是px为单位的
-		float hh = 100f;
-		float ww = 100f;
-		int be = 1;
-		if (w > h && w > ww) {
-			be = (int) (newOpts.outWidth / ww);
-		} else if (w < h && h > hh) {
-			be = (int) (newOpts.outHeight / hh);
+		String srcPath1 = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+//		File f1 = new File(srcPath1);
+
+		if(f.exists()){
+			BitmapFactory.Options newOpts = new BitmapFactory.Options();
+			newOpts.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(srcPath,newOpts);
 		}
-		if (be <= 0)
-			be = 1;
-		newOpts.inSampleSize = be;//设置采样率
-		newOpts.inPreferredConfig = Bitmap.Config.ARGB_8888;//该模式是默认的,可不设
-		newOpts.inPurgeable = true;// 同时设置才会有效
-		newOpts.inInputShareable = true;//。当系统内存不够时候图片自动被回收
-
-		newOpts.inJustDecodeBounds = false;
-		return BitmapFactory.decodeFile(srcPath,newOpts);
+		else{
+			BitmapFactory.Options newOpts = new BitmapFactory.Options();
+			newOpts.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(srcPath1,newOpts);
+		}
 	}
 }

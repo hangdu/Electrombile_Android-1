@@ -4,11 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1dcf96">
+    android:background="@drawable/rect_dialog">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#ffffff">
+        android:background="@drawable/rect_dialog_title">
 
         <Button
             android:id="@+id/btn_cancel"
@@ -40,14 +40,35 @@
         android:text="车辆名称"/>
 
     <TextView
-        android:id="@+id/dialog_tv_LastCarLocation"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="17dp"
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
         android:textSize="16sp"
-        android:text="最后一次定位地点"/>
+        android:text="最后一次定位地点:"/>
+
+    <TextView
+        android:id="@+id/dialog_tv_LastCarLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="14sp" />
+
+
+
+    <TextView
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="最后一次定位时间:"/>
 
     <TextView
         android:id="@+id/dialog_tv_LastLocateTime"
@@ -56,18 +77,18 @@
         android:paddingLeft="17dp"
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="最后一次定位时间"/>
+        android:textSize="14sp" />
 
     <TextView
+        android:layout_marginTop="12dp"
         android:id="@+id/dialog_tv_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="17dp"
         android:paddingRight="17dp"
         android:textColor="#afe9d2"
-        android:textSize="16sp"
-        android:text="状态"/>
+        android:textSize="20sp"
+        android:text="状态:正在更新"/>
 
 
     <Button

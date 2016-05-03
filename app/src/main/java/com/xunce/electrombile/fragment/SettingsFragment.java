@@ -59,27 +59,21 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        log.info("onCreateView-start");
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.settings_fragment, container, false);
             initView(rootView);
         }
-//        log.info("onCreateView-finish");
         return rootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        log.info("onViewCreated-start");
         super.onViewCreated(view, savedInstanceState);
-//        log.info("onViewCreated-finish");
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-//        log.info("onActivityCreated-start");
         super.onActivityCreated(savedInstanceState);
-//        log.info("onActivityCreated-finish");
     }
 
     @Override
@@ -255,6 +249,7 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
                 //关闭mqttclient
                 mqttConnectManager.MqttDisconnect();
+//                mqttConnectManager.removeConnectionInDatabase();
 
                 intent = new Intent(m_context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

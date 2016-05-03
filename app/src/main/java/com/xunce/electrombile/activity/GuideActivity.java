@@ -77,9 +77,9 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
     public void onPageSelected(int position) {
         for(int i=0;i<ids.length;i++){
             if(position==i){
-                dots[i].setImageResource(R.drawable.guide_point_selected);
+                dots[i].setImageResource(R.drawable.guide_point_selected1);
             }else{
-                dots[i].setImageResource(R.drawable.guide_point);
+                dots[i].setImageResource(R.drawable.guide_point1);
             }
         }
     }

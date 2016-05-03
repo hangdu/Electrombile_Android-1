@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avos.avoscloud.LogUtil;
 import com.baidu.mapapi.SDKInitializer;
@@ -56,12 +59,16 @@ import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
     //保存数据所需要的最短距离
-    private static final double MIN_DISTANCE = 100;
-//    private static final int DELAY = 1000;
+//    private static final double MIN_DISTANCE = 100;
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private static final int SHOWGPSDIALOG = 0;
+    //    private static final int DELAY = 1000;
     public static MapView mMapView;
     private static String TAG = "MaptabFragment:";
     public TrackPoint currentTrack;
@@ -75,7 +82,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private View markerView;
 
     //dialogs
-    private Dialog networkDialog;
+//    private Dialog networkDialog;
     private Dialog didDialog;
     private BaiduMap mBaiduMap;
     //缓存布局
@@ -100,7 +107,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public String status = status_LocateCar;
 
-    public Boolean LostCarSituation = false;
+    public boolean LostCarSituation = false;
 
     private TextView dialog_tv_LastCarLocation;
     private TextView dialog_tv_LastLocateTime;
@@ -108,23 +115,37 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Button btn_LostCarnextstep;
     private String status_GPSornot;
     private TextView tv_GPSornot;
+    private Dialog findCarGuide2_dialog;
+    private Location currentLocation;
+    private boolean NetworkLocationListenerRemoved = false;//判断网络监听是否移除
+    private SimpleDateFormat sdfWithSecond;
 
 
     private Handler playHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.obj != null) {
-                TrackPoint trackPoint = (TrackPoint) msg.obj;
-                mInfoWindow = new InfoWindow(markerView, trackPoint.point, -100);
-                SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
-                if(LostCarSituation){
-                    dialog_tv_LastLocateTime.setText("最后一次定位时间:"+sdfWithSecond.format(trackPoint.time));
-                }
-                mBaiduMap.showInfoWindow(mInfoWindow);
-                //设置车辆位置  填到textview中
-                mSearch.reverseGeoCode(new ReverseGeoCodeOption()
-                        .location(trackPoint.point));
+            switch (msg.what){
+                //更新位置
+                case 0:
+                    if (msg.obj != null) {
+                        TrackPoint trackPoint = (TrackPoint) msg.obj;
+                        mInfoWindow = new InfoWindow(markerView, trackPoint.point, -100);
+                        tvUpdateTime.setText(sdfWithSecond.format(trackPoint.time));
+                        if(LostCarSituation){
+                            dialog_tv_LastLocateTime.setText(sdfWithSecond.format(trackPoint.time));
+                        }
+                        mBaiduMap.showInfoWindow(mInfoWindow);
+                        //设置车辆位置  填到textview中
+                        mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                                .location(trackPoint.point));
+                    }
+                    break;
+                //设备在室内
+                case 1:
+                    dialog_tv_status.setText("设备在室内");
+                    status_GPSornot = "设备在室内";
+                    setLostCarSituationFlag();
+                    break;
             }
         }
     };
@@ -137,8 +158,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //注意该方法要再setContentView方法之前实现
-        SDKInitializer.initialize(m_context);
         currentTrack = new TrackPoint(new Date(), 0, 0);
         LayoutInflater inflater = (LayoutInflater) m_context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -170,6 +189,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
+        sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
@@ -363,7 +383,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_back.setVisibility(View.INVISIBLE);
         ll_historyAndlocate.setVisibility(View.VISIBLE);
 
-
         HideInfowindow();
         setCarname();
     }
@@ -378,8 +397,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_back.setVisibility(View.VISIBLE);
         ll_historyAndlocate.setVisibility(View.INVISIBLE);
 
-
-        tv_FindModeCarName.setText("车辆名称:" + setManager.getIMEI());
+        tv_FindModeCarName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
         InitCarLocation();
         BitmapDescriptor bitmap = BitmapDescriptorFactory
                 .fromResource(R.drawable.marker_person);
@@ -443,6 +461,12 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
                     // Called when a new location is found by the network location provider.
+                    if(isGPSOpened(1)&&!NetworkLocationListenerRemoved){
+                        //去掉网络监听  开启gps监听
+                        locationManager.removeUpdates(locationListener);
+                        NetworkLocationListenerRemoved = true;
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+                    }
                     LatLng oldPoint = new LatLng(location.getLatitude(), location.getLongitude());
                     LatLng bdPoint = mCenter.convertPoint(oldPoint);
                     markerPerson.setPosition(bdPoint);
@@ -457,8 +481,54 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
             };
         }
 
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 2000, 1, locationListener);
+        isGPSOpened(SHOWGPSDIALOG);
+
+        String provider;
+        List<String> locationList = locationManager.getProviders(true);
+        if (locationList.contains(LocationManager.GPS_PROVIDER)) {
+            NetworkLocationListenerRemoved = true;
+            provider = LocationManager.GPS_PROVIDER;
+            locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
+            com.orhanobut.logger.Logger.d("GPS_PROVIDER 更新位置");
+        } else if (locationList.contains(LocationManager.NETWORK_PROVIDER)) {
+            NetworkLocationListenerRemoved = false;
+            provider = LocationManager.NETWORK_PROVIDER;
+            locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
+            com.orhanobut.logger.Logger.d("NETWORK_PROVIDER  更新位置");
+        } else {
+            Toast.makeText(m_context, "没有可用的定位服务", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //第一次调用
+    private boolean isGPSOpened(int type){
+        LocationManager locationManager
+                = (LocationManager) m_context.getSystemService(Context.LOCATION_SERVICE);
+        // 通过GPS卫星定位，定位级别可以精确到街（通过24颗卫星定位，在室外和空旷的地方定位准确、速度快）
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            if(type == SHOWGPSDIALOG){
+                //设置gps的dialog
+                Dialog GPSDialog = new AlertDialog.Builder(m_context).setMessage("GPS定位手机位置更加准确,请开启GPS!")
+                        .setTitle("请打开gps开关")
+                        .setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setNegativeButton("开启", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(myIntent);
+                            }
+                        }).create();
+                GPSDialog.show();
+            }
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private void ToMapFragmentUI(){
@@ -519,7 +589,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private void findCarGuide2(int dialog_width){
         final LayoutInflater inflater = (LayoutInflater) m_context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_findcar_guide2, null);
-        final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
+        findCarGuide2_dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
 
         btn_LostCarnextstep = (Button)view.findViewById(R.id.btn_nextstep);
         Button cancel = (Button) view.findViewById(R.id.btn_cancel);
@@ -529,8 +599,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         dialog_tv_LastLocateTime = (TextView)view.findViewById(R.id.dialog_tv_LastLocateTime);
         dialog_tv_status = (TextView)view.findViewById(R.id.dialog_tv_status);
 
-        dialog_tv_carName.setText("车辆名称:"+setManager.getCarName(setManager.getIMEI()));
-//        dialog_tv_LastCarLocation.setText(tv_CarPosition.getText());
+        dialog_tv_carName.setText("车辆名称:" + setManager.getCarName(setManager.getIMEI()));
 
         if ((m_context).mac != null ){
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
@@ -539,7 +608,8 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         btn_LostCarnextstep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                findCarGuide2_dialog.dismiss();
+                findCarGuide2_dialog = null;
                 ToFindCarModeUI();
             }
         });
@@ -547,12 +617,13 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                findCarGuide2_dialog.dismiss();
+                findCarGuide2_dialog = null;
             }
         });
 
-        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
-        dialog.show();
+        findCarGuide2_dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+        findCarGuide2_dialog.show();
     }
 
 
@@ -578,6 +649,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         MarkerLocationCenter(track.point);
 
         Message msg = Message.obtain();
+        msg.what = 0;
         msg.obj = track;
         playHandler.sendMessage(msg);
         refreshTrack(track);
@@ -645,30 +717,43 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_FindModeCarPosition.setText("车辆位置:" + reverseGeoCodeResult);
 
         if(LostCarSituation){
-            dialog_tv_LastCarLocation.setText("最后一次定位地点:" + reverseGeoCodeResult);
-            LostCarSituation = false;
+            dialog_tv_LastCarLocation.setText(reverseGeoCodeResult);
+            setLostCarSituationFlag();
         }
-    }
-
-    public void caseLostCarSituationOffline(){
-        dialog_tv_status.setText("设备不在线");
-        btn_LostCarnextstep.setVisibility(View.INVISIBLE);
-    }
-
-    public void caseLostCarSituationWaiting(){
-        dialog_tv_status.setText("设备在室内");
-        status_GPSornot = "设备在室内";
-    }
-
-    public void caseLostCarSituationSuccess(){
-        dialog_tv_status.setText("设备在室外,定位成功");
-        status_GPSornot = "设备在室外,定位成功";
     }
 
     @Override
     public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
 
     }
+
+    public void caseLostCarSituationOffline(TrackPoint trackPoint){
+        dialog_tv_status.setText("设备不在线");
+        btn_LostCarnextstep.setVisibility(View.INVISIBLE);
+
+        if(trackPoint!=null){
+            Date date = trackPoint.time;
+            String time = sdfWithSecond.format(date);
+            dialog_tv_LastLocateTime.setText(time);
+            mSearch.reverseGeoCode(new ReverseGeoCodeOption()
+                    .location(trackPoint.point));
+        }
+    }
+
+    public void caseLostCarSituationWaiting(){
+        Message msg = Message.obtain();
+        msg.what = 1;
+        playHandler.sendMessageDelayed(msg, 3000);
+    }
+
+    public void caseLostCarSituationSuccess(){
+        playHandler.removeMessages(1);
+        dialog_tv_status.setText("设备在室外,定位成功");
+        status_GPSornot = "设备在室外,定位成功";
+        setLostCarSituationFlag();
+    }
+
+
 
     class MyBroadcastReceiver extends BroadcastReceiver {
         //接收到广播会被自动调用
@@ -688,6 +773,35 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     status  = status_LocateCar;
                 }
             }
+            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
+                HideInfowindow();
+                setCarname();
+                InitCarLocation();
+
+                //如果是找车界面  需要切换到locateCar界面
+                if(status.equals(status_FindCar)){
+                    ToMapFragmentUI();
+                    status  = status_LocateCar;
+                }
+            }
+
+            else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
+                HideInfowindow();
+                setCarname();
+                InitCarLocation();
+
+                //如果是找车界面  需要切换到locateCar界面
+                if(status.equals(status_FindCar)){
+                    ToMapFragmentUI();
+                    status  = status_LocateCar;
+                }
+            }
+        }
+    }
+
+    private void setLostCarSituationFlag(){
+        if(!dialog_tv_LastCarLocation.getText().equals("")&&!dialog_tv_status.getText().equals("状态:正在更新")){
+            LostCarSituation = false;
         }
     }
 }

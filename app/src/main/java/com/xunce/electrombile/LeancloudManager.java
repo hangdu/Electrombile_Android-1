@@ -179,6 +179,7 @@ public class LeancloudManager {
                         settingManager.setIMEIlist(IMEIlist);
                         settingManager.setIMEI(IMEIlist.get(0));
 
+
                         //获取IMEIlist中每一个设备对应的头像
 
                         for (String IMEI : IMEIlist) {
@@ -214,8 +215,8 @@ public class LeancloudManager {
                         AVObject avObject = list.get(0);
 
                         try {
-                            AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.png",
-                                    Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png");
+                            AVFile avfile = AVFile.withAbsoluteLocalPath("crop_result.jpg",
+                                    Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.jpg");
                             avfile.saveInBackground();
                             avObject.put("Image", avfile);
                             avObject.saveInBackground(new SaveCallback() {
@@ -267,7 +268,7 @@ public class LeancloudManager {
                         //设备头像
                         if (avObject.get("Image") == null) {
                             //服务器上的头像数据为空
-                            String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+                            String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
                             File f = new File(fileName);
                             if(f.exists()){
                                 f.delete();
@@ -289,7 +290,7 @@ public class LeancloudManager {
                                         return;
                                     }
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    String fileName = Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.png";
+                                    String fileName = Environment.getExternalStorageDirectory() + "/" + IMEI + "crop_result.jpg";
                                     try {
                                         BitmapUtils.saveBitmapToFile(bitmap, fileName);
                                     } catch (IOException e1) {

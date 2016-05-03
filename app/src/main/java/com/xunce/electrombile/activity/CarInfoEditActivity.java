@@ -9,8 +9,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.*;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -33,48 +36,43 @@ import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.DeleteCallback;
 import com.avos.avoscloud.FindCallback;
-import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
-import com.xunce.electrombile.applicatoin.Historys;
-import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
-import com.xunce.electrombile.mqtt.Connection;
-import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
-
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.json.JSONArray;
-
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 public class CarInfoEditActivity extends Activity implements View.OnClickListener{
     private PopupWindow mpopupWindow;
-    TextView tv_CarIMEI;
-    RelativeLayout btn_DeleteDevice;
-    String IMEI;
+//    private TextView tv_CarIMEI;
+//    private RelativeLayout btn_DeleteDevice;
+    private String IMEI;
     private SettingManager setManager;
     private ProgressDialog progressDialog;
-    RelativeLayout btn_DeviceChange;
-    Boolean Flag_Maincar;
-    Boolean LastCar;
-    MqttConnectManager mqttConnectManager;
+    private RelativeLayout btn_DeviceChange;
+    private Boolean Flag_Maincar;
+    private Boolean LastCar;
+    private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
-    String NextCarIMEI;
+    private String NextCarIMEI;
     private List<String> IMEIlist;
     private int othercarListPosition;
-    private RelativeLayout RelativeLayout_changeCarPic;
     private TextView tv_CarName;
     private LeancloudManager leancloudManager;
     private TextView titleTextView;
+    private ImageView img_car;
+    private Uri imageUri;
+    private Bitmap bitmap;
 
+    public static final int TAKE_PHOTE=1;
+    public static final int CROP_PHOTO=2;
+    public static final int CHOOSE_PHOTO=3;
 
 
     private Handler mHandler = new Handler(){
@@ -116,9 +114,11 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
                     //删除设备头像    sharepreference中的部分信息:IMEI号码对应的绑定日期和车昵称
                     deleteCarInfo();
+                    setManager.removeKey(IMEI);
 
                     //关闭mqttclient
                     mqttConnectManager.MqttDisconnect();
+//                    mqttConnectManager.removeConnectionInDatabase();
 
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -140,35 +140,108 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         }
     }
 
-
-
     private void deleteCarInfo(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
         File f = new File(fileName);
         if(f.exists()){
             f.delete();
         }
-        setManager.removeKey(IMEI);
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.tv_pop_changeCarPic:
-//
-//                mpopupWindow.dismiss();
-//                break;
-//            case R.id.tv_pop_ViewPic:
-//
-//                mpopupWindow.dismiss();
-//                break;
-//            case R.id.tv_pop_cancel:
-//
-//                mpopupWindow.dismiss();
-//                break;
+            case R.id.tv_pop_FromGallery:
+                File outputImage = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage.exists()){
+                        outputImage.delete();
+                    }
+                    outputImage.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage);
+                Intent intent = new Intent("android.intent.action.PICK");
+                intent.setType("image/*");
+                startActivityForResult(intent,CHOOSE_PHOTO);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_camera:
+                File outputImage1 = new File(Environment.getExternalStorageDirectory(),"output_image.jpg");
+                try{
+                    if(outputImage1.exists()){
+                        outputImage1.delete();
+                    }
+                    outputImage1.createNewFile();
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+                imageUri = Uri.fromFile(outputImage1);
+                Intent intent1 = new Intent("android.media.action.IMAGE_CAPTURE");
+                intent1.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent1,TAKE_PHOTE);
+                mpopupWindow.dismiss();
+                break;
+
+            case R.id.tv_pop_cancel:
+                mpopupWindow.dismiss();
+                break;
 
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case TAKE_PHOTE:
+                if(resultCode == Activity.RESULT_OK) {
+                    Intent intent = new Intent(this,CropActivity.class);
+                    intent.setData(imageUri);
+                    intent.putExtra("IMEI",IMEI);
+                    startActivityForResult(intent, CROP_PHOTO);
+                }
+                break;
+
+            case CHOOSE_PHOTO:
+                if(resultCode == Activity.RESULT_OK) {
+                    imageUri = data.getData();
+                    Intent intent = new Intent(this,CropActivity.class);
+                    intent.setData(imageUri);
+                    intent.putExtra("IMEI", IMEI);
+                    startActivityForResult(intent, CROP_PHOTO);
+                }
+                break;
+
+            case CROP_PHOTO:
+                if(resultCode == Activity.RESULT_OK) {
+                    img_car.setImageBitmap(null);
+                    bitmapRelease();
+                    bitmap = BitmapUtils.compressImageFromFile(IMEI);
+                    if (bitmap != null) {
+                        img_car.setImageBitmap(bitmap);
+                        //发送广播 switchfragment的照片啊
+                        Intent intent = new Intent("com.app.bc.test");
+                        intent.putExtra("KIND", "CHANGEMAINPIC");
+                        sendBroadcast(intent);//发送广播事件
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void bitmapRelease(){
+        if(bitmap != null && !bitmap.isRecycled()){
+            // 回收并且置为null
+            bitmap.recycle();
+            bitmap = null;
+            System.gc();
         }
     }
 
@@ -206,13 +279,13 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         setManager = SettingManager.getInstance();
         leancloudManager = LeancloudManager.getInstance();
 
-        ImageView img_car = (ImageView)findViewById(R.id.img_car);
+        img_car = (ImageView)findViewById(R.id.img_car);
         Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
         if(bitmap!=null){
             img_car.setImageBitmap(bitmap);
         }
 
-        tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
+        TextView tv_CarIMEI = (TextView)findViewById(R.id.tv_CarIMEI);
         tv_CarIMEI.setText("设备号:"+IMEI);
 
         tv_CarName = (TextView)findViewById(R.id.tv_CarName);
@@ -228,10 +301,14 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("正在设置,请稍后");
 
-        btn_DeleteDevice = (RelativeLayout)findViewById(R.id.relativelayout_DeviceUnbind);
+        RelativeLayout btn_DeleteDevice = (RelativeLayout)findViewById(R.id.relativelayout_DeviceUnbind);
         btn_DeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarInfoEditActivity.this)){
+                    ToastUtils.showShort(CarInfoEditActivity.this, "请检查网络连接,该操作无法完成");
+                    return;
+                }
                 progressDialog.show();
                 releaseBinding();
             }
@@ -242,8 +319,11 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         btn_DeviceChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarInfoEditActivity.this)){
+                    ToastUtils.showShort(CarInfoEditActivity.this, "请检查网络连接,切换无法完成");
+                    return;
+                }
                 DeviceChange();
-
             }
         });
 
@@ -256,7 +336,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             }
         });
 
-        RelativeLayout_changeCarPic = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarPic);
+        RelativeLayout RelativeLayout_changeCarPic = (RelativeLayout)findViewById(R.id.RelativeLayout_changeCarPic);
         RelativeLayout_changeCarPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -265,7 +345,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         });
 
         JudgeMainCarOrNot();
-        getIMEIlist();
+        IMEIlist = setManager.getIMEIlist();
     }
     
     private void changeCarNickName(){
@@ -291,8 +371,6 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     dialog.dismiss();
                     //上传服务器
                     leancloudManager.uploadCarName(IMEI, nickname);
-                    //发送一个广播
-
                 }
             }
         });
@@ -344,6 +422,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         //删除头像文件
         deleteCarInfo();
+        setManager.removeKey(IMEI);
 
         Intent intent = new Intent();
         intent.putExtra("string_key","设备解绑");
@@ -352,40 +431,32 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         finish();
     }
 
-    public void getIMEIlist(){
-        IMEIlist = setManager.getIMEIlist();
-    }
-
-
     //设备切换
     private void DeviceChange(){
         //在这里就解订阅原来的设备号,并且订阅新的设备号,然后查询小安宝的初始状态
         mqttConnectManager = MqttConnectManager.getInstance();
-        mCenter = CmdCenter.getInstance();
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
             mqttConnectManager.unSubscribe(setManager.getIMEI());
             setManager.setIMEI(IMEI);
             mqttConnectManager.subscribe(IMEI);
+            mCenter = CmdCenter.getInstance();
             mqttConnectManager.sendMessage(mCenter.getInitialStatus(), IMEI);
-            ToastUtils.showShort(CarInfoEditActivity.this,"切换成功");
+            //更新IMEIlist
+            String IMEI_previous = IMEIlist.get(0);
+            IMEIlist.set(0,IMEI);
+            IMEIlist.set(othercarListPosition+1,IMEI_previous);
+            setManager.setIMEIlist(IMEIlist);
+
+            Intent intent = new Intent();
+            intent.putExtra("string_key", "设备切换");
+            intent.putExtra("boolean_key", Flag_Maincar);
+            setResult(RESULT_OK, intent);
+            CarInfoEditActivity.this.finish();
         }
         else{
             ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");
         }
-
-        //更新IMEIlist
-        String IMEI_previous = IMEIlist.get(0);
-        IMEIlist.set(0,IMEI);
-        IMEIlist.set(othercarListPosition+1,IMEI_previous);
-        setManager.setIMEIlist(IMEIlist);
-
-        Intent intent = new Intent();
-        intent.putExtra("string_key","设备切换");
-        intent.putExtra("boolean_key", Flag_Maincar);
-        setResult(RESULT_OK, intent);
-        //解除订阅
-        CarInfoEditActivity.this.finish();
     }
 
     //在Binding数据表里删除一条记录
@@ -522,39 +593,42 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
         }
     }
 
-
     private void showPopMenu() {
-//        View view = View.inflate(getApplicationContext(), R.layout.popwindow_changecarpic, null);
-//        TextView tv_pop_changeCarPic = (TextView) view.findViewById(R.id.tv_pop_changeCarPic);
-//        TextView tv_pop_ViewPic = (TextView) view.findViewById(R.id.tv_pop_ViewPic);
-//        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
-//        tv_pop_changeCarPic.setOnClickListener(CarInfoEditActivity.this);
-//        tv_pop_ViewPic.setOnClickListener(CarInfoEditActivity.this);
-//        tv_pop_cancel.setOnClickListener(this);
-//
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mpopupWindow.dismiss();
-//            }
-//        });
-//
-//        view.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in));
-//        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
-//        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.push_bottom_in));
-//
-//        if(mpopupWindow==null){
-//            mpopupWindow = new PopupWindow(this);
-//            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-//            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
-//            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
-//
-//            mpopupWindow.setFocusable(true);
-//            mpopupWindow.setOutsideTouchable(true);
-//        }
-//
-//        mpopupWindow.setContentView(view);
-//        mpopupWindow.showAtLocation(RelativeLayout_changeCarPic, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
-//        mpopupWindow.update();
+        View view = View.inflate(this, R.layout.popwindow_changecarpic, null);
+        TextView tv_pop_FromGallery = (TextView) view.findViewById(R.id.tv_pop_FromGallery);
+        TextView tv_pop_camera = (TextView) view.findViewById(R.id.tv_pop_camera);
+        TextView tv_pop_cancel = (TextView) view.findViewById(R.id.tv_pop_cancel);
+        tv_pop_FromGallery.setOnClickListener(this);
+        tv_pop_camera.setOnClickListener(this);
+        tv_pop_cancel.setOnClickListener(this);
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mpopupWindow.dismiss();
+            }
+        });
+
+        view.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
+        LinearLayout ll_popup_carpic = (LinearLayout) view.findViewById(R.id.ll_popup_carpic);
+        ll_popup_carpic.startAnimation(AnimationUtils.loadAnimation(this, R.anim.push_bottom_in));
+
+        if(mpopupWindow==null){
+            mpopupWindow = new PopupWindow(this);
+            mpopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+            mpopupWindow.setFocusable(true);
+            mpopupWindow.setOutsideTouchable(true);
+
+            //背景设置为半透明
+            ColorDrawable dw = new ColorDrawable(0xb0000000);
+            mpopupWindow.setBackgroundDrawable(dw);
+        }
+
+        mpopupWindow.setContentView(view);
+        mpopupWindow.showAtLocation(img_car, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL, 0, 0);
+        mpopupWindow.update();
     }
 }

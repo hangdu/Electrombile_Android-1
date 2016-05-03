@@ -25,20 +25,17 @@ import java.util.Set;
  * Created by lybvinci on 16/1/22.
  */
 public class DBManage {
-    SQLiteDatabase sqldb;
-    SQLiteDatabase sqldb2;
+    private SQLiteDatabase sqldb;
+    private SQLiteDatabase sqldb2;
     private MyDatabaseHelper dbHelper;
-    Context mcontext;
-    ContentValues cv;
+    private Context mcontext;
+    private ContentValues cv;
     public List<DateTrack> dateTrackList;
-    public List<DateTrackSecond> dateTrackSecondList;
     public ArrayList<ArrayList<TracksManager.TrackPoint>>  trackList;
-    String IMEI;
 
 
     public DBManage(Context context,String IMEI){
         mcontext = context;
-        this.IMEI = IMEI;
         String TableName = "IMEI_"+IMEI+".db";
         dbHelper = new MyDatabaseHelper(mcontext,TableName,null,5);
         sqldb = dbHelper.getWritableDatabase();
@@ -54,33 +51,29 @@ public class DBManage {
         cv = new ContentValues();
     }
 
-    public void insert(long timestamp,int trackNumber,String StartPoint,String EndPoint,String time){
+    public void insert(long timestamp,int trackNumber,String StartPoint,String EndPoint,String time,int OneTrackMile){
         cv.put("timestamp",timestamp);
         cv.put("trackNumber",trackNumber);
         cv.put("StartPoint",StartPoint);
         cv.put("EndPoint",EndPoint);
         cv.put("time",time);
+        cv.put("OneTrackMile",OneTrackMile);
+
         long res = sqldb.insert("datetrack", null, cv);
         if(-1 == res){
             Toast.makeText(mcontext, "insert失败", Toast.LENGTH_SHORT).show();
-
         }
-//        else{
-//            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
+    }
+
+//    public void delete(){
+//        int res = sqldb.delete("datetrack", null, null);
+//        if(0 == res){
+//            Toast.makeText(mcontext,"删除失败",Toast.LENGTH_SHORT).show();
 //        }
-    }
-
-
-
-    public void delete(){
-        int res = sqldb.delete("datetrack", null, null);
-        if(0 == res){
-            Toast.makeText(mcontext,"删除失败",Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Toast.makeText(mcontext,"成功删除了"+res+"行的数据",Toast.LENGTH_SHORT).show();
-        }
-    }
+//        else{
+//            Toast.makeText(mcontext,"成功删除了"+res+"行的数据",Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
     //方法重载
     public void delete(String filter){
@@ -112,6 +105,8 @@ public class DBManage {
                 dateTrack.StartPoint = mCursor.getString(mCursor.getColumnIndex("StartPoint"));
                 dateTrack.EndPoint = mCursor.getString(mCursor.getColumnIndex("EndPoint"));
                 dateTrack.time = mCursor.getString(mCursor.getColumnIndex("time"));
+                dateTrack.miles = mCursor.getInt(mCursor.getColumnIndex("OneTrackMile"));
+
                 dateTrackList.add(dateTrack);
             } while (mCursor.moveToNext());
         }
@@ -122,44 +117,18 @@ public class DBManage {
         return resultCount;
     }
 
-//    public void RefreshDateTrack(){
-//        //删除部分数据
-//        //找到距离现在30天之前的日期作为比较的参考物
-//        Calendar c = Calendar.getInstance();
-//        c.add(Calendar.DAY_OF_MONTH, -30);
-////        Date ComparedDate = c.getTime();
-//
-//        //转换成秒
-//        long ComeparedTimeStamp = c.getTime().getTime()/1000;
-//        String filter = "timestamp<"+"'"+ComeparedTimeStamp+"'";
-//        delete(filter);
-//    }
 
-
-    public void insertSecondTable(int trackNumber,long timestamp,double longitude,double latitude){
+    public void insertSecondTable(int trackNumber,long timestamp,double longitude,double latitude,int speed){
         cv.put("trackNumber",trackNumber);
         cv.put("timestamp", timestamp);
         cv.put("longitude",longitude);
         cv.put("latitude",latitude);
+        cv.put("speed",speed);
         long res = sqldb2.insert("datetracksecond", null, cv);
         if(-1 == res){
             Toast.makeText(mcontext, "insert失败", Toast.LENGTH_SHORT).show();
-
         }
-//        else{
-//            Toast.makeText(mcontext,"insert成功",Toast.LENGTH_SHORT).show();
-//        }
     }
-
-//    public void deleteSecondTable(){
-//        int res = sqldb2.delete("datetracksecond", null, null);
-//        if(0 == res){
-//            Toast.makeText(mcontext,"删除失败",Toast.LENGTH_SHORT).show();
-//        }
-//        else{
-//            Toast.makeText(mcontext,"成功删除了"+res+"行的数据",Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     public void querySecondTable(int TotalTrackNumber){
         //有几条轨迹就按照几条轨迹装载好
@@ -180,8 +149,9 @@ public class DBManage {
                     long timestamp = mCursor.getLong(mCursor.getColumnIndex("timestamp"));
                     double longitude = mCursor.getDouble(mCursor.getColumnIndex("longitude"));
                     double latitude = mCursor.getDouble(mCursor.getColumnIndex("latitude"));
+                    int speed = mCursor.getInt(mCursor.getColumnIndex("speed"));
 
-                    trackPoint = new TracksManager.TrackPoint(new Date(1000*timestamp),latitude,longitude);
+                    trackPoint = new TracksManager.TrackPoint(new Date(1000*timestamp),latitude,longitude,speed);
                     track.add(trackPoint);
                 } while (mCursor.moveToNext());
             }
@@ -202,59 +172,32 @@ public class DBManage {
         }
     }
 
-
-//    //String日期转换成Date数据类型
-//    private Date StringtoDate(String StringDate){
-//        SimpleDateFormat fmt =new SimpleDateFormat("yyyy年MM月dd日");
-//        Date date = new Date();
-//        try{
-//            date = fmt.parse(StringDate);
-//        }catch(ParseException e){
-//            Toast.makeText(mcontext,"日期解析失败",Toast.LENGTH_SHORT);
-//        }
-//        return date;
-//    }
-
-    //在一级数据库里把所有的时间戳都记录下来  转换成日期  装到一个list中去
-//    public List<String> getAllDateInDateTrackTable(){
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-//        List<String> dateList = new ArrayList<>();
-//
-////        String TableName = "IMEI_"+IMEI+".db";
-//        Cursor mCursor = sqldb.query(true, "datetrack", new String[]{"timestamp"}, null, null, "timestamp", null, null, null);
-//        if (mCursor.moveToFirst()) {
-//            do {
-//                //点的集合  形成的一条轨迹
-//                long timestamp = mCursor.getLong(mCursor.getColumnIndex("timestamp"));
-//                Date date = new Date(1000*timestamp);
-//                String date_string = sdf.format(date);
-//                dateList.add(date_string);
-//            } while (mCursor.moveToNext());
-//        }
-//        if (mCursor != null && !mCursor.isClosed()) {
-//            mCursor.close();
-//        }
-//        return dateList;
-//    }
-
     //删除30天之外的数据
     static public void updateDatabase(){
-        SettingManager settingManager = SettingManager.getInstance();
-        long lastUpdateTime = settingManager.getUpdateDatabaseTime();
-        if(lastUpdateTime == 0){
-            //清理  表示第一次调用这个函数
-            sub_updateDatabase();
-            settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                //doing some work
+                SettingManager settingManager = SettingManager.getInstance();
+                long lastUpdateTime = settingManager.getUpdateDatabaseTime();
+                if(lastUpdateTime == 0){
+                    //清理  表示第一次调用这个函数
+                    sub_updateDatabase();
+                    settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                }
 
-        else{
-            long timestamp_now = System.currentTimeMillis();
-            long compare = 720 * 3600 * 1000;
-            if(timestamp_now-lastUpdateTime>compare){
-                sub_updateDatabase();
-                settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                else{
+                    long timestamp_now = System.currentTimeMillis();
+                    long compare = 720 * 3600 * 1000;
+                    if(timestamp_now-lastUpdateTime>compare){
+                        sub_updateDatabase();
+                        settingManager.setUpdateDatabaseTime(System.currentTimeMillis());
+                    }
+                }
             }
-        }
+        };
+        new Thread(runnable).start();
+
     }
 
     static public void sub_updateDatabase(){

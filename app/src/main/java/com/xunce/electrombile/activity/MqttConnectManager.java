@@ -1,6 +1,8 @@
 package com.xunce.electrombile.activity;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.avos.avoscloud.LogUtil;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.applicatoin.App;
@@ -57,6 +59,7 @@ public class MqttConnectManager {
                 mcontext,
                 false);
         ServiceConstants.handler = connection.handle();
+        Log.d("initMqtt",ServiceConstants.handler);
         mcp = new MqttConnectOptions();
         /*
          * true :那么在客户机建立连接时，将除去客户机的任何旧预订。当客户机断开连接时，会除去客户机在会话期间创建的任何新预订。
@@ -108,11 +111,12 @@ public class MqttConnectManager {
 
     public void getMqttConnection(){
         try {
+            MyLog.d("getMqttConnection", "1");
             mac.connect(mcp, this, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     onMqttConnectListener.MqttConnectSuccess();
-                    MyLog.d("getMqttConnection","MqttConnectSuccess 连接服务器成功");
+                    MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器成功");
                 }
 
                 @Override
@@ -121,11 +125,17 @@ public class MqttConnectManager {
                     MyLog.d("getMqttConnection", "MqttConnectSuccess 连接服务器失败");
                 }
             });
-            Connections.getInstance(mcontext).addConnection(connection);
+//            MyLog.d("getMqttConnection", "2");
+//            Connections.getInstance(mcontext).addConnection(connection);
+//            MyLog.d("getMqttConnection", "3");
         } catch (MqttException e1) {
             e1.printStackTrace();
         }
     }
+
+//    public void removeConnectionInDatabase(){
+//        Connections.getInstance(mcontext).removeConnection(connection);
+//    }
 
     public void MqttDisconnect(){
         if(returnMqttStatus()){
@@ -201,7 +211,7 @@ public class MqttConnectManager {
 
         String[] topic = {topic1, topic2, topic3, topic4, topic5};
         int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
-                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE};
+                ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,ServiceConstants.MQTT_QUALITY_OF_SERVICE};
         try {
             mac.subscribe(topic, qos);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);

@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -116,7 +117,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private TextView tv_Safeday;
     private TextView tv_battery;
     private TextView tv_distance;
-    private TextView tv_angleRank;
+    private ImageView img_angle1;
+    private ImageView img_angle2;
+    private ImageView img_angle3;
+    private ImageView img_angle4;
+    private ImageView img_angle5;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -252,9 +257,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         com.orhanobut.logger.Logger.i("SwitchFragment", "onDestroyView");
         super.onDestroyView();
         ((ViewGroup) rootView.getParent()).removeView(rootView);
-
-//        tv_battery.setText("test");
-//        Log.d("test","test");
     }
 
     @Override
@@ -315,7 +317,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ll_Power.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_context.sendMessage(m_context,mCenter.getBatteryInfo(),setManager.getIMEI());
+                m_context.sendMessage(m_context, mCenter.getBatteryInfo(), setManager.getIMEI());
             }
         });
 
@@ -355,7 +357,11 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
         tv_distance = (TextView)v.findViewById(R.id.tv_distance);
-        tv_angleRank = (TextView)v.findViewById(R.id.tv_angleRank);
+        img_angle1 = (ImageView)v.findViewById(R.id.angle1);
+        img_angle2 = (ImageView)v.findViewById(R.id.angle2);
+        img_angle3 = (ImageView)v.findViewById(R.id.angle3);
+        img_angle4 = (ImageView)v.findViewById(R.id.angle4);
+        img_angle5 = (ImageView)v.findViewById(R.id.angle5);
     }
 
     private void initEvent() {
@@ -370,6 +376,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 if(resultCode == Activity.RESULT_OK) {
                     Intent intent = new Intent(m_context,CropActivity.class);
                     intent.setData(imageUri);
+                    intent.putExtra("IMEI", setManager.getIMEI());
                     startActivityForResult(intent, CROP_PHOTO);
                 }
                 break;
@@ -379,13 +386,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     imageUri = data.getData();
                     Intent intent = new Intent(m_context,CropActivity.class);
                     intent.setData(imageUri);
+                    intent.putExtra("IMEI",setManager.getIMEI());
                     startActivityForResult(intent, CROP_PHOTO);
                 }
                 break;
 
             case CROP_PHOTO:
                 if(resultCode == Activity.RESULT_OK) {
-                    //上传到服务器
+                    headImage.setImageBitmap(null);
+                    bitmapRelease();
                     bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
                     if (bitmap != null) {
                         headImage.setImageBitmap(bitmap);
@@ -398,9 +407,18 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
+    public void bitmapRelease(){
+        if(bitmap != null && !bitmap.isRecycled()){
+            // 回收并且置为null
+            bitmap.recycle();
+            bitmap = null;
+            System.gc();
+        }
+    }
+
     public void loadBitmap() {
         //如果这个文件在本地是没有的  就直接加载默认的图片
-        String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.png";
+        String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
         File file = new File(srcPath);
         if(!file.exists()){
 //            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
@@ -413,7 +431,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void DeviceChangeHeadImage(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.png";
+        String fileName = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
         File f = new File(fileName);
         if(f.exists()){
             bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
@@ -455,6 +473,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void httpGetWeather(String city) {
+        if(city == null){
+            return;
+        }
         city = city.replace("市", "");
         Log.e(TAG, "city：" + city);
         city = StringUtils.encode(city);
@@ -510,18 +531,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     }
 
                     private void setWeather(WeatherBean data) {
-                        tv_temperature.setText(data.temp+"摄氏度");
-                        tv_weatherCondition.setText(data.weather);
-                        tv_location.setText(data.city);
+                        if(data!=null){
+                            tv_temperature.setText(data.temp+"摄氏度");
+                            tv_weatherCondition.setText(data.weather);
+                            tv_location.setText(data.city);
 
-                        if(data.weather.contains("雨")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
-                        }
-                        else if(data.weather.contains("雪")){
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
-                        }
-                        else{
-                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                            if(data.weather.contains("雨")){
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
+                            }
+                            else if(data.weather.contains("雪")){
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                            }
+                            else{
+                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
+                            }
                         }
                     }
 
@@ -743,8 +766,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         ArrayList<MKOLUpdateElement> localCitylist = mkOfflineMap.getAllUpdateInfo();
         if (localCitylist != null) {
             for (MKOLUpdateElement element : localCitylist) {
-                element.cityName.contains(localcity);
-                return element;
+                if(element.cityName.contains(localcity)){
+                    return element;
+                }
             }
         }
         return null;
@@ -764,24 +788,6 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         }
     }
 
-    class MyBroadcastReceiver extends BroadcastReceiver {
-        //接收到广播会被自动调用
-        @Override
-        public void onReceive (Context context, Intent intent) {
-            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
-                m_context.refreshBindList1();
-            }
-            else if(intent.getStringExtra("KIND").equals("OTHER")){
-                DeviceChangeHeadImage();
-                setSafedays();
-                m_context.updateTotalItinerary();
-                m_context.refreshBindList1();
-            }
-            else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
-                caseGetInitialStatus();
-            }
-        }
-    }
 
     private void caseGetInitialStatus(){
         if(rootView!=null){
@@ -946,25 +952,47 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     public void refreshItineraryInfo(double itinerary){
-        tv_distance.setText(itinerary+"公里");
+        tv_distance.setText(itinerary + "公里");
+
         //星
         if(itinerary<500){
             double a = itinerary/100;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1星");
+//                    tv_angleRank.setText("1星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(1);
                     break;
                 case 1:
-                    tv_angleRank.setText("2星");
+//                    tv_angleRank.setText("2星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(2);
                     break;
                 case 2:
-                    tv_angleRank.setText("3星");
+
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(3);
+//                    tv_angleRank.setText("3星");
                     break;
                 case 3:
-                    tv_angleRank.setText("4星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    img_angle4.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(4);
+//                    tv_angleRank.setText("4星");
                     break;
                 case 4:
-                    tv_angleRank.setText("5星");
+//                    tv_angleRank.setText("5星");
+                    img_angle1.setBackgroundResource(R.drawable.star);
+                    img_angle2.setBackgroundResource(R.drawable.star);
+                    img_angle3.setBackgroundResource(R.drawable.star);
+                    img_angle4.setBackgroundResource(R.drawable.star);
+                    img_angle5.setBackgroundResource(R.drawable.star);
+                    VisibleNumber(5);
                     break;
                 default:
                     break;
@@ -976,19 +1004,39 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             double a = (itinerary-500)/500;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(1);
+//                    tv_angleRank.setText("1钻");
                     break;
                 case 1:
-                    tv_angleRank.setText("2钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+//                    tv_angleRank.setText("2钻");
+                    VisibleNumber(2);
                     break;
                 case 2:
-                    tv_angleRank.setText("3钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(3);
+//                    tv_angleRank.setText("3钻");
                     break;
                 case 3:
-                    tv_angleRank.setText("4钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    img_angle4.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(4);
+//                    tv_angleRank.setText("4钻");
                     break;
                 case 4:
-                    tv_angleRank.setText("5钻");
+//                    tv_angleRank.setText("5钻");
+                    img_angle1.setBackgroundResource(R.drawable.diamond);
+                    img_angle2.setBackgroundResource(R.drawable.diamond);
+                    img_angle3.setBackgroundResource(R.drawable.diamond);
+                    img_angle4.setBackgroundResource(R.drawable.diamond);
+                    img_angle5.setBackgroundResource(R.drawable.diamond);
+                    VisibleNumber(5);
                     break;
                 default:
                     break;
@@ -999,20 +1047,114 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             double a = (itinerary-3000)/1000;
             switch ((int)a){
                 case 0:
-                    tv_angleRank.setText("1冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(1);
                     break;
                 case 1:
-                    tv_angleRank.setText("2冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(2);
                     break;
                 case 2:
-                    tv_angleRank.setText("3冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(3);
                     break;
                 case 3:
-                    tv_angleRank.setText("4冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    img_angle4.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(4);
                     break;
                 default:
-                    tv_angleRank.setText("5冠");
+                    img_angle1.setBackgroundResource(R.drawable.crown);
+                    img_angle2.setBackgroundResource(R.drawable.crown);
+                    img_angle3.setBackgroundResource(R.drawable.crown);
+                    img_angle4.setBackgroundResource(R.drawable.crown);
+                    img_angle5.setBackgroundResource(R.drawable.crown);
+                    VisibleNumber(5);
                     break;
+            }
+        }
+    }
+
+    private void VisibleNumber(int number){
+        switch (number){
+            case 1:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.INVISIBLE);
+                img_angle3.setVisibility(View.INVISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 2:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.INVISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 3:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.INVISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 4:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.VISIBLE);
+                img_angle5.setVisibility(View.INVISIBLE);
+                break;
+            case 5:
+                img_angle1.setVisibility(View.VISIBLE);
+                img_angle2.setVisibility(View.VISIBLE);
+                img_angle3.setVisibility(View.VISIBLE);
+                img_angle4.setVisibility(View.VISIBLE);
+                img_angle5.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    class MyBroadcastReceiver extends BroadcastReceiver {
+        //接收到广播会被自动调用
+        @Override
+        public void onReceive (Context context, Intent intent) {
+            if(intent.getStringExtra("KIND").equals("CHANGECARNICKNAME")){
+                m_context.refreshBindList1();
+            }
+            else if(intent.getStringExtra("KIND").equals("OTHER")){
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1();
+            }
+            else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
+                caseGetInitialStatus();
+            }
+            else if(intent.getStringExtra("KIND").equals("SWITCHDEVICE")){
+                int position = intent.getIntExtra("POSITION",0);
+                m_context.refreshBindList1(FragmentActivity.SWITCHDEVICE,position);
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETENONMAINDEVICE")){
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,intent.getIntExtra("POSITION",0));
+            }
+            else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
+                DeviceChangeHeadImage();
+                setSafedays();
+                m_context.updateTotalItinerary();
+                m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
+            }
+            else if(intent.getStringExtra("KIND").equals("CHANGEMAINPIC")){
+                BitmapWorkerTask task = new BitmapWorkerTask();
+                task.execute();
             }
         }
     }

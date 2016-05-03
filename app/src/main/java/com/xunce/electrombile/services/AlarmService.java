@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.xunce.electrombile.Constants.ServiceConstants;
+import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.mqtt.Connection;
 import com.xunce.electrombile.mqtt.Connections;
@@ -33,7 +34,7 @@ public class AlarmService extends Service {
     public void onCreate() {
         super.onCreate();
         setManager = SettingManager.getInstance();
-        startMqttClient();
+//        startMqttClient();
         registerBroadCast();
     }
 
@@ -51,13 +52,15 @@ public class AlarmService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void startMqttClient() {
-        if (ServiceConstants.handler.isEmpty()) {
-            return;
-        }
-        Connection connection = Connections.getInstance(this).getConnection(ServiceConstants.handler);
-        mac = connection.getClient();
-    }
+//    private void startMqttClient() {
+//        if (ServiceConstants.handler.isEmpty()) {
+//            return;
+//        }
+//        Connection connection = Connections.getInstance(this).getConnection(ServiceConstants.handler);
+//        mac = connection.getClient();
+
+//        mac =  MqttConnectManager.getInstance().getMac();
+//    }
 
     @Override
     public void onDestroy() {

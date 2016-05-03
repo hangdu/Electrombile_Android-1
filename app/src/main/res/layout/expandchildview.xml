@@ -5,7 +5,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="60dp"
         android:background="@drawable/history_detail_background">
         
         <ImageView
@@ -19,9 +19,9 @@
             android:id="@+id/img_startPoint"
             android:layout_marginTop="4.67dp"
             android:layout_toRightOf="@+id/detail_line"
-            android:layout_marginLeft="105dp"
+            android:layout_marginLeft="60dp"
             android:layout_width="8.33dp"
-            android:layout_height="12dp"
+            android:layout_height="24dp"
             android:src="@drawable/history_detail_startplace"/>
 
         <TextView
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="罗宇东路"/>
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/img_endPoint"
@@ -41,7 +41,7 @@
             android:layout_alignLeft="@+id/img_startPoint"
             android:layout_marginTop="6.67dp"
             android:layout_width="8.33dp"
-            android:layout_height="12dp"
+            android:layout_height="24dp"
             android:src="@drawable/history_detail_endplace" />
 
         <TextView
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="光谷"/>
+            android:textSize="16sp" />
         
         <ImageView
             android:layout_width="6.67dp"

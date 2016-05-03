@@ -40,7 +40,6 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.applicatoin.Historys;
-import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
 import com.xunce.electrombile.fragment.SwitchFragment;
@@ -95,7 +94,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private SimpleAdapter simpleAdapter;
     private View left_menu;
     private Boolean firsttime_Flag = true;
-    Thread myThread;
+    private Thread myThread;
+
+    public static final int SWITCHDEVICE = 1;
+    public static final int ADDDEVICE = 2;
+    public static final int DELETEMAINDEVICE = 3;
+    public static final int DELETEMONMAINDEVICE = 4;
 
 
     /**
@@ -152,8 +156,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         }
                         AVObject avObject = list.get(0);
                         try {
-                            int itinerary = (int)avObject.get("itinerary");
-                            switchFragment.refreshItineraryInfo(itinerary/1000.0);
+                            int itinerary = (int) avObject.get("itinerary");
+                            switchFragment.refreshItineraryInfo(itinerary / 1000.0);
                         } catch (Exception ee) {
                             ee.printStackTrace();
                         }
@@ -168,9 +172,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        MyLog.delFile();
-        DBManage.updateDatabase();
-        MyLog.d("FragmentActivity","onCreate");
         com.orhanobut.logger.Logger.i("FragmentActivity-onCreate", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
@@ -178,7 +179,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         initView();
         initData();
         //判断是否绑定设备
-        queryIMEI();
+        MyLog.d("FragmentActivity", "onCreate3");
+        queryIMEIandMqttConnection();
+        MyLog.d("FragmentActivity", "onCreate4");
         Historys.put(this);
         registerBroadCast();
     }
@@ -298,7 +301,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 //这些是在呈现了页面之后执行的
                 MqttConnectManager.status = MqttConnectManager.OK;
                 com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
-                if(firsttime_Flag){
+                if (firsttime_Flag) {
                     mac = mqttConnectManager.getMac();
                     mqttConnectManager.subscribe(setManager.getIMEI());
                     ToastUtils.showShort(FragmentActivity.this, "服务器连接成功");
@@ -362,7 +365,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     /**
      * 查询并判断是否该建立MQTT连接
      */
-    public void queryIMEI(){
+    public void queryIMEIandMqttConnection(){
         if (setManager.getIMEI().isEmpty()) {
             AVQuery<AVObject> query = new AVQuery<>("Bindings");
             final AVUser currentUser = AVUser.getCurrentUser();
@@ -428,7 +431,6 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mqttConnectManager.setContext(FragmentActivity.this);
         mqttConnectManager.initMqtt();
 
-
         List<Fragment> list = new ArrayList<>();
         list.add(switchFragment);
         list.add(maptabFragment);
@@ -472,6 +474,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         });
 
         refreshBindList1();
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                refreshBindList1();
+                //execute the task
+            }
+        }, 2000);
     }
 
     /**
@@ -498,37 +506,75 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     /**
      * 重复按下返回键退出app方法
-     */
-    public void exit() {
-        if (!isExit) {
-            isExit = true;
-            Toast.makeText(getApplicationContext(),
-                    "退出程序", Toast.LENGTH_SHORT).show();
-            exitHandler.sendEmptyMessageDelayed(0, 2000);
-        } else {
-            cancelNotification();
-            if (mac != null) {
-                mac.unregisterResources();
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-            }
-            //此方法会不在onDestory中调用，所以放在结束任务之前使用
-            if (TracksManager.getTracks() != null) TracksManager.clearTracks();
-            timeHandler.removeMessages(0);
-            timeHandler = null;
-            Historys.exit();
-        }
-    }
+//     */
+//    public void exit() {
+
+
+//        if (!isExit) {
+//            isExit = true;
+//            Toast.makeText(getApplicationContext(),
+//                    "退出程序", Toast.LENGTH_SHORT).show();
+//            exitHandler.sendEmptyMessageDelayed(0, 2000);
+//        } else {
+//            cancelNotification();
+//            if (mac != null) {
+//                mac.unregisterResources();
+//                LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+//            }
+//            //此方法会不在onDestory中调用，所以放在结束任务之前使用
+//            if (TracksManager.getTracks() != null) TracksManager.clearTracks();
+//            timeHandler.removeMessages(0);
+//            timeHandler = null;
+//            Historys.exit();
+//        }
+//    }
 
 
 
     @Override
     public void onBackPressed() {
-        exit();
+        moveTaskToBack(true);
+//        exit();
+    }
+
+    public void refreshBindList1(int type,int position){
+        IMEIlist = setManager.getIMEIlist();
+        BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
+        switch (type){
+            case SWITCHDEVICE:
+                list.get(position).put("whichcar", setManager.getCarName(IMEIlist.get(position + 1)));
+                simpleAdapter.notifyDataSetChanged();
+                break;
+
+            case DELETEMONMAINDEVICE:
+                list.remove(position);
+                simpleAdapter.notifyDataSetChanged();
+                break;
+
+            case DELETEMAINDEVICE:
+                list.remove(0);
+                simpleAdapter.notifyDataSetChanged();
+                break;
+
+
+            default:
+                list.clear();
+                for (int i = 1; i < IMEIlist.size(); i++) {
+                    HashMap<String, Object> map = null;
+                    map = new HashMap<>();
+                    map.put("whichcar",setManager.getCarName(IMEIlist.get(i)));
+                    map.put("img", R.drawable.othercar);
+                    list.add(map);
+                }
+                simpleAdapter.notifyDataSetChanged();
+                break;
+        }
     }
 
     public void refreshBindList1(){
         IMEIlist = setManager.getIMEIlist();
         BindedCarIMEI.setText(setManager.getCarName(IMEIlist.get(0)));
+
         HashMap<String, Object> map = null;
         list.clear();
         for (int i = 1; i < IMEIlist.size(); i++) {
@@ -542,9 +588,19 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     //设备切换
     private void DeviceChange(int position){
+        if(NetworkUtils.checkNetwork(this)){
+            ToastUtils.showShort(this, "请检查网络连接,切换无法完成");
+            return;
+        }
+        //第一步 关闭抽屉
+        closeDrawable();
+
+        showWaitDialog();
+
+        //第二步  逻辑上切换过来
         String previous_IMEI = setManager.getIMEI();
         String current_IMEI = IMEIlist.get(position+1);
-        //在这里就解订阅原来的设备号,并且订阅新的设备号
+           //在这里就解订阅原来的设备号,并且订阅新的设备号
         if(mqttConnectManager.returnMqttStatus()){
             //mqtt连接良好
             mqttConnectManager.unSubscribe(previous_IMEI);
@@ -555,28 +611,21 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             mqttConnectManager.sendMessage(mCenter.getInitialStatus(), current_IMEI);
             switchFragment.refreshBatteryToNULL();
             ToastUtils.showShort(this, "切换成功");
+
+            IMEIlist.set(0, setManager.getIMEI());
+            IMEIlist.set(position + 1, previous_IMEI);
+            setManager.setIMEIlist(IMEIlist);
+
+            //第三步:UI刷新
+            Intent intent = new Intent("com.app.bc.test");
+            intent.putExtra("KIND", "SWITCHDEVICE");
+            intent.putExtra("POSITION", position);
+            sendBroadcast(intent);//发送广播事件
         }
         else{
             ToastUtils.showShort(this,"mqtt连接失败");
         }
-
-        IMEIlist.set(0, setManager.getIMEI());
-        IMEIlist.set(position + 1, previous_IMEI);
-        setManager.setIMEIlist(IMEIlist);
-
-        //list改变
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("whichcar", previous_IMEI);
-        map.put("img", R.drawable.othercar);
-        list.set(position, map);
-        simpleAdapter.notifyDataSetChanged();
-
-        //发广播
-        Intent intent = new Intent("com.app.bc.test");
-        intent.putExtra("KIND","OTHER");
-        sendBroadcast(intent);//发送广播事件
-
-        closeDrawable();
+        dismissWaitDialog();
     }
 
     public void openDrawable(){

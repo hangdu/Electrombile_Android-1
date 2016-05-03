@@ -16,6 +16,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.activity.Autolock;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.fragment.SwitchFragment;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
@@ -104,6 +105,7 @@ public class MyReceiver extends BroadcastReceiver {
                     select = 0x01;
                     protocol = createFactory(select, s);
                     Log.i(TAG, "得到命令字");
+                    Logger.i(TAG,"得到命令字");
                     onCmdArrived(protocol);
                 } else if (destinationName.contains("gps")) {
                     select = 0x02;
@@ -119,7 +121,7 @@ public class MyReceiver extends BroadcastReceiver {
                 } else if (destinationName.contains("notify")) {
                     select = 0x05;
                     protocol = createFactory(select, s);
-                    Log.i(TAG, "433找车");
+                    MyLog.d(TAG, "notify");
                     onNotifyArrived(protocol);
                 }
 
@@ -137,6 +139,7 @@ public class MyReceiver extends BroadcastReceiver {
     }
 
     private void onNotifyArrived(Protocol protocol){
+        MyLog.d("onNotifyArrived","start");
         int notify = protocol.getNotify();
         switch (notify){
             //上报的自动落锁状态
@@ -147,12 +150,13 @@ public class MyReceiver extends BroadcastReceiver {
                     Date date = new Date(timestamp*1000);
                     SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String date_str = sdfWithSecond.format(date);
-                    ToastUtils.showShort(mContext,date_str+" 自动落锁成功");
+                    ToastUtils.showShort(mContext, date_str + " 自动落锁成功");
 
-                    //打开防盗模式
-                    ((FragmentActivity) mContext).sendMessage((FragmentActivity) mContext,
-                            ((FragmentActivity) mContext).mCenter.cmdFenceOn(), ((FragmentActivity) mContext).setManager.getIMEI());
-
+                    MyLog.d("onNotifyArrived", "openStateAlarmBtn");
+                    //改变小安宝开关的样式  现在为开启状态  这个函数没有改变开关样式 为什么啊
+                    ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
+                    ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
+                    ((FragmentActivity) mContext).switchFragment.showNotification("自动落锁成功");
                 }
                 break;
 
@@ -245,19 +249,29 @@ public class MyReceiver extends BroadcastReceiver {
     private void caseGetGPS(int code,Protocol protocol) {
         switch (code) {
             case ProtocolConstants.ERR_SUCCESS:
+                Logger.i("接收","code为0");
                 cmdGPSgetresult(protocol,code);
                 return;
 
             case ProtocolConstants.ERR_WAITING:
                 cmdGPSgetresult(protocol,code);
                 return;
+
             case ProtocolConstants.ERR_OFFLINE:
                 ToastUtils.showShort(mContext, "设备不在线，请检查电源。");
                 if(((FragmentActivity) mContext).maptabFragment.LostCarSituation){
-                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationOffline();
-                    ((FragmentActivity) mContext).maptabFragment.LostCarSituation = false;
+                    TracksManager.TrackPoint trackPoint = protocol.getNewResult();
+                    if(trackPoint!=null){
+                        Date date = trackPoint.time;
+                        CmdCenter mCenter = CmdCenter.getInstance();
+                        LatLng bdPoint = mCenter.convertPoint(trackPoint.point);
+                        trackPoint = new TracksManager.TrackPoint(date,bdPoint);
+                    }
+                    ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationOffline(trackPoint);
+//                    ((FragmentActivity) mContext).maptabFragment.LostCarSituation = false;
                 }
                 break;
+
             case ProtocolConstants.ERR_INTERNAL:
                 ToastUtils.showShort(mContext, "服务器内部错误，请稍后再试。");
                 break;
@@ -515,8 +529,6 @@ public class MyReceiver extends BroadcastReceiver {
                     ((FragmentActivity) mContext).maptabFragment.caseLostCarSituationSuccess();
                 }
             }
-
-
         }
     }
 

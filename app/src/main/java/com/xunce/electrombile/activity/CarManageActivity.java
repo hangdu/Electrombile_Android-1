@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.BitmapUtils;
+import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import org.json.JSONArray;
 
@@ -70,7 +72,7 @@ public class CarManageActivity extends Activity {
         }
 
         tv_CurrentCar = (TextView)findViewById(R.id.menutext1);
-        String carname = settingManager.getCarName(settingManager.getIMEI());
+//        String carname = settingManager.getCarName(settingManager.getIMEI());
         tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
 
         ListView listview = (ListView)findViewById(R.id.OtherCarListview);
@@ -104,10 +106,13 @@ public class CarManageActivity extends Activity {
         btn_AddDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(NetworkUtils.checkNetwork(CarManageActivity.this)){
+                    ToastUtils.showShort(CarManageActivity.this, "请检查网络连接,该操作无法完成");
+                    return;
+                }
                 Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
                 intent.putExtra("From","CarManageActivity");
                 startActivity(intent);
-
             }
         });
 
@@ -122,7 +127,7 @@ public class CarManageActivity extends Activity {
                 OthercarPositon = position;
                 Intent intentCarEdit = new Intent(CarManageActivity.this, CarInfoEditActivity.class);
 //                intentCarEdit.putExtra("string_key", Othercarlist.get(position).get("WhichCar").toString());
-                String imei = settingManager.getIMEIlist().get(position+1);
+//                String imei = settingManager.getIMEIlist().get(position+1);
                 intentCarEdit.putExtra("string_key", settingManager.getIMEIlist().get(position+1));
 
                 intentCarEdit.putExtra("list_position", position);
@@ -147,11 +152,15 @@ public class CarManageActivity extends Activity {
 
                             //发送广播提醒switchFragment  发生了切解绑主车辆的行为(只有主车辆被解绑了  才需要去发送广播)
                             Intent intent = new Intent("com.app.bc.test");
-                            intent.putExtra("KIND","OTHER");
+                            intent.putExtra("KIND","DELETEMAINDEVICE");
                             sendBroadcast(intent);//发送广播事件
                         }
                         else{
                             caseOtherCarUnbind();
+                            Intent intent = new Intent("com.app.bc.test");
+                            intent.putExtra("KIND","DELETENONMAINDEVICE");
+                            intent.putExtra("POSITION",OthercarPositon);
+                            sendBroadcast(intent);//发送广播事件
                         }
                     }
                     //设备切换
@@ -165,14 +174,13 @@ public class CarManageActivity extends Activity {
 
     private void caseDeviceChange(){
         getIMEIlist();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("WhichCar", tv_CurrentCar.getText());
-        map.put("img",R.drawable.othercar);
+
         //UI变化
         tv_CurrentCar.setText(settingManager.getCarName(settingManager.getIMEI()));
 
-        Othercarlist.set(OthercarPositon, map);
+        Othercarlist.get(OthercarPositon).put("WhichCar", tv_CurrentCar.getText());
         adapter.notifyDataSetChanged();
+
         //逻辑上切换:原来的设备解订阅,新设备订阅,查询alarmstatus
         settingManager.setFlagCarSwitched("切换");
 
@@ -181,12 +189,13 @@ public class CarManageActivity extends Activity {
 
         //发送广播提醒switchFragment  发生了切换车辆的行为
         Intent intent = new Intent("com.app.bc.test");
-        intent.putExtra("KIND","OTHER");
+        intent.putExtra("KIND","SWITCHDEVICE");
+        intent.putExtra("POSITION",OthercarPositon);
         sendBroadcast(intent);//发送广播事件
     }
 
     private void DeviceChangeHeadImage(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.png";
+        String fileName = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.jpg";
         File f = new File(fileName);
         if(f.exists()){
             Bitmap bitmap = BitmapUtils.compressImageFromFile(settingManager.getIMEI());
@@ -208,10 +217,9 @@ public class CarManageActivity extends Activity {
 
     private void initEvents(){
         getIMEIlist();
-        HashMap<String, Object> map = null;
+        HashMap<String, Object> map;
         for(int i = 1;i<IMEIlist.size();i++){
             map = new HashMap<String, Object>();
-
             map.put("WhichCar",settingManager.getCarName(IMEIlist.get(i)));
             map.put("img",R.drawable.othercar);
             Othercarlist.add(map);
@@ -231,6 +239,17 @@ public class CarManageActivity extends Activity {
             tv_CurrentCar.setText((String)Othercarlist.get(0).get("WhichCar"));
             Othercarlist.remove(0);
             adapter.notifyDataSetChanged();
+            //头像也要变过来
+
+            String IMEI = settingManager.getIMEI();
+            Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
+            if(bitmap!=null){
+                img_car.setImageBitmap(bitmap);
+            }
+            else{
+                bitmap = BitmapFactory.decodeResource(this.getResources(),R.drawable.default_carimage);
+                img_car.setImageBitmap(bitmap);
+            }
         }
     }
 

@@ -1,10 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fe8488">
     <TextView
+        android:layout_marginTop="54dp"
+        android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="导航界面3"/>
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="针对性功能"/>
+
+    <TextView
+        android:layout_marginTop="12.67dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="无信号找车 自动设防 没有误报"/>
+
+    <ImageView
+        android:layout_width="320dp"
+        android:layout_height="363dp"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/img_guide3"
+        android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

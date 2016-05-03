@@ -2,7 +2,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1dcf96"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_marginTop="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_point1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/guide_point_selected1"/>
+
+
+        <ImageView
+            android:id="@+id/iv_point2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/guide_point1" />
+
+        <ImageView
+            android:id="@+id/iv_point3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/guide_point1" />
+
+        <ImageView
+            android:id="@+id/iv_point4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/guide_point1"
+            android:visibility="visible" />
+    </LinearLayout>
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
@@ -11,36 +47,5 @@
 
     </android.support.v4.view.ViewPager>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/iv_point1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/guide_point_selected" />
-
-        <ImageView
-            android:id="@+id/iv_point2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/guide_point" />
-
-        <ImageView
-            android:id="@+id/iv_point3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/guide_point" />
-
-        <ImageView
-            android:id="@+id/iv_point4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/guide_point" />
-    </LinearLayout>
 
 </RelativeLayout>

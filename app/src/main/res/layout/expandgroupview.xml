@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:textColor="#1dcf96"
-            android:text="16.7km"
+            android:text="0km"
             android:textSize="16sp" />
     </RelativeLayout>
 

@@ -99,7 +99,7 @@ public class MyLog {
      * @return
      * **/
     private static void writeLogtoFile(String mylogtype, String tag, String text) {// 新建或打开日志文件
-        Date nowtime = new Date();
+        Date nowtime = new Date(System.currentTimeMillis());
         String needWriteFiel = logfile.format(nowtime);
         String needWriteMessage = myLogSdf.format(nowtime) + "    " + mylogtype
                 + "    " + tag + "    " + text;
@@ -144,35 +144,46 @@ public class MyLog {
      * 删除制定的日志文件
      * */
     public static void delFile() {// 删除日志文件
-        //列出该目录下的所有文件
-        String path = Environment.getExternalStorageDirectory()+File.separator+"safeguard1";
-        File file = new File(path);
-        if(!file.exists()){
-            return;
-        }
-
-        Date nowtime = new Date();
-        Calendar now = Calendar.getInstance();
-        now.setTime(nowtime);
-        now.set(Calendar.DATE, now.get(Calendar.DATE)
-                - SDCARD_LOG_FILE_SAVE_DAYS);
-        Date comparedDate = now.getTime();
-
-        File[] files = file.listFiles();
-
-        for(int i = 0;i<files.length;i++){
-            String fileName = files[i].getName();
-            //得到了日期
-            String subfileName = fileName.substring(0, 10);
-            try{
-                Date date = logfile.parse(subfileName);
-                if(date.before(comparedDate)){
-                    files[i].delete();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                //列出该目录下的所有文件
+                String path = Environment.getExternalStorageDirectory()+File.separator+"safeguard1";
+                File file = new File(path);
+                if(!file.exists()){
+                    return;
                 }
-            }catch(Exception e){
-                e.printStackTrace();
+
+                Date nowtime = new Date();
+                Calendar now = Calendar.getInstance();
+                now.setTime(nowtime);
+                now.set(Calendar.DATE, now.get(Calendar.DATE)
+                        - SDCARD_LOG_FILE_SAVE_DAYS);
+                Date comparedDate = now.getTime();
+
+                File[] files = file.listFiles();
+
+                for(int i = 0;i<files.length;i++){
+                    String fileName = files[i].getName();
+                    if(fileName.length()!=17){
+//                        Log.d("MyLog","fileName.length()!=17");
+                        continue;
+                    }
+//                    Log.d("MyLog","fileName.length()==17");
+                    //得到了日期
+                    String subfileName = fileName.substring(0, 10);
+                    try{
+                        Date date = logfile.parse(subfileName);
+                        if(date.before(comparedDate)){
+                            files[i].delete();
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+        };
+        new Thread(runnable).start();
     }
 
 

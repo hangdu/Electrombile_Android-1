@@ -39,7 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpecificHistoryTrackActivity extends Activity {
-    private static final int DELAY = 1000;
+    private static final int DELAY1 = 1000;
+    private static final int DELAY2 = 800;
+    private static final int DELAY5 = 500;
+    private static int DELAY = DELAY1;
     private static String START = "start";
     private static String PLAYING = "playing";
     private static String PAUSE = "pause";
@@ -49,18 +52,14 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private String startPoint;
     private String endPoint;
+//    private int miles;
 
     private Button btn_play;
-    private Button btn_speed;
-
     private Marker markerMobile;
-
     private LatLng southwest;
     private LatLng northeast;
 
     private BaiduMap mBaiduMap;
-
-    private Overlay tracksOverlay;
     private int playOrder = 0;
     public static MapView mMapView;
     private SeekBar seekBar;
@@ -69,6 +68,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     private InfoWindow mInfoWindow;
     private View markerView;
     private TextView tv_pointTime;
+    private TextView tv_speed;
 
     private Handler playHandler = new Handler() {
         @Override
@@ -82,12 +82,16 @@ public class SpecificHistoryTrackActivity extends Activity {
                             markerMobile.setPosition(trackDataList.get((int) msg.obj).point);
                             SetSeekbar((int)msg.obj);
                             playLocateMobile((int) msg.obj);
-                            if((int) msg.obj == (trackDataList.size()-1)){
-                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    break;
+
+                case BOUND_REFRESH:
+                    LatLngBounds bounds = new LatLngBounds.Builder().include(northeast).include(southwest).build();
+                    MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
+                    mBaiduMap.setMapStatus(mMapStatusUpdate);
                     break;
             }
         }
@@ -96,19 +100,19 @@ public class SpecificHistoryTrackActivity extends Activity {
     //播放线程消息类型
     enum handleKey {
         CHANGE_POINT,
-        SET_MARKER
+        BOUND_REFRESH
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(this);
+//        SDKInitializer.initialize(this);
 
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
         endPoint = intent.getStringExtra("endPoint");
-//        int size = trackDataList.size();
+//        miles = Integer.parseInt(intent.getStringExtra("miles"));
         setContentView(R.layout.activity_specific_history_track);
 
         initViews();
@@ -137,7 +141,26 @@ public class SpecificHistoryTrackActivity extends Activity {
         TextView tv_endPoint = (TextView)findViewById(R.id.tv_endPoint);
         TextView tv_routeTime = (TextView)findViewById(R.id.tv_routeTime);
         btn_play = (Button)findViewById(R.id.btn_play);
-        btn_speed = (Button)findViewById(R.id.btn_speed);
+
+        final Button btn_speed = (Button)findViewById(R.id.btn_speed);
+        btn_speed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(DELAY == DELAY1){
+                    DELAY = DELAY2;
+                    btn_speed.setBackgroundResource(R.drawable.img_speed2);
+                }
+                else if(DELAY == DELAY2){
+                    DELAY = DELAY5;
+                    btn_speed.setBackgroundResource(R.drawable.img_speed3);
+                }
+                else if(DELAY == DELAY5){
+                    DELAY = DELAY1;
+                    btn_speed.setBackgroundResource(R.drawable.img_speed1);
+                }
+            }
+        });
+
         seekBar = (SeekBar)findViewById(R.id.seekbar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -159,7 +182,10 @@ public class SpecificHistoryTrackActivity extends Activity {
                 playOrder = Progress;
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
-                if(status.equals(PLAYING)){
+                mInfoWindow = new InfoWindow(markerView,p2, -100);
+                mBaiduMap.showInfoWindow(mInfoWindow);
+
+                if (status.equals(PLAYING)) {
                     Message msg = Message.obtain();
                     msg.what = handleKey.CHANGE_POINT.ordinal();
                     msg.obj = playOrder;
@@ -178,6 +204,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         long diff = time2 - time1;
         // Difference in seconds
         long diffSec = diff / 1000;
+
         if(diffSec/3600 == 0){
             //小于1h
             int min = (int)diffSec/60;
@@ -225,10 +252,17 @@ public class SpecificHistoryTrackActivity extends Activity {
         LayoutInflater inflater = (LayoutInflater) this
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         markerView = inflater.inflate(R.layout.view_marker, null);
+
         tv_pointTime = (TextView)markerView.findViewById(R.id.tv_updateTime);
+        SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdfWithSecond.format(trackDataList.get(0).time);
+        String[] strs = time.split(" ");
+        tv_pointTime.setText(strs[1]);
+
         TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
         tv_speedname.setText("速度:");
-        TextView tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
+        tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
+        tv_speed.setText(trackDataList.get(0).speed+"km/h");
 
         seekBar.setMax(trackDataList.size()-1);
     }
@@ -243,6 +277,7 @@ public class SpecificHistoryTrackActivity extends Activity {
         //在地图上添加Marker，并显示
         markerMobile = (Marker) mBaiduMap.addOverlay(option);
         markerMobile.setPosition(trackDataList.get(0).point);
+        markerMobile.setTitle("testtest");
 
         BitmapDescriptor bitmap_startpoint = BitmapDescriptorFactory
                 .fromResource(R.drawable.icon_startpoint);
@@ -269,6 +304,10 @@ public class SpecificHistoryTrackActivity extends Activity {
 
         mInfoWindow = new InfoWindow(markerView,trackDataList.get(0).point, -100);
         mBaiduMap.showInfoWindow(mInfoWindow);
+
+        Message msg = Message.obtain();
+        msg.what = handleKey.BOUND_REFRESH.ordinal();
+        playHandler.sendMessageDelayed(msg,800);
     }
 
     /**
@@ -285,7 +324,7 @@ public class SpecificHistoryTrackActivity extends Activity {
                 .width(10)
                 .color(0xAA00FF00);
         //在地图上添加多边形Option，用于显示
-        tracksOverlay = mBaiduMap.addOverlay(polylineOption);
+       mBaiduMap.addOverlay(polylineOption);
     }
 
     /**
@@ -357,12 +396,17 @@ public class SpecificHistoryTrackActivity extends Activity {
         }
 
         mInfoWindow = new InfoWindow(markerView,p2, -100);
+        mBaiduMap.showInfoWindow(mInfoWindow);
+
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
         String[] strs = time.split(" ");
         tv_pointTime.setText(strs[1]);
-        mBaiduMap.showInfoWindow(mInfoWindow);
+
+        tv_speed.setText(trackDataList.get(track + 1).speed+"km/h");
+
         playOrder += 1;
+
         sendPlayMessage(DELAY);
     }
 }

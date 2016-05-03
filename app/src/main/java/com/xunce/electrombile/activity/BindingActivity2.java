@@ -21,7 +21,9 @@ import com.avos.avoscloud.SaveCallback;
 import com.covics.zxingscanner.OnDecodeCompletionListener;
 import com.covics.zxingscanner.ScannerView;
 import com.xunce.electrombile.Constants.ProtocolConstants;
+import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -43,6 +45,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     private MqttConnectManager mqttConnectManager;
     public CmdCenter mCenter;
     public String previous_IMEI;
+    private LeancloudManager leancloudManager;
     private List<String> IMEIlist;
     public Handler timeHandler = new Handler() {
         @Override
@@ -69,8 +72,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(BindingActivity2.this, "设备登陆成功");
                     progressDialog.cancel();
-                    getAlarmStatus();
-//                    gotoAct();
+                    getBindDeviceNumber();
                     break;
 
                 case FAILED:
@@ -93,7 +95,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         if(1 == BindedDeviceNum){
             //刚刚绑定的就是第一个设备:订阅;查询
             mqttConnectManager.subscribe(settingManager.getIMEI());
-            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(),settingManager.getIMEI());
+            mqttConnectManager.sendMessage(mCenter.cmdFenceGet(), settingManager.getIMEI());
 
         }
         else if(BindedDeviceNum > 1){
@@ -107,7 +109,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
         gotoAct();
     }
 
-    private void getAlarmStatus(){
+    private void getBindDeviceNumber(){
         mCenter = CmdCenter.getInstance();
         mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.getMac() == null){
@@ -127,33 +129,33 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
 
     public void gotoAct(){
+        List<String> IMEIlist = settingManager.getIMEIlist();
         if(FromActivity.equals("CarManageActivity")){
-            getIMEIlist();
+
             String IMEI_first = IMEIlist.get(0);
             IMEIlist.add(IMEI_first);
+
             IMEIlist.set(0, settingManager.getIMEI());
-            JSONArray jsonArray = new JSONArray();
-            for(String IMEI:IMEIlist){
-                jsonArray.put(IMEI);
-            }
-//            settingManager.setIMEIlist(jsonArray.toString());
+            settingManager.setIMEIlist(IMEIlist);
+
+            //添加设备的话  需要从服务器上获取车辆的头像啊  他们的执行顺序不是你想的那个样子
+            leancloudManager.getHeadImageFromServer(settingManager.getIMEI());
+            leancloudManager.getCarcreatedAt(settingManager.getIMEI());
+
             Intent intent = new Intent(BindingActivity2.this,FragmentActivity.class);
-            //换位置
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
         else{
-            //之前还没有绑定过设备
             IMEIlist.clear();
             IMEIlist.add(settingManager.getIMEI());
             settingManager.setIMEIlist(IMEIlist);
+
+            leancloudManager.getHeadImageFromServer(settingManager.getIMEI());
             Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
             startActivity(intent);
         }
         finish();
-    }
-
-    public void getIMEIlist(){
-        IMEIlist = settingManager.getIMEIlist();
     }
 
     @Override
@@ -185,6 +187,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
 
     private void initEvent(){
+        leancloudManager = LeancloudManager.getInstance();
         scannerView.setOnDecodeListener(this);
         btn_InputIMEI.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,10 +210,19 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                 try {
                     IMEI = JSONUtils.ParseJSON(barcode, "IMEI");
                 } catch (JSONException e) {
-                    ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！");
+                    ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！"+e.getMessage());
+                    MyLog.d("解析二维码",e.getMessage());
                     e.printStackTrace();
                     return;
                 }
+//                String[] strs = barcode.split(";");
+//                if(strs[2].contains("IMEI")){
+//                    IMEI = strs[2].substring(5,strs[2].length());
+//                }else{
+//                    ToastUtils.showShort(BindingActivity2.this, "扫描失败,字符串格式不对");
+//                }
+
+
                 //判断IMEI号是否是15位
                 if(IMEIlength(IMEI)){
                     mHandler.sendEmptyMessage(handler_key.START_BIND.ordinal());
@@ -292,12 +304,14 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     }
 
     private void startBind(final String IMEI){
-        timeHandler.sendEmptyMessageDelayed(1, 10000);
+        final AVQuery<AVObject> queryBinding = new AVQuery<>("Bindings");
+
         final AVObject bindDevice = new AVObject("Bindings");
         final AVUser currentUser = AVUser.getCurrentUser();
         bindDevice.put("user", currentUser);
+
+        //查询该IMEI号码是否存在
         AVQuery<AVObject> query = new AVQuery<>("DID");
-        final AVQuery<AVObject> queryBinding = new AVQuery<>("Bindings");
         query.whereEqualTo("IMEI", this.IMEI);
         query.findInBackground(new FindCallback<AVObject>() {
             @Override
@@ -312,8 +326,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                             Log.d("成功", "IMEI查询到" + list.size() + " 条符合条件的数据");
                             //一个设备可以绑定多个用户,但是这个类是唯一的，确保不重复生成相同的对象。
                             if (list.size() > 0) {
-                                //因为约束条件既有user又有IMEI  所以查询结果要么是找不到,要么是找到一个
-                                android.os.Message message = new android.os.Message();
+                                Message message = Message.obtain();
                                 message.what = handler_key.FAILED.ordinal();
                                 message.obj = "设备已经被绑定！";
                                 mHandler.sendMessage(message);
@@ -327,10 +340,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                             } else {
                                 bindDevice.put("isAdmin", true);
                                 ToastUtils.showShort(BindingActivity2.this, "您正在绑定主车辆...");
-
-                                //增加查询小安宝开关状态的逻辑代码
-
-                                timeHandler.removeMessages(1);
                             }
                             bindDevice.put("IMEI", IMEI);
                             bindDevice.saveInBackground(new SaveCallback() {
@@ -340,7 +349,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                                         mHandler.sendEmptyMessage(handler_key.SUCCESS.ordinal());
                                     } else {
                                         Log.d("失败", "绑定错误: " + e.getMessage());
-                                        android.os.Message message = new android.os.Message();
+                                        Message message = Message.obtain();
                                         message.what = handler_key.FAILED.ordinal();
                                         message.obj = e.getMessage();
                                         mHandler.sendMessage(message);
@@ -353,7 +362,7 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
 
 
                 } else {
-                    android.os.Message message = new Message();
+                    Message message = Message.obtain();
                     message.what = handler_key.FAILED.ordinal();
                     if (e != null) {
                         Log.d("失败", "查询错误: " + e.getMessage());

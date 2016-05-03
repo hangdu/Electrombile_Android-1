@@ -54,7 +54,7 @@ public class InputIMEIActivity extends Activity {
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(InputIMEIActivity.this, "设备登陆成功");
                     progressDialog.cancel();
-                    getAlarmStatus();
+                    getBindDeviceNumber();
                     break;
                 case FAILED:
                     progressDialog.cancel();
@@ -102,7 +102,7 @@ public class InputIMEIActivity extends Activity {
         finish();
     }
 
-    private void getAlarmStatus(){
+    private void getBindDeviceNumber(){
         mCenter = CmdCenter.getInstance();
         mqttConnectManager = MqttConnectManager.getInstance();
         if(mqttConnectManager.getMac() == null){
@@ -149,7 +149,7 @@ public class InputIMEIActivity extends Activity {
 
         }
         else if(BindedDeviceNum > 1){
-            //
+            //刚刚绑定的不是第一个设备:需要先取消上一个设备的订阅   再订阅本设备
             if(mqttConnectManager.unSubscribe(previous_IMEI)){
                 //解订阅成功
                 mqttConnectManager.subscribe(settingManager.getIMEI());
