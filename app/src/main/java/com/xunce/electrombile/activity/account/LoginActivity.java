@@ -142,6 +142,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				}
 				else{
 					//直接进入主界面
+					FragmentActivity.firsttime_Flag = true;
 					IntentUtils.getInstance().startActivity(LoginActivity.this, FragmentActivity.class);
 					finish();
 				}

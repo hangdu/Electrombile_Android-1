@@ -142,17 +142,20 @@ public class BitmapUtils {
 		File f = new File(srcPath);
 
 		String srcPath1 = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
-//		File f1 = new File(srcPath1);
+		File f1 = new File(srcPath1);
 
 		if(f.exists()){
 			BitmapFactory.Options newOpts = new BitmapFactory.Options();
 			newOpts.inJustDecodeBounds = false;
 			return BitmapFactory.decodeFile(srcPath,newOpts);
 		}
-		else{
+		else if(f1.exists()){
 			BitmapFactory.Options newOpts = new BitmapFactory.Options();
 			newOpts.inJustDecodeBounds = false;
 			return BitmapFactory.decodeFile(srcPath1,newOpts);
+		}
+		else{
+			return null;
 		}
 	}
 }

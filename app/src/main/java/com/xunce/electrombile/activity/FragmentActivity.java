@@ -47,6 +47,7 @@ import com.xunce.electrombile.log.MyLog;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.manager.TracksManager;
+import com.xunce.electrombile.mqtt.Connections;
 import com.xunce.electrombile.receiver.MyReceiver;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
@@ -93,7 +94,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private List<String> IMEIlist;
     private SimpleAdapter simpleAdapter;
     private View left_menu;
-    private Boolean firsttime_Flag = true;
+    public static Boolean firsttime_Flag = true;
     private Thread myThread;
 
     public static final int SWITCHDEVICE = 1;
@@ -193,6 +194,12 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         super.onStart();
         if (!NetworkUtils.isNetworkConnected(this)) {
             NetworkUtils.networkDialog(this, true);
+        }
+
+        if(mqttConnectManager.getMac()==null){
+            mqttConnectManager.setContext(FragmentActivity.this);
+            mqttConnectManager.initMqtt();
+            queryIMEIandMqttConnection();
         }
     }
 
@@ -298,6 +305,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         mqttConnectManager.setOnMqttConnectListener(new MqttConnectManager.OnMqttConnectListener() {
             @Override
             public void MqttConnectSuccess() {
+                mac = mqttConnectManager.getMac();
                 //这些是在呈现了页面之后执行的
                 MqttConnectManager.status = MqttConnectManager.OK;
                 com.orhanobut.logger.Logger.i("MqttConnectSuccess", "mqtt连接成功(是否反复重连 反复成功?)");
@@ -350,6 +358,10 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
      * @param IMEI    要发送的设备号
      */
     public void sendMessage(Context context, final byte[] message, final String IMEI) {
+        if(mqttConnectManager!=null){
+            mac = mqttConnectManager.getMac();
+        }
+
         if (mac == null||!mac.isConnected()) {
             ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
@@ -480,6 +492,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 //execute the task
             }
         }, 2000);
+
     }
 
     /**
@@ -672,4 +685,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             myThread.start();
         }
     }
+
+//    public void cancelAllNotification(){
+//        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+//        notificationManager.cancel(R.string.app_name);
+//    }
 }

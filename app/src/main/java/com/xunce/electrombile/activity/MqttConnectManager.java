@@ -183,6 +183,10 @@ public class MqttConnectManager {
         return mac;
     }
 
+    public void setMac(){
+        mac = null;
+    }
+
 
     public void sendMessage(final byte[] message, final String IMEI) {
         if (mac == null||!mac.isConnected()) {

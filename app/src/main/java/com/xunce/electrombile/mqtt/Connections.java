@@ -99,6 +99,10 @@ public class Connections {
         }
     }
 
+    public int getConnectionsSize(){
+        return connections.size();
+    }
+
     /**
      * Create a fully initialised <code>MqttAndroidClient</code> for the parameters given
      * @param context The Applications context

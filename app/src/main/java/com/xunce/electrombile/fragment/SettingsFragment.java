@@ -38,22 +38,16 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
     //缓存view
     private View rootView;
     private TextView tv_autolockstatus;
-//    private Logger log;
     private MqttConnectManager mqttConnectManager;
 
     @Override
     public void onAttach(Activity activity) {
-//        log = Logger.getLogger(SettingsFragment.class);
-//        log.info("onAttach-start");
         super.onAttach(activity);
-//        log.info("onAttach-finish");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
-//        log.info("onCreate-start");
         super.onCreate(savedInstanceState);
-//        log.info("onCreate-finish");
     }
 
     @Override
@@ -224,16 +218,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         final LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.dialog_logout, null);
         final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
-
-        //找按钮
-//        TextView title = (TextView) view.findViewById(R.id.dialog_title);
-//        TextView message = (TextView) view.findViewById(R.id.dialog_message);
         Button confirm = (Button) view.findViewById(R.id.dialog_confirm);
         Button cancel = (Button) view.findViewById(R.id.dialog_cancel);
-
-//        //设置对应的事件
-//        title.setText("退出登录");
-//        message.setText("将删除本地所有信息，确定退出么？");
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,7 +235,8 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
 
                 //关闭mqttclient
                 mqttConnectManager.MqttDisconnect();
-//                mqttConnectManager.removeConnectionInDatabase();
+//                mqttConnectManager.setMac();
+//                m_context.mac = null;
 
                 intent = new Intent(m_context, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

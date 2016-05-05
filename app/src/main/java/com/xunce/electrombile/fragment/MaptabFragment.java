@@ -668,7 +668,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
      */
     public void updateLocation() {
         tv_CarPosition.setText("车辆位置:");
-        if ((m_context).mac != null ){
+        if (m_context.mac != null ){
             (m_context).sendMessage(m_context, mCenter.cmdWhere(), setManager.getIMEI());
         }
 

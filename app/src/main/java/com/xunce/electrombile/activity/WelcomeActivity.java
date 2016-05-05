@@ -9,9 +9,6 @@ import android.widget.Button;
 import com.xunce.electrombile.R;
 
 public class WelcomeActivity extends Activity {
-
-    private Button btn_Sure;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,11 +17,13 @@ public class WelcomeActivity extends Activity {
     }
 
     private void initView(){
-        btn_Sure = (Button)findViewById(R.id.btn_Sure);
+        Button btn_Sure = (Button)findViewById(R.id.btn_Sure);
         btn_Sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FragmentActivity.firsttime_Flag = true;
                 Intent intent = new Intent(WelcomeActivity.this,FragmentActivity.class);
+
                 startActivity(intent);
                 finish();
             }
