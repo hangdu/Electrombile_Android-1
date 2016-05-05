@@ -120,8 +120,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     mqttConnectManager.MqttDisconnect();
 //                    mqttConnectManager.removeConnectionInDatabase();
 
-                    mqttConnectManager.setMac();
+//                    mqttConnectManager.setMac();
 
+                    FragmentActivity.cancelAllNotification();
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

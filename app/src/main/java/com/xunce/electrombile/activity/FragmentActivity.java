@@ -39,6 +39,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
+import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.applicatoin.Historys;
 import com.xunce.electrombile.fragment.MaptabFragment;
 import com.xunce.electrombile.fragment.SettingsFragment;
@@ -688,8 +689,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
     }
 
-//    public void cancelAllNotification(){
-//        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-//        notificationManager.cancel(R.string.app_name);
-//    }
+    static public void cancelAllNotification(){
+        NotificationManager notificationManager = (NotificationManager) App.getInstance().getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
 }
