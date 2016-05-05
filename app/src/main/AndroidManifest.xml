@@ -133,10 +133,6 @@
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
-            android:name=".activity.FindActivity"
-            android:label="@string/title_activity_find"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.account.PersonalCenterActivity"
             android:label="@string/title_activity_personal_center"
             android:screenOrientation="portrait"

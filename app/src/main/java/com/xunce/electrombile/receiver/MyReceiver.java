@@ -170,6 +170,7 @@ public class MyReceiver extends BroadcastReceiver {
         int code = protocol.getCode();
         int result = protocol.getResult();
         timeHandler.removeMessages(ProtocolConstants.TIME_OUT);
+        ((FragmentActivity) mContext).cancelWaitTimeOut();
 
         switch (cmd) {
             //如果是设置围栏的命令
@@ -182,7 +183,7 @@ public class MyReceiver extends BroadcastReceiver {
 
             //如果是设置关闭围栏的命令
             case ProtocolConstants.CMD_FENCE_OFF:
-                //新加代码
+//                //新加代码
                 Message msg1 = Message.obtain();
                 msg1.what = 2;
                 alarmHandler.sendMessage(msg1);
@@ -205,7 +206,7 @@ public class MyReceiver extends BroadcastReceiver {
                 break;
 
             case ProtocolConstants.CMD_LOCATION:
-                ((FragmentActivity) mContext).cancelWaitTimeOut();
+//                ((FragmentActivity) mContext).cancelWaitTimeOut();
                 caseGetGPS(code,protocol);
                 break;
 

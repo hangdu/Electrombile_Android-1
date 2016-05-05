@@ -84,7 +84,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     private boolean isExit = false;
     //接收广播
     public MyReceiver receiver;
-    private MqttConnectManager mqttConnectManager;
+    public MqttConnectManager mqttConnectManager;
     private DrawerLayout mDrawerLayout;
     //获取到include中的ui(左滑出来的)
     private TextView BindedCarIMEI;
@@ -106,11 +106,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     /**
      * The handler. to process exit()
      */
-    private Handler exitHandler = new Handler() {
-        public void handleMessage(android.os.Message msg) {
-            isExit = false;
-        }
-    };
+//    private Handler exitHandler = new Handler() {
+//        public void handleMessage(android.os.Message msg) {
+//            isExit = false;
+//        }
+//    };
     private Dialog waitDialog;
     public Handler timeHandler = new Handler() {
         @Override
@@ -363,7 +363,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         }
 
         if (mac == null||!mac.isConnected()) {
-            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
+//            ToastUtils.showShort(context, "请先连接设备，或等待连接。");
             return;
         }
         try {
@@ -371,7 +371,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             mac.publish("app2dev/" + IMEI + "/cmd", message, ServiceConstants.MQTT_QUALITY_OF_SERVICE, false);
         } catch (MqttException e) {
             e.printStackTrace();
+            return;
         }
+        timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
     }
 
     /**
