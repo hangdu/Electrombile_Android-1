@@ -184,11 +184,6 @@ public class MqttConnectManager {
         return mac;
     }
 
-//    public void setMac(){
-//        mac = null;
-//    }
-
-
     public void sendMessage(final byte[] message, final String IMEI) {
         if (mac == null||!mac.isConnected()) {
             ToastUtils.showShort(App.getInstance(), "请先连接设备，或等待连接。");

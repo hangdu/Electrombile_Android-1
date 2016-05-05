@@ -215,7 +215,6 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         if (checkBind()) return;
 
         if (mBaiduMap != null) {
-//            m_context.timeHandler.sendEmptyMessageDelayed(ProtocolConstants.TIME_OUT, ProtocolConstants.TIME_OUT_VALUE);
             updateLocation();
             com.orhanobut.logger.Logger.i("InitCarLocation", "发送cmd_location");
         }
