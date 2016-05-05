@@ -1,84 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <LinearLayout
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rect_dialog">
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="#16c772"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="@drawable/rect_dialog_title">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/img_cancel"/>
 
         <TextView
-            android:id="@+id/dialog_title"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="我是标题"
-            android:textColor="@color/base_color_text_white"
-            android:textSize="24sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp">
-
-        <TextView
-            android:id="@+id/dialog_message"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:text="我是内容"
-            android:textColor="@color/base_color_text_black"
-            android:textSize="20sp" />
+            android:layout_centerInParent="true"
+            android:textColor="#009f53"
+            android:textSize="17.33sp"
+            android:text="退出登录"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/dialog_tv_carName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:textColor="#afe9d2"
+        android:textSize="16sp"
+        android:text="将删除本地所有信息，确定退出吗？"/>
+
+    <LinearLayout
+        android:layout_marginTop="17dp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/dialog_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="17dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/yellow_rect"
+            android:textColor="#dadada"
+            android:textSize="17.33dp"
+            android:text="确定"/>
+        <Button
+            android:layout_marginLeft="9dp"
+            android:id="@+id/dialog_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="17dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/yellow_rect"
+            android:textColor="#dadada"
+            android:textSize="17.33dp"
+            android:text="取消"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="2dp"
-        android:background="@drawable/horizontal_line"
-        android:layerType="software" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:weightSum="3">
-
-        <TextView
-            android:id="@+id/dialog_confirm"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.35"
-            android:background="@drawable/dialog_tv_bg"
-            android:clickable="true"
-            android:gravity="center"
-            android:text="确定"
-            android:textSize="24sp" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.3"
-            android:background="@drawable/vertical_line"
-            android:layerType="software" />
-
-        <TextView
-            android:id="@+id/dialog_cancel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1.35"
-            android:background="@drawable/dialog_tv_bg"
-            android:clickable="true"
-            android:gravity="center"
-            android:text="取消"
-            android:textSize="24sp" />
-    </LinearLayout>
-
+        android:layout_height="17dp">
+    </View>
 </LinearLayout>

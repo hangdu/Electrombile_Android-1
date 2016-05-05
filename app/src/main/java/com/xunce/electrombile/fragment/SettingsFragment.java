@@ -226,14 +226,14 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
         final Dialog dialog = new Dialog(m_context, R.style.Translucent_NoTitle_white);
 
         //找按钮
-        TextView title = (TextView) view.findViewById(R.id.dialog_title);
-        TextView message = (TextView) view.findViewById(R.id.dialog_message);
-        TextView confirm = (TextView) view.findViewById(R.id.dialog_confirm);
-        TextView cancel = (TextView) view.findViewById(R.id.dialog_cancel);
+//        TextView title = (TextView) view.findViewById(R.id.dialog_title);
+//        TextView message = (TextView) view.findViewById(R.id.dialog_message);
+        Button confirm = (Button) view.findViewById(R.id.dialog_confirm);
+        Button cancel = (Button) view.findViewById(R.id.dialog_cancel);
 
-        //设置对应的事件
-        title.setText("退出登录");
-        message.setText("将删除本地所有信息，确定退出么？");
+//        //设置对应的事件
+//        title.setText("退出登录");
+//        message.setText("将删除本地所有信息，确定退出么？");
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -265,19 +265,12 @@ public class SettingsFragment extends BaseFragment implements View.OnClickListen
             }
         });
 
-        //设置布局
-        dialog.addContentView(view, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        dialog.show();
-
-        //设置宽度
         WindowManager m = m_context.getWindowManager();
         Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); // 获取对话框当前的参数值
-//        p.height = (int) (d.getHeight() * 0.6); // 高度设置为屏幕的0.6
-        //虽然过时,为了兼容性,还是用老方法. API 13以上才能使用新方法
-        p.width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
-        dialog.getWindow().setAttributes(p);
+        final int dialog_width = (int) (d.getWidth() * 0.75); // 宽度设置为屏幕的0.65
+        dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        dialog.show();
     }
 
     /**
