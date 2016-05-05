@@ -275,6 +275,7 @@ public class FindCarActivity extends Activity {
 
         dialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
+        dialog.setCancelable(false);
     }
 
 
@@ -294,6 +295,7 @@ public class FindCarActivity extends Activity {
 
         countdownDialog.addContentView(view, new LinearLayout.LayoutParams(dialog_width, ViewGroup.LayoutParams.WRAP_CONTENT));
         countdownDialog.show();
+        countdownDialog.setCancelable(false);
     }
 
     private void getSignalUserguideDialog(){

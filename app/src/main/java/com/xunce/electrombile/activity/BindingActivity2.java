@@ -46,13 +46,13 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
     public CmdCenter mCenter;
     public String previous_IMEI;
     private LeancloudManager leancloudManager;
-    private List<String> IMEIlist;
-    public Handler timeHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            ToastUtils.showShort(BindingActivity2.this, "绑定设备超时");
-        }
-    };
+//    private List<String> IMEIlist;
+//    public Handler timeHandler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            ToastUtils.showShort(BindingActivity2.this, "绑定设备超时");
+//        }
+//    };
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(android.os.Message msg){
@@ -155,7 +155,6 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
             Intent intent = new Intent(BindingActivity2.this,WelcomeActivity.class);
             startActivity(intent);
         }
-        finish();
     }
 
     @Override
@@ -229,12 +228,14 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                 }
                 else{
                     ToastUtils.showShort(BindingActivity2.this,"IMEI的长度不对");
+//                    finish();
                 }
             }
         }
         else{
             //扫描失败
             ToastUtils.showShort(BindingActivity2.this, "扫描失败，请重新扫描！");
+//            finish();
         }
     }
 
