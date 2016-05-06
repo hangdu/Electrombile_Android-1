@@ -1,5 +1,6 @@
 package com.xunce.electrombile.utils.system;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -157,5 +158,13 @@ public class BitmapUtils {
 		else{
 			return null;
 		}
+	}
+
+	public static Bitmap readBitMap(Context context, int drawableId){
+		BitmapFactory.Options opt = new BitmapFactory.Options();
+		opt.inPreferredConfig = Bitmap.Config.RGB_565;
+		//获取资源图片
+		InputStream is = context.getResources().openRawResource(drawableId);
+		return BitmapFactory.decodeStream(is, null, opt);
 	}
 }

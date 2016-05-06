@@ -23,10 +23,10 @@
         android:text="车辆问题一手遮天"/>
 
     <ImageView
+        android:id="@+id/img_guide2"
         android:layout_width="320dp"
         android:layout_height="363dp"
         android:layout_marginTop="25dp"
-        android:src="@drawable/img_guide2"
         android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

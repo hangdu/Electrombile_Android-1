@@ -23,10 +23,10 @@
         android:text="由防到找如此简单"/>
     
     <ImageView
+        android:id="@+id/img_guide1"
         android:layout_width="320dp"
         android:layout_height="363dp"
         android:layout_marginTop="25dp"
-        android:src="@drawable/img_guide1"
         android:layout_gravity="center_horizontal"/>
 
 </LinearLayout>

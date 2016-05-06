@@ -3,6 +3,9 @@ package com.xunce.electrombile.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,6 +17,7 @@ import android.widget.ImageView;
 
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
+import com.xunce.electrombile.utils.system.BitmapUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +30,10 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
     private ImageView[] dots;
     private int[] ids={R.id.iv_point1,R.id.iv_point2,R.id.iv_point3,R.id.iv_point4};
     private Button b_enter;
-
-
+    private ImageView img_guide1;
+    private ImageView img_guide2;
+    private ImageView img_guide3;
+    private ImageView img_guide4;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,10 +48,29 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
     public void initViews(){
         LayoutInflater layoutInflater= LayoutInflater.from(this);
         views=new ArrayList<>();
-        views.add(layoutInflater.inflate(R.layout.guide_one,null));
-        views.add(layoutInflater.inflate(R.layout.guide_two,null));
-        views.add(layoutInflater.inflate(R.layout.guide_three,null));
-        views.add(layoutInflater.inflate(R.layout.guide_four,null));
+
+        View view1 = layoutInflater.inflate(R.layout.guide_one, null);
+        View view2 = layoutInflater.inflate(R.layout.guide_two,null);
+        View view3 = layoutInflater.inflate(R.layout.guide_three,null);
+        View view4 = layoutInflater.inflate(R.layout.guide_four,null);
+
+        img_guide1 = (ImageView)view1.findViewById(R.id.img_guide1);
+        img_guide1.setImageBitmap(BitmapUtils.readBitMap(this,R.drawable.img_guide1));
+
+        img_guide2 = (ImageView)view2.findViewById(R.id.img_guide2);
+        img_guide2.setImageBitmap(BitmapUtils.readBitMap(this,R.drawable.img_guide2));
+
+        img_guide3 = (ImageView)view3.findViewById(R.id.img_guide3);
+        img_guide3.setImageBitmap(BitmapUtils.readBitMap(this,R.drawable.img_guide3));
+
+        img_guide4 = (ImageView)view4.findViewById(R.id.img_guide4);
+        img_guide4.setImageBitmap(BitmapUtils.readBitMap(this,R.drawable.img_guide4));
+
+        views.add(view1);
+        views.add(view2);
+        views.add(view3);
+        views.add(view4);
+
         viewPagerAdapter=new ViewPagerAdapter(views,this);
         viewPager= (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(viewPagerAdapter);
@@ -121,6 +146,29 @@ public class GuideActivity extends Activity implements ViewPager.OnPageChangeLis
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return (view==object);
+        }
+    }
+
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        releaseImageViewResouce(img_guide1);
+        releaseImageViewResouce(img_guide2);
+        releaseImageViewResouce(img_guide3);
+        releaseImageViewResouce(img_guide4);
+    }
+
+
+    public static void releaseImageViewResouce(ImageView imageView) {
+        if (imageView == null) return;
+        Drawable drawable = imageView.getDrawable();
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
         }
     }
 }
