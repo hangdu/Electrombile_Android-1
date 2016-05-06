@@ -57,7 +57,7 @@
         android:layout_marginTop="16.67dp"
         android:textColor="#717171"
         android:textSize="10.67sp"
-        android:text = "为了安全,我们会向你的手机发送验证码"/>
+        android:text = "为了安全，我们会向您的手机发送验证码"/>
 
     <Button
         android:id="@+id/btn_NextStep"
