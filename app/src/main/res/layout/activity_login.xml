@@ -31,6 +31,7 @@
             android:layout_centerInParent="true"
             android:background="@null"
             android:hint="输入手机号码"
+            android:textSize="16sp"
             android:inputType="phone"
             android:singleLine="true" />
     </RelativeLayout>
@@ -63,6 +64,7 @@
             android:inputType="textPassword"
             android:digits="0123456789abcdefghigklmnopqrstuvwxyz"
             android:hint="输入密码"
+            android:textSize="16sp"
             android:singleLine="true" />
     </RelativeLayout>
 
@@ -96,13 +98,13 @@
             android:layout_height="30dp"
             android:background="@drawable/btn_register"
             android:textSize="16sp"
-            android:text="登陆"
+            android:text="登录"
             android:textColor="@color/white" />
 
         <Button
             android:layout_below="@+id/btnLogin"
             android:id="@+id/tvForgot"
-            android:layout_width="63.67dp"
+            android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="65dp"

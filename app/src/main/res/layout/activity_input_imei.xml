@@ -29,6 +29,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@null"
         android:hint="输入设备序列号"
+        android:textSize="16sp"
         android:inputType="phone"
         android:singleLine="true" />
 

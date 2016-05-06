@@ -29,7 +29,7 @@ public class VerifiedActivity extends Activity {
 
     private EditText etInputCode;
     private Button btnReGetCode;
-    private Button btnSure;
+//    private Button btnSure;
     private ProgressDialog dialog;
     //验证码重发倒计时
     private int secondLeft = 60;
@@ -77,7 +77,7 @@ public class VerifiedActivity extends Activity {
     private void initView() {
         etInputCode = (EditText) findViewById(R.id.etInputCode);
         btnReGetCode = (Button) findViewById(R.id.btnReGetCode);
-        btnSure = (Button) findViewById(R.id.btnReGetCode);
+//        btnSure = (Button) findViewById(R.id.btnReGetCode);
         dialog = new ProgressDialog(this);
         dialog.setMessage("处理中，请稍候...");
         settingManager = SettingManager.getInstance();
