@@ -180,17 +180,6 @@ public class TestddActivity extends Activity{
             tracksManager.clearTracks();
         }
 
-        //删除数据库啊
-//        String path = "/data/data/com.xunce.electrombile/databases";
-//        File filePath = new File(path);
-//        File[] files = filePath.listFiles();
-//        for(File file:files){
-//            String filename = file.getName();
-//            Log.d("test","test");
-//            if(filename.contains("IMEI")){
-//                file.delete();
-//            }
-//        }
     }
 
 
@@ -363,10 +352,10 @@ public class TestddActivity extends Activity{
                                 query.whereEqualTo("IMEI", IMEI);
 
                                 //单位转换:  由秒转换成毫秒
-                                Date startDate = new Date(start_timestamp * 1000);
-                                Date endDate = new Date(end_timestamp * 1000);
-                                query.whereGreaterThanOrEqualTo("createdAt", startDate);
-                                query.whereLessThan("createdAt", endDate);
+//                                Date startDate = new Date(start_timestamp * 1000);
+//                                Date endDate = new Date(end_timestamp * 1000);
+                                query.whereGreaterThanOrEqualTo("time", start_timestamp);
+                                query.whereLessThan("time", end_timestamp);
                                 query.findInBackground(new FindCallback<AVObject>() {
                                     @Override
                                     public void done(List<AVObject> list, AVException e) {
