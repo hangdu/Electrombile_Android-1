@@ -64,7 +64,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     public MapView mMapView;
     private SeekBar seekBar;
     private int Progress;
-    private SettingManager settingManager;
+//    private SettingManager settingManager;
     private InfoWindow mInfoWindow;
     private View markerView;
     private TextView tv_pointTime;
@@ -120,7 +120,7 @@ public class SpecificHistoryTrackActivity extends Activity {
     }
 
     private void initViews(){
-        settingManager = SettingManager.getInstance();
+        SettingManager settingManager = SettingManager.getInstance();
 
         View titleView = findViewById(R.id.ll_button) ;
         TextView titleTextView = (TextView)titleView.findViewById(R.id.tv_title);

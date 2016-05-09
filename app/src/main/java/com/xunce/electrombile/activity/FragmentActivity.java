@@ -58,6 +58,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,7 +70,6 @@ import java.util.List;
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener{
     private static final String TAG = "FragmentActivity:";
-//    private static final int DELAYTIME = 500;
     private static final int REFRESHTIME = 1000*60*30;
     public MqttAndroidClient mac;
     public CmdCenter mCenter;
@@ -103,6 +103,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public static final int DELETEMAINDEVICE = 3;
     public static final int DELETEMONMAINDEVICE = 4;
 
+    public static final int ItineraryOnly = 1;
+    public static final int ItineraryandSim = 2;
+
 
     /**
      * The handler. to process exit()
@@ -132,7 +135,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     MyLog.d("handler", "updateData");
                     //查询电量
                     getBatteryInfo();
-                    updateTotalItinerary();
+                    updateTotalItineraryandSim(ItineraryOnly);
                     break;
             }
         }
@@ -142,9 +145,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         sendMessage(this, mCenter.getBatteryInfo(), setManager.getIMEI());
     }
 
-    //主动刷新电量和总公里数
-    public void updateTotalItinerary(){
-        //查询总的公里数
+    //查询总的公里数和sim卡天数
+    public void updateTotalItineraryandSim(final int type){
         AVQuery<AVObject> query = new AVQuery<>("DID");
         query.whereEqualTo("IMEI", setManager.getIMEI());
         query.findInBackground(new FindCallback<AVObject>() {
@@ -160,6 +162,15 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                         try {
                             int itinerary = (int) avObject.get("itinerary");
                             switchFragment.refreshItineraryInfo(itinerary / 1000.0);
+
+                            if(type == 2){
+                                Date createDate = avObject.getCreatedAt();
+                                long timestamp_start = createDate.getTime();
+                                long timestamp = System.currentTimeMillis();
+                                int days = (int)((timestamp-timestamp_start)/3600/24000);
+                                days = 365-days;
+                                switchFragment.refreshSimDays(days);
+                            }
                         } catch (Exception ee) {
                             ee.printStackTrace();
                         }
@@ -169,8 +180,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                 }
             }
         });
-
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,8 +333,8 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
                     //获取小安宝的初始状态:电量;自动落锁状态;小安宝的开关状态
                     sendMessage(FragmentActivity.this, mCenter.getInitialStatus(), setManager.getIMEI());
 
-                    //获取总公里数
-                    updateTotalItinerary();
+                    //获取总公里数和SIM
+                    updateTotalItineraryandSim(ItineraryandSim);
 
                     firsttime_Flag = false;
 

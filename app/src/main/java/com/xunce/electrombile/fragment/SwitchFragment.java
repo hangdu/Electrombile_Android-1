@@ -122,6 +122,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     private ImageView img_angle3;
     private ImageView img_angle4;
     private ImageView img_angle5;
+    private TextView tv_SimDays;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -354,6 +355,8 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 });
             }
         });
+
+        tv_SimDays = (TextView)v.findViewById(R.id.tv_SimDays);
 
         tv_battery = (TextView)v.findViewById(R.id.tv_battery);
         tv_distance = (TextView)v.findViewById(R.id.tv_distance);
@@ -951,6 +954,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         tv_battery.setText("正在获取电量");
     }
 
+    public void refreshSimDays(int days){
+        tv_SimDays.setText("sim卡还有"+String.valueOf(days)+"天到期");
+    }
+
     public void refreshItineraryInfo(double itinerary){
         tv_distance.setText(itinerary + "公里");
 
@@ -1130,7 +1137,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             else if(intent.getStringExtra("KIND").equals("OTHER")){
                 DeviceChangeHeadImage();
                 setSafedays();
-                m_context.updateTotalItinerary();
+                m_context.updateTotalItineraryandSim(FragmentActivity.ItineraryandSim);
                 m_context.refreshBindList1();
             }
             else if(intent.getStringExtra("KIND").equals("GETINITIALSTATUS")){
@@ -1141,7 +1148,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 m_context.refreshBindList1(FragmentActivity.SWITCHDEVICE,position);
                 DeviceChangeHeadImage();
                 setSafedays();
-                m_context.updateTotalItinerary();
+                m_context.updateTotalItineraryandSim(FragmentActivity.ItineraryandSim);
             }
             else if(intent.getStringExtra("KIND").equals("DELETENONMAINDEVICE")){
                 m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,intent.getIntExtra("POSITION",0));
@@ -1149,7 +1156,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             else if(intent.getStringExtra("KIND").equals("DELETEMAINDEVICE")){
                 DeviceChangeHeadImage();
                 setSafedays();
-                m_context.updateTotalItinerary();
+                m_context.updateTotalItineraryandSim(FragmentActivity.ItineraryandSim);
                 m_context.refreshBindList1(FragmentActivity.DELETEMONMAINDEVICE,0);
             }
             else if(intent.getStringExtra("KIND").equals("CHANGEMAINPIC")){

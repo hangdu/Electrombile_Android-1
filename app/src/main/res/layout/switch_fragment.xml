@@ -206,7 +206,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="12.67sp"
                     android:textColor="#595959"
-                    android:text="预计可行驶60公里"/>
+                    android:text="预计可行驶---公里"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -282,6 +282,7 @@
                 android:text="小安宝流量"/>
 
             <TextView
+                android:id="@+id/tv_SimDays"
                 android:layout_below="@+id/tv1"
                 android:layout_marginTop="6dp"
                 android:layout_alignLeft="@+id/tv1"
