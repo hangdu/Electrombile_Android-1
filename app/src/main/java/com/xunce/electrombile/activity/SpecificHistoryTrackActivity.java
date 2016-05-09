@@ -61,7 +61,7 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private BaiduMap mBaiduMap;
     private int playOrder = 0;
-    public static MapView mMapView;
+    public MapView mMapView;
     private SeekBar seekBar;
     private int Progress;
     private SettingManager settingManager;
@@ -408,5 +408,27 @@ public class SpecificHistoryTrackActivity extends Activity {
         playOrder += 1;
 
         sendPlayMessage(DELAY);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        mMapView.onResume();
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        mMapView.onPause();
+
+    }
+
+    @Override
+    public void onDestroy(){
+        mBaiduMap.clear();
+        mMapView.onDestroy();
+        mMapView = null;
+        super.onDestroy();
     }
 }

@@ -282,6 +282,8 @@ public class TestddActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        TracksManager.clearTracks();
+        System.gc();
     }
 
     private void findCloud(){
