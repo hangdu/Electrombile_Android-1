@@ -30,9 +30,10 @@
                 android:id="@+id/tv_CarName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
+                android:textColor="#ffffff"
                 android:textSize="14sp"
-                android:background="#1dcf96"
+                android:theme="@android:style/Theme.Translucent"
+                android:background="#55000000"
                 android:text="车辆名称:"/>
             <View
                 android:layout_width="wrap_content"
@@ -42,9 +43,10 @@
                 android:id="@+id/tv_startPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
+                android:textColor="#ffffff"
                 android:textSize="14sp"
-                android:background="#1dcf96"
+                android:theme="@android:style/Theme.Translucent"
+                android:background="#55000000"
                 android:text="起始位置:"/>
 
             <View
@@ -55,9 +57,10 @@
                 android:id="@+id/tv_endPoint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
+                android:textColor="#ffffff"
                 android:textSize="14sp"
-                android:background="#1dcf96"
+                android:theme="@android:style/Theme.Translucent"
+                android:background="#55000000"
                 android:text="终点位置:"/>
 
             <View
@@ -68,16 +71,18 @@
                 android:id="@+id/tv_routeTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000000"
+                android:textColor="#ffffff"
                 android:textSize="14sp"
-                android:background="#1dcf96"
+                android:theme="@android:style/Theme.Translucent"
+                android:background="#55000000"
                 android:text="历时:"/>
         </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="52.67dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -90,10 +95,9 @@
 
         <SeekBar
             android:id="@+id/seekbar"
-            android:layout_toRightOf="@+id/btn_play"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="26.67dp"
-            android:layout_width="200dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:layout_height="wrap_content"
             android:thumb="@drawable/thumb"
             android:thumbOffset="8dp"
@@ -101,10 +105,41 @@
 
         <Button
             android:id="@+id/btn_speed"
-            android:layout_toRightOf="@+id/seekbar"
-            android:layout_marginLeft="26.67dp"
             android:layout_width="35.33dp"
             android:layout_height="34.33dp"
             android:background="@drawable/img_speed1"/>
-    </RelativeLayout>
+        <View
+            android:layout_width="23.33dp"
+            android:layout_height="34.33dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@android:style/Theme.Translucent"
+        android:background="#55000000"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tv_pointTime"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textColor="#ffffff"
+            android:text="时间:"/>
+
+        <TextView
+            android:id="@+id/tv_speed"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="速度:"
+            android:textColor="#ffffff"
+            android:layout_marginLeft="60dp"/>
+    </LinearLayout>
 </RelativeLayout>

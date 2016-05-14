@@ -52,7 +52,6 @@ public class SpecificHistoryTrackActivity extends Activity {
 
     private String startPoint;
     private String endPoint;
-//    private int miles;
 
     private Button btn_play;
     private Marker markerMobile;
@@ -64,9 +63,6 @@ public class SpecificHistoryTrackActivity extends Activity {
     public MapView mMapView;
     private SeekBar seekBar;
     private int Progress;
-//    private SettingManager settingManager;
-    private InfoWindow mInfoWindow;
-    private View markerView;
     private TextView tv_pointTime;
     private TextView tv_speed;
 
@@ -107,12 +103,10 @@ public class SpecificHistoryTrackActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-//        SDKInitializer.initialize(this);
 
         Intent intent = getIntent();
         startPoint = intent.getStringExtra("startPoint");
         endPoint = intent.getStringExtra("endPoint");
-//        miles = Integer.parseInt(intent.getStringExtra("miles"));
         setContentView(R.layout.activity_specific_history_track);
 
         initViews();
@@ -182,8 +176,6 @@ public class SpecificHistoryTrackActivity extends Activity {
                 playOrder = Progress;
                 LatLng p2 = trackDataList.get(Progress).point;
                 markerMobile.setPosition(p2);
-                mInfoWindow = new InfoWindow(markerView,p2, -100);
-                mBaiduMap.showInfoWindow(mInfoWindow);
 
                 if (status.equals(PLAYING)) {
                     Message msg = Message.obtain();
@@ -249,20 +241,14 @@ public class SpecificHistoryTrackActivity extends Activity {
         });
         status = START;
 
-        LayoutInflater inflater = (LayoutInflater) this
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        markerView = inflater.inflate(R.layout.view_marker, null);
-
-        tv_pointTime = (TextView)markerView.findViewById(R.id.tv_updateTime);
+        tv_pointTime = (TextView)findViewById(R.id.tv_pointTime);
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdfWithSecond.format(trackDataList.get(0).time);
         String[] strs = time.split(" ");
-        tv_pointTime.setText(strs[1]);
+        tv_pointTime.setText("时间:"+strs[1]);
 
-        TextView tv_speedname = (TextView)markerView.findViewById(R.id.tv_statusName);
-        tv_speedname.setText("速度:");
-        tv_speed = (TextView)markerView.findViewById(R.id.tv_statuse);
-        tv_speed.setText(trackDataList.get(0).speed+"km/h");
+        tv_speed = (TextView)findViewById(R.id.tv_speed);
+        tv_speed.setText("速度:"+trackDataList.get(0).speed+"km/h");
 
         seekBar.setMax(trackDataList.size()-1);
     }
@@ -301,9 +287,6 @@ public class SpecificHistoryTrackActivity extends Activity {
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newLatLngBounds(bounds);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         drawLine();
-
-        mInfoWindow = new InfoWindow(markerView,trackDataList.get(0).point, -100);
-        mBaiduMap.showInfoWindow(mInfoWindow);
 
         Message msg = Message.obtain();
         msg.what = handleKey.BOUND_REFRESH.ordinal();
@@ -395,15 +378,11 @@ public class SpecificHistoryTrackActivity extends Activity {
             markerMobile.setPosition(p2);
         }
 
-        mInfoWindow = new InfoWindow(markerView,p2, -100);
-        mBaiduMap.showInfoWindow(mInfoWindow);
-
         SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdfWithSecond.format(trackDataList.get(track + 1).time);
         String[] strs = time.split(" ");
-        tv_pointTime.setText(strs[1]);
-
-        tv_speed.setText(trackDataList.get(track + 1).speed+"km/h");
+        tv_pointTime.setText("时间:"+strs[1]);
+        tv_speed.setText("速度:"+trackDataList.get(track + 1).speed+"km/h");
 
         playOrder += 1;
 
