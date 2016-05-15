@@ -237,7 +237,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
-            showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+//            showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
         } else {
             closeStateAlarmBtn();
         }
