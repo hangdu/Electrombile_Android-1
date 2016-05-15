@@ -156,7 +156,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 4:
                     if (setManager.getAlarmFlag()) {
                         openStateAlarmBtn();
-                        showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+                        showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
                     } else {
                         closeStateAlarmBtn();
                     }
@@ -237,7 +237,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
-            showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+            showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
         } else {
             closeStateAlarmBtn();
         }
@@ -739,10 +739,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void msgSuccessArrived() {
         if (setManager.getAlarmFlag()) {
-            showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+            showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             openStateAlarmBtn();
         } else {
-            showNotification("安全宝防盗系统已关闭",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+            showNotification("小安宝防盗系统已关闭",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             VibratorUtil.Vibrate(m_context, 500);
             closeStateAlarmBtn();
         }
@@ -757,9 +757,9 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
         Notification notification = new NotificationCompat.Builder(m_context)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("安全宝")
+                .setContentTitle("小安宝")
                 .setWhen(System.currentTimeMillis())
-                .setTicker("安全宝正在设置~")
+                .setTicker("小安宝正在设置~")
                 .setOngoing(true)
                 .setContentText(text)
                 .setContentIntent(contextIntent)
@@ -813,7 +813,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             if(setManager.getAlarmFlag()){
                 //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
                 openStateAlarmBtn();
-                showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
+                showNotification("小安宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             }
             else{
                 closeStateAlarmBtn();
