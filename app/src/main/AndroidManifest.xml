@@ -62,7 +62,7 @@
         <!-- BugHD -->
         <meta-data
             android:name="BUG_HD_SDK_GENERAL_KEY"
-            android:value="653b6b146dd19b4ce30dea9bbfa4a1e2" />
+            android:value="a46dee02ce9ef676758d3c4071da3e52" />
 
         <activity
             android:name=".activity.SplashActivity"
