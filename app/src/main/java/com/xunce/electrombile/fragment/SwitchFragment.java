@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.Image;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -155,7 +156,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 case 4:
                     if (setManager.getAlarmFlag()) {
                         openStateAlarmBtn();
-                        showNotification("安全宝防盗系统已启动");
+                        showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
                     } else {
                         closeStateAlarmBtn();
                     }
@@ -236,7 +237,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         super.onResume();
         if (setManager.getAlarmFlag()) {
             openStateAlarmBtn();
-            showNotification("安全宝防盗系统已启动");
+            showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
         } else {
             closeStateAlarmBtn();
         }
@@ -738,21 +739,22 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void msgSuccessArrived() {
         if (setManager.getAlarmFlag()) {
-            showNotification("安全宝防盗系统已启动");
+            showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             openStateAlarmBtn();
         } else {
-            showNotification("安全宝防盗系统已关闭");
+            showNotification("安全宝防盗系统已关闭",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             VibratorUtil.Vibrate(m_context, 500);
             closeStateAlarmBtn();
         }
     }
 
     //显示常驻通知栏
-    public void showNotification(String text) {
+    public void showNotification(String text,int notification_id) {
         NotificationManager notificationManager = (NotificationManager) (m_context).getSystemService(
                 m_context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(m_context, FragmentActivity.class);
         PendingIntent contextIntent = PendingIntent.getActivity(m_context, 0, intent, 0);
+
         Notification notification = new NotificationCompat.Builder(m_context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("安全宝")
@@ -762,7 +764,20 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                 .setContentText(text)
                 .setContentIntent(contextIntent)
                 .build();
-        notificationManager.notify(R.string.app_name, notification);
+
+        notification.defaults |= Notification.DEFAULT_VIBRATE;
+        notification.defaults |= Notification.DEFAULT_SOUND;
+
+        switch (notification_id){
+            case FragmentActivity.NOTIFICATION_ALARMSTATUS:
+                notificationManager.notify(R.string.app_name, notification);
+                break;
+            case FragmentActivity.NOTIFICATION_AUTOLOCKSTATUS:
+                notificationManager.notify(notification_id, notification);
+                break;
+            default:
+                break;
+        }
     }
 
     private static MKOLUpdateElement LocalCityelement() {
@@ -798,7 +813,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             if(setManager.getAlarmFlag()){
                 //这个地方可能会出现问题  有可能switchFramgent的initview函数还没有执行完  这里就需要进行置状态了.
                 openStateAlarmBtn();
-                showNotification("安全宝防盗系统已启动");
+                showNotification("安全宝防盗系统已启动",FragmentActivity.NOTIFICATION_ALARMSTATUS);
             }
             else{
                 closeStateAlarmBtn();

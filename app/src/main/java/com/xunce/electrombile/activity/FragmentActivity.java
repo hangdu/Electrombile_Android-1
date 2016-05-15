@@ -69,6 +69,8 @@ import java.util.List;
 
 public class FragmentActivity extends android.support.v4.app.FragmentActivity
         implements SwitchFragment.GPSDataChangeListener{
+    public static final int NOTIFICATION_ALARMSTATUS = 0;
+    public static final int NOTIFICATION_AUTOLOCKSTATUS = 1;
     private static final String TAG = "FragmentActivity:";
     private static final int REFRESHTIME = 1000*60*30;
     public MqttAndroidClient mac;

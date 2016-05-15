@@ -150,13 +150,11 @@ public class MyReceiver extends BroadcastReceiver {
                     Date date = new Date(timestamp*1000);
                     SimpleDateFormat sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String date_str = sdfWithSecond.format(date);
-                    ToastUtils.showShort(mContext, date_str + " 自动落锁成功");
-
-                    MyLog.d("onNotifyArrived", "openStateAlarmBtn");
                     //改变小安宝开关的样式  现在为开启状态  这个函数没有改变开关样式 为什么啊
                     ((FragmentActivity) mContext).setManager.setAlarmFlag(true);
                     ((FragmentActivity) mContext).switchFragment.openStateAlarmBtn();
-                    ((FragmentActivity) mContext).switchFragment.showNotification("自动落锁成功");
+                    ((FragmentActivity) mContext).switchFragment.showNotification(date_str+"自动落锁成功",
+                            FragmentActivity.NOTIFICATION_AUTOLOCKSTATUS);
                 }
                 break;
 
