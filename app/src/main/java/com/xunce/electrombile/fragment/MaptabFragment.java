@@ -61,7 +61,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 
 public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultListener {
     //保存数据所需要的最短距离

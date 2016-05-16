@@ -29,7 +29,6 @@ import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.PersonalCenterActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
-import org.apache.log4j.Logger;
 
 
 public class SettingsFragment extends BaseFragment implements View.OnClickListener {
