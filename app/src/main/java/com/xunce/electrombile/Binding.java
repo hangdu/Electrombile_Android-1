@@ -20,6 +20,7 @@ import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.useful.JPushUtils;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class Binding {
     private BindingCallback bindingCallback;
     private String FromActivity;
     private LeancloudManager leancloudManager;
+    private JPushUtils jPushUtils;
     public Binding(Context context,String FromActivity,BindingCallback bindingCallback){
         this.bindingCallback = bindingCallback;
         mContext = context;
@@ -46,6 +48,7 @@ public class Binding {
         mCenter = CmdCenter.getInstance();
         this.FromActivity = FromActivity;
         leancloudManager = LeancloudManager.getInstance();
+        jPushUtils = JPushUtils.getInstance();
     }
 
 
@@ -67,6 +70,7 @@ public class Binding {
                     settingManager.setIMEI(IMEI);
                     ToastUtils.showShort(mContext, "设备登陆成功");
 //                    progressDialog.cancel();
+                    jPushUtils.setJPushAlias("simcom_"+settingManager.getIMEI());
                     getBindDeviceNumber();
                     break;
 

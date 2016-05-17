@@ -2,6 +2,7 @@ package com.xunce.electrombile.activity;
 
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -63,6 +64,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 
 /**
  * Created by heyukun on 2015/3/24. 修改 by liyanbo
@@ -101,6 +104,7 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     public static Boolean firsttime_Flag = true;
     private Thread myThread;
     private JPushUtils jPushUtils;
+    private MessageReceiver mMessageReceiver;
 
     public static final int SWITCHDEVICE = 1;
     public static final int ADDDEVICE = 2;
@@ -109,6 +113,11 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
 
     public static final int ItineraryOnly = 1;
     public static final int ItineraryandSim = 2;
+    public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_EXTRAS = "extras";
+
 
 
     /**
@@ -202,6 +211,9 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
         MyLog.d("FragmentActivity", "onCreate4");
         Historys.put(this);
         registerBroadCast();
+
+        JPushInterface.init(getApplicationContext());
+        registerMessageReceiver();
         jPushUtils.setJPushAlias("simcom_"+setManager.getIMEI());
     }
 
@@ -716,5 +728,26 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
     static public void cancelAllNotification(){
         NotificationManager notificationManager = (NotificationManager) App.getInstance().getSystemService(NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
+    }
+
+    public void registerMessageReceiver() {
+        mMessageReceiver = new MessageReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        filter.addAction(MESSAGE_RECEIVED_ACTION);
+        registerReceiver(mMessageReceiver, filter);
+    }
+
+    public class MessageReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
+                String messge = intent.getStringExtra(KEY_MESSAGE);
+                String extras = intent.getStringExtra(KEY_EXTRAS);
+                StringBuilder showMsg = new StringBuilder();
+                showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
+            }
+        }
     }
 }

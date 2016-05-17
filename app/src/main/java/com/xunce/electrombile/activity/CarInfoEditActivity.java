@@ -43,6 +43,7 @@ import com.xunce.electrombile.manager.CmdCenter;
 import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.system.BitmapUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
+import com.xunce.electrombile.utils.useful.JPushUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     private ImageView img_car;
     private Uri imageUri;
     private Bitmap bitmap;
+    private JPushUtils jPushUtils;
 
     public static final int TAKE_PHOTE=1;
     public static final int CROP_PHOTO=2;
@@ -279,6 +281,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
         setManager = SettingManager.getInstance();
         leancloudManager = LeancloudManager.getInstance();
+        jPushUtils = JPushUtils.getInstance();
 
         img_car = (ImageView)findViewById(R.id.img_car);
         Bitmap bitmap = BitmapUtils.compressImageFromFile(IMEI);
