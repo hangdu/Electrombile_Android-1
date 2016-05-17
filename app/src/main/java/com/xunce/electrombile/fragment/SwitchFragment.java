@@ -81,7 +81,9 @@ import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 import com.xunce.electrombile.utils.useful.StringUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -481,12 +483,14 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
             return;
         }
         city = city.replace("市", "");
+        final String cityName = city;
         Log.e(TAG, "city：" + city);
         city = StringUtils.encode(city);
+//        final String cityName = city;
         Log.e(TAG, "city" + city);
         HttpUtils http = new HttpUtils();
         http.send(HttpRequest.HttpMethod.GET,
-                "http://apistore.baidu.com/microservice/weather?cityname=" + city,
+                "http://wthrcdn.etouch.cn/weather_mini?city=" + city,
                 new RequestCallBack<String>() {
                     //更新任务进度
                     @Override
@@ -498,57 +502,61 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                     public void onSuccess(ResponseInfo<String> responseInfo) {
                         Log.i(TAG, StringUtils.decodeUnicode(responseInfo.result));
                         String originData = StringUtils.decodeUnicode(responseInfo.result);
-                        WeatherBean data = new WeatherBean();
-                        parseWeatherErr(data, originData);
+//                        WeatherBean data = new WeatherBean();
+                        parseWeatherErr(originData);
                     }
 
-                    private void parseWeatherErr(WeatherBean data, String originData) {
+                    private void parseWeatherErr(String originData) {
+                        String temperature;
+                        String type;
                         try {
-                            data.errNum = JSONUtils.ParseJSON(originData, "errNum");
-                            data.errMsg = JSONUtils.ParseJSON(originData, "errMsg");
-                            if ("0".equals(data.errNum) && "success".equals(data.errMsg)) {
-                                data.retData = JSONUtils.ParseJSON(originData, "retData");
-                                parseRetData(data.retData, data);
-                            } else {
-                                Log.e(TAG, "fail to get Weather info");
+                            String desc = JSONUtils.ParseJSON(originData, "desc");
+                            if(desc!=null&&desc.equals("OK")){
+                                String data = JSONUtils.ParseJSON(originData, "data");
+                                temperature = JSONUtils.ParseJSON(data, "wendu");
+                                String forecast = JSONUtils.ParseJSON(data, "forecast");
+                                JSONArray jsonArray = new JSONArray(forecast);
+                                if(jsonArray.length() > 0){
+                                    JSONObject jsonObject = jsonArray.optJSONObject(0);
+                                    type = jsonObject.optString("type");
+                                    setWeather(cityName,temperature,type);
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
 
-                    private void parseRetData(String originData, WeatherBean data) {
-                        try {
-                            data.city = JSONUtils.ParseJSON(originData, "city");
-                            data.time = JSONUtils.ParseJSON(originData, "time");
-                            data.weather = JSONUtils.ParseJSON(originData, "weather");
-                            data.temp = JSONUtils.ParseJSON(originData, "temp");
-                            data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
-                            data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
-                            data.WD = JSONUtils.ParseJSON(originData, "WD");
-                            data.WS = JSONUtils.ParseJSON(originData, "WS");
-                            setWeather(data);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            ToastUtils.showShort(m_context, "天气查询失败");
+//                    private void parseRetData(String originData, WeatherBean data) {
+//                        try {
+//                            data.city = JSONUtils.ParseJSON(originData, "city");
+//                            data.time = JSONUtils.ParseJSON(originData, "time");
+//                            data.weather = JSONUtils.ParseJSON(originData, "weather");
+//                            data.temp = JSONUtils.ParseJSON(originData, "temp");
+//                            data.l_tmp = JSONUtils.ParseJSON(originData, "l_tmp");
+//                            data.h_tmp = JSONUtils.ParseJSON(originData, "h_tmp");
+//                            data.WD = JSONUtils.ParseJSON(originData, "WD");
+//                            data.WS = JSONUtils.ParseJSON(originData, "WS");
+//                            setWeather(data);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                            ToastUtils.showShort(m_context, "天气查询失败");
+//                        }
+//                    }
+
+                    private void setWeather(String cityName,String temperature,String type) {
+                        tv_temperature.setText(temperature+"摄氏度");
+                        tv_weatherCondition.setText(type);
+                        tv_location.setText(cityName);
+
+                        if(type.contains("雨")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
                         }
-                    }
-
-                    private void setWeather(WeatherBean data) {
-                        if(data!=null){
-                            tv_temperature.setText(data.temp+"摄氏度");
-                            tv_weatherCondition.setText(data.weather);
-                            tv_location.setText(data.city);
-
-                            if(data.weather.contains("雨")){
-                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.rain)));
-                            }
-                            else if(data.weather.contains("雪")){
-                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
-                            }
-                            else{
-                                img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
-                            }
+                        else if(type.contains("雪")){
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.snow)));
+                        }
+                        else{
+                            img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
                         }
                     }
 
