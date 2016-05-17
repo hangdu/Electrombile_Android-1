@@ -168,4 +168,10 @@
     <color name="edit_text_color">#c0efd9</color>
     <color name="grey1">#4e4e4e</color>
 
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="viewfinder_laser">#ffff0000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+
 </resources>

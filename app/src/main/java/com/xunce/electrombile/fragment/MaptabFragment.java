@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.LogUtil;
-import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -48,14 +46,12 @@ import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
-import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
-import com.xunce.electrombile.activity.BindingActivity2;
+import com.xunce.electrombile.activity.CaptureActivity;
 import com.xunce.electrombile.activity.FindCarActivity;
 import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
-import com.xunce.electrombile.utils.system.ToastUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
 import java.text.SimpleDateFormat;
@@ -172,7 +168,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent;
-                        intent = new Intent(m_context, BindingActivity2.class);
+                        intent = new Intent(m_context, CaptureActivity.class);
                         m_context.startActivity(intent);
                     }
                 })

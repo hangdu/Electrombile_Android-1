@@ -37,7 +37,7 @@ import com.orhanobut.logger.Logger;
 import com.xunce.electrombile.LeancloudManager;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BaseActivity;
-import com.xunce.electrombile.activity.BindingActivity2;
+import com.xunce.electrombile.activity.CaptureActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
 import com.xunce.electrombile.utils.system.IntentUtils;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -135,7 +135,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			public void onGetBindListSuccess(List<AVObject> list) {
 				if(list.size() == 0){
 					//进入绑定设备的activity
-					Intent intent = new Intent(LoginActivity.this, BindingActivity2.class);
+					Intent intent = new Intent(LoginActivity.this, CaptureActivity.class);
 					intent.putExtra("From","LoginActivity");
 					startActivity(intent);
 					finish();

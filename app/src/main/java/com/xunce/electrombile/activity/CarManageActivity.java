@@ -110,7 +110,8 @@ public class CarManageActivity extends Activity {
                     ToastUtils.showShort(CarManageActivity.this, "请检查网络连接,该操作无法完成");
                     return;
                 }
-                Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
+//                Intent intent = new Intent(CarManageActivity.this, BindingActivity2.class);
+                Intent intent = new Intent(CarManageActivity.this, CaptureActivity.class);
                 intent.putExtra("From","CarManageActivity");
                 startActivity(intent);
             }

@@ -14,15 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVMobilePhoneVerifyCallback;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.RequestMobileCodeCallback;
 import com.avos.avoscloud.UpdatePasswordCallback;
 import com.xunce.electrombile.R;
-import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.utils.system.ToastUtils;
-import com.xunce.electrombile.utils.useful.StringUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;

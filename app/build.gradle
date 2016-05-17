@@ -152,5 +152,6 @@ dependencies {
     compile 'com.orhanobut:logger:1.11'
     compile 'com.malinskiy:materialicons:1.0.2'
     compile files('libs/Bughd_android_sdk_v1.3.7.jar')
+    compile files('libs/core.jar')
 }
 

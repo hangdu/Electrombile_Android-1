@@ -15,18 +15,14 @@ import android.widget.Toast;
 
 import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVMobilePhoneVerifyCallback;
-import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.LogUtil;
 import com.avos.avoscloud.RequestMobileCodeCallback;
-import com.avos.avoscloud.SignUpCallback;
 import com.avos.avoscloud.UpdatePasswordCallback;
 import com.xunce.electrombile.R;
-import com.xunce.electrombile.activity.BindingActivity2;
-import com.xunce.electrombile.manager.SettingManager;
+import com.xunce.electrombile.activity.CaptureActivity;
 import com.xunce.electrombile.utils.system.ToastUtils;
-import com.xunce.electrombile.utils.useful.StringUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,7 +76,7 @@ public class SMSandPasswordActivity extends Activity {
                 case UPDATEPASS_SUCCESS:
                     ToastUtils.showShort(SMSandPasswordActivity.this, "成功修改密码");
                     //进入绑定设备的页面
-                    Intent intent = new Intent(SMSandPasswordActivity.this, BindingActivity2.class);
+                    Intent intent = new Intent(SMSandPasswordActivity.this, CaptureActivity.class);
                     intent.putExtra("From","SMSandPasswordActivity");
                     startActivity(intent);
                     break;

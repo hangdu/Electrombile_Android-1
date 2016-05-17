@@ -93,10 +93,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ScannerActivity"
-            android:label="Scanner"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.AlarmActivity"
             android:label="Alarm"
             android:launchMode="singleTask"
@@ -170,7 +166,6 @@
             android:name=".activity.account.RegisterActivity_Part1"
             android:label="@string/title_activity_register_activity__part1" />
         <activity android:name=".activity.account.SMSandPasswordActivity" />
-        <activity android:name=".activity.BindingActivity2" />
         <activity android:name=".activity.WelcomeActivity" />
         <activity android:name=".activity.InputIMEIActivity" />
         <activity android:name=".activity.account.ForgetPassActivity2" />
@@ -178,7 +173,9 @@
         <activity android:name=".activity.SpecificHistoryTrackActivity" />
         <activity android:name=".activity.CropActivity" />
         <activity android:name=".activity.GuideActivity" />
-        <activity android:name=".activity.FindCarActivity"></activity>
+        <activity android:name=".activity.FindCarActivity" />
+        <activity android:name=".activity.CapureActivity" />
+        <activity android:name=".activity.CaptureActivity"></activity>
     </application>
 
 </manifest>
