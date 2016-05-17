@@ -7,6 +7,8 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 
+import com.xunce.electrombile.applicatoin.App;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -139,21 +141,17 @@ public class BitmapUtils {
 
 	public static Bitmap compressImageFromFile(String IMEI) {
 		//先要判断一下这个文件里的内容是否为空
-		String srcPath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
-		File f = new File(srcPath);
-
-		String srcPath1 = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
-		File f1 = new File(srcPath1);
+		String srcPath = App.getInstance().getExternalFilesDir(null).getAbsolutePath()+"/" + IMEI + "crop_result.jpg";
+//		File f = new File(srcPath);
+//
+//		String srcPath1 = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.png";
+//		File f1 = new File(srcPath1);
+		File f = new File(App.getInstance().getExternalFilesDir(null), IMEI+"crop_result.jpg");
 
 		if(f.exists()){
 			BitmapFactory.Options newOpts = new BitmapFactory.Options();
 			newOpts.inJustDecodeBounds = false;
 			return BitmapFactory.decodeFile(srcPath,newOpts);
-		}
-		else if(f1.exists()){
-			BitmapFactory.Options newOpts = new BitmapFactory.Options();
-			newOpts.inJustDecodeBounds = false;
-			return BitmapFactory.decodeFile(srcPath1,newOpts);
 		}
 		else{
 			return null;

@@ -247,8 +247,12 @@ public class MqttConnectManager {
     public boolean unSubscribeGPS(String IMEI) {
         String topic = "dev2app/" + IMEI + "/gps";
         try {
-            mac.unsubscribe(topic);
-            return true;
+            if(returnMqttStatus()){
+                mac.unsubscribe(topic);
+                mac.unsubscribe(topic);
+                return true;
+            }
+            return false;
         } catch (MqttException e) {
             e.printStackTrace();
             ToastUtils.showShort(App.getInstance(), "取消订阅失败!请稍后重启再试！");

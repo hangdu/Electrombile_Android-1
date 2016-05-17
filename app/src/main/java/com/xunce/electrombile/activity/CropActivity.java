@@ -110,8 +110,10 @@ public class CropActivity extends Activity{
     //bitmap写文件
     public void saveMyBitmaptoFile(Bitmap mBitmap,String IMEI){
         //如果用户没有内存卡这句话会不会出错
-        filePath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
-        File f = new File(filePath);
+//        filePath = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
+//        File f = new File(filePath);
+
+        File f = new File(this.getExternalFilesDir(null), IMEI+"crop_result.jpg");
 
         FileOutputStream fOut = null;
         try {

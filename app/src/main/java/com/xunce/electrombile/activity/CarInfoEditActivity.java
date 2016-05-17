@@ -141,8 +141,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
     }
 
     private void deleteCarInfo(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
-        File f = new File(fileName);
+//        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
+//        File f = new File(fileName);
+        File f = new File(this.getExternalFilesDir(null), setManager.getIMEI()+"crop_result.jpg");
         if(f.exists()){
             f.delete();
         }

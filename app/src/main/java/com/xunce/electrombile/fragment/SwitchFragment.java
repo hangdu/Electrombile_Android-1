@@ -422,13 +422,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     public void loadBitmap() {
         //如果这个文件在本地是没有的  就直接加载默认的图片
-        String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
-//        String srcPath = Context.getExternalFilesDir() + "/"+setManager.getIMEI()+"crop_result.jpg";
-        File file = new File(srcPath);
+//        String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
+        File file = new File(m_context.getExternalFilesDir(null), setManager.getIMEI()+"crop_result.jpg");
+//        File file = new File(srcPath);
         if(!file.exists()){
-//            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
-//            headImage.setImageBitmap(bitmap);
-//            m_context.setLeftMenuCarImage(bitmap);
             return;
         }
         BitmapWorkerTask task = new BitmapWorkerTask();
@@ -436,8 +433,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     }
 
     private void DeviceChangeHeadImage(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
-        File f = new File(fileName);
+//        String fileName = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
+//        File f = new File(fileName);
+
+        File f = new File(m_context.getExternalFilesDir(null), setManager.getIMEI()+"crop_result.jpg");
         if(f.exists()){
             bitmap = BitmapUtils.compressImageFromFile(setManager.getIMEI());
             if(bitmap!=null){

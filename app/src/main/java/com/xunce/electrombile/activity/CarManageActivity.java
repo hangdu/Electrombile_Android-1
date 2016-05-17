@@ -196,8 +196,9 @@ public class CarManageActivity extends Activity {
     }
 
     private void DeviceChangeHeadImage(){
-        String fileName = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.jpg";
-        File f = new File(fileName);
+//        String fileName = Environment.getExternalStorageDirectory() + "/"+settingManager.getIMEI()+"crop_result.jpg";
+//        File f = new File(fileName);
+        File f = new File(this.getExternalFilesDir(null), settingManager.getIMEI()+"crop_result.jpg");
         if(f.exists()){
             Bitmap bitmap = BitmapUtils.compressImageFromFile(settingManager.getIMEI());
             if(bitmap!=null){
