@@ -153,5 +153,6 @@ dependencies {
     compile 'com.malinskiy:materialicons:1.0.2'
     compile files('libs/Bughd_android_sdk_v1.3.7.jar')
     compile files('libs/core.jar')
+    compile files('src/main/jniLibs/jpush-android-2.1.5.jar')
 }
 
