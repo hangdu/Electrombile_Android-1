@@ -72,6 +72,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.CropActivity;
 import com.xunce.electrombile.activity.FragmentActivity;
+import com.xunce.electrombile.applicatoin.App;
 import com.xunce.electrombile.bean.WeatherBean;
 import com.xunce.electrombile.utils.device.VibratorUtil;
 import com.xunce.electrombile.utils.system.BitmapUtils;
@@ -180,7 +181,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         mSearch = GeoCoder.newInstance();
         mSearch.setOnGetGeoCodeResultListener(this);
 
-        mLocationClient = new LocationClient(m_context);     //声明LocationClient类
+        mLocationClient = new LocationClient(App.getInstance());     //声明LocationClient类
         mLocationClient.registerLocationListener(myListener);    //注册监听函数
         initLocation();
         mLocationClient.start();
@@ -269,6 +270,10 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
         m_context.unregisterReceiver(MyBroadcastReceiver);
         m_context = null;
         mSearch = null;
+        if (mLocationClient != null)
+        {
+            mLocationClient.stop();
+        }
 
         super.onDestroy();
     }
@@ -520,6 +525,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                                     JSONObject jsonObject = jsonArray.optJSONObject(0);
                                     type = jsonObject.optString("type");
                                     setWeather(cityName,temperature,type);
+                                    LocationClientProcess();
                                 }
                             }
                         } catch (JSONException e) {
@@ -558,6 +564,15 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
                         else{
                             img_weather.setImageDrawable(m_context.getResources().getDrawable((R.drawable.sunny)));
                         }
+                    }
+
+                    private void LocationClientProcess(){
+                        mLocationClient.unRegisterLocationListener(myListener);
+                        if (mLocationClient != null)
+                        {
+                            mLocationClient.stop();
+                        }
+
                     }
 
                     @Override
