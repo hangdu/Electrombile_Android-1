@@ -8,6 +8,7 @@ import com.baidu.mapapi.SDKInitializer;
 import com.xunce.electrombile.database.DBManage;
 import com.xunce.electrombile.log.MyLog;
 
+import cn.jpush.android.api.JPushInterface;
 import im.fir.sdk.FIR;
 //import io.yunba.android.manager.YunBaManager;
 
@@ -37,6 +38,9 @@ public class App extends Application {
         AVOSCloud.initialize(this,
                 "5wk8ccseci7lnss55xfxdgj9xn77hxg3rppsu16o83fydjjn",
                 "yovqy5zy16og43zwew8i6qmtkp2y6r9b18zerha0fqi5dqsw");
+
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
 //        YunBaManager.start(getApplicationContext());
 
 

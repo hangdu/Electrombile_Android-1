@@ -21,6 +21,7 @@ import com.xunce.electrombile.Constants.ServiceConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.account.LoginActivity;
 import com.xunce.electrombile.activity.account.VerifiedActivity;
+import com.xunce.electrombile.manager.SettingManager;
 import com.xunce.electrombile.utils.useful.JSONUtils;
 import com.xunce.electrombile.utils.useful.NetworkUtils;
 
@@ -31,18 +32,21 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
+import java.util.Set;
 
+import cn.jpush.android.api.InstrumentedActivity;
 import im.fir.sdk.FIR;
 import im.fir.sdk.VersionCheckCallback;
 
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends InstrumentedActivity {
 
     private final int UPDATE = 0;
     private final int UN_UPDATE = 1;
     private boolean isUpdate;
     private File file;
     private ProgressDialog progressDialog;
+    private SettingManager setManager;
     Handler MyHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -106,12 +110,13 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        setManager = SettingManager.getInstance();
         ServiceConstants.MQTT_HOST = setManager.getServer();
         getDeviceId();
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         final Context context = this;
         if(!NetworkUtils.isNetworkConnected(this)){

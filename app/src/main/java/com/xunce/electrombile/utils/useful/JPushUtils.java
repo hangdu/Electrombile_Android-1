@@ -110,11 +110,11 @@ public class JPushUtils {
 
     public void setJPushAlias(String alias){
         if (TextUtils.isEmpty(alias)) {
-            Toast.makeText(mContext, R.string.error_alias_empty, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "alias为空", Toast.LENGTH_SHORT).show();
             return;
         }
         if (!JPushUtils.isValidTagAndAlias(alias)) {
-            Toast.makeText(mContext,R.string.error_tag_gs_empty, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"alias格式错误", Toast.LENGTH_SHORT).show();
             return;
         }
 
