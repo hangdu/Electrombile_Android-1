@@ -121,6 +121,9 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
                     //关闭mqttclient
                     mqttConnectManager.MqttDisconnect();
 //                    mqttConnectManager.removeConnectionInDatabase();
+
+                    jPushUtils.setJPushAlias("simcom");
+
                     FragmentActivity.cancelAllNotification();
                     intent = new Intent(CarInfoEditActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -146,7 +149,7 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 //        String fileName = Environment.getExternalStorageDirectory() + "/"+IMEI+"crop_result.jpg";
 //        File f = new File(fileName);
         File f = new File(this.getExternalFilesDir(null), setManager.getIMEI()+"crop_result.jpg");
-        if(f.exists()){
+        if (f.exists()){
             f.delete();
         }
 
@@ -409,6 +412,8 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
 
                     IMEIlist.remove(0);
                     setManager.setIMEIlist(IMEIlist);
+
+                    jPushUtils.setJPushAlias("simcom_" + setManager.getIMEI());
                 }
                 else{
                     Log.d("test","test");
@@ -457,6 +462,8 @@ public class CarInfoEditActivity extends Activity implements View.OnClickListene
             intent.putExtra("boolean_key", Flag_Maincar);
             setResult(RESULT_OK, intent);
             CarInfoEditActivity.this.finish();
+
+            jPushUtils.setJPushAlias("simcom_"+setManager.getIMEI());
         }
         else{
             ToastUtils.showShort(CarInfoEditActivity.this,"mqtt连接失败");

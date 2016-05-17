@@ -95,7 +95,7 @@ public class CaptureActivity extends Activity implements Callback {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CaptureActivity.this,InputIMEIActivity.class);
-                intent.putExtra("FromActivity",FromActivity);
+                intent.putExtra("From",FromActivity);
                 startActivity(intent);
             }
         });
