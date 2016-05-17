@@ -423,6 +423,7 @@ public class SwitchFragment extends BaseFragment implements OnGetGeoCoderResultL
     public void loadBitmap() {
         //如果这个文件在本地是没有的  就直接加载默认的图片
         String srcPath = Environment.getExternalStorageDirectory() + "/"+setManager.getIMEI()+"crop_result.jpg";
+//        String srcPath = Context.getExternalFilesDir() + "/"+setManager.getIMEI()+"crop_result.jpg";
         File file = new File(srcPath);
         if(!file.exists()){
 //            Bitmap bitmap = BitmapFactory.decodeResource(m_context.getResources(), R.drawable.default_carimage);
