@@ -52,6 +52,7 @@ import com.xunce.electrombile.Constants.ProtocolConstants;
 import com.xunce.electrombile.R;
 import com.xunce.electrombile.activity.BindingActivity2;
 import com.xunce.electrombile.activity.FindCarActivity;
+import com.xunce.electrombile.activity.MqttConnectManager;
 import com.xunce.electrombile.activity.TestddActivity;
 import com.xunce.electrombile.manager.TracksManager.TrackPoint;
 import com.xunce.electrombile.utils.system.ToastUtils;
@@ -118,6 +119,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
     private Location currentLocation;
     private boolean NetworkLocationListenerRemoved = false;//判断网络监听是否移除
     private SimpleDateFormat sdfWithSecond;
+    private MqttConnectManager mqttConnectManager;
 
 
     private Handler playHandler = new Handler() {
@@ -189,6 +191,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
         filter.addAction("com.app.bc.test");
         m_context.registerReceiver(MyBroadcastReceiver, filter);
         sdfWithSecond = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        mqttConnectManager = MqttConnectManager.getInstance();
     }
 
     @Override
@@ -226,11 +229,14 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onStart(){
+        com.orhanobut.logger.Logger.i(TAG, "onStart");
         super.onStart();
+        mqttConnectManager.subscribeGPS(setManager.getIMEI());
     }
 
     @Override
     public void onResume() {
+        com.orhanobut.logger.Logger.i(TAG, "onResume");
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
         mMapView.setVisibility(View.VISIBLE);
         mMapView.onResume();
@@ -239,6 +245,7 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onPause() {
+        com.orhanobut.logger.Logger.i(TAG, "onPause");
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
         mMapView.onPause();
         super.onPause();
@@ -246,7 +253,9 @@ public class MaptabFragment extends BaseFragment implements OnGetGeoCoderResultL
 
     @Override
     public void onStop(){
+        com.orhanobut.logger.Logger.i(TAG, "onStop");
         super.onStop();
+        mqttConnectManager.unSubscribeGPS(setManager.getIMEI());
     }
 
     @Override

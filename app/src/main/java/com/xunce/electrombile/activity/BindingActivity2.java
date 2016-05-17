@@ -230,6 +230,8 @@ public class BindingActivity2 extends Activity implements OnDecodeCompletionList
                     ToastUtils.showShort(BindingActivity2.this,"IMEI的长度不对");
 //                    finish();
                 }
+
+                scannerView.onResume();
             }
         }
         else{

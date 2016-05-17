@@ -201,7 +201,7 @@ public class MqttConnectManager {
         //订阅命令字
         String topic1 = "dev2app/" + IMEI + "/cmd";
         //订阅GPS数据
-        String topic2 = "dev2app/" + IMEI + "/gps";
+//        String topic2 = "dev2app/" + IMEI + "/gps";
         //订阅上报的信号强度
         String topic3 = "dev2app/" + IMEI + "/433";
         //订阅报警
@@ -209,13 +209,12 @@ public class MqttConnectManager {
 
         String topic5 = "dev2app/" + IMEI + "/notify";
 
-        String[] topic = {topic1, topic2, topic3, topic4, topic5};
-        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,
+        String[] topic = {topic1, topic3, topic4, topic5};
+        int[] qos = {ServiceConstants.MQTT_QUALITY_OF_SERVICE,
                 ServiceConstants.MQTT_QUALITY_OF_SERVICE, ServiceConstants.MQTT_QUALITY_OF_SERVICE,ServiceConstants.MQTT_QUALITY_OF_SERVICE};
         try {
             mac.subscribe(topic, qos);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic1);
-            LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic2);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic3);
             LogUtil.log.i("Connection established to " + ServiceConstants.MQTT_HOST + " on topic " + topic4);
         } catch (MqttException e) {
@@ -227,7 +226,6 @@ public class MqttConnectManager {
     public boolean unSubscribe(String IMEI) {
         //订阅命令字
         String topic1 = "dev2app/" + IMEI + "/cmd";
-        //订阅GPS数据
         String topic2 = "dev2app/" + IMEI + "/gps";
         //订阅上报的信号强度
         String topic3 = "dev2app/" + IMEI + "/433";
@@ -235,7 +233,7 @@ public class MqttConnectManager {
         String topic4 = "dev2app/" + IMEI + "/alarm";
 
         String topic5 = "dev2app/" + IMEI + "/notify";
-        String[] topic = {topic1, topic2, topic3, topic4, topic5};
+        String[] topic = {topic1, topic2,topic3, topic4, topic5};
         try {
             mac.unsubscribe(topic);
             return true;
@@ -243,6 +241,31 @@ public class MqttConnectManager {
             e.printStackTrace();
             ToastUtils.showShort(App.getInstance(), "取消订阅失败!请稍后重启再试！");
             return false;
+        }
+    }
+
+    public boolean unSubscribeGPS(String IMEI) {
+        String topic = "dev2app/" + IMEI + "/gps";
+        try {
+            mac.unsubscribe(topic);
+            return true;
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(App.getInstance(), "取消订阅失败!请稍后重启再试！");
+            return false;
+        }
+    }
+
+
+    public void subscribeGPS(String IMEI){
+        String topic = "dev2app/" + IMEI + "/gps";
+        try {
+            if(returnMqttStatus()){
+                mac.subscribe(topic, ServiceConstants.MQTT_QUALITY_OF_SERVICE);
+            }
+        } catch (MqttException e) {
+            e.printStackTrace();
+            ToastUtils.showShort(App.getInstance(), "订阅失败!请稍后重启再试！");
         }
     }
 }

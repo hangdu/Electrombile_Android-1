@@ -471,14 +471,17 @@ public class FragmentActivity extends android.support.v4.app.FragmentActivity
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
                     case R.id.rbSwitch:
+                        mqttConnectManager.unSubscribeGPS(setManager.getIMEI());
                         mViewPager.setCurrentItem(0, false);
                         checkId = 0;
                         break;
                     case R.id.rbMap:
+                        mqttConnectManager.subscribeGPS(setManager.getIMEI());
                         mViewPager.setCurrentItem(1, false);
                         checkId = 1;
                         break;
                     case R.id.rbSettings:
+                        mqttConnectManager.unSubscribeGPS(setManager.getIMEI());
                         mViewPager.setCurrentItem(2, false);
                         checkId = 2;
                         break;
