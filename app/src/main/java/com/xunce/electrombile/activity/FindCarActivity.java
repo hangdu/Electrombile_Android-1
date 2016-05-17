@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -155,12 +156,22 @@ public class FindCarActivity extends Activity {
             public void onClick(View v) {
                 intensityList.clear();
 
-                if(count == 1){
+                if (count == 1) {
                     getSignalUserguideDialog();
-                }else{
+                } else {
                     refreshSignalUserGuide();
                     SignalUserguideDialog.show();
                 }
+            }
+        });
+
+        TextView tv_helpPhone = (TextView)findViewById(R.id.tv_helpPhone);
+        tv_helpPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + "027-88046747"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 
