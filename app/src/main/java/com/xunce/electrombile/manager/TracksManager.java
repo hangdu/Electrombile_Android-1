@@ -162,15 +162,19 @@ public class TracksManager implements Serializable{
         if(size == 1){
             return;
         }
-        ArrayList<TrackPoint> temp;
-        Date MinDate;
+
+        long minTimestamp;
         int MinPosition;
+
+        ArrayList<TrackPoint> temp;
+
         for(int i=0;i<size;i++){
-            MinDate = tracks.get(i).get(0).time;
+            minTimestamp = tracks.get(i).get(0).time.getTime();
             MinPosition = i;
             for(int j = i+1;j<size;j++){
-                if(tracks.get(j).get(0).time.before(MinDate)){
+                if(minTimestamp>tracks.get(j).get(0).time.getTime()){
                     MinPosition = j;
+                    minTimestamp = tracks.get(j).get(0).time.getTime();
                 }
             }
             if(MinPosition!=i){
@@ -180,6 +184,7 @@ public class TracksManager implements Serializable{
             }
         }
     }
+
 
 
     public static class TrackPoint implements Serializable{
